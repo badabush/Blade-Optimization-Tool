@@ -18,7 +18,7 @@ class parser(object):
     def construct(self):
         """
         Constructs the parser with several arguments for stdout.
-
+        
         :return:
         """
 

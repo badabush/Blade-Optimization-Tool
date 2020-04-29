@@ -10,7 +10,5 @@ Welcome to thesis's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   doc/packages
-   doc/classes
-
-.. automodule:: parser
+   packages
+   scripts
