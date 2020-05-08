@@ -1,5 +1,6 @@
 import argparse
 
+
 class parser(object):
     """
     Parser for handling the API commands.
@@ -8,6 +9,7 @@ class parser(object):
 
         Parser is used as a placeholder for the GUI and will be replaced in a later stage if the project.
     """
+
     def __init__(self):
         """
         Initialization, builds the parser.
@@ -34,8 +36,8 @@ class parser(object):
         print(args.accumulate(args.integers))
 
 
-
 if __name__ == "__main__":
     parser().construct()
     import doctest
+
     doctest.testmod()
