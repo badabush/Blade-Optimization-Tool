@@ -35,10 +35,10 @@ def naca65gen(beta1, beta2, sigma_t, rth_t):
     # zero chamber incidence- and deviation angle for (t/c = .1 = 10%)
     # zero chamber incidence
     p = .914 + sigma_t ** 3 / 160
-    inc0_design_10 = beta1 ** p / (5 + 46 * np.exp(-2.3 * rth_t)) - .1 * rth_t ** 3 * np.exp((beta1 - 70) / 4)
+    inc0_design_10 = beta1 ** p / (5 + 46 * np.exp(-2.3 * sigma_t)) - .1 * sigma_t ** 3 * np.exp((beta1 - 70) / 4)
 
     # zero chamber deviation
-    dev0_design_10 = .01 * rth_t * beta1 + (.74 * rth_t ** 1.9 + 3 * rth_t) * (beta1 / 90) ** (1.67 + 1.09 * rth_t)
+    dev0_design_10 = .01 * sigma_t * beta1 + (.74 * sigma_t ** 1.9 + 3 * sigma_t) * (beta1 / 90) ** (1.67 + 1.09 * sigma_t)
 
     # fit angle for thickness influence (?)
     incthick = k_sh * k_tinc * inc0_design_10
@@ -46,10 +46,10 @@ def naca65gen(beta1, beta2, sigma_t, rth_t):
 
     # slope factors for profile camber
     # slope factor incidence
-    n = 0.025 * rth_t - 0.06 - (beta1 / 90) ** (1 + 1.2 * rth_t) / (1.5 + 0.43 * rth_t)
+    n = 0.025 * sigma_t - 0.06 - (beta1 / 90) ** (1 + 1.2 * sigma_t) / (1.5 + 0.43 * sigma_t)
 
     # slope factor deviation
-    m = (0.17 - 3.33e-4 * beta1 + 3.33e-5 * beta1 ** 2) / rth_t ** (0.9625 - 0.17e-2 * beta1 - 0.85e-6 * beta1 ** 3)
+    m = (0.17 - 3.33e-4 * beta1 + 3.33e-5 * beta1 ** 2) / sigma_t ** (0.9625 - 0.17e-2 * beta1 - 0.85e-6 * beta1 ** 3)
 
     # metal angle (?)
     theta = ((beta1 - beta2) + devthick - incthick) / (1 - m + n);
@@ -59,4 +59,4 @@ def naca65gen(beta1, beta2, sigma_t, rth_t):
     boa = beta2 - dev_design  # Blade Outlet Angle
     lambd = (bia + boa) / 2;
 
-    return theta, lambd
+    return np.deg2rad(theta), np.deg2rad(lambd)
