@@ -20,6 +20,7 @@ class Param:
 
         # construct pandas frame from Dict
         self.df_params = pd.DataFrame.from_dict(self.ds)
+        0
 
     def generate(self):
         """
