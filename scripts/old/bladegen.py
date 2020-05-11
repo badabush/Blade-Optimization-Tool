@@ -23,6 +23,7 @@ class BladeGen:
                                             self.df_param.gammahk_t1.item())
         self.rearblade = self.blade_shaper(self.beta['beta21'], self.beta['beta22'], self.df_param.a_t2.item(),
                                             self.df_param.gammahk_t2.item())
+        0
 
     def redir_tandem(self):
         # ALL VALUES HAVE BEEN CHANGED TO RAD
