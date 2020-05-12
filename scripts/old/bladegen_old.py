@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import scipy.optimize as optimize
 from matplotlib import pyplot as plt
-from param import Param
+from param_old import Param
 import tools
 
 
@@ -17,7 +17,7 @@ class BladeGen:
 
         """
         self.npoints = 300
-        self.df_param = Param().df_params  # get parameters from param.py
+        self.df_param = Param().df_params  # get parameters from param_old.py
         self.beta = self.redir_tandem()
         self.frontblade = self.blade_shaper(self.beta['beta11'], self.beta['beta12'], self.df_param.a_t1.item(),
                                             self.df_param.gammahk_t1.item())
