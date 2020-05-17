@@ -190,8 +190,19 @@ class BladeGen:
 
         xt, yt = self.thickness_dist(self.tc)  # get x and y coords from thickness distribution
         sloc, xloc, yloc = self.parametrize_airfoil(xt, yt, xt, -yt)
-        FMMSpline(sloc, xloc, yloc)
 
+        #fit splines to xloc vs sloc and yloc vs sloc
+        xploc = FMMSpline(sloc, xloc)
+        yploc = FMMSpline(sloc, yloc)
+
+        slow = sloc[xt.size:]
+        xlow = xloc[xt.size:]
+        ylow = -yloc[xt.size:]
+        xplow = xploc[xt.size:]
+        yplow = -yploc[xt.size:]
+
+        for k in range(0,x.size):
+            0
         0
         # return y, yp, ypp
 
