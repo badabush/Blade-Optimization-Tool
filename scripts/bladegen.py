@@ -287,6 +287,39 @@ class BladeGen:
 
         return xt, yt
 
+    def naca6gen2(self):
+        # eps and psi were taken from the original nasa f90 code (21 points)
+        # algorithm derived from nacax.f90 (~line 1000)
+        a = 1.0  # from source code
+        phi = np.linspace(0, np.pi, self.npts)
+
+        eps = np.array(
+            [0.00000, 0.01515, 0.01943, 0.01715, 0.01821, 0.02211, 0.02772, 0.03510, 0.04404, 0.05467, 0.06653,
+             0.07771, 0.08614, 0.09017, 0.08982, 0.08427, 0.07368, 0.05228, 0.02939, 0.01302, 0.00000])
+
+        psi = np.array(
+            [0.17464, 0.16808, 0.15523, 0.15235, 0.15350, 0.15536, 0.15678, 0.15731, 0.15653, 0.15393, 0.14779,
+             0.13680, 0.12154, 0.10353, 0.08401, 0.06385, 0.04422, 0.02590, 0.01154, 0.00289, 0.00000])
+        tc = self.th
+        sf = self.coef[0] * tc + self.coef[1] * tc ** 2 + self.coef[2] * tc ** 3 + self.coef[
+            3] * tc ** 4  # scale factor
+
+        eps_scaled = eps * sf
+        psi_scaled = psi * sf
+
+        """ 
+        use sclaed set of eps and psi functions ot perform the conformal mapping for the circle z into the scaled 
+        airfoil zfinal.
+        Return the real imaginary parts as xt and yt.
+        """
+        z = np.array([a * np.exp(complex(psi[0], x)) for x in phi], dtype=complex)
+        zprime = np.array([Z * np.exp(complex(p-psi[0], -e)) for Z, p,e in zip(z, psi, eps)], dtype=complex)
+        zeta = zprime+a*a/zprime
+        zfinal = (zeta[0]-zeta)/np.abs(zeta[-1]-zeta[0])
+        xt = np.real(zfinal)
+        yt = -np.imag(zfinal)
+        0
+
 
 if __name__ == "__main__":
     # NACA65-210
