@@ -1,6 +1,8 @@
 import numpy as np
 from matplotlib import pyplot as plt
+from sklearn import preprocessing
 import pandas as pd
+import scipy.optimize as optimize
 
 import utils as utils
 
@@ -17,8 +19,8 @@ class BladeGen:
         self.beta[3] = utils.sdr(self.beta[2], self.ds.sigma_s, self.ds.df2)
 
         # single blade
-        theta,lambd = utils.naca65gen(self.beta[0], self.beta[3], self.ds.sigma_s, self.ds.rth_s)
-        self.ythickness(theta, self.ds.c_s[0])
+        theta, lambd = utils.naca65gen(self.beta[0], self.beta[3], self.ds.sigma_s, self.ds.rth_s)
+        self.ythickness(lambd, theta, self.ds.c_s[0])
 
     def params(self):
         """
@@ -52,19 +54,94 @@ class BladeGen:
         ds['rth_t'] = ds['th'] / ds['c_t']
         return ds
 
-    def ythickness(self, theta, c):
+    def ythickness(self, lambd, theta, c):
+        theta = np.deg2rad(55.0121)
+        lambd = np.deg2rad(23.4077)
+        c=1
         ds = self.ds
-        x = self.x
+        # make a non linear x scaling for moving the extremum
+        xcambermax = .4
+        x = np.zeros(self.npts)
+        half = int(np.round(self.npts/2))
+        x[:half] = np.linspace(0, xcambermax, half)
+        x[half-1:] = np.linspace(xcambermax, 1, half+1)
+        x=x
         yth = ds.th[0] * (1 - x) * (1.0675 * np.sqrt(x) - x * (.2756 - x * (2.4478 - 2.8385 * x))) / (
                 1 - .176 * x)  # thickness distribution
 
-        # calc circular arc camberline
-        rc = c/2 * np.arcsin(theta/2) # radius of
-        # yc = -rc * np.cos(theta/2)
-        pts = np.linspace(0, np.pi, self.npts) # angles for 1/2 circle
-        xc = yc = np.zeros(self.npts)
-        xc = rc * np.cos(pts) + rc # x coords + offset r
-        yc = rc * np.sin(pts) #
+        # scale thickness
+        foo = np.zeros((self.npts, 2))
+        # foo[:, 0] = np.linspace(0, 1, self.npts)
+        foo[:, 0] = x
+        foo[:, 1] = yth
+        min_max_scaler = preprocessing.MinMaxScaler()
+        xy_th = min_max_scaler.fit_transform(foo)
+        xy_th[:, 1] = xy_th[:, 1] * ds.th[0]
+
+
+        # calc circular arc camberline (R. Aungier, p.65)
+        rc = c / 2 * np.arcsin(theta / 2)  # radius of circular arc
+        chalf = rc * np.sin(theta / 2)
+        yc = -rc * np.cos(theta / 2)
+
+        # origin @ (0, yc)
+        pts = np.linspace(-chalf, chalf, self.npts)
+        xy_camber = np.transpose(np.array([x, yc + np.sqrt(rc ** 2 - pts ** 2)]))
+        xy_camber[:, 1] = xy_camber[:, 1]/np.linalg.norm(xy_camber[:, 1])
+
+        # # FIXME: test with camber from matlab script
+        # a = ds.c_s
+        # c = 1
+        # b = c * (np.sqrt(1 + (((4 * np.tan(theta)) ** 2) * ((a / c) - (a / c) ** 2 - 3 / 16))) - 1) / (
+        #         4 * np.tan(theta))
+        # ycambertemp = np.zeros(x.size)
+        # for i in range(0, x.size):
+        #     xtemp = x[i]
+        #     y0 = 0
+        #     fun = lambda y: (-y + xtemp * (c - xtemp) / (
+        #             (((c - 2 * a) ** 2) / (4 * b ** 2)) * y + ((c - 2 * a) / b) * xtemp - (
+        #             (c ** 2 - 4 * a * c) / (4 * b))))
+        #     y = optimize.fsolve(fun, y0)
+        #     ycambertemp[i] = y
+        #
+        # xy_camber = np.transpose(np.array([x, ycambertemp]))
+
+        # xy surface
+        yth_abs = np.abs(xy_th[:, 1])
+        xsurface = np.zeros(2 * x.size - 1)
+        ysurface = np.zeros(2 * x.size - 1)
+        xss = x - yth_abs
+        xps = x + yth_abs
+        xsurface[:xss.size] = xps[::-1]
+        xsurface[xss.size:] = xss[1:]
+
+        yss = xy_camber[:, 1] + yth_abs
+        yps = xy_camber[:, 1] - yth_abs
+        ysurface[:yss.size] = yps[::-1]
+        ysurface[yss.size:] = yss[1:]
+
+        # Scale and rotate
+        # scale with c
+        xsurface = xsurface * c
+        ysurface = ysurface * c
+
+        X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
+        Y = np.sin(lambd) * xsurface + np.cos(lambd) * ysurface
+        Xchord = (np.cos(lambd) * x - np.sin(lambd) * xy_camber[:, 1]) * c
+        Ycamber = (np.sin(lambd) * x + np.cos(lambd) * xy_camber[:, 1]) * c
+
+        plt.figure(2)
+        plt.subplot(231)
+        plt.plot(x, xy_th[:, 1])
+        plt.subplot(232)
+        plt.plot(x, xy_camber[:, 1])
+        plt.subplot(233)
+        plt.plot(Xchord, Ycamber)
+        plt.subplot(234)
+        plt.plot(xsurface, ysurface)
+        plt.subplot(235)
+        plt.plot(X, Y)
+        plt.show()
 
         0
 
