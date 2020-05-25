@@ -9,7 +9,10 @@ import utils as utils
 
 class BladeGen:
 
-    def __init__(self):
+    def __init__(self, nblade='single', maxcamberpos=.4, theta=55, lambd=23):
+
+        # assert input is valid
+
         self.npts = 118
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.npts)))  # x-coord generation
         self.ds = pd.DataFrame(self.params(), index=[0])
@@ -59,6 +62,8 @@ class BladeGen:
         lambd = np.deg2rad(23.4077)
         c=1
         ds = self.ds
+
+
         # make a non linear x scaling for moving the extremum
         xcambermax = .4
         x = np.zeros(self.npts)
@@ -69,6 +74,7 @@ class BladeGen:
         yth = ds.th[0] * (1 - x) * (1.0675 * np.sqrt(x) - x * (.2756 - x * (2.4478 - 2.8385 * x))) / (
                 1 - .176 * x)  # thickness distribution
 
+
         # scale thickness
         foo = np.zeros((self.npts, 2))
         # foo[:, 0] = np.linspace(0, 1, self.npts)
@@ -78,33 +84,21 @@ class BladeGen:
         xy_th = min_max_scaler.fit_transform(foo)
         xy_th[:, 1] = xy_th[:, 1] * ds.th[0]
 
+        a = .4 # max chamber pos
+        c = 1
+        b = c * (np.sqrt(1 + (((4 * np.tan(theta)) ** 2) * ((a / c) - (a / c) ** 2 - 3 / 16))) - 1) / (
+                4 * np.tan(theta))
+        ycambertemp = np.zeros(x.size)
+        for i in range(0, x.size):
+            xtemp = x[i]
+            y0 = 0
+            fun = lambda y: (-y + xtemp * (c - xtemp) / (
+                    (((c - 2 * a) ** 2) / (4 * b ** 2)) * y + ((c - 2 * a) / b) * xtemp - (
+                    (c ** 2 - 4 * a * c) / (4 * b))))
+            y = optimize.fsolve(fun, y0)
+            ycambertemp[i] = y
 
-        # calc circular arc camberline (R. Aungier, p.65)
-        rc = c / 2 * np.arcsin(theta / 2)  # radius of circular arc
-        chalf = rc * np.sin(theta / 2)
-        yc = -rc * np.cos(theta / 2)
-
-        # origin @ (0, yc)
-        pts = np.linspace(-chalf, chalf, self.npts)
-        xy_camber = np.transpose(np.array([x, yc + np.sqrt(rc ** 2 - pts ** 2)]))
-        xy_camber[:, 1] = xy_camber[:, 1]/np.linalg.norm(xy_camber[:, 1])
-
-        # # FIXME: test with camber from matlab script
-        # a = ds.c_s
-        # c = 1
-        # b = c * (np.sqrt(1 + (((4 * np.tan(theta)) ** 2) * ((a / c) - (a / c) ** 2 - 3 / 16))) - 1) / (
-        #         4 * np.tan(theta))
-        # ycambertemp = np.zeros(x.size)
-        # for i in range(0, x.size):
-        #     xtemp = x[i]
-        #     y0 = 0
-        #     fun = lambda y: (-y + xtemp * (c - xtemp) / (
-        #             (((c - 2 * a) ** 2) / (4 * b ** 2)) * y + ((c - 2 * a) / b) * xtemp - (
-        #             (c ** 2 - 4 * a * c) / (4 * b))))
-        #     y = optimize.fsolve(fun, y0)
-        #     ycambertemp[i] = y
-        #
-        # xy_camber = np.transpose(np.array([x, ycambertemp]))
+        xy_camber = np.transpose(np.array([x, ycambertemp]))
 
         # xy surface
         yth_abs = np.abs(xy_th[:, 1])
@@ -139,8 +133,10 @@ class BladeGen:
         plt.plot(Xchord, Ycamber)
         plt.subplot(234)
         plt.plot(xsurface, ysurface)
+        plt.plot(x, xy_camber[:, 1])
         plt.subplot(235)
         plt.plot(X, Y)
+        plt.axis('equal')
         plt.show()
 
         0
