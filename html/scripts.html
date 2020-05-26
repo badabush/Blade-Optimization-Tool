@@ -43,7 +43,7 @@
 <span id="scripts-package"></span><h1>scripts package<a class="headerlink" href="#module-scripts" title="Permalink to this headline">¶</a></h1>
 <p>Software documentation for Master Thesis</p>
 <div class="section" id="module-scripts.parser">
-<span id="scripts-parser-module"></span><h2>scripts.parser module<a class="headerlink" href="#module-scripts.parser" title="Permalink to this headline">¶</a></h2>
+<span id="parser-module"></span><h2>Parser module<a class="headerlink" href="#module-scripts.parser" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="scripts.parser.parser">
 <em class="property">class </em><code class="sig-prename descclassname">scripts.parser.</code><code class="sig-name descname">parser</code><a class="reference internal" href="_modules/scripts/parser.html#parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.parser.parser" title="Permalink to this definition">¶</a></dt>
@@ -67,6 +67,54 @@
 </dd></dl>
 
 </div>
+<div class="section" id="module-scripts.utils">
+<span id="utils-module"></span><h2>Utils module<a class="headerlink" href="#module-scripts.utils" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="scripts.utils.euclidean_dist">
+<code class="sig-prename descclassname">scripts.utils.</code><code class="sig-name descname">euclidean_dist</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y1</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/utils.html#euclidean_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.utils.euclidean_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the euclidean distance between two points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<em>float</em>) – x-coord of 1st point</p></li>
+<li><p><strong>x2</strong> (<em>float</em>) – x-coord of 2nd point</p></li>
+<li><p><strong>y1</strong> (<em>float</em>) – y-coord of 1st point</p></li>
+<li><p><strong>y2</strong> (<em>float</em>) – y-coord of 2nd point</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>euclid_dist</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="scripts.utils.rte_fitter">
+<code class="sig-prename descclassname">scripts.utils.</code><code class="sig-name descname">rte_fitter</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">r</em>, <em class="sig-param">camberline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/utils.html#rte_fitter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.utils.rte_fitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit trailing edge radius.</p>
+<p>Calculate euclidean distance between points, take shortest for every points, find distance closest to r_te.
+Returns X, Y coords with fitted trailing edge radius.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – unrotated x coords of blade</p></li>
+<li><p><strong>y</strong> – unrotated y coords of blade</p></li>
+<li><p><strong>r</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>x,y</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -78,7 +126,8 @@
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">scripts package</a><ul>
-<li><a class="reference internal" href="#module-scripts.parser">scripts.parser module</a></li>
+<li><a class="reference internal" href="#module-scripts.parser">Parser module</a></li>
+<li><a class="reference internal" href="#module-scripts.utils">Utils module</a></li>
 </ul>
 </li>
 </ul>

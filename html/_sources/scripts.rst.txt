@@ -3,10 +3,19 @@ scripts package
 
 .. automodule:: scripts
 
-scripts.parser module
+Parser module
 ---------------------
 
 .. automodule:: scripts.parser
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+Utils module
+---------------------
+
+.. automodule:: scripts.utils
    :members:
    :undoc-members:
    :show-inheritance:

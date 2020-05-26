@@ -1,55 +1,161 @@
 import numpy as np
 import scipy.optimize as optimize
-
-# simple design rule after MCGlumphy
-def sdr(beta1, sigma, df):
-    beta1_0 = 0
-    fun = lambda x: - df + (1 - (np.cos(beta1) / np.cos(x))) + (
-            np.cos(beta1) * (np.tan(beta1) - np.tan(x)) / (2 * sigma))
-    beta2 = optimize.fsolve(fun, beta1_0)
-
-    return beta2[0]
+from matplotlib import pyplot as plt
+import pandas as pd
 
 
-def naca65gen(beta1, beta2, sigma_t, rth_t):
+def euclidean_dist(x1, x2, y1, y2):
+    """
+    Returns the euclidean distance between two points.
 
-    beta1 = np.rad2deg(beta1)
-    beta2 = np.rad2deg(beta2)
-    # formfactor
-    k_sh = .9
+    :param x1: x-coord of 1st point
+    :type x1: float
+    :param x2: x-coord of 2nd point
+    :type x2: float
+    :param y1: y-coord of 1st point
+    :type y1: float
+    :param y2: y-coord of 2nd point
+    :type y2: float
+    :return: euclid_dist
+    :rtype: float
+    """
 
-    # formfactor incidence for relative profile thickness
-    q = .28 / rth_t ** .3
-    k_tinc = (10 * rth_t) ** q
+    euclid_dist = np.sqrt((x2-x1)**2 + (y2-y1)**2)
+    return euclid_dist
 
-    # formfactor deviation for relative profile thickness
-    k_tdev = 6.25 * rth_t + 37.5 * rth_t ** 2
+def rte_fitter(x, y, r, camberline):
+    """
+    Fit trailing edge radius.
 
-    # zero chamber incidence- and deviation angle for (t/c = .1 = 10%)
-    # zero chamber incidence
-    p = .914 + sigma_t ** 3 / 160
-    inc0_design_10 = beta1 ** p / (5 + 46 * np.exp(-2.3 * sigma_t)) - .1 * sigma_t ** 3 * np.exp((beta1 - 70) / 4)
+    Calculate euclidean distance between points, take shortest for every points, find distance closest to r_te.
+    Returns X, Y coords with fitted trailing edge radius.
 
-    # zero chamber deviation
-    dev0_design_10 = .01 * sigma_t * beta1 + (.74 * sigma_t ** 1.9 + 3 * sigma_t) * (beta1 / 90) ** (1.67 + 1.09 * sigma_t)
+    :param x: unrotated x coords of blade
+    :param y: unrotated y coords of blade
+    :param r:
+    :return: x,y
+    :rtype: float array
+    """
+    n4 = int(np.round(x.size / 4))  # forth of length
 
-    # fit angle for thickness influence (?)
-    incthick = k_sh * k_tinc * inc0_design_10
-    devthick = k_sh * k_tdev * dev0_design_10
+    # extract the latter half of blade, seperated into upper and lower
+    xupper = x[n4 * 3:]
+    yupper = y[n4 * 3:]
+    xlower = x[:n4]
+    xlower = xlower[::-1]
+    ylower = y[:n4]
+    ylower = ylower[::-1]
+    xcamber = camberline[200:, 0]
+    ycamber = camberline[200:, 1]
+    dist = np.zeros((xupper.size, xupper.size))
+    ds = pd.DataFrame(data={
+        'xlower' : xlower,
+        'ylower' : ylower,
+        'xupper' : xupper,
+        'yupper' : yupper,
+        'idx_closest': np.zeros(xupper.size),
+        'dist_closest': np.zeros(xupper.size)
+    })
+    for i in range(0, xupper.size):
+        for j in range(0, xupper.size):
+            dist[i][j] = euclidean_dist(xlower[i], xupper[j], ylower[i], yupper[j])
+        ds.idx_closest[i] = dist[i,:].argmin()
+        ds.dist_closest[i] = np.abs(dist[i][int(ds.idx_closest[i])]-r*2)
 
-    # slope factors for profile camber
-    # slope factor incidence
-    n = 0.025 * sigma_t - 0.06 - (beta1 / 90) ** (1 + 1.2 * sigma_t) / (1.5 + 0.43 * sigma_t)
+    idx_low = ds.dist_closest.idxmin()
+    idx_up = ds.idx_closest[idx_low]
 
-    # slope factor deviation
-    m = (0.17 - 3.33e-4 * beta1 + 3.33e-5 * beta1 ** 2) / sigma_t ** (0.9625 - 0.17e-2 * beta1 - 0.85e-6 * beta1 ** 3)
+    # cut everything behind the index
+    ds.xlower[ds.xlower.index.values.astype(int)>idx_low] = np.nan
+    ds.ylower[ds.ylower.index.values.astype(int)>idx_low] = np.nan
+    ds.xupper[ds.xupper.index.values.astype(int)>idx_up] = np.nan
+    ds.yupper[ds.yupper.index.values.astype(int)>idx_up] = np.nan
 
-    # metal angle (?)
-    theta = ((beta1 - beta2) + devthick - incthick) / (1 - m + n);
-    inc_design = incthick + n * theta  # design incidence
-    dev_design = devthick + m * theta  # design deviation
-    bia = beta1 - inc_design  # Blade Inlet Angle
-    boa = beta2 - dev_design  # Blade Outlet Angle
-    lambd = (bia + boa) / 2;
+    # create a half-circular-esque trailing edge
+    xc_mid = ds.xlower[idx_low] + (ds.xupper[idx_up] - ds.xlower[idx_low])/2
+    yc_mid = ds.ylower[idx_low] + (ds.yupper[idx_up] - ds.ylower[idx_low])/2
 
-    return np.deg2rad(theta[0]), np.deg2rad(lambd[0])
+    # since length is different for upper and lower array, the "erased" length will be recreated to be a  quarter circle
+    # from endpoint to mid
+    nc_upper = np.count_nonzero(np.isnan(ds.xupper))# count nan elements of upper
+    nc_lower = np.count_nonzero(np.isnan(ds.xlower))# count nan elements of lower
+    theta_up = np.linspace(0, 2*np.pi, nc_upper+nc_lower)
+    theta_low = np.linspace(np.pi/2, np.pi, nc_lower)
+    xc_upper = r * np.cos(theta_up) + xc_mid
+    yc_upper = r * np.sin(theta_up) + yc_mid
+
+    xintersect_up = np.intersect1d(xc_upper, ds.xupper[idx_up])
+
+
+    plt.plot(ds.xupper, ds.yupper)
+    plt.plot(ds.xlower, ds.ylower)
+    plt.plot(ds.xlower[idx_low], ds.ylower[idx_low], 'x')
+    plt.plot(ds.xupper[idx_up], ds.yupper[idx_up], 'x')
+    plt.plot(xc_mid, yc_mid, 'x')
+    plt.plot(xcamber, ycamber, '--')
+    plt.plot(xc_upper, yc_upper, '--')
+    # plt.plot(xc_lower, yc_lower, '--')
+    plt.axis('equal')
+
+
+    plt.show()
+    0
+
+
+
+
+#
+#
+# # simple design rule after MCGlumphy
+# def sdr(beta1, sigma, df):
+#     beta1_0 = 0
+#     fun = lambda x: - df + (1 - (np.cos(beta1) / np.cos(x))) + (
+#             np.cos(beta1) * (np.tan(beta1) - np.tan(x)) / (2 * sigma))
+#     beta2 = optimize.fsolve(fun, beta1_0)
+#
+#     return beta2[0]
+#
+#
+# def naca65gen(beta1, beta2, sigma_t, rth_t):
+#     beta1 = np.rad2deg(beta1)
+#     beta2 = np.rad2deg(beta2)
+#     # formfactor
+#     k_sh = .9
+#
+#     # formfactor incidence for relative profile thickness
+#     q = .28 / rth_t ** .3
+#     k_tinc = (10 * rth_t) ** q
+#
+#     # formfactor deviation for relative profile thickness
+#     k_tdev = 6.25 * rth_t + 37.5 * rth_t ** 2
+#
+#     # zero chamber incidence- and deviation angle for (t/c = .1 = 10%)
+#     # zero chamber incidence
+#     p = .914 + sigma_t ** 3 / 160
+#     inc0_design_10 = beta1 ** p / (5 + 46 * np.exp(-2.3 * sigma_t)) - .1 * sigma_t ** 3 * np.exp((beta1 - 70) / 4)
+#
+#     # zero chamber deviation
+#     dev0_design_10 = .01 * sigma_t * beta1 + (.74 * sigma_t ** 1.9 + 3 * sigma_t) * (beta1 / 90) ** (
+#             1.67 + 1.09 * sigma_t)
+#
+#     # fit angle for thickness influence (?)
+#     incthick = k_sh * k_tinc * inc0_design_10
+#     devthick = k_sh * k_tdev * dev0_design_10
+#
+#     # slope factors for profile camber
+#     # slope factor incidence
+#     n = 0.025 * sigma_t - 0.06 - (beta1 / 90) ** (1 + 1.2 * sigma_t) / (1.5 + 0.43 * sigma_t)
+#
+#     # slope factor deviation
+#     m = (0.17 - 3.33e-4 * beta1 + 3.33e-5 * beta1 ** 2) / sigma_t ** (0.9625 - 0.17e-2 * beta1 - 0.85e-6 * beta1 ** 3)
+#
+#     # metal angle (?)
+#     theta = ((beta1 - beta2) + devthick - incthick) / (1 - m + n);
+#     inc_design = incthick + n * theta  # design incidence
+#     dev_design = devthick + m * theta  # design deviation
+#     bia = beta1 - inc_design  # Blade Inlet Angle
+#     boa = beta2 - dev_design  # Blade Outlet Angle
+#     lambd = (bia + boa) / 2;
+#
+#     return np.deg2rad(theta[0]), np.deg2rad(lambd[0])
+

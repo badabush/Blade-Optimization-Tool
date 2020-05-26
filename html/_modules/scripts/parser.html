@@ -39,6 +39,7 @@
   <h1>Source code for scripts.parser</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">argparse</span>
 
+
 <div class="viewcode-block" id="parser"><a class="viewcode-back" href="../../scripts.html#scripts.parser.parser">[docs]</a><span class="k">class</span> <span class="nc">parser</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Parser for handling the API commands.</span>
@@ -47,6 +48,7 @@
 
 <span class="sd">        Parser is used as a placeholder for the GUI and will be replaced in a later stage if the project.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialization, builds the parser.</span>
@@ -73,10 +75,10 @@
         <span class="nb">print</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">accumulate</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">integers</span><span class="p">))</span></div></div>
 
 
-
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">parser</span><span class="p">()</span><span class="o">.</span><span class="n">construct</span><span class="p">()</span>
     <span class="kn">import</span> <span class="nn">doctest</span>
+
     <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
 </pre></div>
 
