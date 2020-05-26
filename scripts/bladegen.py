@@ -9,21 +9,19 @@ import utils as utils
 
 class BladeGen:
 
-    def __init__(self, nblade='single', maxcamberpos=.4, theta=55, lambd=23):
-
-        # assert input is valid
-
+    def __init__(self, nblade='single', beta1=25, beta2=25, maxcamberpos=.4, l_chord=1, lambd=25):
         self.npts = 118
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.npts)))  # x-coord generation
         self.ds = pd.DataFrame(self.params(), index=[0])
-        self.beta = [np.deg2rad(53), 0, 0, 0]
-        self.beta[1] = utils.sdr(self.beta[0], self.ds.sigma_s, self.ds.df1)
-        self.beta[2] = self.beta[1]
-        self.beta[3] = utils.sdr(self.beta[2], self.ds.sigma_s, self.ds.df2)
+        self.beta = [beta1, beta2]
+        theta = np.deg2rad(np.sum(self.beta))
+        lambd = np.deg2rad(lambd)
 
-        # single blade
-        theta, lambd = utils.naca65gen(self.beta[0], self.beta[3], self.ds.sigma_s, self.ds.rth_s)
-        self.ythickness(lambd, theta, self.ds.c_s[0])
+        self.xy_th = self.thickness_dist()
+        self.xy_camber = self.camberline(theta, maxcamberpos)
+        self.xy_blade = self.geom_gen(lambd, l_chord)
+
+        self.debug_plot()
 
     def params(self):
         """
@@ -57,34 +55,24 @@ class BladeGen:
         ds['rth_t'] = ds['th'] / ds['c_t']
         return ds
 
-    def ythickness(self, lambd, theta, c):
-        theta = np.deg2rad(55.0121)
-        lambd = np.deg2rad(23.4077)
-        c=1
+    def thickness_dist(self):
         ds = self.ds
-
-
-        # make a non linear x scaling for moving the extremum
-        xcambermax = .4
-        x = np.zeros(self.npts)
-        half = int(np.round(self.npts/2))
-        x[:half] = np.linspace(0, xcambermax, half)
-        x[half-1:] = np.linspace(xcambermax, 1, half+1)
-        x=x
+        x = self.x
         yth = ds.th[0] * (1 - x) * (1.0675 * np.sqrt(x) - x * (.2756 - x * (2.4478 - 2.8385 * x))) / (
                 1 - .176 * x)  # thickness distribution
 
-
         # scale thickness
-        foo = np.zeros((self.npts, 2))
-        # foo[:, 0] = np.linspace(0, 1, self.npts)
-        foo[:, 0] = x
-        foo[:, 1] = yth
+        th_noscale = np.zeros((self.npts, 2))
+        th_noscale[:, 0] = x
+        th_noscale[:, 1] = yth
         min_max_scaler = preprocessing.MinMaxScaler()
-        xy_th = min_max_scaler.fit_transform(foo)
+        xy_th = min_max_scaler.fit_transform(th_noscale)
         xy_th[:, 1] = xy_th[:, 1] * ds.th[0]
 
-        a = .4 # max chamber pos
+        return xy_th
+
+    def camberline(self, theta, a):
+        x = self.x
         c = 1
         b = c * (np.sqrt(1 + (((4 * np.tan(theta)) ** 2) * ((a / c) - (a / c) ** 2 - 3 / 16))) - 1) / (
                 4 * np.tan(theta))
@@ -99,6 +87,13 @@ class BladeGen:
             ycambertemp[i] = y
 
         xy_camber = np.transpose(np.array([x, ycambertemp]))
+
+        return xy_camber
+
+    def geom_gen(self, lambd, c):
+        x = self.x
+        xy_th = self.xy_th
+        xy_camber = self.xy_camber
 
         # xy surface
         yth_abs = np.abs(xy_th[:, 1])
@@ -124,21 +119,19 @@ class BladeGen:
         Xchord = (np.cos(lambd) * x - np.sin(lambd) * xy_camber[:, 1]) * c
         Ycamber = (np.sin(lambd) * x + np.cos(lambd) * xy_camber[:, 1]) * c
 
+        xy_blade = np.transpose(np.array([X, Y]))
+        return xy_blade
+
+    def debug_plot(self):
         plt.figure(2)
         plt.subplot(231)
-        plt.plot(x, xy_th[:, 1])
+        plt.plot(self.x, self.xy_th[:, 1])
         plt.subplot(232)
-        plt.plot(x, xy_camber[:, 1])
+        plt.plot(self.x, self.xy_camber[:, 1])
         plt.subplot(233)
-        plt.plot(Xchord, Ycamber)
-        plt.subplot(234)
-        plt.plot(xsurface, ysurface)
-        plt.plot(x, xy_camber[:, 1])
-        plt.subplot(235)
-        plt.plot(X, Y)
+        plt.plot(self.xy_blade[:, 0], self.xy_blade[:, 1])
         plt.axis('equal')
         plt.show()
-
         0
 
 
