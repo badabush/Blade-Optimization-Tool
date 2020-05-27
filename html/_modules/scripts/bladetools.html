@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>scripts.utils &#8212; thesis  documentation</title>
+    <title>scripts.bladetools &#8212; thesis  documentation</title>
     <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     
@@ -36,7 +36,7 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <h1>Source code for scripts.utils</h1><div class="highlight"><pre>
+  <h1>Source code for scripts.bladetools</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">optimize</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
@@ -44,7 +44,7 @@
 <span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span> <span class="k">as</span> <span class="n">norm</span>
 
 
-<div class="viewcode-block" id="euclidean_dist"><a class="viewcode-back" href="../../scripts.html#scripts.utils.euclidean_dist">[docs]</a><span class="k">def</span> <span class="nf">euclidean_dist</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
+<div class="viewcode-block" id="euclidean_dist"><a class="viewcode-back" href="../../scripts.html#scripts.bladetools.euclidean_dist">[docs]</a><span class="k">def</span> <span class="nf">euclidean_dist</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the euclidean distance between two points.</span>
 
@@ -64,7 +64,7 @@
     <span class="k">return</span> <span class="n">euclid_dist</span></div>
 
 
-<div class="viewcode-block" id="shape_circle"><a class="viewcode-back" href="../../scripts.html#scripts.utils.shape_circle">[docs]</a><span class="k">def</span> <span class="nf">shape_circle</span><span class="p">(</span><span class="n">side</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">xy_mid</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+<div class="viewcode-block" id="shape_circle"><a class="viewcode-back" href="../../scripts.html#scripts.bladetools.shape_circle">[docs]</a><span class="k">def</span> <span class="nf">shape_circle</span><span class="p">(</span><span class="n">side</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">xy_mid</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Takes either the upper or lower surface and adds a quarter circle where the original shape was.</span>
 
@@ -125,7 +125,7 @@
     <span class="k">return</span> <span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="rte_fitter"><a class="viewcode-back" href="../../scripts.html#scripts.utils.rte_fitter">[docs]</a><span class="k">def</span> <span class="nf">rte_fitter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">camberline</span><span class="p">):</span>
+<div class="viewcode-block" id="rte_fitter"><a class="viewcode-back" href="../../scripts.html#scripts.bladetools.rte_fitter">[docs]</a><span class="k">def</span> <span class="nf">rte_fitter</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">camberline</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Fit trailing edge radius.</span>
 
@@ -134,7 +134,7 @@
 
 <span class="sd">    :param x: unrotated x coords of blade</span>
 <span class="sd">    :param y: unrotated y coords of blade</span>
-<span class="sd">    :param r:</span>
+<span class="sd">    :param r: radius of trailing edge</span>
 <span class="sd">    :return: x,y</span>
 <span class="sd">    :rtype: float array</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -147,8 +147,6 @@
     <span class="n">xlower</span> <span class="o">=</span> <span class="n">xlower</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">ylower</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="n">n4</span><span class="p">]</span>
     <span class="n">ylower</span> <span class="o">=</span> <span class="n">ylower</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">xcamber</span> <span class="o">=</span> <span class="n">camberline</span><span class="p">[</span><span class="mi">200</span><span class="p">:,</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="n">ycamber</span> <span class="o">=</span> <span class="n">camberline</span><span class="p">[</span><span class="mi">200</span><span class="p">:,</span> <span class="mi">1</span><span class="p">]</span>
     <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">xupper</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">xupper</span><span class="o">.</span><span class="n">size</span><span class="p">))</span>
     <span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span>
         <span class="s1">&#39;xlower&#39;</span><span class="p">:</span> <span class="n">xlower</span><span class="p">,</span>
@@ -190,17 +188,13 @@
     <span class="n">x</span><span class="p">[:</span><span class="n">n4</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">y</span><span class="p">[:</span><span class="n">n4</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
-    <span class="n">yupper</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:]</span>
-    <span class="n">xlower</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="n">n4</span><span class="p">]</span>
-    <span class="n">xlower</span> <span class="o">=</span> <span class="n">xlower</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-    <span class="n">ylower</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="n">n4</span><span class="p">]</span>
-    <span class="n">ylower</span> <span class="o">=</span> <span class="n">ylower</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-
     <span class="c1"># plt.plot(ds.xupper, ds.yupper)</span>
     <span class="c1"># plt.plot(ds.xlower, ds.ylower)</span>
     <span class="c1"># plt.plot(ds.xlower[idx_low], ds.ylower[idx_low], &#39;x&#39;)</span>
     <span class="c1"># plt.plot(ds.xupper[idx_up], ds.yupper[idx_up], &#39;x&#39;)</span>
     <span class="c1"># plt.plot(xc_mid, yc_mid, &#39;x&#39;)</span>
+    <span class="c1"># xcamber = camberline[200:, 0]</span>
+    <span class="c1"># ycamber = camberline[200:, 1]</span>
     <span class="c1"># plt.plot(xcamber, ycamber, &#39;--&#39;)</span>
     <span class="c1">#</span>
     <span class="c1"># plt.plot(ds.xupper, ds.yupper, &#39;x&#39;)</span>

@@ -3,6 +3,7 @@ scripts package
 
 .. automodule:: scripts
 
+
 Parser module
 ---------------------
 
@@ -12,10 +13,19 @@ Parser module
    :show-inheritance:
 
 
-Utils module
+Bladetools module
 ---------------------
 
-.. automodule:: scripts.utils
+.. automodule:: scripts.bladetools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+
+BladeGen module
+---------------------
+
+.. automodule:: scripts.bladegen
    :members:
    :undoc-members:
    :show-inheritance:

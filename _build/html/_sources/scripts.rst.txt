@@ -3,7 +3,6 @@ scripts package
 
 .. automodule:: scripts
 
-
 Parser module
 ---------------------
 
@@ -20,7 +19,6 @@ Bladetools module
    :members:
    :undoc-members:
    :show-inheritance:
-
 
 BladeGen module
 ---------------------

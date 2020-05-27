@@ -1,0 +1,289 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>scripts.bladegen &#8212; thesis  documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">thesis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scripts.bladegen</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">preprocessing</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">scipy.optimize</span> <span class="k">as</span> <span class="nn">optimize</span>
+<span class="kn">import</span> <span class="nn">scripts.bladetools</span> <span class="k">as</span> <span class="nn">utils</span>
+
+
+
+<div class="viewcode-block" id="BladeGen"><a class="viewcode-back" href="../../scripts.html#scripts.bladegen.BladeGen">[docs]</a><span class="k">class</span> <span class="nc">BladeGen</span><span class="p">:</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nblade</span><span class="o">=</span><span class="s1">&#39;single&#39;</span><span class="p">,</span> <span class="n">r_th</span><span class="o">=.</span><span class="mi">0215</span><span class="p">,</span> <span class="n">beta1</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">beta2</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">x_maxcamber</span><span class="o">=.</span><span class="mi">4</span><span class="p">,</span> <span class="n">l_chord</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">lambd</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">r_te</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">npts</span><span class="o">=</span><span class="mi">400</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        User Input parameters.</span>
+
+<span class="sd">        :param nblade: number of blades, default: &#39;single&#39;</span>
+<span class="sd">        :type nblade: str</span>
+<span class="sd">        :param r_th: relative thickness, default: .0215</span>
+<span class="sd">        :type r_th: float</span>
+<span class="sd">        :param beta1: inlet angle, default: 25</span>
+<span class="sd">        :type beta1: float</span>
+<span class="sd">        :param beta2: outlet angle, default: 25</span>
+<span class="sd">        :type beta2: float</span>
+<span class="sd">        :param x_maxcamber: X position of max. chamber, default: .4</span>
+<span class="sd">        :type x_maxcamber: float</span>
+<span class="sd">        :param l_chord: length of chord, default: 1</span>
+<span class="sd">        :type l_chord: float</span>
+<span class="sd">        :param lambd: rotation of blade, default: 0</span>
+<span class="sd">        :type lambd: float</span>
+<span class="sd">        :param r_te: radius trailing edge, default: .01</span>
+<span class="sd">        :type r_te: float</span>
+<span class="sd">        :param npts: number of blade points, default: 400</span>
+<span class="sd">        :type npts: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">npts</span> <span class="o">=</span> <span class="n">npts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">)))</span>  <span class="c1"># x-coord generation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rth</span> <span class="o">=</span> <span class="n">r_th</span> <span class="c1"># rel. thickness</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rte</span> <span class="o">=</span> <span class="n">r_te</span> <span class="c1"># radius trailing edge</span>
+
+        <span class="c1"># pack dict into pandas frame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">(),</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="p">[</span><span class="n">beta1</span><span class="p">,</span> <span class="n">beta2</span><span class="p">]</span>
+        <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">))</span>
+        <span class="n">lambd</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">lambd</span><span class="p">)</span>
+
+        <span class="n">xy_th</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thickness_dist</span><span class="p">()</span>
+        <span class="n">xy_camber</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">camberline</span><span class="p">(</span><span class="n">theta</span><span class="p">,</span> <span class="n">x_maxcamber</span><span class="p">)</span>
+        <span class="n">xy_blade</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geom_gen</span><span class="p">(</span><span class="n">xy_th</span><span class="p">,</span> <span class="n">xy_camber</span><span class="p">,</span> <span class="n">lambd</span><span class="p">,</span> <span class="n">l_chord</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_points</span><span class="p">(</span><span class="n">xy_blade</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug_plot</span><span class="p">(</span><span class="n">xy_th</span><span class="p">,</span> <span class="n">xy_camber</span><span class="p">,</span> <span class="n">xy_blade</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BladeGen.params"><a class="viewcode-back" href="../../scripts.html#scripts.bladegen.BladeGen.params">[docs]</a>    <span class="k">def</span> <span class="nf">params</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate parameters.</span>
+<span class="sd">        Return dataset (ds) with parameters.</span>
+
+<span class="sd">        :return: ds</span>
+<span class="sd">        :rtype ds: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;c_s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">43</span>  <span class="c1"># length of chord single</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;c_t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;c_s&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="mi">2</span>  <span class="c1"># length of chord tandem</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rth</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;r_te&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rte</span>
+
+        <span class="c1"># Lieblein Diffusion Factor for front and rear blade</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;df1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">39</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;df2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">4915</span>
+
+        <span class="c1"># division radius</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;sc_s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="o">.</span><span class="mi">43</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;sc_t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.16</span>
+        <span class="c1"># compute division</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;s_s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;sc_s&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;c_s&#39;</span><span class="p">]</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;s_t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;sc_t&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;c_t&#39;</span><span class="p">]</span>
+
+        <span class="c1"># real division: division and solicity</span>
+        <span class="c1"># ds[&#39;s&#39;] = 2 * np.pi * ds[&#39;r&#39;] / ds[&#39;N_s&#39;]  # division</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;sigma_s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;c_s&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;s_s&#39;</span><span class="p">]</span>  <span class="c1"># solicity s</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;sigma_t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;c_t&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;s_t&#39;</span><span class="p">]</span>  <span class="c1"># solicity t</span>
+
+        <span class="c1"># relative thickness</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;rth_s&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;c_s&#39;</span><span class="p">]</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;rth_t&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;c_t&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ds</span></div>
+
+<div class="viewcode-block" id="BladeGen.thickness_dist"><a class="viewcode-back" href="../../scripts.html#scripts.bladegen.BladeGen.thickness_dist">[docs]</a>    <span class="k">def</span> <span class="nf">thickness_dist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate thickness distribution.</span>
+<span class="sd">        Returns  vector with X and Y of thickness distribution.</span>
+
+<span class="sd">        :return: xy_th</span>
+<span class="sd">        :rtype xy_th: (npts, 2) float array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ds</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">yth</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">th</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0675</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="o">.</span><span class="mi">2756</span> <span class="o">-</span> <span class="n">x</span> <span class="o">*</span> <span class="p">(</span><span class="mf">2.4478</span> <span class="o">-</span> <span class="mf">2.8385</span> <span class="o">*</span> <span class="n">x</span><span class="p">)))</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="mi">1</span> <span class="o">-</span> <span class="o">.</span><span class="mi">176</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span>  <span class="c1"># thickness distribution</span>
+
+        <span class="c1"># scale thickness</span>
+        <span class="n">th_noscale</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">npts</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">th_noscale</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="n">th_noscale</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">yth</span>
+        <span class="n">min_max_scaler</span> <span class="o">=</span> <span class="n">preprocessing</span><span class="o">.</span><span class="n">MinMaxScaler</span><span class="p">()</span>
+        <span class="n">xy_th</span> <span class="o">=</span> <span class="n">min_max_scaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">th_noscale</span><span class="p">)</span>
+        <span class="n">xy_th</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xy_th</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">ds</span><span class="o">.</span><span class="n">th</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">xy_th</span></div>
+
+<div class="viewcode-block" id="BladeGen.camberline"><a class="viewcode-back" href="../../scripts.html#scripts.bladegen.BladeGen.camberline">[docs]</a>    <span class="k">def</span> <span class="nf">camberline</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">theta</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculate the parabolic-arc camberline from R.Aungier.</span>
+<span class="sd">        Returns vector with X and Y of camber line.</span>
+
+<span class="sd">        :param theta: sum of beta1 and beta2 ( $\Chi$ Chi1 and Chi2 in R.Aungier)</span>
+<span class="sd">        :type theta: float</span>
+<span class="sd">        :param a: max. chamber position</span>
+<span class="sd">        :type a: float</span>
+<span class="sd">        :return: xy_camber</span>
+<span class="sd">        :rtype xy_camber: (npts, 2) float array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">c</span> <span class="o">*</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="p">(((</span><span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">((</span><span class="n">a</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">a</span> <span class="o">/</span> <span class="n">c</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">/</span> <span class="mi">16</span><span class="p">)))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                <span class="mi">4</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">tan</span><span class="p">(</span><span class="n">theta</span><span class="p">))</span>
+        <span class="n">ycambertemp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">):</span>
+            <span class="n">xtemp</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">y0</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">fun</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="n">y</span> <span class="o">+</span> <span class="n">xtemp</span> <span class="o">*</span> <span class="p">(</span><span class="n">c</span> <span class="o">-</span> <span class="n">xtemp</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span>
+                    <span class="p">(((</span><span class="n">c</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">b</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">*</span> <span class="n">y</span> <span class="o">+</span> <span class="p">((</span><span class="n">c</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">a</span><span class="p">)</span> <span class="o">/</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">xtemp</span> <span class="o">-</span> <span class="p">(</span>
+                    <span class="p">(</span><span class="n">c</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">*</span> <span class="n">a</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">b</span><span class="p">))))</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">optimize</span><span class="o">.</span><span class="n">fsolve</span><span class="p">(</span><span class="n">fun</span><span class="p">,</span> <span class="n">y0</span><span class="p">)</span>
+            <span class="n">ycambertemp</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+
+        <span class="n">xy_camber</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">ycambertemp</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">xy_camber</span></div>
+
+<div class="viewcode-block" id="BladeGen.geom_gen"><a class="viewcode-back" href="../../scripts.html#scripts.bladegen.BladeGen.geom_gen">[docs]</a>    <span class="k">def</span> <span class="nf">geom_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy_th</span><span class="p">,</span> <span class="n">xy_camber</span><span class="p">,</span> <span class="n">lambd</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the Blade shape.</span>
+<span class="sd">        Returns vector with X and Y of blade geometry.</span>
+
+<span class="sd">        :param lambd: Rotation of blade</span>
+<span class="sd">        :type lambd: float</span>
+<span class="sd">        :param c: chord length</span>
+<span class="sd">        :type c: float</span>
+<span class="sd">        :param xy_th: X and Y points from method thickness_dist</span>
+<span class="sd">        :type xy_th: (npts, 2) float-array</span>
+<span class="sd">        :param xy_camber: X and Y points from method camberline</span>
+<span class="sd">        :type xy_camber: (npts, 2) float-array</span>
+<span class="sd">        :return: xy_blade</span>
+<span class="sd">        :rtype xy_blade: (npts, 2) float-array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+
+        <span class="c1"># xy surface</span>
+        <span class="n">yth_abs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">xy_th</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">xsurface</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">ysurface</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="n">xss</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">yth_abs</span>
+        <span class="n">xps</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">yth_abs</span>
+        <span class="n">xsurface</span><span class="p">[:</span><span class="n">xss</span><span class="o">.</span><span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="n">xps</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">xsurface</span><span class="p">[</span><span class="n">xss</span><span class="o">.</span><span class="n">size</span><span class="p">:]</span> <span class="o">=</span> <span class="n">xss</span><span class="p">[</span><span class="mi">0</span><span class="p">:]</span>
+
+        <span class="n">yss</span> <span class="o">=</span> <span class="n">xy_camber</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">yth_abs</span>
+        <span class="n">yps</span> <span class="o">=</span> <span class="n">xy_camber</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">yth_abs</span>
+        <span class="n">ysurface</span><span class="p">[:</span><span class="n">yss</span><span class="o">.</span><span class="n">size</span><span class="p">]</span> <span class="o">=</span> <span class="n">yps</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ysurface</span><span class="p">[</span><span class="n">yss</span><span class="o">.</span><span class="n">size</span><span class="p">:]</span> <span class="o">=</span> <span class="n">yss</span><span class="p">[</span><span class="mi">0</span><span class="p">:]</span>
+
+        <span class="c1"># Scale and rotate</span>
+        <span class="c1"># scale with c</span>
+        <span class="n">xsurface</span> <span class="o">=</span> <span class="n">xsurface</span> <span class="o">*</span> <span class="n">c</span>
+        <span class="n">ysurface</span> <span class="o">=</span> <span class="n">ysurface</span> <span class="o">*</span> <span class="n">c</span>
+
+        <span class="c1"># Trailing edge radius fitting if &gt;0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">rte</span> <span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">xsurface</span><span class="p">,</span> <span class="n">ysurface</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">rte_fitter</span><span class="p">(</span><span class="n">xsurface</span><span class="p">,</span> <span class="n">ysurface</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rte</span><span class="p">,</span> <span class="n">xy_camber</span><span class="p">)</span>
+
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lambd</span><span class="p">)</span> <span class="o">*</span> <span class="n">xsurface</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lambd</span><span class="p">)</span> <span class="o">*</span> <span class="n">ysurface</span>
+        <span class="n">Y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">lambd</span><span class="p">)</span> <span class="o">*</span> <span class="n">xsurface</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">lambd</span><span class="p">)</span> <span class="o">*</span> <span class="n">ysurface</span>
+        <span class="c1"># Xchord = (np.cos(lambd) * x - np.sin(lambd) * xy_camber[:, 1]) * c</span>
+        <span class="c1"># Ycamber = (np.sin(lambd) * x + np.cos(lambd) * xy_camber[:, 1]) * c</span>
+
+        <span class="n">xy_blade</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">xy_blade</span></div>
+
+<div class="viewcode-block" id="BladeGen.get_points"><a class="viewcode-back" href="../../scripts.html#scripts.bladegen.BladeGen.get_points">[docs]</a>    <span class="k">def</span> <span class="nf">get_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">):</span>
+        <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="BladeGen.debug_plot"><a class="viewcode-back" href="../../scripts.html#scripts.bladegen.BladeGen.debug_plot">[docs]</a>    <span class="k">def</span> <span class="nf">debug_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy_th</span><span class="p">,</span> <span class="n">xy_camber</span><span class="p">,</span> <span class="n">xy_blade</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">131</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">xy_th</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">132</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">xy_camber</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">133</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xy_blade</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">xy_blade</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">BladeGen</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">thesis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Ga Man Liang.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

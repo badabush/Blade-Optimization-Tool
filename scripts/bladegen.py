@@ -3,17 +3,41 @@ from matplotlib import pyplot as plt
 from sklearn import preprocessing
 import pandas as pd
 import scipy.optimize as optimize
+import scripts.bladetools as utils
 
-import utils as utils
 
 
 class BladeGen:
 
-    def __init__(self, nblade='single', r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, l_chord=1, lambd=0, r_te=.004):
-        self.npts = 400
+    def __init__(self, nblade='single', r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, l_chord=1.0, lambd=0, r_te=0.01, npts=400):
+        """
+        User Input parameters.
+
+        :param nblade: number of blades, default: 'single'
+        :type nblade: str
+        :param r_th: relative thickness, default: .0215
+        :type r_th: float
+        :param beta1: inlet angle, default: 25
+        :type beta1: float
+        :param beta2: outlet angle, default: 25
+        :type beta2: float
+        :param x_maxcamber: X position of max. chamber, default: .4
+        :type x_maxcamber: float
+        :param l_chord: length of chord, default: 1
+        :type l_chord: float
+        :param lambd: rotation of blade, default: 0
+        :type lambd: float
+        :param r_te: radius trailing edge, default: .01
+        :type r_te: float
+        :param npts: number of blade points, default: 400
+        :type npts: int
+        """
+        self.npts = npts
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.npts)))  # x-coord generation
         self.rth = r_th # rel. thickness
         self.rte = r_te # radius trailing edge
+
+        # pack dict into pandas frame
         self.ds = pd.DataFrame(self.params(), index=[0])
 
         self.beta = [beta1, beta2]
@@ -29,8 +53,10 @@ class BladeGen:
     def params(self):
         """
         Generate parameters.
-        :return:
-        :param ds: dict with parameters
+        Return dataset (ds) with parameters.
+
+        :return: ds
+        :rtype ds: dict
         """
         ds = {}
         ds['c_s'] = .43  # length of chord single
@@ -62,9 +88,10 @@ class BladeGen:
     def thickness_dist(self):
         """
         Calculate thickness distribution.
+        Returns  vector with X and Y of thickness distribution.
 
-        :return:
-        :param xy_th: (npts, 2) vector with X and Y of thickness distribution
+        :return: xy_th
+        :rtype xy_th: (npts, 2) float array
         """
 
         ds = self.ds
@@ -85,11 +112,14 @@ class BladeGen:
     def camberline(self, theta, a):
         """
         Calculate the parabolic-arc camberline from R.Aungier.
+        Returns vector with X and Y of camber line.
 
         :param theta: sum of beta1 and beta2 (Chi1 and Chi2 in R.Aungier)
+        :type theta: float
         :param a: max. chamber position
-        :return:
-        :param xy_camber: (npts, 2) vector with X and Y of camber line
+        :type a: float
+        :return: xy_camber
+        :rtype xy_camber: (npts, 2) float array
         """
 
         x = self.x
@@ -113,13 +143,18 @@ class BladeGen:
     def geom_gen(self, xy_th, xy_camber, lambd, c):
         """
         Generate the Blade shape.
+        Returns vector with X and Y of blade geometry.
 
         :param lambd: Rotation of blade
+        :type lambd: float
         :param c: chord length
+        :type c: float
         :param xy_th: X and Y points from method thickness_dist
+        :type xy_th: (npts, 2) float-array
         :param xy_camber: X and Y points from method camberline
-        :return:
-        :param xy_blade: (npts, 2) vector with X and Y of blade geometry
+        :type xy_camber: (npts, 2) float-array
+        :return: xy_blade
+        :rtype xy_blade: (npts, 2) float-array
         """
 
         x = self.x
@@ -142,7 +177,10 @@ class BladeGen:
         # scale with c
         xsurface = xsurface * c
         ysurface = ysurface * c
-        utils.rte_fitter(xsurface, ysurface, self.rte, xy_camber)
+
+        # Trailing edge radius fitting if >0
+        if self.rte !=0:
+            xsurface, ysurface = utils.rte_fitter(xsurface, ysurface, self.rte, xy_camber)
 
         X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
         Y = np.sin(lambd) * xsurface + np.cos(lambd) * ysurface
@@ -166,7 +204,6 @@ class BladeGen:
         plt.plot(xy_blade[:, 0], xy_blade[:, 1])
         plt.axis('equal')
         plt.show()
-        0
 
 
 if __name__ == "__main__":

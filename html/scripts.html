@@ -67,11 +67,11 @@
 </dd></dl>
 
 </div>
-<div class="section" id="module-scripts.utils">
-<span id="utils-module"></span><h2>Utils module<a class="headerlink" href="#module-scripts.utils" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-scripts.bladetools">
+<span id="bladetools-module"></span><h2>Bladetools module<a class="headerlink" href="#module-scripts.bladetools" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
-<dt id="scripts.utils.euclidean_dist">
-<code class="sig-prename descclassname">scripts.utils.</code><code class="sig-name descname">euclidean_dist</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y1</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/utils.html#euclidean_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.utils.euclidean_dist" title="Permalink to this definition">¶</a></dt>
+<dt id="scripts.bladetools.euclidean_dist">
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">euclidean_dist</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y1</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#euclidean_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.euclidean_dist" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the euclidean distance between two points.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -92,8 +92,8 @@
 </dd></dl>
 
 <dl class="function">
-<dt id="scripts.utils.rte_fitter">
-<code class="sig-prename descclassname">scripts.utils.</code><code class="sig-name descname">rte_fitter</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">r</em>, <em class="sig-param">camberline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/utils.html#rte_fitter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.utils.rte_fitter" title="Permalink to this definition">¶</a></dt>
+<dt id="scripts.bladetools.rte_fitter">
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">rte_fitter</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">r</em>, <em class="sig-param">camberline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#rte_fitter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.rte_fitter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit trailing edge radius.</p>
 <p>Calculate euclidean distance between points, take shortest for every points, find distance closest to r_te.
 Returns X, Y coords with fitted trailing edge radius.</p>
@@ -102,7 +102,7 @@ Returns X, Y coords with fitted trailing edge radius.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> – unrotated x coords of blade</p></li>
 <li><p><strong>y</strong> – unrotated y coords of blade</p></li>
-<li><p><strong>r</strong> – </p></li>
+<li><p><strong>r</strong> – radius of trailing edge</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -112,6 +112,122 @@ Returns X, Y coords with fitted trailing edge radius.</p>
 <dd class="field-odd"><p>float array</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="scripts.bladetools.shape_circle">
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">shape_circle</code><span class="sig-paren">(</span><em class="sig-param">side</em>, <em class="sig-param">r</em>, <em class="sig-param">xy_mid</em>, <em class="sig-param">xy</em>, <em class="sig-param">idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#shape_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.shape_circle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes either the upper or lower surface and adds a quarter circle where the original shape was.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>side</strong> (<em>str</em>) – either ‘up’ or ‘low’ to differentiate between both sides since overlaps will be handled differently</p></li>
+<li><p><strong>r</strong> (<em>float</em>) – radius</p></li>
+<li><p><strong>xy_mid</strong> (<em>(</em><em>n</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X,Y coord. for the origin of circle</p></li>
+<li><p><strong>xy</strong> (<em>(</em><em>n</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X,Y coord. for the upper or lower surface</p></li>
+<li><p><strong>idx</strong> (<em>int</em>) – index of last point that is not NaN of upper or lower surface</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>xy</p>
+</dd>
+<dt class="field-odd">Rtype xy</dt>
+<dd class="field-odd"><p>(n, 2) float-array</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-scripts.bladegen">
+<span id="bladegen-module"></span><h2>BladeGen module<a class="headerlink" href="#module-scripts.bladegen" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="scripts.bladegen.BladeGen">
+<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">nblade='single'</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=25</em>, <em class="sig-param">beta2=25</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=0</em>, <em class="sig-param">r_te=0.01</em>, <em class="sig-param">npts=400</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="scripts.bladegen.BladeGen.camberline">
+<code class="sig-name descname">camberline</code><span class="sig-paren">(</span><em class="sig-param">theta</em>, <em class="sig-param">a</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.camberline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.camberline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the parabolic-arc camberline from R.Aungier.
+Returns vector with X and Y of camber line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> (<em>float</em>) – sum of beta1 and beta2 ( $Chi$ Chi1 and Chi2 in R.Aungier)</p></li>
+<li><p><strong>a</strong> (<em>float</em>) – max. chamber position</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>xy_camber</p>
+</dd>
+<dt class="field-odd">Rtype xy_camber</dt>
+<dd class="field-odd"><p>(npts, 2) float array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.bladegen.BladeGen.debug_plot">
+<code class="sig-name descname">debug_plot</code><span class="sig-paren">(</span><em class="sig-param">xy_th</em>, <em class="sig-param">xy_camber</em>, <em class="sig-param">xy_blade</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.debug_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.debug_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.bladegen.BladeGen.geom_gen">
+<code class="sig-name descname">geom_gen</code><span class="sig-paren">(</span><em class="sig-param">xy_th</em>, <em class="sig-param">xy_camber</em>, <em class="sig-param">lambd</em>, <em class="sig-param">c</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.geom_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.geom_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the Blade shape.
+Returns vector with X and Y of blade geometry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lambd</strong> (<em>float</em>) – Rotation of blade</p></li>
+<li><p><strong>c</strong> (<em>float</em>) – chord length</p></li>
+<li><p><strong>xy_th</strong> (<em>(</em><em>npts</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X and Y points from method thickness_dist</p></li>
+<li><p><strong>xy_camber</strong> (<em>(</em><em>npts</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X and Y points from method camberline</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>xy_blade</p>
+</dd>
+<dt class="field-odd">Rtype xy_blade</dt>
+<dd class="field-odd"><p>(npts, 2) float-array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.bladegen.BladeGen.get_points">
+<code class="sig-name descname">get_points</code><span class="sig-paren">(</span><em class="sig-param">xy</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.get_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.get_points" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.bladegen.BladeGen.params">
+<code class="sig-name descname">params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate parameters.
+Return dataset (ds) with parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>ds</p>
+</dd>
+<dt class="field-even">Rtype ds</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.bladegen.BladeGen.thickness_dist">
+<code class="sig-name descname">thickness_dist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.thickness_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.thickness_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate thickness distribution.
+Returns  vector with X and Y of thickness distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>xy_th</p>
+</dd>
+<dt class="field-even">Rtype xy_th</dt>
+<dd class="field-even"><p>(npts, 2) float array</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -127,7 +243,8 @@ Returns X, Y coords with fitted trailing edge radius.</p>
   <ul>
 <li><a class="reference internal" href="#">scripts package</a><ul>
 <li><a class="reference internal" href="#module-scripts.parser">Parser module</a></li>
-<li><a class="reference internal" href="#module-scripts.utils">Utils module</a></li>
+<li><a class="reference internal" href="#module-scripts.bladetools">Bladetools module</a></li>
+<li><a class="reference internal" href="#module-scripts.bladegen">BladeGen module</a></li>
 </ul>
 </li>
 </ul>
