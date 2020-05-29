@@ -6,36 +6,21 @@ import scipy.optimize as optimize
 import scripts.bladetools as utils
 
 
-
 class BladeGen:
 
-    def __init__(self, nblade='single', r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, l_chord=1.0, lambd=0, r_te=0.01, npts=400):
-        """
-        User Input parameters.
+    def __init__(self, nblade='single', r_th=.0215, beta1=30, beta2=30, x_maxcamber=.4, l_chord=1.0, lambd=0,
+                 rth_le=0.04, rth_te=0.0135, npts=500):
 
-        :param nblade: number of blades, default: 'single'
-        :type nblade: str
-        :param r_th: relative thickness, default: .0215
-        :type r_th: float
-        :param beta1: inlet angle, default: 25
-        :type beta1: float
-        :param beta2: outlet angle, default: 25
-        :type beta2: float
-        :param x_maxcamber: X position of max. chamber, default: .4
-        :type x_maxcamber: float
-        :param l_chord: length of chord, default: 1
-        :type l_chord: float
-        :param lambd: rotation of blade, default: 0
-        :type lambd: float
-        :param r_te: radius trailing edge, default: .01
-        :type r_te: float
-        :param npts: number of blade points, default: 400
-        :type npts: int
-        """
+        # assert input
+        self.assert_input(nblade, r_th, beta1, beta2, x_maxcamber, rth_le, rth_te, npts)
+
         self.npts = npts
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.npts)))  # x-coord generation
-        self.rth = r_th # rel. thickness
-        self.rte = r_te # radius trailing edge
+        self.rth = r_th  # rel. thickness
+        self.nblade = nblade
+        self.c = l_chord
+        self.th_le = rth_le / self.c  # rth leading edge
+        self.th_te = rth_te / self.c  # rth trailing edge
 
         # pack dict into pandas frame
         self.ds = pd.DataFrame(self.params(), index=[0])
@@ -62,7 +47,7 @@ class BladeGen:
         ds['c_s'] = .43  # length of chord single
         ds['c_t'] = ds['c_s'] / 2  # length of chord tandem
         ds['th'] = self.rth
-        ds['r_te'] = self.rte
+        ds['r_te'] = self.th_te
 
         # Lieblein Diffusion Factor for front and rear blade
         ds['df1'] = .39
@@ -91,7 +76,7 @@ class BladeGen:
         Returns  vector with X and Y of thickness distribution.
 
         :return: xy_th
-        :rtype xy_th: (npts, 2) float array
+        :rtype xy_th: (npts, 2) ndarray
         """
 
         ds = self.ds
@@ -119,7 +104,7 @@ class BladeGen:
         :param a: max. chamber position
         :type a: float
         :return: xy_camber
-        :rtype xy_camber: (npts, 2) float array
+        :rtype xy_camber: (npts, 2) ndarray
         """
 
         x = self.x
@@ -178,18 +163,53 @@ class BladeGen:
         xsurface = xsurface * c
         ysurface = ysurface * c
 
-        # Trailing edge radius fitting if >0
-        if self.rte !=0:
-            xsurface, ysurface = utils.rte_fitter(xsurface, ysurface, self.rte, xy_camber)
+        # Leading edge radius fitting
+        xsurface, ysurface = utils.rte_fitter('LE', xsurface, ysurface, self.th_le / 2, xy_camber)
+
+        # Trailing edge radius fitting
+        xsurface, ysurface = utils.rte_fitter('TE', xsurface, ysurface, self.th_te / 2, xy_camber)
 
         X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
         Y = np.sin(lambd) * xsurface + np.cos(lambd) * ysurface
-        # Xchord = (np.cos(lambd) * x - np.sin(lambd) * xy_camber[:, 1]) * c
-        # Ycamber = (np.sin(lambd) * x + np.cos(lambd) * xy_camber[:, 1]) * c
-
         xy_blade = np.transpose(np.array([X, Y]))
 
         return xy_blade
+
+    def assert_input(self, nblade, r_th, beta1, beta2, x_maxcamber, rth_le, rth_te, npts):
+        """
+        Assert input parameter are within defined range.
+
+        :param nblade: number of blades, default: 'single'
+        :type nblade: str
+        :param r_th: relative thickness, default: .0215
+        :type r_th: float
+        :param beta1: inlet angle, default: 25
+        :type beta1: float
+        :param beta2: outlet angle, default: 25
+        :type beta2: float
+        :param x_maxcamber: X position of max. chamber, default: .4
+        :type x_maxcamber: float
+        :param rth_le: rel. thickness leading edge as percentage of chord, default: .02
+        :type rth_le: float
+        :param rth_te: rel. thickness trailing edge as percentage of chord, default: .0135
+        :type rth_te: float
+        :param npts: number of blade points, default: 400
+        :type npts: int
+        :raises: Assertion Errors
+        """
+        # Either single or tandem
+        assert ((nblade == 'single') or (nblade == 'tandem')), "single or tandem"
+
+        # Blade arc flips above sum(beta1,beta2)>90
+        assert ((rth_le < r_th * 2) and (rth_le > r_th)), "rth_le out of range"
+
+        assert ((x_maxcamber > 0) and (x_maxcamber < 1)), "x max chamber out of range [0,1]."
+        # LE/TE Radius doesnt work properly outside of range
+        assert ((beta1 + beta2) <= 90), "Beta1 + Beta2 must be smaller than 90"
+        assert ((rth_te < r_th * .75) and (rth_te > 0.005)), "rth_te out of range"
+
+        # Blade looks absolute horrible sub 200 points..
+        assert (npts >= 200), "Choose more than 200 Pts"
 
     def get_points(self, xy):
         0

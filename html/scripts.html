@@ -93,38 +93,40 @@
 
 <dl class="function">
 <dt id="scripts.bladetools.rte_fitter">
-<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">rte_fitter</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">r</em>, <em class="sig-param">camberline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#rte_fitter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.rte_fitter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">rte_fitter</code><span class="sig-paren">(</span><em class="sig-param">edge</em>, <em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">r</em>, <em class="sig-param">camberline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#rte_fitter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.rte_fitter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Fit trailing edge radius.</p>
 <p>Calculate euclidean distance between points, take shortest for every points, find distance closest to r_te.
 Returns X, Y coords with fitted trailing edge radius.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> – unrotated x coords of blade</p></li>
-<li><p><strong>y</strong> – unrotated y coords of blade</p></li>
-<li><p><strong>r</strong> – radius of trailing edge</p></li>
+<li><p><strong>edge</strong> (<em>str</em>) – trailing or leading edge (TE/LE)</p></li>
+<li><p><strong>x</strong> (<em>ndarray</em>) – unrotated x coords of blade</p></li>
+<li><p><strong>y</strong> (<em>ndarray</em>) – unrotated y coords of blade</p></li>
+<li><p><strong>r</strong> (<em>float</em>) – radius of trailing edge</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>x,y</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float array</p>
+<dd class="field-odd"><p>ndarray</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="scripts.bladetools.shape_circle">
-<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">shape_circle</code><span class="sig-paren">(</span><em class="sig-param">side</em>, <em class="sig-param">r</em>, <em class="sig-param">xy_mid</em>, <em class="sig-param">xy</em>, <em class="sig-param">idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#shape_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.shape_circle" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">shape_circle</code><span class="sig-paren">(</span><em class="sig-param">side</em>, <em class="sig-param">edge</em>, <em class="sig-param">r</em>, <em class="sig-param">xy_mid</em>, <em class="sig-param">xy</em>, <em class="sig-param">idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#shape_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.shape_circle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes either the upper or lower surface and adds a quarter circle where the original shape was.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>side</strong> (<em>str</em>) – either ‘up’ or ‘low’ to differentiate between both sides since overlaps will be handled differently</p></li>
+<li><p><strong>edge</strong> (<em>str</em>) – either ‘LE’ or ‘TE’</p></li>
 <li><p><strong>r</strong> (<em>float</em>) – radius</p></li>
-<li><p><strong>xy_mid</strong> (<em>(</em><em>n</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X,Y coord. for the origin of circle</p></li>
-<li><p><strong>xy</strong> (<em>(</em><em>n</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X,Y coord. for the upper or lower surface</p></li>
+<li><p><strong>xy_mid</strong> (<em>(</em><em>n</em><em>, </em><em>2</em><em>) </em><em>ndarray</em>) – X,Y coord. for the origin of circle</p></li>
+<li><p><strong>xy</strong> (<em>(</em><em>n</em><em>, </em><em>2</em><em>) </em><em>ndarray</em>) – X,Y coord. for the upper or lower surface</p></li>
 <li><p><strong>idx</strong> (<em>int</em>) – index of last point that is not NaN of upper or lower surface</p></li>
 </ul>
 </dd>
@@ -132,7 +134,7 @@ Returns X, Y coords with fitted trailing edge radius.</p>
 <dd class="field-even"><p>xy</p>
 </dd>
 <dt class="field-odd">Rtype xy</dt>
-<dd class="field-odd"><p>(n, 2) float-array</p>
+<dd class="field-odd"><p>(n, 2) ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -142,8 +144,31 @@ Returns X, Y coords with fitted trailing edge radius.</p>
 <span id="bladegen-module"></span><h2>BladeGen module<a class="headerlink" href="#module-scripts.bladegen" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="scripts.bladegen.BladeGen">
-<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">nblade='single'</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=25</em>, <em class="sig-param">beta2=25</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=0</em>, <em class="sig-param">r_te=0.01</em>, <em class="sig-param">npts=400</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">nblade='single'</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=30</em>, <em class="sig-param">beta2=30</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=0</em>, <em class="sig-param">rth_le=0.04</em>, <em class="sig-param">rth_te=0.0135</em>, <em class="sig-param">npts=500</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="scripts.bladegen.BladeGen.assert_input">
+<code class="sig-name descname">assert_input</code><span class="sig-paren">(</span><em class="sig-param">nblade</em>, <em class="sig-param">r_th</em>, <em class="sig-param">beta1</em>, <em class="sig-param">beta2</em>, <em class="sig-param">x_maxcamber</em>, <em class="sig-param">rth_le</em>, <em class="sig-param">rth_te</em>, <em class="sig-param">npts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.assert_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.assert_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assert input parameter are within defined range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nblade</strong> (<em>str</em>) – number of blades, default: ‘single’</p></li>
+<li><p><strong>r_th</strong> (<em>float</em>) – relative thickness, default: .0215</p></li>
+<li><p><strong>beta1</strong> (<em>float</em>) – inlet angle, default: 25</p></li>
+<li><p><strong>beta2</strong> (<em>float</em>) – outlet angle, default: 25</p></li>
+<li><p><strong>x_maxcamber</strong> (<em>float</em>) – X position of max. chamber, default: .4</p></li>
+<li><p><strong>rth_le</strong> (<em>float</em>) – rel. thickness leading edge as percentage of chord, default: .02</p></li>
+<li><p><strong>rth_te</strong> (<em>float</em>) – rel. thickness trailing edge as percentage of chord, default: .0135</p></li>
+<li><p><strong>npts</strong> (<em>int</em>) – number of blade points, default: 400</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>Assertion Errors</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="method">
 <dt id="scripts.bladegen.BladeGen.camberline">
 <code class="sig-name descname">camberline</code><span class="sig-paren">(</span><em class="sig-param">theta</em>, <em class="sig-param">a</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.camberline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.camberline" title="Permalink to this definition">¶</a></dt>
@@ -152,7 +177,7 @@ Returns vector with X and Y of camber line.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>theta</strong> (<em>float</em>) – sum of beta1 and beta2 ( $Chi$ Chi1 and Chi2 in R.Aungier)</p></li>
+<li><p><strong>theta</strong> (<em>float</em>) – sum of beta1 and beta2 (Chi1 and Chi2 in R.Aungier)</p></li>
 <li><p><strong>a</strong> (<em>float</em>) – max. chamber position</p></li>
 </ul>
 </dd>
@@ -160,7 +185,7 @@ Returns vector with X and Y of camber line.</p>
 <dd class="field-even"><p>xy_camber</p>
 </dd>
 <dt class="field-odd">Rtype xy_camber</dt>
-<dd class="field-odd"><p>(npts, 2) float array</p>
+<dd class="field-odd"><p>(npts, 2) ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -223,7 +248,7 @@ Returns  vector with X and Y of thickness distribution.</p>
 <dd class="field-odd"><p>xy_th</p>
 </dd>
 <dt class="field-even">Rtype xy_th</dt>
-<dd class="field-even"><p>(npts, 2) float array</p>
+<dd class="field-even"><p>(npts, 2) ndarray</p>
 </dd>
 </dl>
 </dd></dl>
