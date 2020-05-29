@@ -166,8 +166,8 @@ def rte_fitter(edge, x, y, r, camberline):
         for i in range(0, xllower.size):
             offset[i] = np.abs(xupper[0] - xllower[i])
         minoffset = offset.argmin()
-        real_offset = n4 - minoffset
-
+        real_offset = -int(np.round((n4 - minoffset))) #fixme: fix offset
+        real_offset = 0
         # shift
         xlower = x[n4 + real_offset:n4 * 2 + real_offset]
         ylower = y[n4 + real_offset:n4 * 2 + real_offset]
