@@ -171,6 +171,7 @@ class BladeGen:
         if self.th_te>0:
             xsurface, ysurface = utils.rte_fitter('TE', xsurface, ysurface, self.th_te / 2, xy_camber)
 
+        # rotate
         X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
         Y = np.sin(lambd) * xsurface + np.cos(lambd) * ysurface
         xy_blade = np.transpose(np.array([X, Y]))
