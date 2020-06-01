@@ -136,24 +136,43 @@ def min_dist(xy1, xy2):
     return idx1, idx2, dist.min()
 
 
-def fill_interpolate(x1, x2, xn2):
+def fill_interpolate(p1, p2, pn2, pnose):
     """
-    Interpolate nan values and fill into correct length
-    :param x1:
-    :param x2:
-    :param xn2:
-    :return:
+    Interpolate nan values and fill into correct length.
+    Returns blade with new circle attached.
+    
+    :param p1: x or y blade
+    :type p1: pdSeries
+    :param p2: x or y circle
+    :type p2: pdSeries
+    :param pn2: x or y new circle
+    :type pn2: pdSeries
+    :param pnose: x or y of nose point
+    :type pnose: 
+    :return: xn
+    :rtype xn: pdSeries
     """
-    diff = np.abs(x2.size - xn2.size)
-    foo = np.zeros(diff)
-    foo[:] = None
-    xn = pd.Series(data=np.concatenate([x1.values, foo, xn2.values]))
+
+    diff = np.abs(p2.size - pn2.size)
+    # even length of diff
+    if (diff % 2) == 0:
+        empt = np.zeros(int(diff / 2))
+        empt[:] = None
+        xn = pd.Series(data=np.concatenate([p1.values, empt, pn2.values, empt]))
+    else:
+        empt1 = np.zeros(int(np.floor(diff / 2)))
+        empt1[:] = None
+        empt2 = np.zeros(int(np.floor(diff / 2) + 1))
+        empt2[:] = None
+        xn = pd.Series(data=np.concatenate([p1.values, empt1, pn2.values, empt2]))
+
+    xn.iloc[-1] = pnose
     xn = xn.interpolate()
 
     return xn
 
 
-def attach_circle(ds):
+def attach_circle(edge, polynomial_cl, ds):
     def fix_clip(x, y):
         xgrad = np.abs(np.gradient(x))
         xgrad_max = np.array([xgrad[i - 1] - xgrad[i] for i in range(1, x.size)]).argmax()
@@ -179,7 +198,7 @@ def attach_circle(ds):
     xlower1, xlower2, ylower1, ylower2 = fix_clip(ds.xlower, ds.ylower)
     xupper1, xupper2, yupper1, yupper2 = fix_clip(ds.xupper, ds.yupper)
 
-    #poly lower
+    # poly lower
     coef = np.polyfit([xlower1.iloc[-1], xlower1.iloc[-2]], [ylower1.iloc[-1], ylower1.iloc[-2]], 1)
     polynomial_low = np.poly1d(coef)
     xn_low = xlower2.iloc[1]
@@ -188,42 +207,104 @@ def attach_circle(ds):
     # calculate angle to rotate circle
     AB = [xn_low - xlower1.iloc[-1], yn_low - ylower1.iloc[-1]]
     AC = [xlower2.iloc[1] - xlower1.iloc[-1], ylower2.iloc[1] - ylower1.iloc[-1]]
-    angle_low = -np.arctan2(np.linalg.norm(np.cross(AB, AC)), np.linalg.norm(np.dot(AB, AC)))
+    if edge == 'LE':
+        if (AB[1] > AC[1]):
+            sign = -1
+        else:
+            sign = 1
+    else:
+        if (AB[1] > AC[1]):
+            sign = 1
+        else:
+            sign = -1
+    angle_low = np.sign(sign) * np.arctan2(np.linalg.norm(np.cross(AB, AC)), np.linalg.norm(np.dot(AB, AC)))
     xlow_og, ylow_og = [xlower2.iloc[0], ylower2.iloc[0]]
     xlower2 = xlow_og + np.cos(angle_low) * (xlower2 - xlow_og) - np.sin(angle_low) * (ylower2 - ylow_og)
     ylower2 = ylow_og + np.sin(angle_low) * (xlower2 - xlow_og) + np.cos(angle_low) * (ylower2 - ylow_og)
 
     # fixme: fix repetition of script
-    #poly upper
-    coef = np.polyfit([xlower1.iloc[-1], xlower1.iloc[-2]], [ylower1.iloc[-1], ylower1.iloc[-2]], 1)
+    # poly upper
+    coef = np.polyfit([xupper1.iloc[-1], xupper1.iloc[-2]], [yupper1.iloc[-1], yupper1.iloc[-2]], 1)
     polynomial_up = np.poly1d(coef)
-    xn_up = xlower2.iloc[1]
+    xn_up = xupper2.iloc[1]
     yn_up = polynomial_up(xn_up)
 
     # calculate angle to rotate circle
     AB = [xn_up - xupper1.iloc[-1], yn_up - yupper1.iloc[-1]]
     AC = [xupper2.iloc[1] - xupper1.iloc[-1], yupper2.iloc[1] - yupper1.iloc[-1]]
-    angle_up = np.arctan2(np.linalg.norm(np.cross(AB, AC)), np.linalg.norm(np.dot(AB, AC)))
+    if edge == 'LE':
+        if (AB[1] > AC[1]):
+            sign = -1
+        else:
+            sign = 1
+    else:
+        if (AB[1] > AC[1]):
+            sign = -1
+        else:
+            sign = 1
+    angle_up = np.sign(sign) * np.arctan2(np.linalg.norm(np.cross(AB, AC)), np.linalg.norm(np.dot(AB, AC)))
     xup_og, yup_og = [xupper2.iloc[0], yupper2.iloc[0]]
-    # xupper2 = xup_og + np.cos(angle_up) * (xupper2 - xup_og) - np.sin(angle_up) * (yupper2 - yup_og)
-    # yupper2 = yup_og + np.sin(angle_up) * (xupper2 - xup_og) + np.cos(angle_up) * (yupper2 - yup_og)
+    xupper2 = xup_og + np.cos(angle_up) * (xupper2 - xup_og) - np.sin(angle_up) * (yupper2 - yup_og)
+    yupper2 = yup_og + np.sin(angle_up) * (xupper2 - xup_og) + np.cos(angle_up) * (yupper2 - yup_og)
 
-    # move lower until it collides with upper
-    col = 2
-    iter = 0
-    while col != 0:
-        iter += 1
-        x0 = xlower2.iloc[1]
-        y0 = polynomial_low(x0)
-        xlower2 = xlower2 - np.abs(xlower2.iloc[0] - x0)
-        ylower2 = ylower2 - np.abs(ylower2.iloc[0] - y0)
-        idx_low, idx_up, dist = min_dist(np.array([xlower2, ylower2]), np.array([xupper2, yupper2]))
-        # skip first collision
-        if (dist <= 0.0002):
-            col -= 1
-        elif iter > 200:
-            col = 0
 
+
+    # # move lower/upper along line until it collides with upper
+    # if edge=='LE':
+    # intersect with camberline
+    y_up_cl = polynomial_cl(xupper2)
+    idx_up, foo1, foo2 = min_dist([xupper2.values, yupper2.values],[xupper2.values, y_up_cl])
+    x_up_cl = xupper2.iloc[idx_up]
+    y_up_cl = yupper2.iloc[idx_up]
+
+    y_low_cl = polynomial_cl(xlower2)
+    idx_low, foo1, foo2 = min_dist([xlower2.values, ylower2.values],[xlower2.values, y_low_cl])
+    x_low_cl = xlower2.iloc[idx_low]
+    y_low_cl = ylower2.iloc[idx_low]
+
+    # fitting
+    xlower2 = xlower2 + (x_up_cl-x_low_cl)
+    yoffset = np.abs(ylower2.iloc[0] - polynomial_low(xlower2.iloc[0]))
+    ylower2 = ylower2 - yoffset
+
+    idx_low, idx_up, foo = min_dist([xlower2.values, ylower2.values],[xupper2.values, yupper2.values])
+    xlower2.reset_index(drop=True, inplace=True)
+    ylower2.reset_index(drop=True, inplace=True)
+    xupper2.reset_index(drop=True, inplace=True)
+    yupper2.reset_index(drop=True, inplace=True)
+    xlower2[xlower2.index>=idx_low] = np.nan
+    ylower2[ylower2.index>=idx_low] = np.nan
+    xupper2[xupper2.index>=idx_up] = np.nan
+    yupper2[yupper2.index>=idx_up] = np.nan
+    # xlower2.iloc[idx_low] = xupper2.iloc[idx_up-1]
+    # ylower2.iloc[idx_low] = yupper2.iloc[idx_up-1]
+    xupper2.iloc[idx_up] = xlower2.iloc[idx_low-1]
+    yupper2.iloc[idx_up] = ylower2.iloc[idx_low-1]
+    xlower2.dropna(inplace=True)
+    ylower2.dropna(inplace=True)
+    xupper2.dropna(inplace=True)
+    yupper2.dropna(inplace=True)
+
+    plt.plot(x_up_cl, y_up_cl, 'x')
+    plt.plot(x_low_cl, y_low_cl, 'x')
+    plt.plot(xupper2, polynomial_cl(xupper2))
+    plt.plot(xupper1, yupper1)
+    plt.plot(xupper2, yupper2,'x')
+    plt.plot(xlower1, ylower1)
+    plt.plot(xlower2, ylower2,'x')
+    plt.plot(xlower2, polynomial_low(xlower2))
+    plt.plot(xupper2, polynomial_up(xupper2))
+    # plt.plot(xoffset, yoffset, 'o')
+
+    plt.axis('equal')
+    plt.show()
+    0
+
+
+
+
+
+    idx_low, idx_up, dist = min_dist(np.array([xlower2, ylower2]), np.array([xupper2, yupper2]))
     # cut circles @ index
     xnlower2 = xlower2.iloc[:idx_low]
     ynlower2 = ylower2.iloc[:idx_low]
@@ -231,31 +312,34 @@ def attach_circle(ds):
     ynupper2 = yupper2.iloc[:idx_up]
 
     # fit back into pandas series
-    ds.xlower = fill_interpolate(xlower1, xlower2, xnlower2)
-    ds.ylower = fill_interpolate(ylower1, ylower2, ynlower2)
+    xnose = xlower2.iloc[idx_low]
+    ynose = ylower2.iloc[idx_low]
+    ds.xlower = fill_interpolate(xlower1, xlower2, xnlower2, xnose)
+    ds.ylower = fill_interpolate(ylower1, ylower2, ynlower2, ynose)
 
-    ds.xupper = fill_interpolate(xupper1, xupper2, xnupper2)
-    ds.yupper = fill_interpolate(yupper1, yupper2, ynupper2)
+    ds.xupper = fill_interpolate(xupper1, xupper2, xnupper2, xnose)
+    ds.yupper = fill_interpolate(yupper1, yupper2, ynupper2, ynose)
 
-    ds.xupper.iloc[-1] = ds.xlower.iloc[-1]
-    ds.yupper.iloc[-1] = ds.ylower.iloc[-1]
-    #
-    # plt.plot([xlower2.iloc[idx_low], xupper2.iloc[idx_up]], [ylower2.iloc[idx_low], yupper2.iloc[idx_up]])
-    # plt.plot(xn_low, yn_low)
-    # # plt.plot(xupper1, yupper1)
-    # # plt.plot(xnupper2, ynupper2, 'x')
-    #
-    # plt.plot(ds.xupper, ds.yupper)
-    # plt.plot(ds.xlower, ds.ylower)
-    # # plt.plot(xnlower2, ynlower2, 'x')
-    # plt.axis('equal')
+    # # connect nose
+    # ds.xupper.iloc[-1] = ds.xlower.iloc[-1]
+    # ds.yupper.iloc[-1] = ds.ylower.iloc[-1]
+
+    plt.plot([xlower2.iloc[idx_low], xupper2.iloc[idx_up]], [ylower2.iloc[idx_low], yupper2.iloc[idx_up]])
+    plt.plot(xn_low, yn_low)
+    plt.plot(xupper1, yupper1)
+    plt.plot(xnupper2, ynupper2, 'x')
+
+    plt.plot(ds.xupper, ds.yupper)
+    plt.plot(ds.xlower, ds.ylower)
+    plt.plot(xnlower2, ynlower2, 'x')
+    plt.axis('equal')
     # plt.show()
-    # 0
+    0
 
     return ds
 
 
-def rte_fitter(edge, x, y, r, camberline):
+def radius_fitter(edge, x, y, r, camberline):
     """
     Fit trailing edge radius.
 
@@ -341,21 +425,23 @@ def rte_fitter(edge, x, y, r, camberline):
     ds.xupper, ds.yupper = shape_circle('up', edge, r, [xc_mid, yc_mid], [ds.xupper, ds.yupper], idx_up)
     ds.xlower, ds.ylower = shape_circle('low', edge, r, [xc_mid, yc_mid], [ds.xlower, ds.ylower], idx_low)
 
-
+    # compute camber line polynom
+    weights = np.polyfit(camberline[:,0], camberline[:,1],5)
+    cl_model = np.poly1d(weights)
     if edge == 'TE':
-        # attach_circle(ds)
+        # fix clipping
+        attach_circle(edge, cl_model, ds)
         x[n4 * 3:] = ds.xupper
         y[n4 * 3:] = ds.yupper
         x[:n4] = ds.xlower[::-1]
         y[:n4] = ds.ylower[::-1]
     else:
         # fix clipping
-        attach_circle(ds)
+        attach_circle(edge, cl_model, ds)
         x[n4 * 2:n4 * 3] = ds.xupper[::-1]
         y[n4 * 2:n4 * 3] = ds.yupper[::-1]
         x[n4:n4 * 2] = ds.xlower
         y[n4:n4 * 2] = ds.ylower
-
 
     xcamber = camberline[:, 0]
     ycamber = camberline[:, 1]
@@ -364,6 +450,6 @@ def rte_fitter(edge, x, y, r, camberline):
     plt.plot(ds.xlower, ds.ylower)
     plt.axis('equal')
 
-    plt.show()
+    # plt.show()
 
     return x, y

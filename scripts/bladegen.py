@@ -8,8 +8,8 @@ import scripts.bladetools as utils
 
 class BladeGen:
 
-    def __init__(self, nblade='single', r_th=.0215, beta1=30, beta2=30, x_maxcamber=.4, l_chord=1.0, lambd=0,
-                 rth_le=0.01, rth_te=0.0135, npts=500):
+    def __init__(self, nblade='single', r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, l_chord=1.0, lambd=0,
+                 rth_le=0.01, rth_te=0.015, npts=500):
 
         # assert input
         self.assert_input(nblade, r_th, beta1, beta2, x_maxcamber, rth_le, rth_te, npts)
@@ -163,13 +163,13 @@ class BladeGen:
         xsurface = xsurface * c
         ysurface = ysurface * c
 
-        # Leading edge radius fitting
-        if self.th_le>0:
-            xsurface, ysurface = utils.rte_fitter('LE', xsurface, ysurface, self.th_le / 2, xy_camber)
-
         # Trailing edge radius fitting
         if self.th_te>0:
-            xsurface, ysurface = utils.rte_fitter('TE', xsurface, ysurface, self.th_te / 2, xy_camber)
+            xsurface, ysurface = utils.radius_fitter('TE', xsurface, ysurface, self.th_te / 2, xy_camber)
+
+        # Leading edge radius fitting
+        if self.th_le>0:
+            xsurface, ysurface = utils.radius_fitter('LE', xsurface, ysurface, self.th_le / 2, xy_camber)
 
         # rotate
         X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
@@ -204,8 +204,8 @@ class BladeGen:
         assert ((nblade == 'single') or (nblade == 'tandem')), "single or tandem"
 
         # Blade arc flips above sum(beta1,beta2)>90
-        assert ((rth_le < r_th * 2) and (rth_le >= 0)), "rth_le out of range"
-        assert ((rth_te < r_th * .75) and (rth_te >= 0)), "rth_te out of range"
+        assert (((rth_le < r_th * 2) and (rth_le >= 0.01)) or rth_le == 0), "rth_le out of range"
+        assert (((rth_te < r_th * .75) and (rth_te >= 0)) or rth_te == 0), "rth_te out of range"
 
         assert ((x_maxcamber > 0) and (x_maxcamber < 1)), "x max chamber out of range [0,1]."
         # LE/TE Radius doesnt work properly outside of range
