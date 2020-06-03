@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>scripts package &#8212; thesis  documentation</title>
+    <title>Scripts module &#8212; thesis  documentation</title>
     <link rel="stylesheet" href="_static/classic.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
@@ -39,12 +39,13 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-scripts">
-<span id="scripts-package"></span><h1>scripts package<a class="headerlink" href="#module-scripts" title="Permalink to this headline">¶</a></h1>
-<p>Software documentation for Master Thesis</p>
-<div class="section" id="module-scripts.parser">
-<span id="parser-module"></span><h2>Parser module<a class="headerlink" href="#module-scripts.parser" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+  <div class="section" id="scripts-module">
+<h1>Scripts module<a class="headerlink" href="#scripts-module" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="parser-module">
+<h2>Parser module<a class="headerlink" href="#parser-module" title="Permalink to this headline">¶</a></h2>
+<p>Parser to handle class calls.
+Does absolutely nothing at the moment.</p>
+<span class="target" id="module-scripts.parser"></span><dl class="class">
 <dt id="scripts.parser.parser">
 <em class="property">class </em><code class="sig-prename descclassname">scripts.parser.</code><code class="sig-name descname">parser</code><a class="reference internal" href="_modules/scripts/parser.html#parser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.parser.parser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
@@ -67,84 +68,12 @@
 </dd></dl>
 
 </div>
-<div class="section" id="module-scripts.bladetools">
-<span id="bladetools-module"></span><h2>Bladetools module<a class="headerlink" href="#module-scripts.bladetools" title="Permalink to this headline">¶</a></h2>
-<dl class="function">
-<dt id="scripts.bladetools.euclidean_dist">
-<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">euclidean_dist</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y1</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#euclidean_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.euclidean_dist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the euclidean distance between two points.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>float</em>) – x-coord of 1st point</p></li>
-<li><p><strong>x2</strong> (<em>float</em>) – x-coord of 2nd point</p></li>
-<li><p><strong>y1</strong> (<em>float</em>) – y-coord of 1st point</p></li>
-<li><p><strong>y2</strong> (<em>float</em>) – y-coord of 2nd point</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>euclid_dist</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="scripts.bladetools.radius_fitter">
-<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">radius_fitter</code><span class="sig-paren">(</span><em class="sig-param">edge</em>, <em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">r</em>, <em class="sig-param">camberline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Fit trailing edge radius.</p>
-<p>Calculate euclidean distance between points, take shortest for every points, find distance closest to r_te.
-Returns X, Y coords with fitted trailing edge radius.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>edge</strong> (<em>str</em>) – trailing or leading edge (TE/LE)</p></li>
-<li><p><strong>x</strong> (<em>ndarray</em>) – unrotated x coords of blade</p></li>
-<li><p><strong>y</strong> (<em>ndarray</em>) – unrotated y coords of blade</p></li>
-<li><p><strong>r</strong> (<em>float</em>) – radius of trailing edge</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>x,y</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="scripts.bladetools.shape_circle">
-<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">shape_circle</code><span class="sig-paren">(</span><em class="sig-param">side</em>, <em class="sig-param">edge</em>, <em class="sig-param">r</em>, <em class="sig-param">xy_mid</em>, <em class="sig-param">xy</em>, <em class="sig-param">idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#shape_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.shape_circle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Takes either the upper or lower surface and adds a quarter circle where the original shape was.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>side</strong> (<em>str</em>) – either ‘up’ or ‘low’ to differentiate between both sides since overlaps will be handled differently</p></li>
-<li><p><strong>edge</strong> (<em>str</em>) – either ‘LE’ or ‘TE’</p></li>
-<li><p><strong>r</strong> (<em>float</em>) – radius</p></li>
-<li><p><strong>xy_mid</strong> (<em>(</em><em>n</em><em>, </em><em>2</em><em>) </em><em>ndarray</em>) – X,Y coord. for the origin of circle</p></li>
-<li><p><strong>xy</strong> (<em>(</em><em>n</em><em>, </em><em>2</em><em>) </em><em>ndarray</em>) – X,Y coord. for the upper or lower surface</p></li>
-<li><p><strong>idx</strong> (<em>int</em>) – index of last point that is not NaN of upper or lower surface</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>xy</p>
-</dd>
-<dt class="field-odd">Rtype xy</dt>
-<dd class="field-odd"><p>(n, 2) ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
-<div class="section" id="module-scripts.bladegen">
-<span id="bladegen-module"></span><h2>BladeGen module<a class="headerlink" href="#module-scripts.bladegen" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
+<div class="section" id="bladegen-module">
+<h2>BladeGen module<a class="headerlink" href="#bladegen-module" title="Permalink to this headline">¶</a></h2>
+<p>Generate a NACA65 blade from input parameters.</p>
+<span class="target" id="module-scripts.bladegen"></span><dl class="class">
 <dt id="scripts.bladegen.BladeGen">
-<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">nblade='single'</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=30</em>, <em class="sig-param">beta2=30</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=0</em>, <em class="sig-param">rth_le=0.04</em>, <em class="sig-param">rth_te=0.0135</em>, <em class="sig-param">npts=500</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">nblade='single'</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=25</em>, <em class="sig-param">beta2=25</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=0</em>, <em class="sig-param">rth_le=0.01</em>, <em class="sig-param">rth_te=0.015</em>, <em class="sig-param">npts=500</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="scripts.bladegen.BladeGen.assert_input">
@@ -256,6 +185,182 @@ Returns  vector with X and Y of thickness distribution.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="bladetools-module">
+<h2>Bladetools module<a class="headerlink" href="#bladetools-module" title="Permalink to this headline">¶</a></h2>
+<p>Contains multiple reusable tools for the BladeGen module.</p>
+<span class="target" id="module-scripts.bladetools"></span><dl class="function">
+<dt id="scripts.bladetools.euclidean_dist">
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">euclidean_dist</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y1</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#euclidean_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.euclidean_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the euclidean distance between two points.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<em>float</em>) – x-coord of 1st point</p></li>
+<li><p><strong>x2</strong> (<em>float</em>) – x-coord of 2nd point</p></li>
+<li><p><strong>y1</strong> (<em>float</em>) – y-coord of 1st point</p></li>
+<li><p><strong>y2</strong> (<em>float</em>) – y-coord of 2nd point</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>euclid_dist</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="scripts.bladetools.min_dist">
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">min_dist</code><span class="sig-paren">(</span><em class="sig-param">xy1</em>, <em class="sig-param">xy2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#min_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.min_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find closest upper surface point to each lower surface point.
+Returns idx for both arrays where the minimum distance was found as well as the distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy1</strong> (<em>list</em>) – list arrays of x and y values</p></li>
+<li><p><strong>xy2</strong> – list arrays of x and y values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>idx1, idx2, dist</p>
+</dd>
+<dt class="field-odd">Rtype idx1</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Rtype idx2</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Rtype dist</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="scripts.bladetools.radius_fitter">
+<em class="property">class </em><code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">radius_fitter</code><span class="sig-paren">(</span><em class="sig-param">edge</em>, <em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">r</em>, <em class="sig-param">camberline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for fitting in leading edge and/or trailing edge radius.
+Either the front half (for LE fitting) or the latter half (for TE fitting) will be taken from input.
+A quarter circle will be attached to upper and lower surfaces, rotated into position for a smooth transition.
+The intersection between the quarter circles will be determined and cut, emerged gap will be filled with
+interpolation.</p>
+<p>Returns the x,y coordinates of original length with the fitted radius.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>edge</strong> (<em>str</em>) – TE/LE</p></li>
+<li><p><strong>x</strong> (<em>ndarray</em>) – x coordinates of whole blade</p></li>
+<li><p><strong>y</strong> (<em>ndarray</em>) – y coordinates of whole blade</p></li>
+<li><p><strong>r</strong> (<em>float</em>) – radius of LE/TE circle</p></li>
+<li><p><strong>camberline</strong> (<em>list of ndarrays</em>) – xy of camberline</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>x, y</p>
+</dd>
+<dt class="field-odd">Rtype x</dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+<dt class="field-even">Rtype y</dt>
+<dd class="field-even"><p>ndarray</p>
+</dd>
+</dl>
+<dl class="method">
+<dt id="scripts.bladetools.radius_fitter.attach_circle">
+<code class="sig-name descname">attach_circle</code><span class="sig-paren">(</span><em class="sig-param">ds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.attach_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.attach_circle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bring the circles into correct position, fix clipping in intersections (surface-circle, circle-circle),
+cut overlaps and interpolate for smooth surface.</p>
+<p>Returns updated ds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ds</strong> (<em>pdDataFrame</em>) – dataset of coordinates</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>ds</p>
+</dd>
+<dt class="field-odd">Rtype ds</dt>
+<dd class="field-odd"><p>pdDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.bladetools.radius_fitter.fill_interpolate">
+<code class="sig-name descname">fill_interpolate</code><span class="sig-paren">(</span><em class="sig-param">p1</em>, <em class="sig-param">p2</em>, <em class="sig-param">pnose</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.fill_interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.fill_interpolate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate nan values and fill into correct length (n4).
+Returns blade with new circle attached.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>p1</strong> (<em>pdSeries</em>) – x or y blade</p></li>
+<li><p><strong>p2</strong> (<em>pdSeries</em>) – x or y circle</p></li>
+<li><p><strong>pnose</strong> – x or y of nose point</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>xn</p>
+</dd>
+<dt class="field-odd">Rtype xn</dt>
+<dd class="field-odd"><p>pdSeries</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.bladetools.radius_fitter.fit_circle">
+<code class="sig-name descname">fit_circle</code><span class="sig-paren">(</span><em class="sig-param">ds</em>, <em class="sig-param">idx_low</em>, <em class="sig-param">idx_up</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.fit_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.fit_circle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.bladetools.radius_fitter.prior_geom">
+<code class="sig-name descname">prior_geom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.prior_geom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.prior_geom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract front or latter half of blade, seperated to upper and lower.
+Find distance between upper and lower surface points matching input radius, cutting geometry after the point.
+Create and returns dataset containing xylower, xyupper, ….</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>ds</p>
+</dd>
+<dt class="field-even">Rtype ds</dt>
+<dd class="field-even"><p>pdDataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.bladetools.radius_fitter.return_xy">
+<code class="sig-name descname">return_xy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.return_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.return_xy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.bladetools.radius_fitter.shape_circle">
+<code class="sig-name descname">shape_circle</code><span class="sig-paren">(</span><em class="sig-param">side</em>, <em class="sig-param">xy_mid</em>, <em class="sig-param">xy</em>, <em class="sig-param">idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.shape_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.shape_circle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes either the upper or lower surface and adds a quarter circle where the original shape was.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>side</strong> (<em>str</em>) – either ‘up’ or ‘low’ to differentiate between both sides since overlaps will be handled differently</p></li>
+<li><p><strong>edge</strong> (<em>str</em>) – either ‘LE’ or ‘TE’</p></li>
+<li><p><strong>r</strong> (<em>float</em>) – radius</p></li>
+<li><p><strong>xy_mid</strong> (<em>(</em><em>n</em><em>, </em><em>2</em><em>) </em><em>ndarray</em>) – X,Y coord. for the origin of circle</p></li>
+<li><p><strong>xy</strong> (<em>(</em><em>n</em><em>, </em><em>2</em><em>) </em><em>ndarray</em>) – X,Y coord. for the upper or lower surface</p></li>
+<li><p><strong>idx</strong> (<em>int</em>) – index of last point that is not NaN of upper or lower surface</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>xy</p>
+</dd>
+<dt class="field-odd">Rtype xy</dt>
+<dd class="field-odd"><p>(n, 2) ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 
 
@@ -266,10 +371,10 @@ Returns  vector with X and Y of thickness distribution.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">scripts package</a><ul>
-<li><a class="reference internal" href="#module-scripts.parser">Parser module</a></li>
-<li><a class="reference internal" href="#module-scripts.bladetools">Bladetools module</a></li>
-<li><a class="reference internal" href="#module-scripts.bladegen">BladeGen module</a></li>
+<li><a class="reference internal" href="#">Scripts module</a><ul>
+<li><a class="reference internal" href="#parser-module">Parser module</a></li>
+<li><a class="reference internal" href="#bladegen-module">BladeGen module</a></li>
+<li><a class="reference internal" href="#bladetools-module">Bladetools module</a></li>
 </ul>
 </li>
 </ul>

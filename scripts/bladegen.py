@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from sklearn import preprocessing
 import pandas as pd
 import scipy.optimize as optimize
-import scripts.bladetools as utils
+from bladetools import radius_fitter
 
 
 class BladeGen:
@@ -164,12 +164,12 @@ class BladeGen:
         ysurface = ysurface * c
 
         # Trailing edge radius fitting
-        if self.th_te>0:
-            xsurface, ysurface = utils.radius_fitter('TE', xsurface, ysurface, self.th_te / 2, xy_camber)
+        if self.th_te > 0:
+            xsurface, ysurface = radius_fitter('TE', xsurface, ysurface, self.th_te / 2, xy_camber).return_xy()
 
         # Leading edge radius fitting
-        if self.th_le>0:
-            xsurface, ysurface = utils.radius_fitter('LE', xsurface, ysurface, self.th_le / 2, xy_camber)
+        if self.th_le > 0:
+            xsurface, ysurface = radius_fitter('LE', xsurface, ysurface, self.th_le / 2, xy_camber).return_xy()
 
         # rotate
         X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
