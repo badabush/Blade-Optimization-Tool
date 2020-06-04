@@ -5,26 +5,6 @@ import pandas as pd
 from numpy.linalg import norm as norm
 
 
-def euclidean_dist(x1, x2, y1, y2):
-    """
-    Returns the euclidean distance between two points.
-
-    :param x1: x-coord of 1st point
-    :type x1: float
-    :param x2: x-coord of 2nd point
-    :type x2: float
-    :param y1: y-coord of 1st point
-    :type y1: float
-    :param y2: y-coord of 2nd point
-    :type y2: float
-    :return: euclid_dist
-    :rtype: float
-    """
-
-    euclid_dist = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-    return euclid_dist
-
-
 def euclidean_dist2(xy1, xy2):
     x1 = xy1[0]
     y1 = xy1[1]
@@ -90,6 +70,7 @@ class radius_fitter:
         self.n4 = int(np.round(x.size / 4))  # quarter length of original input coords
         ds, idx_low, idx_up = self.prior_geom()
         self.fit_circle(ds, idx_low, idx_up)
+        self.debug_plot([x, y], [self.x, self.y], ds)
 
         self.return_xy()
 
@@ -136,10 +117,10 @@ class radius_fitter:
         # find closest upper surface point to each lower surface point
 
         dist = np.array(
-            [euclidean_dist2([ds.xupper, ds.yupper], [ds.xlower.iloc[i], ds.ylower.iloc[i]]) for i in range(0, 250)])
+            [euclidean_dist2([ds.xupper, ds.yupper], [ds.xlower.iloc[i], ds.ylower.iloc[i]]) for i in range(0, self.n4)])
         # if points are further apart than 2 indices in LE, set distance high (reduces clipping)
         if self.edge == 'LE':
-            dist = np.array([dist[x, y] if np.abs(x - y) < 2 else 9999 for x in range(0, 250) for y in range(0, 250)])
+            dist = np.array([dist[x, y] if np.abs(x - y) < 2 else 9999 for x in range(0, self.n4) for y in range(0, self.n4)])
             dist = dist.reshape(self.n4, self.n4)
         idx_closest = dist.argmin(axis=1)
         dist_closest = np.array([np.abs(dist[i, idx_closest[i].astype(int)] - self.r * 2) for i in range(0, self.n4)])
@@ -172,20 +153,64 @@ class radius_fitter:
         ds.xupper, ds.yupper = self.shape_circle('up', [xc_mid, yc_mid], [ds.xupper, ds.yupper], idx_up)
         ds.xlower, ds.ylower = self.shape_circle('low', [xc_mid, yc_mid], [ds.xlower, ds.ylower], idx_low)
 
-        ds = self.attach_circle(ds)
+        ds, xy_intersect = self.attach_circle(ds)
+
+        # smooth out the intersect point of nose/tail
+        x_circle = np.concatenate((ds.xupper[idx_up:].values, ds.xlower[idx_low:][::-1].values))
+        y_circle = np.concatenate((ds.yupper[idx_up:].values, ds.ylower[idx_low:][::-1].values))
+
+        idx_intersect = np.where(x_circle == xy_intersect[0])
+        idx_low_last = np.min(idx_intersect)-1
+        idx_up_last = np.max(idx_intersect)+1
+        xy_low_last = np.array([x_circle[idx_low_last], y_circle[idx_low_last]])
+        xy_up_last = np.array([x_circle[idx_up_last], y_circle[idx_up_last]])
         if self.edge == 'TE':
-            # fix clipping
+            idx_intersect = np.where(x_circle == xy_intersect[0])
+            idx_low_last = np.min(idx_intersect) - 1
+            idx_up_last = np.max(idx_intersect) + 1
+            xy_low_last = np.array([x_circle[idx_low_last], y_circle[idx_low_last]])
+            xy_up_last = np.array([x_circle[idx_up_last], y_circle[idx_up_last]])
+            xy_point = np.array([x_circle[idx_up_last-1], y_circle[idx_up_last-1]])
+            xy_half_uplow = xy_low_last + (xy_up_last-xy_low_last)/2
+            xy_half_p = xy_half_uplow + (xy_point - xy_half_uplow)/2
+            x_circle[idx_low_last+1] = xy_half_p[0]
+            y_circle[idx_low_last+1] = xy_half_p[1]
+            x_circle[idx_up_last-1] = xy_half_p[0]
+            y_circle[idx_up_last-1] = xy_half_p[1]
+            ds.xupper.iloc[idx_up:] = x_circle[:idx_up_last - 1]
+            ds.yupper.iloc[idx_up:] = y_circle[:idx_up_last - 1]
+            ds.xlower.iloc[idx_low:] = x_circle[idx_low_last + 2:][::-1]
+            ds.ylower.iloc[idx_low:] = y_circle[idx_low_last + 2:][::-1]
+        else:
+            idx_intersect = np.where(x_circle == xy_intersect[0])
+            idx_low_last = np.min(idx_intersect)-2
+            idx_up_last = np.max(idx_intersect)-1
+            xy_low_last = np.array([x_circle[idx_low_last], y_circle[idx_low_last]])
+            xy_up_last = np.array([x_circle[idx_up_last], y_circle[idx_up_last]])
+            xy_point = np.array([x_circle[idx_low_last+1], y_circle[idx_low_last+1]])
+            xy_half_uplow = xy_low_last + (xy_up_last-xy_low_last)/2
+            xy_half_p = xy_half_uplow + (xy_point - xy_half_uplow)/2
+
+            x_circle[idx_low_last+1] = xy_half_p[0]
+            y_circle[idx_low_last+1] = xy_half_p[1]
+            x_circle[idx_up_last-1] = xy_half_p[0]
+            y_circle[idx_up_last-1] = xy_half_p[1]
+            ds.xupper.iloc[idx_up:] = x_circle[:idx_up_last+1]
+            ds.yupper.iloc[idx_up:] = y_circle[:idx_up_last+1]
+            ds.xlower.iloc[idx_low:] = x_circle[idx_low_last+3:][::-1]
+            ds.ylower.iloc[idx_low:] = y_circle[idx_low_last+3:][::-1]
+
+
+        if self.edge == 'TE':
             self.x[self.n4 * 3:] = ds.xupper
             self.y[self.n4 * 3:] = ds.yupper
             self.x[:self.n4] = ds.xlower[::-1]
             self.y[:self.n4] = ds.ylower[::-1]
         else:
-            # fix clipping
             self.x[self.n4 * 2:self.n4 * 3] = ds.xupper[::-1]
             self.y[self.n4 * 2:self.n4 * 3] = ds.yupper[::-1]
             self.x[self.n4:self.n4 * 2] = ds.xlower
             self.y[self.n4:self.n4 * 2] = ds.ylower
-
         0
 
     def shape_circle(self, side, xy_mid, xy, idx):
@@ -380,22 +405,24 @@ class radius_fitter:
                 sign = 1
         else:
             if (AB[1] > AC[1]):
-                sign = -1
-            else:
                 sign = 1
+            else:
+                sign = -1
         angle_up = np.sign(sign) * np.arctan2(np.linalg.norm(np.cross(AB, AC)), np.linalg.norm(np.dot(AB, AC)))
         xup_og, yup_og = [xupper2.iloc[0], yupper2.iloc[0]]
         xupper2 = xup_og + np.cos(angle_up) * (xupper2 - xup_og) - np.sin(angle_up) * (yupper2 - yup_og)
         yupper2 = yup_og + np.sin(angle_up) * (xupper2 - xup_og) + np.cos(angle_up) * (yupper2 - yup_og)
 
+        #fixme: intersection not working for small radius!!
+
         # # move lower/upper along line until it collides with upper
         # intersect with camberline
         y_up_cl = polynomial_cl(xupper2)
-        idx_up, foo1, foo2 = min_dist(np.array([xupper2.values, yupper2.values]), np.array([xupper2.values, y_up_cl]))
+        idx_up, *_ = min_dist(np.array([xupper2.values, yupper2.values]), np.array([xupper2.values, y_up_cl]))
         x_up_cl = xupper2.iloc[idx_up]
 
         y_low_cl = polynomial_cl(xlower2)
-        idx_low, foo1, foo2 = min_dist(np.array([xlower2.values, ylower2.values]), np.array([xlower2.values, y_low_cl]))
+        idx_low, *_ = min_dist(np.array([xlower2.values, ylower2.values]), np.array([xlower2.values, y_low_cl]))
         x_low_cl = xlower2.iloc[idx_low]
 
         # Find indices and replace anything greater than the indices with NaNs.
@@ -437,7 +464,7 @@ class radius_fitter:
         ds.xupper = self.fill_interpolate(xupper1, xnupper2, x_intersect)
         ds.yupper = self.fill_interpolate(yupper1, ynupper2, y_intersect)
 
-        return ds
+        return ds, [x_intersect, y_intersect]
 
     def fill_interpolate(self, p1, p2, pnose):
         """
@@ -456,18 +483,20 @@ class radius_fitter:
 
         diff = self.n4 - p1.size - p2.size
         # even length of diff
-        if (diff % 2) == 0:
-            empt = np.zeros(int(diff / 2))
-            empt[:] = None
-            xn = pd.Series(data=np.concatenate([p1.values, empt, p2.values, empt]))
-        else:
-            empt1 = np.zeros(int(np.floor(diff / 2)))
-            empt1[:] = None
-            empt2 = np.zeros(int(np.floor(diff / 2) + 1))
-            empt2[:] = None
-            xn = pd.Series(data=np.concatenate([p1.values, empt1, p2.values, empt2]))
+        empt = np.zeros(int(diff) - 1)
+        empt[:] = None
+        xn = pd.Series(data=np.concatenate([p1.values, empt, p2.values, [np.nan]]))
 
         xn.iloc[-1] = pnose
         xn = xn.interpolate()
 
         return xn
+
+    def debug_plot(self, xy_pre, xy_new, ds):
+        plt.figure(figsize=(8, 12))
+        plt.plot(xy_new[0], xy_new[1], 'rx')
+        plt.plot(xy_new[0], xy_new[1])
+        plt.plot(xy_pre[0], xy_pre[1], 'k--')
+        plt.plot(self.camberline[:, 0], self.camberline[:, 1], '--')
+        plt.axis('equal')
+        plt.show()

@@ -9,18 +9,18 @@ from bladetools import radius_fitter
 class BladeGen:
 
     def __init__(self, nblade='single', r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, l_chord=1.0, lambd=0,
-                 rth_le=0.01, rth_te=0.015, npts=500):
+                 rth_le=0.05, rth_te=0.1, npts=1000):
 
         # assert input
         self.assert_input(nblade, r_th, beta1, beta2, x_maxcamber, rth_le, rth_te, npts)
 
-        self.npts = npts
+        self.npts = int(npts / 2)
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.npts)))  # x-coord generation
         self.rth = r_th  # rel. thickness
         self.nblade = nblade
         self.c = l_chord
-        self.th_le = rth_le / self.c  # rth leading edge
-        self.th_te = rth_te / self.c  # rth trailing edge
+        self.th_le = rth_le * r_th  # rth leading edge
+        self.th_te = rth_te * r_th  # rth trailing edge
 
         # pack dict into pandas frame
         self.ds = pd.DataFrame(self.params(), index=[0])
@@ -204,8 +204,8 @@ class BladeGen:
         assert ((nblade == 'single') or (nblade == 'tandem')), "single or tandem"
 
         # Blade arc flips above sum(beta1,beta2)>90
-        assert (((rth_le < r_th * 2) and (rth_le >= 0.01)) or rth_le == 0), "rth_le out of range"
-        assert (((rth_te < r_th * .75) and (rth_te >= 0)) or rth_te == 0), "rth_te out of range"
+        # assert (((rth_le < .1) and (rth_le >= .005)) or rth_le == 0), "rth_le out of range"
+        # assert (((rth_te < .1) and (rth_te >= .005)) or rth_te == 0), "rth_te out of range"
 
         assert ((x_maxcamber > 0) and (x_maxcamber < 1)), "x max chamber out of range [0,1]."
         # LE/TE Radius doesnt work properly outside of range
