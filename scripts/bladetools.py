@@ -25,6 +25,16 @@ def euclidean_dist(x1, x2, y1, y2):
     return euclid_dist
 
 
+def euclidean_dist2(xy1, xy2):
+    x1 = xy1[0]
+    y1 = xy1[1]
+    x2 = xy2[0]
+    y2 = xy2[1]
+
+    euclid_dist = np.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
+    return euclid_dist
+
+
 def min_dist(xy1, xy2):
     """
     Find closest upper surface point to each lower surface point.
@@ -39,16 +49,9 @@ def min_dist(xy1, xy2):
     :rtype dist: float
     """
 
-    x1, y1 = xy1
-    x2, y2 = xy2
-    dist = np.zeros([x1.size, x2.size])
-    idx_closest = np.zeros(x2.size)
-    for i in range(0, x1.size):
-        for j in range(0, x2.size):
-            dist[i][j] = euclidean_dist(x1[i], x2[j], y1[i], y2[j])
-
-    # extract idx for lower and upper surface
-    idx1, idx2 = np.unravel_index(dist.argmin(), dist.shape)
+    dist = np.array(
+        [euclidean_dist2(xy1[:, i], xy2[:, j]) for i in range(0, xy1.shape[1]) for j in range(0, xy2.shape[1])])
+    idx1, idx2 = np.unravel_index(dist.argmin(), (xy1.shape[1], xy2.shape[1]))
     return idx1, idx2, dist.min()
 
 
@@ -77,7 +80,6 @@ class radius_fitter:
     :rtype x: ndarray
     :rtype y: ndarray
     """
-
 
     def __init__(self, edge, x, y, r, camberline):
         self.edge = edge
@@ -123,31 +125,27 @@ class radius_fitter:
             ylower = self.y[self.n4:self.n4 * 2]
             yupper = yupper[::-1]
 
-        dist = np.zeros((xupper.size, xupper.size))
         ds = pd.DataFrame(data={
             'xlower': xlower,
             'ylower': ylower,
             'xupper': xupper,
-            'yupper': yupper,
-            'idx_closest': np.zeros(xupper.size),
-            'dist_closest': np.zeros(xupper.size)
+            'yupper': yupper
+            # 'idx_closest': np.zeros(xupper.size),
+            # 'dist_closest': np.zeros(xupper.size)
         })
-
         # find closest upper surface point to each lower surface point
-        #fixme: replace for loops due to runtime issues
-        for i in range(0, ds.xupper.size):
-            for j in range(0, ds.xupper.size):
-                dist[i][j] = euclidean_dist(ds.xlower[i], ds.xupper[j], ds.ylower[i], ds.yupper[j])
 
-                if ((np.abs(j - i) > 1) and (self.edge == 'LE')):
-                    dist[i][j] = 9999
-            # find the 2 closest points with the smallest divergence to the distance 2r
-            ds.idx_closest[i] = dist[i, :].argmin()
-            ds.dist_closest[i] = np.abs(dist[i][int(ds.idx_closest[i])] - self.r * 2)
-
+        dist = np.array(
+            [euclidean_dist2([ds.xupper, ds.yupper], [ds.xlower.iloc[i], ds.ylower.iloc[i]]) for i in range(0, 250)])
+        # if points are further apart than 2 indices in LE, set distance high (reduces clipping)
+        if self.edge == 'LE':
+            dist = np.array([dist[x, y] if np.abs(x - y) < 2 else 9999 for x in range(0, 250) for y in range(0, 250)])
+            dist = dist.reshape(self.n4, self.n4)
+        idx_closest = dist.argmin(axis=1)
+        dist_closest = np.array([np.abs(dist[i, idx_closest[i].astype(int)] - self.r * 2) for i in range(0, self.n4)])
         # extract idx for lower and upper surface
-        idx_low = int(ds.dist_closest.idxmin())
-        idx_up = int(ds.idx_closest[idx_low])
+        idx_low = int(dist_closest.argmin())
+        idx_up = int(idx_closest[idx_low])
 
         # cut everything behind the index
         if self.edge == 'TE':
@@ -393,18 +391,19 @@ class radius_fitter:
         # # move lower/upper along line until it collides with upper
         # intersect with camberline
         y_up_cl = polynomial_cl(xupper2)
-        idx_up, foo1, foo2 = min_dist([xupper2.values, yupper2.values], [xupper2.values, y_up_cl])
+        idx_up, foo1, foo2 = min_dist(np.array([xupper2.values, yupper2.values]), np.array([xupper2.values, y_up_cl]))
         x_up_cl = xupper2.iloc[idx_up]
 
         y_low_cl = polynomial_cl(xlower2)
-        idx_low, foo1, foo2 = min_dist([xlower2.values, ylower2.values], [xlower2.values, y_low_cl])
+        idx_low, foo1, foo2 = min_dist(np.array([xlower2.values, ylower2.values]), np.array([xlower2.values, y_low_cl]))
         x_low_cl = xlower2.iloc[idx_low]
 
         # Find indices and replace anything greater than the indices with NaNs.
         xlower2 = xlower2 + (x_up_cl - x_low_cl)
         yoffset = np.abs(ylower2.iloc[0] - polynomial_low(xlower2.iloc[0]))
         ylower2 = ylower2 - yoffset
-        idx_low, idx_up, foo = min_dist([xlower2.values, ylower2.values], [xupper2.values, yupper2.values])
+        idx_low, idx_up, foo = min_dist(np.array([xlower2.values, ylower2.values]),
+                                        np.array([xupper2.values, yupper2.values]))
         xlower2.reset_index(drop=True, inplace=True)
         ylower2.reset_index(drop=True, inplace=True)
         xupper2.reset_index(drop=True, inplace=True)
@@ -419,7 +418,7 @@ class radius_fitter:
         ylower2.dropna(inplace=True)
         xupper2.dropna(inplace=True)
         yupper2.dropna(inplace=True)
-        idx_low, idx_up, dist = min_dist(np.array([xlower2, ylower2]), np.array([xupper2, yupper2]))
+        idx_low, idx_up, *_ = min_dist(np.array([xlower2, ylower2]), np.array([xupper2, yupper2]))
 
         # cut circles @ index and place in x,y new
         xnlower2 = xlower2.iloc[:idx_low]
