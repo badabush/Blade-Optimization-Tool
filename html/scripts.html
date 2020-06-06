@@ -73,7 +73,7 @@ Does absolutely nothing at the moment.</p>
 <p>Generate a NACA65 blade from input parameters.</p>
 <span class="target" id="module-scripts.bladegen"></span><dl class="class">
 <dt id="scripts.bladegen.BladeGen">
-<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">nblade='single'</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=25</em>, <em class="sig-param">beta2=25</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=0</em>, <em class="sig-param">rth_le=0.01</em>, <em class="sig-param">rth_te=0.015</em>, <em class="sig-param">npts=500</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">nblade='single'</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=25</em>, <em class="sig-param">beta2=25</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=0</em>, <em class="sig-param">rth_le=0.01</em>, <em class="sig-param">rth_te=0.0135</em>, <em class="sig-param">npts=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="scripts.bladegen.BladeGen.assert_input">
@@ -190,25 +190,8 @@ Returns  vector with X and Y of thickness distribution.</p>
 <p>Contains multiple reusable tools for the BladeGen module.</p>
 <span class="target" id="module-scripts.bladetools"></span><dl class="function">
 <dt id="scripts.bladetools.euclidean_dist">
-<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">euclidean_dist</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y1</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#euclidean_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.euclidean_dist" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the euclidean distance between two points.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>float</em>) – x-coord of 1st point</p></li>
-<li><p><strong>x2</strong> (<em>float</em>) – x-coord of 2nd point</p></li>
-<li><p><strong>y1</strong> (<em>float</em>) – y-coord of 1st point</p></li>
-<li><p><strong>y2</strong> (<em>float</em>) – y-coord of 2nd point</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>euclid_dist</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>float</p>
-</dd>
-</dl>
-</dd></dl>
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">euclidean_dist</code><span class="sig-paren">(</span><em class="sig-param">xy1</em>, <em class="sig-param">xy2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#euclidean_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.euclidean_dist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="scripts.bladetools.min_dist">
@@ -237,9 +220,13 @@ Returns idx for both arrays where the minimum distance was found as well as the 
 </dl>
 </dd></dl>
 
-<dl class="class">
-<dt id="scripts.bladetools.radius_fitter">
-<em class="property">class </em><code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">radius_fitter</code><span class="sig-paren">(</span><em class="sig-param">edge</em>, <em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">r</em>, <em class="sig-param">camberline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter" title="Permalink to this definition">¶</a></dt>
+</div>
+<div class="section" id="roundedges-module">
+<h2>RoundEdges module<a class="headerlink" href="#roundedges-module" title="Permalink to this headline">¶</a></h2>
+<p>Contains multiple reusable tools for the BladeGen module.</p>
+<span class="target" id="module-scripts.roundedges"></span><dl class="class">
+<dt id="scripts.roundedges.RoundEdges">
+<em class="property">class </em><code class="sig-prename descclassname">scripts.roundedges.</code><code class="sig-name descname">RoundEdges</code><span class="sig-paren">(</span><em class="sig-param">edge</em>, <em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">r</em>, <em class="sig-param">camberline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/roundedges.html#RoundEdges"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.roundedges.RoundEdges" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for fitting in leading edge and/or trailing edge radius.
 Either the front half (for LE fitting) or the latter half (for TE fitting) will be taken from input.
@@ -268,8 +255,8 @@ interpolation.</p>
 </dd>
 </dl>
 <dl class="method">
-<dt id="scripts.bladetools.radius_fitter.attach_circle">
-<code class="sig-name descname">attach_circle</code><span class="sig-paren">(</span><em class="sig-param">ds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.attach_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.attach_circle" title="Permalink to this definition">¶</a></dt>
+<dt id="scripts.roundedges.RoundEdges.attach_circle">
+<code class="sig-name descname">attach_circle</code><span class="sig-paren">(</span><em class="sig-param">ds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/roundedges.html#RoundEdges.attach_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.roundedges.RoundEdges.attach_circle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bring the circles into correct position, fix clipping in intersections (surface-circle, circle-circle),
 cut overlaps and interpolate for smooth surface.</p>
 <p>Returns updated ds</p>
@@ -287,8 +274,13 @@ cut overlaps and interpolate for smooth surface.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="scripts.bladetools.radius_fitter.fill_interpolate">
-<code class="sig-name descname">fill_interpolate</code><span class="sig-paren">(</span><em class="sig-param">p1</em>, <em class="sig-param">p2</em>, <em class="sig-param">pnose</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.fill_interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.fill_interpolate" title="Permalink to this definition">¶</a></dt>
+<dt id="scripts.roundedges.RoundEdges.debug_plot">
+<code class="sig-name descname">debug_plot</code><span class="sig-paren">(</span><em class="sig-param">xy_pre</em>, <em class="sig-param">xy_new</em>, <em class="sig-param">ds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/roundedges.html#RoundEdges.debug_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.roundedges.RoundEdges.debug_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.roundedges.RoundEdges.fill_interpolate">
+<code class="sig-name descname">fill_interpolate</code><span class="sig-paren">(</span><em class="sig-param">p1</em>, <em class="sig-param">p2</em>, <em class="sig-param">pnose</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/roundedges.html#RoundEdges.fill_interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.roundedges.RoundEdges.fill_interpolate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate nan values and fill into correct length (n4).
 Returns blade with new circle attached.</p>
 <dl class="field-list simple">
@@ -309,13 +301,13 @@ Returns blade with new circle attached.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="scripts.bladetools.radius_fitter.fit_circle">
-<code class="sig-name descname">fit_circle</code><span class="sig-paren">(</span><em class="sig-param">ds</em>, <em class="sig-param">idx_low</em>, <em class="sig-param">idx_up</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.fit_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.fit_circle" title="Permalink to this definition">¶</a></dt>
+<dt id="scripts.roundedges.RoundEdges.fit_circle">
+<code class="sig-name descname">fit_circle</code><span class="sig-paren">(</span><em class="sig-param">ds</em>, <em class="sig-param">idx_low</em>, <em class="sig-param">idx_up</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/roundedges.html#RoundEdges.fit_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.roundedges.RoundEdges.fit_circle" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="scripts.bladetools.radius_fitter.prior_geom">
-<code class="sig-name descname">prior_geom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.prior_geom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.prior_geom" title="Permalink to this definition">¶</a></dt>
+<dt id="scripts.roundedges.RoundEdges.prior_geom">
+<code class="sig-name descname">prior_geom</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/roundedges.html#RoundEdges.prior_geom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.roundedges.RoundEdges.prior_geom" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract front or latter half of blade, seperated to upper and lower.
 Find distance between upper and lower surface points matching input radius, cutting geometry after the point.
 Create and returns dataset containing xylower, xyupper, ….</p>
@@ -330,13 +322,13 @@ Create and returns dataset containing xylower, xyupper, ….</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="scripts.bladetools.radius_fitter.return_xy">
-<code class="sig-name descname">return_xy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.return_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.return_xy" title="Permalink to this definition">¶</a></dt>
+<dt id="scripts.roundedges.RoundEdges.return_xy">
+<code class="sig-name descname">return_xy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/roundedges.html#RoundEdges.return_xy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.roundedges.RoundEdges.return_xy" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="scripts.bladetools.radius_fitter.shape_circle">
-<code class="sig-name descname">shape_circle</code><span class="sig-paren">(</span><em class="sig-param">side</em>, <em class="sig-param">xy_mid</em>, <em class="sig-param">xy</em>, <em class="sig-param">idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#radius_fitter.shape_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.radius_fitter.shape_circle" title="Permalink to this definition">¶</a></dt>
+<dt id="scripts.roundedges.RoundEdges.shape_circle">
+<code class="sig-name descname">shape_circle</code><span class="sig-paren">(</span><em class="sig-param">side</em>, <em class="sig-param">xy_mid</em>, <em class="sig-param">xy</em>, <em class="sig-param">idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/roundedges.html#RoundEdges.shape_circle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.roundedges.RoundEdges.shape_circle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes either the upper or lower surface and adds a quarter circle where the original shape was.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -375,6 +367,7 @@ Create and returns dataset containing xylower, xyupper, ….</p>
 <li><a class="reference internal" href="#parser-module">Parser module</a></li>
 <li><a class="reference internal" href="#bladegen-module">BladeGen module</a></li>
 <li><a class="reference internal" href="#bladetools-module">Bladetools module</a></li>
+<li><a class="reference internal" href="#roundedges-module">RoundEdges module</a></li>
 </ul>
 </li>
 </ul>

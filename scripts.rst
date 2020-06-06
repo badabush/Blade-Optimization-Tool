@@ -31,3 +31,13 @@ Contains multiple reusable tools for the BladeGen module.
    :members:
    :undoc-members:
    :show-inheritance:
+
+RoundEdges module
+---------------------
+
+Contains multiple reusable tools for the BladeGen module.
+
+.. automodule:: scripts.roundedges
+   :members:
+   :undoc-members:
+   :show-inheritance:

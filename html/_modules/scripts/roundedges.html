@@ -1,0 +1,547 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>scripts.roundedges &#8212; thesis  documentation</title>
+    <link rel="stylesheet" href="../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">thesis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scripts.roundedges</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span> <span class="k">as</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">bladetools</span> <span class="kn">import</span> <span class="n">euclidean_dist</span><span class="p">,</span> <span class="n">min_dist</span>
+
+
+<div class="viewcode-block" id="RoundEdges"><a class="viewcode-back" href="../../scripts.html#scripts.roundedges.RoundEdges">[docs]</a><span class="k">class</span> <span class="nc">RoundEdges</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for fitting in leading edge and/or trailing edge radius.</span>
+<span class="sd">    Either the front half (for LE fitting) or the latter half (for TE fitting) will be taken from input.</span>
+<span class="sd">    A quarter circle will be attached to upper and lower surfaces, rotated into position for a smooth transition.</span>
+<span class="sd">    The intersection between the quarter circles will be determined and cut, emerged gap will be filled with</span>
+<span class="sd">    interpolation.</span>
+
+<span class="sd">    Returns the x,y coordinates of original length with the fitted radius.</span>
+
+<span class="sd">    :param edge: TE/LE</span>
+<span class="sd">    :type edge: str</span>
+<span class="sd">    :param x: x coordinates of whole blade</span>
+<span class="sd">    :type x: ndarray</span>
+<span class="sd">    :param y: y coordinates of whole blade</span>
+<span class="sd">    :type y: ndarray</span>
+<span class="sd">    :param r: radius of LE/TE circle</span>
+<span class="sd">    :type r: float</span>
+<span class="sd">    :param camberline: xy of camberline</span>
+<span class="sd">    :type camberline: list of ndarrays</span>
+
+<span class="sd">    :return: x, y</span>
+<span class="sd">    :rtype x: ndarray</span>
+<span class="sd">    :rtype y: ndarray</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">camberline</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">=</span> <span class="n">edge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camberline</span> <span class="o">=</span> <span class="n">camberline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span> <span class="o">/</span> <span class="mi">4</span><span class="p">))</span>  <span class="c1"># quarter length of original input coords</span>
+        <span class="n">ds</span><span class="p">,</span> <span class="n">idx_low</span><span class="p">,</span> <span class="n">idx_up</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">prior_geom</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fit_circle</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">idx_low</span><span class="p">,</span> <span class="n">idx_up</span><span class="p">)</span>
+        <span class="c1"># self.debug_plot([x, y], [self.x, self.y], ds)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">return_xy</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RoundEdges.return_xy"><a class="viewcode-back" href="../../scripts.html#scripts.roundedges.RoundEdges.return_xy">[docs]</a>    <span class="k">def</span> <span class="nf">return_xy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RoundEdges.prior_geom"><a class="viewcode-back" href="../../scripts.html#scripts.roundedges.RoundEdges.prior_geom">[docs]</a>    <span class="k">def</span> <span class="nf">prior_geom</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract front or latter half of blade, seperated to upper and lower.</span>
+<span class="sd">        Find distance between upper and lower surface points matching input radius, cutting geometry after the point.</span>
+<span class="sd">        Create and returns dataset containing xylower, xyupper, ....</span>
+
+<span class="sd">        :return: ds</span>
+<span class="sd">        :rtype ds: pdDataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># extract half of blade, seperated into upper and lower</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;TE&#39;</span><span class="p">:</span>
+            <span class="n">xupper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:]</span>
+            <span class="n">yupper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:]</span>
+            <span class="n">xlower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">]</span>
+            <span class="n">xlower</span> <span class="o">=</span> <span class="n">xlower</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ylower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">]</span>
+            <span class="n">ylower</span> <span class="o">=</span> <span class="n">ylower</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+
+            <span class="n">xupper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">2</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">3</span><span class="p">]</span>
+            <span class="n">yupper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">2</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">3</span><span class="p">]</span>
+            <span class="n">xlower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="n">xupper</span> <span class="o">=</span> <span class="n">xupper</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ylower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="n">yupper</span> <span class="o">=</span> <span class="n">yupper</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">{</span>
+            <span class="s1">&#39;xlower&#39;</span><span class="p">:</span> <span class="n">xlower</span><span class="p">,</span>
+            <span class="s1">&#39;ylower&#39;</span><span class="p">:</span> <span class="n">ylower</span><span class="p">,</span>
+            <span class="s1">&#39;xupper&#39;</span><span class="p">:</span> <span class="n">xupper</span><span class="p">,</span>
+            <span class="s1">&#39;yupper&#39;</span><span class="p">:</span> <span class="n">yupper</span>
+        <span class="p">})</span>
+
+        <span class="c1"># find closest upper surface point to each lower surface point</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">euclidean_dist</span><span class="p">([</span><span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="p">],</span> <span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">]])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+             <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">)])</span>
+        <span class="c1"># if points are further apart than 2 indices in LE, set distance high (reduces clipping)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;LE&#39;</span><span class="p">:</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+                <span class="p">[</span><span class="n">dist</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span> <span class="k">else</span> <span class="mi">9999</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">)])</span>
+            <span class="n">dist</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">)</span>
+        <span class="n">idx_closest</span> <span class="o">=</span> <span class="n">dist</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">dist_closest</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">dist</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">idx_closest</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">)])</span>
+        <span class="c1"># extract idx for lower and upper surface</span>
+        <span class="n">idx_low</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dist_closest</span><span class="o">.</span><span class="n">argmin</span><span class="p">())</span>
+        <span class="n">idx_up</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">idx_closest</span><span class="p">[</span><span class="n">idx_low</span><span class="p">])</span>
+
+        <span class="c1"># cut everything behind the index</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;TE&#39;</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">idx_low</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">idx_low</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">idx_up</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">idx_up</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">idx_low</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">idx_low</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">idx_up</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">idx_up</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">return</span> <span class="n">ds</span><span class="p">,</span> <span class="n">idx_low</span><span class="p">,</span> <span class="n">idx_up</span></div>
+
+<div class="viewcode-block" id="RoundEdges.fit_circle"><a class="viewcode-back" href="../../scripts.html#scripts.roundedges.RoundEdges.fit_circle">[docs]</a>    <span class="k">def</span> <span class="nf">fit_circle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">idx_low</span><span class="p">,</span> <span class="n">idx_up</span><span class="p">):</span>
+
+        <span class="c1"># create a half-circular-esque trailing edge</span>
+        <span class="n">xc_mid</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="p">[</span><span class="n">idx_low</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="p">[</span><span class="n">idx_up</span><span class="p">]</span> <span class="o">-</span> <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="p">[</span><span class="n">idx_low</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="n">yc_mid</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="p">[</span><span class="n">idx_low</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="p">[</span><span class="n">idx_up</span><span class="p">]</span> <span class="o">-</span> <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="p">[</span><span class="n">idx_low</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span>
+
+        <span class="c1"># add circles to existing arrays in the df and filling up the NaNs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;LE&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="mf">1.0</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">yupper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape_circle</span><span class="p">(</span><span class="s1">&#39;up&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">xc_mid</span><span class="p">,</span> <span class="n">yc_mid</span><span class="p">],</span> <span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="p">],</span> <span class="n">idx_up</span><span class="p">)</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape_circle</span><span class="p">(</span><span class="s1">&#39;low&#39;</span><span class="p">,</span> <span class="p">[</span><span class="n">xc_mid</span><span class="p">,</span> <span class="n">yc_mid</span><span class="p">],</span> <span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="p">],</span> <span class="n">idx_low</span><span class="p">)</span>
+
+        <span class="n">ds</span><span class="p">,</span> <span class="n">xy_intersect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attach_circle</span><span class="p">(</span><span class="n">ds</span><span class="p">)</span>
+
+        <span class="c1"># smooth out the intersect point of nose/tail</span>
+        <span class="n">x_circle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="p">[</span><span class="n">idx_up</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="p">[</span><span class="n">idx_low</span><span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+        <span class="n">y_circle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="p">[</span><span class="n">idx_up</span><span class="p">:]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="p">[</span><span class="n">idx_low</span><span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;LE&#39;</span><span class="p">:</span>
+            <span class="n">idx_intersect</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">x_circle</span> <span class="o">==</span> <span class="n">xy_intersect</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">idx_low_last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">idx_intersect</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span>
+            <span class="n">idx_up_last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">idx_intersect</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+            <span class="n">xy_low_last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_circle</span><span class="p">[</span><span class="n">idx_low_last</span><span class="p">],</span> <span class="n">y_circle</span><span class="p">[</span><span class="n">idx_low_last</span><span class="p">]])</span>
+            <span class="n">xy_up_last</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_circle</span><span class="p">[</span><span class="n">idx_up_last</span><span class="p">],</span> <span class="n">y_circle</span><span class="p">[</span><span class="n">idx_up_last</span><span class="p">]])</span>
+            <span class="n">xy_point</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x_circle</span><span class="p">[</span><span class="n">idx_low_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">y_circle</span><span class="p">[</span><span class="n">idx_low_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]])</span>
+            <span class="n">xy_half_uplow</span> <span class="o">=</span> <span class="n">xy_low_last</span> <span class="o">+</span> <span class="p">(</span><span class="n">xy_up_last</span> <span class="o">-</span> <span class="n">xy_low_last</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+            <span class="n">xy_half_p</span> <span class="o">=</span> <span class="n">xy_half_uplow</span> <span class="o">+</span> <span class="p">(</span><span class="n">xy_point</span> <span class="o">-</span> <span class="n">xy_half_uplow</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+            <span class="n">x_circle</span><span class="p">[</span><span class="n">idx_low_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xy_half_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y_circle</span><span class="p">[</span><span class="n">idx_low_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xy_half_p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">x_circle</span><span class="p">[</span><span class="n">idx_up_last</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xy_half_p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">y_circle</span><span class="p">[</span><span class="n">idx_up_last</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">xy_half_p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_up</span><span class="p">:]</span> <span class="o">=</span> <span class="n">x_circle</span><span class="p">[:</span><span class="n">idx_up_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_up</span><span class="p">:]</span> <span class="o">=</span> <span class="n">y_circle</span><span class="p">[:</span><span class="n">idx_up_last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_low</span><span class="p">:]</span> <span class="o">=</span> <span class="n">x_circle</span><span class="p">[</span><span class="n">idx_low_last</span> <span class="o">+</span> <span class="mi">3</span><span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_low</span><span class="p">:]</span> <span class="o">=</span> <span class="n">y_circle</span><span class="p">[</span><span class="n">idx_low_last</span> <span class="o">+</span> <span class="mi">3</span><span class="p">:][::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;TE&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">xupper</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">3</span><span class="p">:]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">yupper</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">2</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">2</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span></div>
+
+<div class="viewcode-block" id="RoundEdges.shape_circle"><a class="viewcode-back" href="../../scripts.html#scripts.roundedges.RoundEdges.shape_circle">[docs]</a>    <span class="k">def</span> <span class="nf">shape_circle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">side</span><span class="p">,</span> <span class="n">xy_mid</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Takes either the upper or lower surface and adds a quarter circle where the original shape was.</span>
+
+<span class="sd">        :param side: either &#39;up&#39; or &#39;low&#39; to differentiate between both sides since overlaps will be handled differently</span>
+<span class="sd">        :type side: str</span>
+<span class="sd">        :param edge: either &#39;LE&#39; or &#39;TE&#39;</span>
+<span class="sd">        :type edge: str</span>
+<span class="sd">        :param r: radius</span>
+<span class="sd">        :type r: float</span>
+<span class="sd">        :param xy_mid: X,Y coord. for the origin of circle</span>
+<span class="sd">        :type xy_mid: (n, 2) ndarray</span>
+<span class="sd">        :param xy: X,Y coord. for the upper or lower surface</span>
+<span class="sd">        :type xy: (n, 2) ndarray</span>
+<span class="sd">        :param idx: index of last point that is not NaN of upper or lower surface</span>
+<span class="sd">        :type idx: int</span>
+<span class="sd">        :return: xy</span>
+<span class="sd">        :rtype xy: (n, 2) ndarray</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># since length is different for upper and lower array, the &quot;erased&quot; length will be recreated to be a  quarter circle</span>
+        <span class="c1"># from endpoint to mid</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">side</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;TE&#39;</span><span class="p">):</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># count nan elements of upper (+2 avoid overlap @ start- and endpoint)</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">side</span> <span class="o">==</span> <span class="s1">&#39;low&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;TE&#39;</span><span class="p">):</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">side</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;LE&#39;</span><span class="p">):</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span>
+                <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>  <span class="c1"># count nan elements of upper (+2 avoid overlap @ start- and endpoint)</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span><span class="n">side</span> <span class="o">==</span> <span class="s1">&#39;low&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;LE&#39;</span><span class="p">):</span>
+            <span class="n">nc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">theta</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">1.5</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span> <span class="n">nc</span><span class="p">)</span>
+
+        <span class="c1"># generate quarter-circle</span>
+        <span class="n">xc</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">+</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">xc</span> <span class="o">=</span> <span class="n">xc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">yc</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span> <span class="o">+</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">yc</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># calculate angle to rotate circle</span>
+        <span class="n">AB</span> <span class="o">=</span> <span class="p">[</span><span class="n">xc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">AC</span> <span class="o">=</span> <span class="p">[</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span> <span class="o">-</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">rot_angle</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">AB</span><span class="p">,</span> <span class="n">AC</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">AB</span><span class="p">,</span> <span class="n">AC</span><span class="p">)))</span>
+
+        <span class="c1"># reinitiate circle with angular correction</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;TE&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">side</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">rot_angle</span><span class="p">)</span> <span class="o">+</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="n">xc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># + np.abs(xc[-1] - xy[0][idx])  # flip array</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">rot_angle</span><span class="p">)</span> <span class="o">+</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># + np.abs(yc[0] - xy[1][idx])</span>
+
+                <span class="c1"># write quarter circle into surface array, start and endpoint are left out due to overlaps</span>
+                <span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">xc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">rot_angle</span><span class="p">)</span> <span class="o">+</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="n">xc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># + np.abs(xc[-1] - xy[0][idx])</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">rot_angle</span><span class="p">)</span> <span class="o">+</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># - np.abs(yc[0] - xy[1][idx])</span>
+
+                <span class="c1"># write quarter circle into surface array, startpoint is left out due to overlaps</span>
+                <span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">xc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">side</span> <span class="o">==</span> <span class="s1">&#39;up&#39;</span><span class="p">:</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">rot_angle</span><span class="p">)</span> <span class="o">+</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="n">xc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># - np.abs(xc[-1] - xy[0][idx])  # flip array</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">rot_angle</span><span class="p">)</span> <span class="o">+</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># - np.abs(yc[-1] - xy[1][idx])</span>
+                <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># + np.abs(yc[0] - xy[1][idx])</span>
+
+                <span class="c1"># write quarter circle into surface array, start and endpoint are left out due to overlaps</span>
+                <span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">xc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">rot_angle</span><span class="p">)</span> <span class="o">+</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">xc</span> <span class="o">=</span> <span class="n">xc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># + np.abs(xc[-1] - xy[0][idx])</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span> <span class="o">-</span> <span class="n">rot_angle</span><span class="p">)</span> <span class="o">+</span> <span class="n">xy_mid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">yc</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>  <span class="c1"># + np.abs(yc[0] - xy[1][idx])</span>
+
+                <span class="c1"># write quarter circle into surface array, startpoint is left out due to overlaps</span>
+                <span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">=</span> <span class="n">xc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span> <span class="o">=</span> <span class="n">yc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">xy</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RoundEdges.attach_circle"><a class="viewcode-back" href="../../scripts.html#scripts.roundedges.RoundEdges.attach_circle">[docs]</a>    <span class="k">def</span> <span class="nf">attach_circle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Bring the circles into correct position, fix clipping in intersections (surface-circle, circle-circle),</span>
+<span class="sd">        cut overlaps and interpolate for smooth surface.</span>
+
+<span class="sd">        Returns updated ds</span>
+
+<span class="sd">        :param ds: dataset of coordinates</span>
+<span class="sd">        :type ds: pdDataFrame</span>
+<span class="sd">        :return: ds</span>
+<span class="sd">        :rtype ds: pdDataFrame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># compute camber line polynomial model</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camberline</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">camberline</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">polynomial_cl</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">poly1d</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">seperate_surface</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Seperates the input surface into two parts by finding the max gradient.</span>
+<span class="sd">            Returns 4 pdSeries x1,y1 and x2,y2, both with a combined length of n4.</span>
+
+<span class="sd">            :param x: x coords of lower or upper surface</span>
+<span class="sd">            :type x: pdSeries[n4]</span>
+<span class="sd">            :param y: y coords of lower or upper surface</span>
+<span class="sd">            :type y: pdSeries[n4]</span>
+<span class="sd">            :return: x1, x2, y1, y2</span>
+<span class="sd">            :rtype x1: pdSeries</span>
+<span class="sd">            :rtype y1: pdSeries</span>
+<span class="sd">            :rtype x2: pdSeries</span>
+<span class="sd">            :rtype y2: pdSeries</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">xgrad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+            <span class="n">xgrad_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xgrad</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xgrad</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+            <span class="n">ygrad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
+            <span class="n">ygrad_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">ygrad</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ygrad</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">size</span><span class="p">)])</span><span class="o">.</span><span class="n">argmax</span><span class="p">()</span>
+
+            <span class="c1"># for some reason this fixes npts input of e.g. 700 and 1220, where the gradients of x and y has a greater</span>
+            <span class="c1"># divergence.</span>
+            <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">xgrad_max</span> <span class="o">-</span> <span class="n">ygrad_max</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">offset</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="n">grad_idx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">xgrad_max</span><span class="p">,</span> <span class="n">ygrad_max</span><span class="p">])</span> <span class="o">+</span> <span class="n">offset</span>
+
+            <span class="c1"># seperate line at max grad</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:</span><span class="n">grad_idx</span><span class="p">]</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">grad_idx</span><span class="p">:]</span>
+            <span class="n">y1</span> <span class="o">=</span> <span class="n">y</span><span class="p">[:</span><span class="n">grad_idx</span><span class="p">]</span>
+            <span class="n">y2</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">grad_idx</span><span class="p">:]</span>
+
+            <span class="n">xdist</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">x1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">ydist</span> <span class="o">=</span> <span class="n">y2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">y1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="c1"># move xy2</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">xdist</span>
+            <span class="n">y2</span> <span class="o">=</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">ydist</span>
+
+            <span class="k">return</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span>
+
+        <span class="n">xlower1</span><span class="p">,</span> <span class="n">ylower1</span><span class="p">,</span> <span class="n">xlower2</span><span class="p">,</span> <span class="n">ylower2</span> <span class="o">=</span> <span class="n">seperate_surface</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">xlower</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span><span class="p">)</span>
+        <span class="n">xupper1</span><span class="p">,</span> <span class="n">yupper1</span><span class="p">,</span> <span class="n">xupper2</span><span class="p">,</span> <span class="n">yupper2</span> <span class="o">=</span> <span class="n">seperate_surface</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">xupper</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">yupper</span><span class="p">)</span>
+
+        <span class="c1"># poly lower</span>
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">([</span><span class="n">xlower1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">xlower1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]],</span> <span class="p">[</span><span class="n">ylower1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ylower1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">polynomial_low</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">poly1d</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span>
+        <span class="n">xn_low</span> <span class="o">=</span> <span class="n">xlower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">yn_low</span> <span class="o">=</span> <span class="n">polynomial_low</span><span class="p">(</span><span class="n">xn_low</span><span class="p">)</span>
+
+        <span class="c1"># calculate angle to rotate circle</span>
+        <span class="n">AB</span> <span class="o">=</span> <span class="p">[</span><span class="n">xn_low</span> <span class="o">-</span> <span class="n">xlower1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">yn_low</span> <span class="o">-</span> <span class="n">ylower1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">AC</span> <span class="o">=</span> <span class="p">[</span><span class="n">xlower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xlower1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">ylower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ylower1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;LE&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">AB</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">AC</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">AB</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">AC</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">angle_low</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">AB</span><span class="p">,</span> <span class="n">AC</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">AB</span><span class="p">,</span> <span class="n">AC</span><span class="p">)))</span>
+        <span class="n">xlow_og</span><span class="p">,</span> <span class="n">ylow_og</span> <span class="o">=</span> <span class="p">[</span><span class="n">xlower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ylower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">xlower2</span> <span class="o">=</span> <span class="n">xlow_og</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle_low</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">xlower2</span> <span class="o">-</span> <span class="n">xlow_og</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle_low</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ylower2</span> <span class="o">-</span> <span class="n">ylow_og</span><span class="p">)</span>
+        <span class="n">ylower2</span> <span class="o">=</span> <span class="n">ylow_og</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle_low</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">xlower2</span> <span class="o">-</span> <span class="n">xlow_og</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle_low</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ylower2</span> <span class="o">-</span> <span class="n">ylow_og</span><span class="p">)</span>
+
+        <span class="c1"># fixme: fix repetition of script</span>
+        <span class="c1"># poly upper</span>
+        <span class="n">coef</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polyfit</span><span class="p">([</span><span class="n">xupper1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">xupper1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]],</span> <span class="p">[</span><span class="n">yupper1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">yupper1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]],</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">polynomial_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">poly1d</span><span class="p">(</span><span class="n">coef</span><span class="p">)</span>
+        <span class="n">xn_up</span> <span class="o">=</span> <span class="n">xupper2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">yn_up</span> <span class="o">=</span> <span class="n">polynomial_up</span><span class="p">(</span><span class="n">xn_up</span><span class="p">)</span>
+
+        <span class="c1"># calculate angle to rotate circle</span>
+        <span class="n">AB</span> <span class="o">=</span> <span class="p">[</span><span class="n">xn_up</span> <span class="o">-</span> <span class="n">xupper1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">yn_up</span> <span class="o">-</span> <span class="n">yupper1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="n">AC</span> <span class="o">=</span> <span class="p">[</span><span class="n">xupper2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">xupper1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">yupper2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">yupper1</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;LE&#39;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">AB</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">AC</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">AB</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">AC</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">sign</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">angle_up</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sign</span><span class="p">(</span><span class="n">sign</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">AB</span><span class="p">,</span> <span class="n">AC</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">AB</span><span class="p">,</span> <span class="n">AC</span><span class="p">)))</span>
+        <span class="n">xup_og</span><span class="p">,</span> <span class="n">yup_og</span> <span class="o">=</span> <span class="p">[</span><span class="n">xupper2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">yupper2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">xupper2</span> <span class="o">=</span> <span class="n">xup_og</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle_up</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">xupper2</span> <span class="o">-</span> <span class="n">xup_og</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle_up</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">yupper2</span> <span class="o">-</span> <span class="n">yup_og</span><span class="p">)</span>
+        <span class="n">yupper2</span> <span class="o">=</span> <span class="n">yup_og</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angle_up</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">xupper2</span> <span class="o">-</span> <span class="n">xup_og</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angle_up</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">yupper2</span> <span class="o">-</span> <span class="n">yup_og</span><span class="p">)</span>
+
+        <span class="c1"># fixme: intersection not working for small radius!!</span>
+
+        <span class="c1"># # move lower/upper along line until it collides with upper</span>
+        <span class="c1"># intersect with camberline</span>
+        <span class="n">y_up_cl</span> <span class="o">=</span> <span class="n">polynomial_cl</span><span class="p">(</span><span class="n">xupper2</span><span class="p">)</span>
+        <span class="n">idx_up</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">min_dist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xupper2</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">yupper2</span><span class="o">.</span><span class="n">values</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xupper2</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">y_up_cl</span><span class="p">]))</span>
+        <span class="n">x_up_cl</span> <span class="o">=</span> <span class="n">xupper2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_up</span><span class="p">]</span>
+
+        <span class="n">y_low_cl</span> <span class="o">=</span> <span class="n">polynomial_cl</span><span class="p">(</span><span class="n">xlower2</span><span class="p">)</span>
+        <span class="n">idx_low</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">min_dist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xlower2</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">ylower2</span><span class="o">.</span><span class="n">values</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xlower2</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">y_low_cl</span><span class="p">]))</span>
+        <span class="n">x_low_cl</span> <span class="o">=</span> <span class="n">xlower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_low</span><span class="p">]</span>
+
+        <span class="n">xlower2</span> <span class="o">=</span> <span class="n">xlower2</span> <span class="o">+</span> <span class="p">(</span><span class="n">x_up_cl</span> <span class="o">-</span> <span class="n">x_low_cl</span><span class="p">)</span>
+        <span class="n">yoffset</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">ylower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">polynomial_low</span><span class="p">(</span><span class="n">xlower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">ylower2</span> <span class="o">=</span> <span class="n">ylower2</span> <span class="o">-</span> <span class="n">yoffset</span>
+
+        <span class="n">idx_low</span><span class="p">,</span> <span class="n">idx_up</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">min_dist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xlower2</span><span class="p">,</span> <span class="n">ylower2</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xupper2</span><span class="p">,</span> <span class="n">yupper2</span><span class="p">]))</span>
+
+        <span class="c1"># Find indices and replace anything greater than the indices with NaNs.</span>
+        <span class="n">xlower2</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ylower2</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">xupper2</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">yupper2</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">xlower2</span><span class="p">[</span><span class="n">xlower2</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="n">idx_low</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">ylower2</span><span class="p">[</span><span class="n">ylower2</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="n">idx_low</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">xupper2</span><span class="p">[</span><span class="n">xupper2</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="n">idx_up</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">yupper2</span><span class="p">[</span><span class="n">yupper2</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="n">idx_up</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="n">xupper2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_up</span><span class="p">]</span> <span class="o">=</span> <span class="n">xlower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_low</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">yupper2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_up</span><span class="p">]</span> <span class="o">=</span> <span class="n">ylower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_low</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">xlower2</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">ylower2</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">xupper2</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">yupper2</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">idx_low</span><span class="p">,</span> <span class="n">idx_up</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="n">min_dist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xlower2</span><span class="p">,</span> <span class="n">ylower2</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xupper2</span><span class="p">,</span> <span class="n">yupper2</span><span class="p">]))</span>
+
+        <span class="c1"># cut circles @ index and place in x,y new</span>
+        <span class="n">xnlower2</span> <span class="o">=</span> <span class="n">xlower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">idx_low</span><span class="p">]</span>
+        <span class="n">ynlower2</span> <span class="o">=</span> <span class="n">ylower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">idx_low</span><span class="p">]</span>
+        <span class="n">xnupper2</span> <span class="o">=</span> <span class="n">xupper2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">idx_up</span><span class="p">]</span>
+        <span class="n">ynupper2</span> <span class="o">=</span> <span class="n">yupper2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">idx_up</span><span class="p">]</span>
+
+        <span class="c1"># get point of intersection</span>
+        <span class="n">x_intersect</span> <span class="o">=</span> <span class="n">xlower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_low</span><span class="p">]</span>
+        <span class="n">y_intersect</span> <span class="o">=</span> <span class="n">ylower2</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">idx_low</span><span class="p">]</span>
+
+        <span class="c1"># fit back into pandas series by interpolating NaNs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">==</span> <span class="s1">&#39;LE&#39;</span><span class="p">:</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">xlower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_interpolate</span><span class="p">(</span><span class="n">xlower1</span><span class="p">,</span> <span class="n">xnlower2</span><span class="p">,</span> <span class="n">x_intersect</span><span class="p">)</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">ylower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_interpolate</span><span class="p">(</span><span class="n">ylower1</span><span class="p">,</span> <span class="n">ynlower2</span><span class="p">,</span> <span class="n">y_intersect</span><span class="p">)</span>
+
+            <span class="n">ds</span><span class="o">.</span><span class="n">xupper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_interpolate</span><span class="p">(</span><span class="n">xupper1</span><span class="p">,</span> <span class="n">xnupper2</span><span class="p">,</span> <span class="n">x_intersect</span><span class="p">)</span>
+            <span class="n">ds</span><span class="o">.</span><span class="n">yupper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fill_interpolate</span><span class="p">(</span><span class="n">yupper1</span><span class="p">,</span> <span class="n">ynupper2</span><span class="p">,</span> <span class="n">y_intersect</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ds</span><span class="p">,</span> <span class="p">[</span><span class="n">x_intersect</span><span class="p">,</span> <span class="n">y_intersect</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RoundEdges.fill_interpolate"><a class="viewcode-back" href="../../scripts.html#scripts.roundedges.RoundEdges.fill_interpolate">[docs]</a>    <span class="k">def</span> <span class="nf">fill_interpolate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p1</span><span class="p">,</span> <span class="n">p2</span><span class="p">,</span> <span class="n">pnose</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Interpolate nan values and fill into correct length (n4).</span>
+<span class="sd">        Returns blade with new circle attached.</span>
+
+<span class="sd">        :param p1: x or y blade</span>
+<span class="sd">        :type p1: pdSeries</span>
+<span class="sd">        :param p2: x or y circle</span>
+<span class="sd">        :type p2: pdSeries</span>
+<span class="sd">        :param pnose: x or y of nose point</span>
+<span class="sd">        :type pnose:</span>
+<span class="sd">        :return: xn</span>
+<span class="sd">        :rtype xn: pdSeries</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n4</span> <span class="o">-</span> <span class="n">p1</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">p2</span><span class="o">.</span><span class="n">size</span>
+        <span class="c1"># even length of diff</span>
+        <span class="c1"># if (diff % 2) == 0:</span>
+        <span class="c1">#     empt = np.zeros(int(diff / 2))</span>
+        <span class="c1">#     empt[:] = None</span>
+        <span class="c1">#     xn = pd.Series(data=np.concatenate([p1.values, empt, p2.values, empt]))</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     empt1 = np.zeros(int(np.floor(diff / 2)))</span>
+        <span class="c1">#     empt1[:] = None</span>
+        <span class="c1">#     empt2 = np.zeros(int(np.floor(diff / 2) + 1))</span>
+        <span class="c1">#     empt2[:] = None</span>
+        <span class="c1">#     xn = pd.Series(data=np.concatenate([p1.values, empt1, p2.values, empt2]))</span>
+        <span class="n">empt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">diff</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">empt</span><span class="p">[:]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">xn</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">p1</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">empt</span><span class="p">,</span> <span class="n">p2</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]]))</span>
+
+        <span class="n">xn</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">pnose</span>
+        <span class="n">xn</span> <span class="o">=</span> <span class="n">xn</span><span class="o">.</span><span class="n">interpolate</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">xn</span></div>
+
+<div class="viewcode-block" id="RoundEdges.debug_plot"><a class="viewcode-back" href="../../scripts.html#scripts.roundedges.RoundEdges.debug_plot">[docs]</a>    <span class="k">def</span> <span class="nf">debug_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy_pre</span><span class="p">,</span> <span class="n">xy_new</span><span class="p">,</span> <span class="n">ds</span><span class="p">):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xy_new</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy_new</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;rx&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xy_new</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy_new</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xy_pre</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">xy_pre</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;k--&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camberline</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">camberline</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;--&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">thesis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Ga Man Liang.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

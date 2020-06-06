@@ -3,13 +3,13 @@ from matplotlib import pyplot as plt
 from sklearn import preprocessing
 import pandas as pd
 import scipy.optimize as optimize
-from bladetools import radius_fitter
+from roundedges import RoundEdges
 
 
 class BladeGen:
 
     def __init__(self, nblade='single', r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, l_chord=1.0, lambd=0,
-                 rth_le=0.05, rth_te=0.1, npts=1000):
+                 rth_le=0.01, rth_te=0.0135, npts=1000):
 
         # assert input
         self.assert_input(nblade, r_th, beta1, beta2, x_maxcamber, rth_le, rth_te, npts)
@@ -19,8 +19,8 @@ class BladeGen:
         self.rth = r_th  # rel. thickness
         self.nblade = nblade
         self.c = l_chord
-        self.th_le = rth_le * r_th  # rth leading edge
-        self.th_te = rth_te * r_th  # rth trailing edge
+        self.th_le = rth_le * self.c  # rth leading edge
+        self.th_te = rth_te * self.c  # rth trailing edge
 
         # pack dict into pandas frame
         self.ds = pd.DataFrame(self.params(), index=[0])
@@ -165,11 +165,11 @@ class BladeGen:
 
         # Trailing edge radius fitting
         if self.th_te > 0:
-            xsurface, ysurface = radius_fitter('TE', xsurface, ysurface, self.th_te / 2, xy_camber).return_xy()
+            xsurface, ysurface = RoundEdges('TE', xsurface, ysurface, self.th_te / 2, xy_camber).return_xy()
 
         # Leading edge radius fitting
         if self.th_le > 0:
-            xsurface, ysurface = radius_fitter('LE', xsurface, ysurface, self.th_le / 2, xy_camber).return_xy()
+            xsurface, ysurface = RoundEdges('LE', xsurface, ysurface, self.th_le / 2, xy_camber).return_xy()
 
         # rotate
         X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
@@ -203,16 +203,17 @@ class BladeGen:
         # Either single or tandem
         assert ((nblade == 'single') or (nblade == 'tandem')), "single or tandem"
 
-        # Blade arc flips above sum(beta1,beta2)>90
-        # assert (((rth_le < .1) and (rth_le >= .005)) or rth_le == 0), "rth_le out of range"
-        # assert (((rth_te < .1) and (rth_te >= .005)) or rth_te == 0), "rth_te out of range"
+        # LE/TE Radius doesnt work properly outside of range
+        assert (((rth_le <= .03) and (rth_le >= .01)) or rth_le == 0), "rth_le out of range"
+        assert (((rth_te <= .03) and (rth_te >= .01)) or rth_te == 0), "rth_te out of range"
 
         assert ((x_maxcamber > 0) and (x_maxcamber < 1)), "x max chamber out of range [0,1]."
-        # LE/TE Radius doesnt work properly outside of range
+        # Blade arc flips above sum(beta1,beta2)>90
         assert ((beta1 + beta2) <= 90), "Beta1 + Beta2 must be smaller than 90"
 
-        # Blade looks absolute horrible sub 200 points..
-        assert (npts >= 200), "Choose more than 200 Pts"
+        # Blade looks absolute horrible sub 500 points. Blade will be divided into 4 even parts, so npts%4==0
+        # must be true.
+        assert ((npts >= 500) and (npts % 4 == 0)), "Choose more than 500 Pts and npts must be dividable by 4."
 
     def get_points(self, xy):
         0
@@ -222,9 +223,9 @@ class BladeGen:
         # plt.subplot(131)
         # plt.plot(self.x, xy_th[:, 1])
         # plt.subplot(132)
-        # plt.plot(self.x, xy_camber[:, 1])
         # plt.subplot(133)
         plt.plot(xy_blade[:, 0], xy_blade[:, 1])
+        # plt.plot(self.x, xy_camber[:, 1])
         plt.axis('equal')
         plt.show()
 
