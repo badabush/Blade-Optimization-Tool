@@ -1,4 +1,6 @@
 import numpy as np
+import pandas as pd
+from numpy.linalg import norm
 
 
 def euclidean_dist(xy1, xy2):
@@ -31,3 +33,47 @@ def min_dist(xy1, xy2):
     idx1, idx2 = np.unravel_index(dist.argmin(), (xy1.shape[1], xy2.shape[1]))
     return idx1, idx2, dist.min()
 
+
+def normalize(xy):
+    # move so left-bottom-most point is @ 0,0
+    xy.x = xy.x - xy.x.min()
+    xy.y = xy.y - xy.y.min()
+    return xy
+
+
+class ImportExport:
+    """
+    Class for importing existing xyz coordinates from txt and exporting generated blade to txt (z=0).
+
+    """
+
+    def _import(self, file):
+        """
+        Import existing xyz coordinates from txt-file.
+        Returns pd.DataFrame of blade.
+
+        :param file: path + name of file to import.
+        :type file: str
+        :return: ds
+        :rtype ds: pdDataFrame
+        """
+        try:
+            ds = pd.read_csv(file, sep=',', header=None)
+            ds.columns = ['x', 'y', 'z']
+            # z will be omitted
+            ds.drop(['z'], axis=1, inplace=True)
+            return ds
+        except FileNotFoundError as e:
+            print(e)
+
+    def _export(self, xy):
+        """
+        Export generated blade.
+
+        :param xy: xy coordinates of blade
+        :type xy: pdDataFrame
+        """
+        z = np.zeros(xy.shape[0])
+        xyz = xy
+        xyz['z'] = z
+        np.savetxt('../geo_output/xyz.txt', np.round(xyz.values, 3), fmt='%.3f, %.3f, %.3f')

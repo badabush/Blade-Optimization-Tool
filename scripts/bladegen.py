@@ -4,16 +4,23 @@ from sklearn import preprocessing
 import pandas as pd
 import scipy.optimize as optimize
 from roundedges import RoundEdges
+from bladetools import ImportExport, normalize
 
 
 class BladeGen:
 
-    def __init__(self, nblade='single', r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, l_chord=1.0, lambd=0,
+    def __init__(self, file='', nblade='single', r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, l_chord=1.0, lambd=20,
                  rth_le=0.01, rth_te=0.0135, npts=1000):
 
         # assert input
+        self.file = file
+        if self.file != '':
+            try:
+                self.xy_in = ImportExport()._import(file)
+                self.xy_in = normalize(self.xy_in)
+            except (ImportError, AttributeError) as e:
+                print(e)
         self.assert_input(nblade, r_th, beta1, beta2, x_maxcamber, rth_le, rth_te, npts)
-
         self.npts = int(npts / 2)
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.npts)))  # x-coord generation
         self.rth = r_th  # rel. thickness
@@ -32,7 +39,8 @@ class BladeGen:
         xy_th = self.thickness_dist()
         xy_camber = self.camberline(theta, x_maxcamber)
         xy_blade = self.geom_gen(xy_th, xy_camber, lambd, l_chord)
-        self.get_points(xy_blade)
+        xy_blade = normalize(xy_blade)
+        ImportExport()._export(xy_blade)
         self.debug_plot(xy_th, xy_camber, xy_blade)
 
     def params(self):
@@ -176,6 +184,8 @@ class BladeGen:
         Y = np.sin(lambd) * xsurface + np.cos(lambd) * ysurface
         xy_blade = np.transpose(np.array([X, Y]))
 
+        # pack into pd Frame
+        xy_blade = pd.DataFrame(data={'x': xy_blade[:, 0], 'y': xy_blade[:, 1]})
         return xy_blade
 
     def assert_input(self, nblade, r_th, beta1, beta2, x_maxcamber, rth_le, rth_te, npts):
@@ -215,20 +225,19 @@ class BladeGen:
         # must be true.
         assert ((npts >= 500) and (npts % 4 == 0)), "Choose more than 500 Pts and npts must be dividable by 4."
 
-    def get_points(self, xy):
-        0
-
     def debug_plot(self, xy_th, xy_camber, xy_blade):
         plt.figure(figsize=(12, 4))
         # plt.subplot(131)
         # plt.plot(self.x, xy_th[:, 1])
         # plt.subplot(132)
         # plt.subplot(133)
-        plt.plot(xy_blade[:, 0], xy_blade[:, 1])
+        if (np.all(self.xy_in) != None):
+            plt.plot(self.xy_in.x, self.xy_in.y)
+        plt.plot(xy_blade.x, xy_blade.y)
         # plt.plot(self.x, xy_camber[:, 1])
         plt.axis('equal')
         plt.show()
 
 
 if __name__ == "__main__":
-    BladeGen()
+    BladeGen(file='../geo_output/coords.txt', lambd=24.5, rth_te=0.0135, rth_le=0, l_chord=50)
