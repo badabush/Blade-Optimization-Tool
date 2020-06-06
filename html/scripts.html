@@ -73,7 +73,7 @@ Does absolutely nothing at the moment.</p>
 <p>Generate a NACA65 blade from input parameters.</p>
 <span class="target" id="module-scripts.bladegen"></span><dl class="class">
 <dt id="scripts.bladegen.BladeGen">
-<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">nblade='single'</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=25</em>, <em class="sig-param">beta2=25</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=0</em>, <em class="sig-param">rth_le=0.01</em>, <em class="sig-param">rth_te=0.0135</em>, <em class="sig-param">npts=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">file=''</em>, <em class="sig-param">nblade='single'</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=25</em>, <em class="sig-param">beta2=25</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=20</em>, <em class="sig-param">rth_le=0.01</em>, <em class="sig-param">rth_te=0.0135</em>, <em class="sig-param">npts=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="scripts.bladegen.BladeGen.assert_input">
@@ -148,11 +148,6 @@ Returns vector with X and Y of blade geometry.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="scripts.bladegen.BladeGen.get_points">
-<code class="sig-name descname">get_points</code><span class="sig-paren">(</span><em class="sig-param">xy</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.get_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.get_points" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
 <dt id="scripts.bladegen.BladeGen.params">
 <code class="sig-name descname">params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate parameters.
@@ -188,7 +183,14 @@ Returns  vector with X and Y of thickness distribution.</p>
 <div class="section" id="bladetools-module">
 <h2>Bladetools module<a class="headerlink" href="#bladetools-module" title="Permalink to this headline">¶</a></h2>
 <p>Contains multiple reusable tools for the BladeGen module.</p>
-<span class="target" id="module-scripts.bladetools"></span><dl class="function">
+<span class="target" id="module-scripts.bladetools"></span><dl class="class">
+<dt id="scripts.bladetools.ImportExport">
+<em class="property">class </em><code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">ImportExport</code><a class="reference internal" href="_modules/scripts/bladetools.html#ImportExport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.ImportExport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for importing existing xyz coordinates from txt and exporting generated blade to txt (z=0).</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="scripts.bladetools.euclidean_dist">
 <code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">euclidean_dist</code><span class="sig-paren">(</span><em class="sig-param">xy1</em>, <em class="sig-param">xy2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#euclidean_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.euclidean_dist" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -201,8 +203,8 @@ Returns idx for both arrays where the minimum distance was found as well as the 
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>xy1</strong> (<em>list</em>) – list arrays of x and y values</p></li>
-<li><p><strong>xy2</strong> – list arrays of x and y values</p></li>
+<li><p><strong>xy1</strong> (<em>np.array</em>) – list arrays of x and y values</p></li>
+<li><p><strong>xy2</strong> (<em>np.array</em>) – list arrays of x and y values</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -219,6 +221,11 @@ Returns idx for both arrays where the minimum distance was found as well as the 
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="function">
+<dt id="scripts.bladetools.normalize">
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">normalize</code><span class="sig-paren">(</span><em class="sig-param">xy</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.normalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </div>
 <div class="section" id="roundedges-module">

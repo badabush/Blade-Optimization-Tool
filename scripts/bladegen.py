@@ -236,6 +236,7 @@ class BladeGen:
         plt.plot(xy_blade.x, xy_blade.y)
         # plt.plot(self.x, xy_camber[:, 1])
         plt.axis('equal')
+        plt.legend(['imported blade', 'generated blade'])
         plt.show()
 
 
