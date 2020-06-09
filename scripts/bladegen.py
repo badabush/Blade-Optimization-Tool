@@ -9,7 +9,7 @@ from bladetools import ImportExport, normalize
 
 class BladeGen:
 
-    def __init__(self, file='', nblade='single', r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, l_chord=1.0, lambd=20,
+    def __init__(self, file='', nblade='single', th_dist_option = 1,r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, x_maxth = .3, l_chord=1.0, lambd=20,
                  rth_le=0.01, rth_te=0.0135, npts=1000):
 
         # assert input
@@ -28,6 +28,8 @@ class BladeGen:
         self.c = l_chord
         self.th_le = rth_le * self.c  # rth leading edge
         self.th_te = rth_te * self.c  # rth trailing edge
+        self.thdist_option = th_dist_option
+        self.x_max_th = x_maxth
 
         # pack dict into pandas frame
         self.ds = pd.DataFrame(self.params(), index=[0])
@@ -51,6 +53,8 @@ class BladeGen:
         :return: ds
         :rtype ds: dict
         """
+
+        # TODO: omit obsolete parameters, add input parameters into dataframe
         ds = {}
         ds['c_s'] = .43  # length of chord single
         ds['c_t'] = ds['c_s'] / 2  # length of chord tandem
@@ -58,8 +62,8 @@ class BladeGen:
         ds['r_te'] = self.th_te
 
         # Lieblein Diffusion Factor for front and rear blade
-        ds['df1'] = .39
-        ds['df2'] = .4915
+        ds['gammahk_t1'] = .14
+        ds['gammahk_t2'] = .14
 
         # division radius
         ds['sc_s'] = .43
@@ -86,11 +90,31 @@ class BladeGen:
         :return: xy_th
         :rtype xy_th: (npts, 2) ndarray
         """
-
         ds = self.ds
         x = self.x
-        yth = ds.th[0] * (1 - x) * (1.0675 * np.sqrt(x) - x * (.2756 - x * (2.4478 - 2.8385 * x))) / (
-                1 - .176 * x)  # thickness distribution
+        if self.thdist_option == 0:
+            yth = ds.th[0] * (1 - x) * (1.0675 * np.sqrt(x) - x * (.2756 - x * (2.4478 - 2.8385 * x))) / (
+                    1 - .176 * x)  # thickness distribution
+        elif self.thdist_option == 1:
+            xd = self.x_max_th
+            rn = self.th_le/self.c
+            d = self.rth
+            dhk = self.th_te
+            c = self.c
+            gammahk = ds.gammahk_t1.values
+            x_front = x[np.where(x<xd)]
+            y_th_front = .5 * (np.sqrt(2 * rn) * np.sqrt(x_front)
+                               + ( ((3*d)/xd) - (15/8) * np.sqrt(2 * rn / xd) - (3 * xd * (d - dhk))/((c-xd)**2) + (2 * xd * np.tan((gammahk)/2))/(c-xd)) * x_front
+                               + ((5/4) * np.sqrt((2*rn)/(xd**3)) - (3*d)/(xd**2) - (4 * np.tan(gammahk/2))/(c-xd) + (6*(d-dhk))/((c-xd)**2)) * x_front**2
+                               + ((2 * np.tan(gammahk/2))/(xd*(c-xd))-(3*(d-dhk))/(xd*(c-xd)**2)-(3/8)*np.sqrt((2*rn)/(xd**5))+d/(xd**3)) * x_front**3
+                               )
+
+            x_rear = x[np.where(x>=xd)]
+            y_th_rear = .5 * (dhk + (2*np.tan(gammahk/2)) * (c-x_rear)
+                              + (((3*(d-dhk))/(c-xd)**2) - (4*np.tan(gammahk/2))/(c-xd)) * (c-x_rear)**2
+                              + (((2 * np.tan(gammahk/2))/(c-xd)**2) - ((2*(d-dhk))/(c-xd)**3)) * (c-x_rear)**3
+                              )
+            yth = np.concatenate([y_th_front, y_th_rear])
 
         # scale thickness
         th_noscale = np.zeros((self.npts, 2))
@@ -172,11 +196,11 @@ class BladeGen:
         ysurface = ysurface * c
 
         # Trailing edge radius fitting
-        if self.th_te > 0:
+        if (self.th_te > 0) and (self.thdist_option==0):
             xsurface, ysurface = RoundEdges('TE', xsurface, ysurface, self.th_te / 2, xy_camber).return_xy()
 
         # Leading edge radius fitting
-        if self.th_le > 0:
+        if (self.th_le > 0) and (self.thdist_option==0):
             xsurface, ysurface = RoundEdges('LE', xsurface, ysurface, self.th_le / 2, xy_camber).return_xy()
 
         # rotate
@@ -241,4 +265,4 @@ class BladeGen:
 
 
 if __name__ == "__main__":
-    BladeGen(file='../geo_output/coords.txt', lambd=24.5, rth_te=0.0135, rth_le=0, l_chord=50)
+    BladeGen(file='../geo_output/coords.txt', lambd=24.5, rth_te=0.012, rth_le=0, l_chord=50, beta2=30, beta1=20)
