@@ -9,7 +9,8 @@ from bladetools import ImportExport, normalize
 
 class BladeGen:
 
-    def __init__(self, file='', nblade='single', th_dist_option = 1,r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4, x_maxth = .3, l_chord=1.0, lambd=20,
+    def __init__(self, file='', nblade='single', th_dist_option=1, r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4,
+                 x_maxth=.3, l_chord=1.0, lambd=20,
                  rth_le=0.01, rth_te=0.0135, npts=1000):
 
         # assert input
@@ -92,37 +93,67 @@ class BladeGen:
         """
         ds = self.ds
         x = self.x
+        # Option 1: Simple
         if self.thdist_option == 0:
             yth = ds.th[0] * (1 - x) * (1.0675 * np.sqrt(x) - x * (.2756 - x * (2.4478 - 2.8385 * x))) / (
                     1 - .176 * x)  # thickness distribution
+            # scale thickness
+            th_noscale = np.zeros((self.npts, 2))
+            th_noscale[:, 0] = x
+            th_noscale[:, 1] = yth
+            min_max_scaler = preprocessing.MinMaxScaler()
+            xy_th = min_max_scaler.fit_transform(th_noscale)
+            xy_th[:, 1] = xy_th[:, 1] * ds.th[0]
+
+        # Option 2: NACA65 (Parabolic_Camber_V5)
         elif self.thdist_option == 1:
             xd = self.x_max_th
-            rn = self.th_le/self.c
+            rn = self.th_le / self.c
             d = self.rth
-            dhk = self.th_te
-            c = self.c
+            dhk = 2 * self.th_te / self.c
+            # dhk = .027
+            # xd = .4
+            # rn = .024
+
+            c = 1
             gammahk = ds.gammahk_t1.values
-            x_front = x[np.where(x<xd)]
+            x_short = x[np.where(x < (1 - self.th_te / self.c))]
+
+            x_front = x_short[np.where(x_short < xd)]
             y_th_front = .5 * (np.sqrt(2 * rn) * np.sqrt(x_front)
-                               + ( ((3*d)/xd) - (15/8) * np.sqrt(2 * rn / xd) - (3 * xd * (d - dhk))/((c-xd)**2) + (2 * xd * np.tan((gammahk)/2))/(c-xd)) * x_front
-                               + ((5/4) * np.sqrt((2*rn)/(xd**3)) - (3*d)/(xd**2) - (4 * np.tan(gammahk/2))/(c-xd) + (6*(d-dhk))/((c-xd)**2)) * x_front**2
-                               + ((2 * np.tan(gammahk/2))/(xd*(c-xd))-(3*(d-dhk))/(xd*(c-xd)**2)-(3/8)*np.sqrt((2*rn)/(xd**5))+d/(xd**3)) * x_front**3
+                               + (((3 * d) / xd) - (15 / 8) * np.sqrt(2 * rn / xd) - (3 * xd * (d - dhk)) / (
+                            (c - xd) ** 2) + (2 * xd * np.tan(gammahk / 2)) / (c - xd)) * x_front
+                               + ((5 / 4) * np.sqrt((2 * rn) / (xd ** 3)) - (3 * d) / (xd ** 2) - (
+                            4 * np.tan(gammahk / 2)) / (c - xd) + (6 * (d - dhk)) / ((c - xd) ** 2)) * x_front ** 2
+                               + ((2 * np.tan(gammahk / 2)) / (xd * (c - xd)) - (3 * (d - dhk)) / (
+                            xd * (c - xd) ** 2) - (3 / 8) * np.sqrt((2 * rn) / (xd ** 5)) + d / (
+                                          xd ** 3)) * x_front ** 3
                                )
 
-            x_rear = x[np.where(x>=xd)]
-            y_th_rear = .5 * (dhk + (2*np.tan(gammahk/2)) * (c-x_rear)
-                              + (((3*(d-dhk))/(c-xd)**2) - (4*np.tan(gammahk/2))/(c-xd)) * (c-x_rear)**2
-                              + (((2 * np.tan(gammahk/2))/(c-xd)**2) - ((2*(d-dhk))/(c-xd)**3)) * (c-x_rear)**3
+            x_rear = x_short[np.where(x_short >= xd)]
+            y_th_rear = .5 * (dhk + (2 * np.tan(gammahk / 2)) * (c - x_rear)
+                              + (((3 * (d - dhk)) / (c - xd) ** 2) - (4 * np.tan(gammahk / 2)) / (c - xd)) * (
+                                      c - x_rear) ** 2
+                              + (((2 * np.tan(gammahk / 2)) / (c - xd) ** 2) - ((2 * (d - dhk)) / (c - xd) ** 3)) * (
+                                      c - x_rear) ** 3
                               )
             yth = np.concatenate([y_th_front, y_th_rear])
 
-        # scale thickness
-        th_noscale = np.zeros((self.npts, 2))
-        th_noscale[:, 0] = x
-        th_noscale[:, 1] = yth
-        min_max_scaler = preprocessing.MinMaxScaler()
-        xy_th = min_max_scaler.fit_transform(th_noscale)
-        xy_th[:, 1] = xy_th[:, 1] * ds.th[0]
+            # fit trailing edge
+            r_te = yth[-1]
+
+            yth_circ_te = np.array(
+                [np.sqrt(np.abs(r_te ** 2 - (X - (1 - r_te)) ** 2)) if (X > (1 - self.th_te / self.c)) else np.nan for X
+                 in x])
+            # omit nans
+            yth_circ_te = yth_circ_te[np.where(np.isnan(yth_circ_te) == False)]
+            xy_th = np.zeros((x.size, 2))
+            xy_th[:, 0] = x
+
+            if (np.abs(x.size - yth.size - yth_circ_te.size) == 0):
+                xy_th[:, 1] = np.concatenate([yth, yth_circ_te])
+            else:
+                xy_th[:, 1] = np.concatenate([yth, yth_circ_te, [0]])
 
         return xy_th
 
@@ -195,13 +226,20 @@ class BladeGen:
         xsurface = xsurface * c
         ysurface = ysurface * c
 
-        # Trailing edge radius fitting
-        if (self.th_te > 0) and (self.thdist_option==0):
-            xsurface, ysurface = RoundEdges('TE', xsurface, ysurface, self.th_te / 2, xy_camber).return_xy()
+        if (self.thdist_option == 0):
+            # Trailing edge radius fitting
+            if (self.th_te > 0):
+                xsurface, ysurface = RoundEdges('TE', xsurface, ysurface, self.th_te / 2, xy_camber * self.c).return_xy()
 
-        # Leading edge radius fitting
-        if (self.th_le > 0) and (self.thdist_option==0):
-            xsurface, ysurface = RoundEdges('LE', xsurface, ysurface, self.th_le / 2, xy_camber).return_xy()
+            # Leading edge radius fitting
+            if (self.th_le > 0):
+                xsurface, ysurface = RoundEdges('LE', xsurface, ysurface, self.th_le / 2, xy_camber * self.c).return_xy()
+
+            # scale back to original length
+            #norm blade
+            xlen = xsurface.max() - xsurface.min()
+            xsurface = (xsurface/xlen)*c
+
 
         # rotate
         X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
@@ -265,4 +303,5 @@ class BladeGen:
 
 
 if __name__ == "__main__":
-    BladeGen(file='../geo_output/coords.txt', lambd=24.5, rth_te=0.012, rth_le=0, l_chord=50, beta2=30, beta1=20)
+    BladeGen(file='../geo_output/coords.txt', th_dist_option=1, lambd=28, rth_te=0.01, rth_le=.01,
+             l_chord=40, beta2=25, beta1=25, r_th=.04, x_maxth=.4)

@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from numpy.linalg import norm
+import csv
 
 
 def euclidean_dist(xy1, xy2):
@@ -39,6 +40,17 @@ def normalize(xy):
     xy.x = xy.x - xy.x.min()
     xy.y = xy.y - xy.y.min()
     return xy
+
+def load_restraints(filename):
+    ds = {}
+    with open(filename) as f:
+        for line in f:
+            item = line.strip(';\n').split(',')
+            try:
+                ds[item[0]] = [float(item[1]), float(item[2]), float(item[3]), float(item[4])]
+            except IndexError as e:
+                print(e)
+    return ds
 
 
 class ImportExport:
