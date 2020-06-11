@@ -9,9 +9,8 @@ from bladetools import ImportExport, normalize
 
 class BladeGen:
 
-    def __init__(self, file='', nblade='single', th_dist_option=1, r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4,
-                 x_maxth=.3, l_chord=1.0, lambd=20,
-                 rth_le=0.01, rth_te=0.0135, npts=1000):
+    def __init__(self, frontend= 'user', file='', nblade='single', th_dist_option=1, r_th=.0215, beta1=25, beta2=25, x_maxcamber=.4,
+                 x_maxth=.3, l_chord=1.0, lambd=20, rth_le=0.01, rth_te=0.0135, npts=1000):
 
         # assert input
         self.file = file
@@ -43,8 +42,12 @@ class BladeGen:
         xy_camber = self.camberline(theta, x_maxcamber)
         xy_blade = self.geom_gen(xy_th, xy_camber, lambd, l_chord)
         xy_blade = normalize(xy_blade)
-        ImportExport()._export(xy_blade)
-        self.debug_plot(xy_th, xy_camber, xy_blade)
+        if frontend == 'user':
+            ImportExport()._export(xy_blade)
+            # self.debug_plot(xy_th, xy_camber, xy_blade)
+        elif frontend == 'gui':
+            self.xy_blade = xy_blade
+            self._return()
 
     def params(self):
         """
@@ -229,17 +232,18 @@ class BladeGen:
         if (self.thdist_option == 0):
             # Trailing edge radius fitting
             if (self.th_te > 0):
-                xsurface, ysurface = RoundEdges('TE', xsurface, ysurface, self.th_te / 2, xy_camber * self.c).return_xy()
+                xsurface, ysurface = RoundEdges('TE', xsurface, ysurface, self.th_te / 2,
+                                                xy_camber * self.c).return_xy()
 
             # Leading edge radius fitting
             if (self.th_le > 0):
-                xsurface, ysurface = RoundEdges('LE', xsurface, ysurface, self.th_le / 2, xy_camber * self.c).return_xy()
+                xsurface, ysurface = RoundEdges('LE', xsurface, ysurface, self.th_le / 2,
+                                                xy_camber * self.c).return_xy()
 
             # scale back to original length
-            #norm blade
+            # norm blade
             xlen = xsurface.max() - xsurface.min()
-            xsurface = (xsurface/xlen)*c
-
+            xsurface = (xsurface / xlen) * c
 
         # rotate
         X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
@@ -301,6 +305,9 @@ class BladeGen:
         plt.legend(['imported blade', 'generated blade'])
         plt.show()
 
+    def _return(self):
+        xy_blade = self.xy_blade.values
+        return xy_blade
 
 if __name__ == "__main__":
     BladeGen(file='../geo_output/coords.txt', th_dist_option=1, lambd=28, rth_te=0.01, rth_le=.01,
