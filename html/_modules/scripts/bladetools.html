@@ -40,6 +40,7 @@
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">import</span> <span class="nn">csv</span>
 
 
 <div class="viewcode-block" id="euclidean_dist"><a class="viewcode-back" href="../../scripts.html#scripts.bladetools.euclidean_dist">[docs]</a><span class="k">def</span> <span class="nf">euclidean_dist</span><span class="p">(</span><span class="n">xy1</span><span class="p">,</span> <span class="n">xy2</span><span class="p">):</span>
@@ -78,6 +79,17 @@
     <span class="n">xy</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="n">xy</span><span class="o">.</span><span class="n">x</span> <span class="o">-</span> <span class="n">xy</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
     <span class="n">xy</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">xy</span><span class="o">.</span><span class="n">y</span> <span class="o">-</span> <span class="n">xy</span><span class="o">.</span><span class="n">y</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">xy</span></div>
+
+<div class="viewcode-block" id="load_restraints"><a class="viewcode-back" href="../../scripts.html#scripts.bladetools.load_restraints">[docs]</a><span class="k">def</span> <span class="nf">load_restraints</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">ds</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">3</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">4</span><span class="p">])]</span>
+            <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ds</span></div>
 
 
 <div class="viewcode-block" id="ImportExport"><a class="viewcode-back" href="../../scripts.html#scripts.bladetools.ImportExport">[docs]</a><span class="k">class</span> <span class="nc">ImportExport</span><span class="p">:</span>

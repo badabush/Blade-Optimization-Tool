@@ -73,7 +73,7 @@ Does absolutely nothing at the moment.</p>
 <p>Generate a NACA65 blade from input parameters.</p>
 <span class="target" id="module-scripts.bladegen"></span><dl class="class">
 <dt id="scripts.bladegen.BladeGen">
-<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">file=''</em>, <em class="sig-param">nblade='single'</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=25</em>, <em class="sig-param">beta2=25</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=20</em>, <em class="sig-param">rth_le=0.01</em>, <em class="sig-param">rth_te=0.0135</em>, <em class="sig-param">npts=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">frontend='user'</em>, <em class="sig-param">file=''</em>, <em class="sig-param">nblade='single'</em>, <em class="sig-param">th_dist_option=1</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=25</em>, <em class="sig-param">beta2=25</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">x_maxth=0.3</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=20</em>, <em class="sig-param">rth_le=0.01</em>, <em class="sig-param">rth_te=0.0135</em>, <em class="sig-param">npts=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="scripts.bladegen.BladeGen.assert_input">
@@ -134,7 +134,7 @@ Returns vector with X and Y of blade geometry.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>lambd</strong> (<em>float</em>) – Rotation of blade</p></li>
 <li><p><strong>c</strong> (<em>float</em>) – chord length</p></li>
-<li><p><strong>xy_th</strong> (<em>(</em><em>npts</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X and Y points from method thickness_dist</p></li>
+<li><p><strong>xy_th</strong> (<em>(</em><em>npts</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X and Y points from method thickness_dist_v1</p></li>
 <li><p><strong>xy_camber</strong> (<em>(</em><em>npts</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X and Y points from method camberline</p></li>
 </ul>
 </dd>
@@ -163,8 +163,8 @@ Return dataset (ds) with parameters.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="scripts.bladegen.BladeGen.thickness_dist">
-<code class="sig-name descname">thickness_dist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.thickness_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.thickness_dist" title="Permalink to this definition">¶</a></dt>
+<dt id="scripts.bladegen.BladeGen.thickness_dist_v1">
+<code class="sig-name descname">thickness_dist_v1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.thickness_dist_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.thickness_dist_v1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate thickness distribution.
 Returns  vector with X and Y of thickness distribution.</p>
 <dl class="field-list simple">
@@ -193,6 +193,11 @@ Returns  vector with X and Y of thickness distribution.</p>
 <dl class="function">
 <dt id="scripts.bladetools.euclidean_dist">
 <code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">euclidean_dist</code><span class="sig-paren">(</span><em class="sig-param">xy1</em>, <em class="sig-param">xy2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#euclidean_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.euclidean_dist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="scripts.bladetools.load_restraints">
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">load_restraints</code><span class="sig-paren">(</span><em class="sig-param">filename</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#load_restraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.load_restraints" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">

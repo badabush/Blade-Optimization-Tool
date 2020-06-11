@@ -58,6 +58,7 @@ class RoundEdges:
         :return: ds
         :rtype ds: pdDataFrame
         """
+
         # extract half of blade, seperated into upper and lower
         if self.edge == 'TE':
             xupper = self.x[self.n4 * 3:]

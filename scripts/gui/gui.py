@@ -20,24 +20,34 @@ class Ui(QtWidgets.QMainWindow):
     def __init__(self):
         super(Ui, self).__init__()
         uic.loadUi('qtdesigner/mainwindow_v1.ui', self)
+        # declaring param keys, load restraints for slider
+        self.param_keys = ['npts', 'beta1', 'beta2', 'lambd', 'rth', 'xmax_th', 'xmax_camber', 'l_chord', 'th_le',
+                           'th_te']
+        self.restraints = load_restraints('restraints.txt')
+        self.menu_default()
+        # Slider only accepts int values, so floats need to be scaled
+        self.scale = 100000
+        # init plot
         self.m = PlotCanvas(self, width=5, height=4)
         toolbar = NavigationToolbar(self.m, self)
         centralwidget = self.fig_widget
         vbl = QtGui.QVBoxLayout(centralwidget)
         vbl.addWidget(toolbar)
         vbl.addWidget(self.m)
-
         self.m.move(500, 20)
-        self.update = self.findChild(QtWidgets.QPushButton, 'btn_update')  # find the button
+
+        # link buttons
+        self.update = self.findChild(QtWidgets.QPushButton, 'btn_update')
         self.update.clicked.connect(self.update_inputs)
-        self.reset = self.findChild(QtWidgets.QPushButton, 'btn_default')  # find the button
+        self.reset = self.findChild(QtWidgets.QPushButton, 'btn_default')
         self.reset.clicked.connect(self.set_default)
-        self.scale = 100000
-        self.param_keys = ['npts', 'beta1', 'beta2', 'lambd', 'rth', 'xmax_th', 'xmax_camber', 'l_chord', 'th_le',
-                           'th_te']
-        self.restraints = load_restraints('restraints.txt')
+        self.thdist_V1.triggered.connect(self.update_thdist_V1)
+        self.thdist_V2.triggered.connect(self.update_thdist_V2)
         self.slider_control()
         self.show()
+
+    def menu_default(self):
+        self.thdist_ver = 0
 
     def slider_control(self):
 
@@ -89,7 +99,7 @@ class Ui(QtWidgets.QMainWindow):
         self.slider['rth'].valueChanged[int].connect(self.update_rth)
         self.label['rth'].editingFinished.connect(self.update_box_rth)
         self.slider['xmax_th'].valueChanged[int].connect(self.update_xmax_th)
-        self.slider['xmax_camber'].valueChanged[int].connect(self.update_xmaxh_camber)
+        self.slider['xmax_camber'].valueChanged[int].connect(self.update_xmax_camber)
         self.slider['th_le'].valueChanged[int].connect(self.update_thle)
         self.slider['th_te'].valueChanged[int].connect(self.update_thte)
 
@@ -183,25 +193,35 @@ class Ui(QtWidgets.QMainWindow):
         value = self.label['xmax_th'].value() * self.scale
         self.slider['xmax_th'].setSliderPosition(value)
 
-    def update_xmaxh_camber(self, value):
+    def update_xmax_camber(self, value):
         self.label['xmax_camber'].setValue(float(value) / self.scale)
 
-    def update_box_rth(self):
+    def update_box_xmax_camber(self):
         value = self.label['xmax_camber'].value() * self.scale
         self.slider['xmax_camber'].setSliderPosition(value)
 
     def update_thle(self, value):
-        self.label['th_le'].setValue(float(value) / self.scale)
+        if (float(value)/self.scale)<0.01 and (float(value)/self.scale)>0.0:
+            self.label['th_le'].setValue(0.01)
+        else:
+            self.label['th_le'].setValue(float(value) / self.scale)
 
-    def update_box_rth(self):
-        value = self.label['th_le'].value() * self.scale
+    def update_box_thle(self):
+        value = self.label['th_le'].value() #* self.scale
+        if value<0.01 and value>0.0:
+            value = 0.01 * self.scale
         self.slider['th_le'].setSliderPosition(value)
 
     def update_thte(self, value):
-        self.label['th_te'].setValue(float(value) / self.scale)
+        if (float(value) / self.scale) < 0.01 and (float(value) / self.scale) > 0.0:
+            self.label['th_te'].setValue(0.01)
+        else:
+            self.label['th_te'].setValue(float(value) / self.scale)
 
-    def update_box_rth(self):
-        value = self.label['th_te'].value() * self.scale
+    def update_box_thte(self):
+        value = self.label['th_te'].value()  # * self.scale
+        if value < 0.01 and value > 0.0:
+            value = 0.01 * self.scale
         self.slider['th_te'].setSliderPosition(value)
 
     def update_inputs(self):
@@ -209,6 +229,7 @@ class Ui(QtWidgets.QMainWindow):
         ds = {}
         for key in self.param_keys:
             ds[key] = self.label[key].value()
+        ds['thdist_ver'] = self.thdist_ver
         self.m.plot(ds)
         print('Updating Plot')
 
@@ -224,6 +245,11 @@ class Ui(QtWidgets.QMainWindow):
                 self.slider[key].setSliderPosition(self.restraints[key][3] * self.scale)
         print('Resetting Values')
 
+    def update_thdist_V1(self):
+        self.thdist_ver = 0
+
+    def update_thdist_V2(self):
+        self.thdist_ver = 1
 
 class PlotCanvas(FigureCanvas):
 
@@ -252,8 +278,8 @@ class PlotCanvas(FigureCanvas):
         else:
             self.xlim = self.ax.get_xlim()
             self.ylim = self.ax.get_ylim()
-        self.ax.cla()
-        bladegen = BladeGen(frontend='gui', th_dist_option=0, npts=ds['npts'], beta1=ds['beta1'], beta2=ds['beta2'],
+        self.ax.cla() # clear existing plots
+        bladegen = BladeGen(frontend='gui', th_dist_option=ds['thdist_ver'], npts=ds['npts'], beta1=ds['beta1'], beta2=ds['beta2'],
                             lambd=ds['lambd'], r_th=ds['rth'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
                             l_chord=ds['l_chord'], rth_le=ds['th_le'], rth_te=ds['th_te'])
         blade_data = bladegen._return()

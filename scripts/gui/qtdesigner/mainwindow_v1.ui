@@ -357,9 +357,9 @@
       <string>Thickness Distribution Type</string>
      </property>
      <addaction name="separator"/>
-     <addaction name="actionV1"/>
+     <addaction name="thdist_V1"/>
      <addaction name="separator"/>
-     <addaction name="actionV2"/>
+     <addaction name="thdist_V2"/>
     </widget>
     <widget class="QMenu" name="menuNumber_of_Blades">
      <property name="title">
@@ -380,12 +380,12 @@
    <addaction name="menuOptimize"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionV1">
+  <action name="thdist_V1">
    <property name="text">
     <string>V1</string>
    </property>
   </action>
-  <action name="actionV2">
+  <action name="thdist_V2">
    <property name="text">
     <string>V2</string>
    </property>
