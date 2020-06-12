@@ -4,13 +4,13 @@ from sklearn import preprocessing
 import pandas as pd
 import scipy.optimize as optimize
 from roundedges import RoundEdges
-from bladetools import ImportExport, normalize
+from bladetools import ImportExport, normalize, camber_spline
 
 
 class BladeGen:
 
     def __init__(self, frontend='user', file='', nblade='single', th_dist_option=1, r_th=.0215, beta1=25, beta2=25,
-                 x_maxcamber=.4, x_maxth=.3, l_chord=1.0, lambd=20, rth_le=0.01, rth_te=0.0135, npts=1000):
+                 x_maxcamber=.4, x_maxth=.3, l_chord=1.0, lambd=20, rth_le=0.01, rth_te=0.0135, npts=1000, spline_pts=[9999]):
 
         self.file = file
         if self.file != '':
@@ -33,7 +33,12 @@ class BladeGen:
 
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.ds['npts'])))  # x-coord generation
 
-        self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
+        if np.any(spline_pts == 9999):
+            self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
+        else:
+            self.xy_camber = camber_spline(self.ds['npts'], spline_pts)
+            # update x otherwise thickness doesnt fit?
+            self.x = self.xy_camber[:,0]
         if self.thdist_option == 0:
             xy_th = self.thickness_dist_v1()
             xy_blade = self.geom_gen(xy_th)
@@ -181,6 +186,7 @@ class BladeGen:
         df = pd.DataFrame(data={'x': x_blade, 'y': y_blade})
         return df
 
+
     def camberline(self, theta, a):
         """
         Calculate the parabolic-arc camberline from R.Aungier.
@@ -211,6 +217,8 @@ class BladeGen:
         xy_camber = np.transpose(np.array([x, ycambertemp]))
 
         return xy_camber
+
+
 
     def geom_gen(self, xy_th):
         """
@@ -255,22 +263,24 @@ class BladeGen:
         xsurface = xsurface * c
         ysurface = ysurface * c
 
-        if (self.thdist_option == 0):
-            # Trailing edge radius fitting
-            if (th_te > 0):
-                xsurface, ysurface = RoundEdges('TE', xsurface, ysurface, th_te / 2,
-                                                xy_camber * c).return_xy()
+        try:
+            if (self.thdist_option == 0):
+                # Trailing edge radius fitting
+                if (th_te > 0):
+                    xsurface, ysurface = RoundEdges('TE', xsurface, ysurface, th_te / 2,
+                                                    xy_camber * c).return_xy()
 
-            # Leading edge radius fitting
-            if (th_le > 0):
-                xsurface, ysurface = RoundEdges('LE', xsurface, ysurface, th_le / 2,
-                                                xy_camber * c).return_xy()
+                # Leading edge radius fitting
+                if (th_le > 0):
+                    xsurface, ysurface = RoundEdges('LE', xsurface, ysurface, th_le / 2,
+                                                    xy_camber * c).return_xy()
 
-            # scale back to original length
-            # norm blade
-            xlen = xsurface.max() - xsurface.min()
-            xsurface = (xsurface / xlen) * c
-
+                # scale back to original length
+                # norm blade
+                xlen = xsurface.max() - xsurface.min()
+                xsurface = (xsurface / xlen) * c
+        except ValueError as e:
+            print("Failed to round edges: " + e)
         # rotate
         X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
         Y = np.sin(lambd) * xsurface + np.cos(lambd) * ysurface

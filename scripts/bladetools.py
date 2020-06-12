@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
+from scipy.special import binom
 from numpy.linalg import norm
+from matplotlib import pyplot as plt
 import csv
 
 
@@ -89,3 +91,29 @@ class ImportExport:
         xyz = xy
         xyz['z'] = z
         np.savetxt('../geo_output/xyz.txt', np.round(xyz.values, 3), fmt='%.3f, %.3f, %.3f')
+
+
+def camber_spline(npts, xy_points):
+    def bernstein(n,k):
+        """Bernstein polynomial.
+        """
+        coeff = binom(n, k)
+
+        def _bpoly(x):
+            return coeff * x ** k * (1 - x) ** (n - k)
+
+        return _bpoly
+
+
+    def bezier(pts, npts):
+        n = len(pts)
+        # t = self.x
+        t = x # x-coord generation
+        curve = np.zeros((npts, 2))
+        for i in range(n):
+            curve += np.outer(bernstein(n-1,i)(t), pts[i])
+        return curve
+    npts = int(npts)
+    x = .5 * (1 - np.cos(np.linspace(0, np.pi, npts)))  # x-coord generation
+    _x, _y = bezier(xy_points, npts).T
+    return np.transpose(np.array([_x,_y]))

@@ -272,9 +272,6 @@ class RoundEdges:
         :rtype ds: pdDataFrame
         """
 
-        # compute camber line polynomial model
-        weights = np.polyfit(self.camberline[:, 0], self.camberline[:, 1], 3)
-        polynomial_cl = np.poly1d(weights)
 
         def seperate_surface(x, y):
             """
@@ -365,6 +362,11 @@ class RoundEdges:
             xn = xog + np.cos(angle) * (x2 - xog) - np.sin(angle) * (y2 - yog)
             yn = yog + np.sin(angle) * (x2 - xog) + np.cos(angle) * (y2 - yog)
             return xn, yn, polynomial
+
+
+        # compute camber line polynomial model
+        weights = np.polyfit(self.camberline[:, 0], self.camberline[:, 1], 3)
+        polynomial_cl = np.poly1d(weights)
 
         xlower1, ylower1, xlower2, ylower2 = seperate_surface(ds.xlower, ds.ylower)
         xupper1, yupper1, xupper2, yupper2 = seperate_surface(ds.xupper, ds.yupper)

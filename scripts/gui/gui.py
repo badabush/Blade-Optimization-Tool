@@ -9,10 +9,13 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from bladetools import load_restraints
+import numpy as np
 
 import random
 import math
 from bladegen import BladeGen
+
+from spline_ui import SplineUi
 
 
 class Ui(QtWidgets.QMainWindow):
@@ -27,6 +30,7 @@ class Ui(QtWidgets.QMainWindow):
         self.menu_default()
         # Slider only accepts int values, so floats need to be scaled
         self.scale = 100000
+        self.points = np.ones((3,2))*9999
         # init plot
         self.m = PlotCanvas(self, width=5, height=4)
         toolbar = NavigationToolbar(self.m, self)
@@ -34,7 +38,6 @@ class Ui(QtWidgets.QMainWindow):
         vbl = QtGui.QVBoxLayout(centralwidget)
         vbl.addWidget(toolbar)
         vbl.addWidget(self.m)
-        self.m.move(500, 20)
 
         # link buttons
         self.update = self.findChild(QtWidgets.QPushButton, 'btn_update')
@@ -47,6 +50,31 @@ class Ui(QtWidgets.QMainWindow):
         self.nblades_tandem.triggered.connect(self.update_nblades_tandem)
         self.slider_control()
         self.show()
+
+        # open spline popup on click
+        self.btn_spline.clicked.connect(self.spline_window)
+
+        # get spline values from 2nd window
+        self.returned_values.textChanged.connect(self.get_spline_pts)
+
+        # run once on startup
+        self.update_inputs()
+
+    def get_spline_pts(self, value):
+        value = value.split(';')
+        points = np.zeros((4, 2))
+        for i, line in enumerate(value):
+            val_splt = line.split(',')
+            points[i, 0] = float(val_splt[0])
+            points[i, 1] = float(val_splt[1])
+
+        self.points = points
+
+    def spline_window(self):
+        self.spline_ui = SplineUi(self.ds, self.returned_values)
+        self.spline_ui.show()
+        self.points = self.spline_ui.points
+        0
 
     def menu_default(self):
         self.thdist_ver = 0
@@ -248,7 +276,9 @@ class Ui(QtWidgets.QMainWindow):
         # get values from menu items
         ds['thdist_ver'] = self.thdist_ver
         ds['nblades'] = self.nblades
+        ds['pts'] = self.points
         self.m.plot(ds)
+        self.ds = ds
         print('Updating Plot')
 
     def set_default(self):
@@ -307,7 +337,7 @@ class PlotCanvas(FigureCanvas):
         bladegen = BladeGen(frontend='gui', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
                             beta1=ds['beta1'], beta2=ds['beta2'],
                             lambd=ds['lambd'], r_th=ds['rth'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
-                            l_chord=ds['l_chord'], rth_le=ds['th_le'], rth_te=ds['th_te'])
+                            l_chord=ds['l_chord'], rth_le=ds['th_le'], rth_te=ds['th_te'],spline_pts=ds['pts'])
         blade_data = bladegen._return()
         self.ax.plot(blade_data[:, 0], blade_data[:, 1])
         division = ds['dist_blades'] * ds['l_chord']
