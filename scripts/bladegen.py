@@ -10,10 +10,8 @@ from bladetools import ImportExport, normalize
 class BladeGen:
 
     def __init__(self, frontend='user', file='', nblade='single', th_dist_option=1, r_th=.0215, beta1=25, beta2=25,
-                 x_maxcamber=.4,
-                 x_maxth=.3, l_chord=1.0, lambd=20, rth_le=0.01, rth_te=0.0135, npts=1000):
+                 x_maxcamber=.4, x_maxth=.3, l_chord=1.0, lambd=20, rth_le=0.01, rth_te=0.0135, npts=1000):
 
-        # assert input
         self.file = file
         if self.file != '':
             try:
@@ -21,39 +19,36 @@ class BladeGen:
                 self.xy_in = normalize(self.xy_in)
             except (ImportError, AttributeError) as e:
                 print(e)
+
+        # assert input
         self.assert_input(nblade, r_th, beta1, beta2, x_maxcamber, rth_le, rth_te, npts)
-        self.npts = int(npts / 2)
-        self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.npts)))  # x-coord generation
-        self.rth = r_th*10  # rel. thickness #fixme: thickness does not work properly
+        # menu items
+        self.thdist_option = th_dist_option # th_dist v1 or v2
+        self.frontend = frontend # the interface to this script
         self.nblade = nblade
-        self.c = l_chord
-        self.th_le = rth_le * self.c  # rth leading edge
-        self.th_te = rth_te * self.c  # rth trailing edge
-        self.thdist_option = th_dist_option
-        self.x_max_th = x_maxth
 
-        # pack dict into pandas frame
-        self.ds = pd.DataFrame(self.params(), index=[0])
+        # pack parameters into dict
+        self.ds = self.params(r_th, [beta1, beta2], x_maxcamber, x_maxth, l_chord, lambd, rth_le,
+                        rth_te, npts)
 
-        self.beta = [beta1, beta2]
-        theta = np.deg2rad(np.sum(self.beta))
-        self.lambd = np.deg2rad(lambd)
+        self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.ds['npts'])))  # x-coord generation
 
-        self.xy_camber = self.camberline(theta, x_maxcamber)
+        self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         if self.thdist_option == 0:
             xy_th = self.thickness_dist_v1()
-            xy_blade = self.geom_gen(xy_th, self.lambd, l_chord)
+            xy_blade = self.geom_gen(xy_th)
             xy_blade = normalize(xy_blade)
         elif self.thdist_option == 1:
             xy_blade = self.thickness_dist_v2()
-        if frontend == 'user':
+        if self.frontend == 'user':
             ImportExport()._export(xy_blade)
-            # self.debug_plot(xy_th, xy_camber, xy_blade)
-        elif frontend == 'gui':
+            self.debug_plot(self.xy_camber, xy_blade)
+        elif self.frontend == 'gui':
             self.xy_blade = xy_blade
             self._return()
 
-    def params(self):
+    def params(self, r_th, beta, x_maxcamber, x_maxth, l_chord, lambd, rth_le,
+                        rth_te, npts):
         """
         Generate parameters.
         Return dataset (ds) with parameters.
@@ -64,30 +59,21 @@ class BladeGen:
 
         # TODO: omit obsolete parameters, add input parameters into dataframe
         ds = {}
-        ds['c_s'] = .43  # length of chord single
-        ds['c_t'] = ds['c_s'] / 2  # length of chord tandem
-        ds['th'] = self.rth
-        ds['r_te'] = self.th_te
+        ds['rth'] = r_th * 10        # fixme: rthickness behaves differently in v1 and v2 thdist
+        ds['beta'] = beta
+        ds['theta'] = np.deg2rad(np.sum(ds['beta']))
+        ds['lambd'] = np.deg2rad(lambd)
+        ds['xmax_camber'] = x_maxcamber
+        ds['xmax_th'] = x_maxth
+        ds['l_chord'] = l_chord
+
+        ds['th_le'] = rth_le * ds['l_chord']
+        ds['th_te'] = rth_te * ds['l_chord']
+        ds['npts'] = int(npts / 2)
 
         # Lieblein Diffusion Factor for front and rear blade
         ds['gammahk_t1'] = .14
-        ds['gammahk_t2'] = .14
 
-        # division radius
-        ds['sc_s'] = .43
-        ds['sc_t'] = 1.16
-        # compute division
-        ds['s_s'] = ds['sc_s'] * ds['c_s']
-        ds['s_t'] = ds['sc_t'] * ds['c_t']
-
-        # real division: division and solicity
-        # ds['s'] = 2 * np.pi * ds['r'] / ds['N_s']  # division
-        ds['sigma_s'] = ds['c_s'] / ds['s_s']  # solicity s
-        ds['sigma_t'] = ds['c_t'] / ds['s_t']  # solicity t
-
-        # relative thickness
-        ds['rth_s'] = ds['th'] / ds['c_s']
-        ds['rth_t'] = ds['th'] / ds['c_t']
         return ds
 
     def thickness_dist_v1(self):
@@ -100,13 +86,14 @@ class BladeGen:
         """
         ds = self.ds
         x = self.x
-        th = ds.th[0]/10
+        npts = ds['npts']
+        th = ds['rth'] / 10
         # Option 1: Simple
 
         yth = th * (1 - x) * (1.0675 * np.sqrt(x) - x * (.2756 - x * (2.4478 - 2.8385 * x))) / (
                 1 - .176 * x)  # thickness distribution
         # scale thickness
-        th_noscale = np.zeros((self.npts, 2))
+        th_noscale = np.zeros((npts, 2))
         th_noscale[:, 0] = x
         th_noscale[:, 1] = yth
         min_max_scaler = preprocessing.MinMaxScaler()
@@ -118,15 +105,20 @@ class BladeGen:
     def thickness_dist_v2(self):
         # Option 2: NACA65 (Parabolic_Camber_V5)
         ds = self.ds
+        c = ds['l_chord']
+        th_te = ds['th_te']
+        th_le = ds['th_le']
+        lambd = ds['lambd']
         x = self.x
-        xd = self.x_max_th
-        rn = self.th_le / self.c
-        d = self.rth
-        dhk = 2 * self.th_te / self.c
+
+        xd = ds['xmax_th']
+        rn = th_le / c
+        d = ds['rth']
+        dhk = 2 * th_te / c
 
         c = 1
         gammahk = ds.gammahk_t1.values
-        x_short = x[np.where(x < (1 - self.th_te / self.c))]
+        x_short = x[np.where(x < (1 - th_te / c))]
 
         x_front = x_short[np.where(x_short < xd)]
         y_th_front = .5 * (np.sqrt(2 * rn) * np.sqrt(x_front)
@@ -152,7 +144,7 @@ class BladeGen:
         r_te = yth[-1]
 
         yth_circ_te = np.array(
-            [np.sqrt(np.abs(r_te ** 2 - (X - (1 - r_te)) ** 2)) if (X > (1 - self.th_te / self.c)) else np.nan for X
+            [np.sqrt(np.abs(r_te ** 2 - (X - (1 - r_te)) ** 2)) if (X > (1 - th_te / c)) else np.nan for X
              in x])
         # omit nans
         yth_circ_te = yth_circ_te[np.where(np.isnan(yth_circ_te) == False)]
@@ -181,10 +173,10 @@ class BladeGen:
         y_blade[xps.size] = y_blade[xps.size + 1] / 2
 
         # scale and rotate
-        x_blade = x_blade * self.c
-        y_blade = y_blade * self.c
-        x_blade = np.cos(self.lambd) * x_blade - np.sin(self.lambd) * y_blade
-        y_blade = np.sin(self.lambd) * x_blade + np.cos(self.lambd) * y_blade
+        x_blade = x_blade * c
+        y_blade = y_blade * c
+        x_blade = np.cos(lambd) * x_blade - np.sin(lambd) * y_blade
+        y_blade = np.sin(lambd) * x_blade + np.cos(lambd) * y_blade
 
         df = pd.DataFrame(data={'x': x_blade, 'y': y_blade})
         return df
@@ -209,10 +201,10 @@ class BladeGen:
         ycambertemp = np.zeros(x.size)
         for i in range(0, x.size):
             xtemp = x[i]
-            y0 = 0
+            y0 = 0.0
             fun = lambda y: (-y + xtemp * (c - xtemp) / (
                     (((c - 2 * a) ** 2) / (4 * b ** 2)) * y + ((c - 2 * a) / b) * xtemp - (
-                        (c ** 2 - 4 * a * c) / (4 * b))))
+                    (c ** 2 - 4 * a * c) / (4 * b))))
             y = optimize.fsolve(fun, y0)
             ycambertemp[i] = y
 
@@ -220,7 +212,7 @@ class BladeGen:
 
         return xy_camber
 
-    def geom_gen(self, xy_th, lambd, c):
+    def geom_gen(self, xy_th):
         """
         Generate the Blade shape.
         Returns vector with X and Y of blade geometry.
@@ -236,8 +228,13 @@ class BladeGen:
         :return: xy_blade
         :rtype xy_blade: (npts, 2) float-array
         """
+        ds = self.ds
         xy_camber = self.xy_camber
         x = self.x
+        lambd = ds['lambd']
+        c = ds['l_chord']
+        th_le = ds['th_le']
+        th_te = ds['th_te']
 
         # xy surface
         yth_abs = np.abs(xy_th[:, 1])
@@ -260,14 +257,14 @@ class BladeGen:
 
         if (self.thdist_option == 0):
             # Trailing edge radius fitting
-            if (self.th_te > 0):
-                xsurface, ysurface = RoundEdges('TE', xsurface, ysurface, self.th_te / 2,
-                                                xy_camber * self.c).return_xy()
+            if (th_te > 0):
+                xsurface, ysurface = RoundEdges('TE', xsurface, ysurface, th_te / 2,
+                                                xy_camber * c).return_xy()
 
             # Leading edge radius fitting
-            if (self.th_le > 0):
-                xsurface, ysurface = RoundEdges('LE', xsurface, ysurface, self.th_le / 2,
-                                                xy_camber * self.c).return_xy()
+            if (th_le > 0):
+                xsurface, ysurface = RoundEdges('LE', xsurface, ysurface, th_le / 2,
+                                                xy_camber * c).return_xy()
 
             # scale back to original length
             # norm blade
@@ -320,7 +317,7 @@ class BladeGen:
         # must be true.
         assert ((npts >= 500) and (npts % 4 == 0)), "Choose more than 500 Pts and npts must be dividable by 4."
 
-    def debug_plot(self, xy_th, xy_camber, xy_blade):
+    def debug_plot(self, xy_camber, xy_blade):
         plt.figure(figsize=(12, 4))
         # plt.subplot(131)
         # plt.plot(self.x, xy_th[:, 1])

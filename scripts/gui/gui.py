@@ -22,7 +22,7 @@ class Ui(QtWidgets.QMainWindow):
         uic.loadUi('qtdesigner/mainwindow_v1.ui', self)
         # declaring param keys, load restraints for slider
         self.param_keys = ['npts', 'beta1', 'beta2', 'lambd', 'rth', 'xmax_th', 'xmax_camber', 'l_chord', 'th_le',
-                           'th_te']
+                           'th_te', 'dist_blades']
         self.restraints = load_restraints('restraints.txt')
         self.menu_default()
         # Slider only accepts int values, so floats need to be scaled
@@ -43,11 +43,14 @@ class Ui(QtWidgets.QMainWindow):
         self.reset.clicked.connect(self.set_default)
         self.thdist_V1.triggered.connect(self.update_thdist_V1)
         self.thdist_V2.triggered.connect(self.update_thdist_V2)
+        self.nblades_single.triggered.connect(self.update_nblades_single)
+        self.nblades_tandem.triggered.connect(self.update_nblades_tandem)
         self.slider_control()
         self.show()
 
     def menu_default(self):
         self.thdist_ver = 0
+        self.nblades = 'single'
 
     def slider_control(self):
 
@@ -82,6 +85,9 @@ class Ui(QtWidgets.QMainWindow):
 
         self.slider['npts'] = self.slider_npts
         self.label['npts'] = self.val_npts
+
+        self.slider['dist_blades'] = self.slider_dist_blades
+        self.label['dist_blades'] = self.val_dist_blades
         for key in self.slider:
             retval = self.set_restraint(key)
             if retval == 1:
@@ -102,6 +108,8 @@ class Ui(QtWidgets.QMainWindow):
         self.slider['xmax_camber'].valueChanged[int].connect(self.update_xmax_camber)
         self.slider['th_le'].valueChanged[int].connect(self.update_thle)
         self.slider['th_te'].valueChanged[int].connect(self.update_thte)
+        self.slider['dist_blades'].valueChanged[int].connect(self.update_dist_blades)
+        self.label['dist_blades'].editingFinished.connect(self.update_box_dist_blades)
 
     def set_restraint(self, key):
         """
@@ -201,14 +209,14 @@ class Ui(QtWidgets.QMainWindow):
         self.slider['xmax_camber'].setSliderPosition(value)
 
     def update_thle(self, value):
-        if (float(value)/self.scale)<0.01 and (float(value)/self.scale)>0.0:
+        if (float(value) / self.scale) < 0.01 and (float(value) / self.scale) > 0.0:
             self.label['th_le'].setValue(0.01)
         else:
             self.label['th_le'].setValue(float(value) / self.scale)
 
     def update_box_thle(self):
-        value = self.label['th_le'].value() #* self.scale
-        if value<0.01 and value>0.0:
+        value = self.label['th_le'].value()  # * self.scale
+        if value < 0.01 and value > 0.0:
             value = 0.01 * self.scale
         self.slider['th_le'].setSliderPosition(value)
 
@@ -224,12 +232,22 @@ class Ui(QtWidgets.QMainWindow):
             value = 0.01 * self.scale
         self.slider['th_te'].setSliderPosition(value)
 
+    def update_dist_blades(self, value):
+        self.label['dist_blades'].setValue(float(value) / self.scale)
+
+    def update_box_dist_blades(self):
+        value = self.label['dist_blades'].value() * self.scale
+        self.slider['dist_blades'].setSliderPosition(value)
+
     def update_inputs(self):
         # get values
         ds = {}
         for key in self.param_keys:
             ds[key] = self.label[key].value()
+
+        # get values from menu items
         ds['thdist_ver'] = self.thdist_ver
+        ds['nblades'] = self.nblades
         self.m.plot(ds)
         print('Updating Plot')
 
@@ -238,7 +256,7 @@ class Ui(QtWidgets.QMainWindow):
         for key in self.param_keys:
             self.label[key].setValue(self.restraints[key][3])
             if key == 'npts':
-                self.slider[key].setSliderPosition(self.restraints[key][3]/100)
+                self.slider[key].setSliderPosition(self.restraints[key][3] / 100)
             elif self.restraints[key][1] > 1:
                 self.slider[key].setSliderPosition(self.restraints[key][3])
             else:
@@ -251,11 +269,18 @@ class Ui(QtWidgets.QMainWindow):
     def update_thdist_V2(self):
         self.thdist_ver = 1
 
+    def update_nblades_single(self):
+        self.nblades = 'single'
+
+    def update_nblades_tandem(self):
+        self.nblades = 'tandem'
+
+
 class PlotCanvas(FigureCanvas):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
+        # self.axes = fig.add_subplot(111)
 
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
@@ -265,25 +290,29 @@ class PlotCanvas(FigureCanvas):
                                    QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
         self.ax = self.figure.add_subplot(111)
-        self.xlim = (0,0)
-        self.ylim = (0,0)
+        self.xlim = (0, 0)
+        self.ylim = (0, 0)
 
         # self.plot()
 
     def plot(self, ds):
         # get zoom state
-        if self.xlim == (0,0) and self.ylim == (0,0):
-            self.xlim = (-0.05, 1)
-            self.ylim = (-.2, .65)
+        if self.xlim == (0, 0) and self.ylim == (0, 0):
+            self.xlim = (-.1, 1)
+            self.ylim = (-.1, 1)
         else:
             self.xlim = self.ax.get_xlim()
             self.ylim = self.ax.get_ylim()
-        self.ax.cla() # clear existing plots
-        bladegen = BladeGen(frontend='gui', th_dist_option=ds['thdist_ver'], npts=ds['npts'], beta1=ds['beta1'], beta2=ds['beta2'],
+        self.ax.cla()  # clear existing plots
+        bladegen = BladeGen(frontend='gui', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
+                            beta1=ds['beta1'], beta2=ds['beta2'],
                             lambd=ds['lambd'], r_th=ds['rth'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
                             l_chord=ds['l_chord'], rth_le=ds['th_le'], rth_te=ds['th_te'])
         blade_data = bladegen._return()
         self.ax.plot(blade_data[:, 0], blade_data[:, 1])
+        division = ds['dist_blades'] * ds['l_chord']
+        self.ax.plot(blade_data[:, 0], blade_data[:, 1] + division)
+
         # self.ax.fill_between(blade_data[:, 0], blade_data[:, 1], color='b')
         # self.ax.set_title('Blade')
         self.ax.axis('equal')
