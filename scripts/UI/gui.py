@@ -7,18 +7,21 @@ import sys
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-import matplotlib.pyplot as plt
 from bladetools import load_restraints
 import numpy as np
-
-import random
 import math
 from bladegen import BladeGen
 
-from spline_ui import SplineUi
+from UI.spline_ui import SplineUi
 
 
 class Ui(QtWidgets.QMainWindow):
+    """
+        Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
+        restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
+        Slider and Textboxes are linked, so change one will modify the other (and vice versa).
+        Plot will save zoom state even on updating plot.
+    """
 
     def __init__(self):
         super(Ui, self).__init__()
@@ -30,7 +33,7 @@ class Ui(QtWidgets.QMainWindow):
         self.menu_default()
         # Slider only accepts int values, so floats need to be scaled
         self.scale = 100000
-        self.points = np.ones((3,2))*9999
+        self.points = np.ones((3, 2)) * 9999
         # init plot
         self.m = PlotCanvas(self, width=5, height=4)
         toolbar = NavigationToolbar(self.m, self)
@@ -61,6 +64,13 @@ class Ui(QtWidgets.QMainWindow):
         self.update_inputs()
 
     def get_spline_pts(self, value):
+        """
+        Method is called when invisible Label with data from the spline window is being updated. Get Points from string.
+
+        :param value: Value with coords of spline points
+        :type value: str
+        :return:
+        """
         value = value.split(';')
         points = np.zeros((4, 2))
         for i, line in enumerate(value):
@@ -71,6 +81,10 @@ class Ui(QtWidgets.QMainWindow):
         self.points = points
 
     def spline_window(self):
+        """
+        Opens an additional spline window on when button 'Spline' has been clicked.
+        :return:
+        """
         self.spline_ui = SplineUi(self.ds, self.returned_values)
         self.spline_ui.show()
         self.points = self.spline_ui.points
@@ -81,7 +95,9 @@ class Ui(QtWidgets.QMainWindow):
         self.nblades = 'single'
 
     def slider_control(self):
-
+        """
+        Setting up slider and linking to label.
+        """
         self.slider = {}
         self.label = {}
         self.slider['beta1'] = self.slider_beta1
@@ -142,8 +158,10 @@ class Ui(QtWidgets.QMainWindow):
     def set_restraint(self, key):
         """
         Set min, max, default and link to label
-        :param slider:
-        :param label:
+        :param slider: All existing slider with key from keylist.
+        :type slider: dict
+        :param label: All existing label wiht key from keylist.
+        :type label: dict
         :param restraint:
         :return:
         """
@@ -307,6 +325,10 @@ class Ui(QtWidgets.QMainWindow):
 
 
 class PlotCanvas(FigureCanvas):
+    """
+        All the plotting commands are organized here. At GUI start, an empty empty figure is generated. On Update,
+        BladeGen will be called with the user parameter and the plot will be updated.
+    """
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
@@ -334,15 +356,25 @@ class PlotCanvas(FigureCanvas):
             self.xlim = self.ax.get_xlim()
             self.ylim = self.ax.get_ylim()
         self.ax.cla()  # clear existing plots
-        bladegen = BladeGen(frontend='gui', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
+        bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
                             beta1=ds['beta1'], beta2=ds['beta2'],
                             lambd=ds['lambd'], r_th=ds['rth'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
-                            l_chord=ds['l_chord'], rth_le=ds['th_le'], rth_te=ds['th_te'],spline_pts=ds['pts'])
-        blade_data = bladegen._return()
-        self.ax.plot(blade_data[:, 0], blade_data[:, 1])
+                            l_chord=ds['l_chord'], rth_le=ds['th_le'], rth_te=ds['th_te'], spline_pts=ds['pts'])
+        blade_data, camber_data = bladegen._return()
         division = ds['dist_blades'] * ds['l_chord']
-        self.ax.plot(blade_data[:, 0], blade_data[:, 1] + division)
-
+        if ds['nblades'] == 'single':
+            self.ax.plot(blade_data[:, 0], blade_data[:, 1])
+            self.ax.plot(blade_data[:, 0], blade_data[:, 1] + division)
+        elif ds['nblades'] == 'tandem':
+            blade1 = blade_data
+            blade2 = blade1
+            blade2[:,0] = blade2[:,0] + np.max(blade1[:, 0]) + .03 * (np.min(blade1[:, 0] + np.max(blade2[:, 0])))
+            blade2[:,1] = blade2[:,1] + (np.max(camber_data[:,1]) - camber_data[0,1]) - (1-0.915)*division
+            # blade2[:,1] = np.max()
+            self.ax.plot(blade1[:, 0], blade1[:, 1])
+            self.ax.plot(blade2[:, 0], blade2[:, 1])
+            # self.ax.plot(blade1[:, 0], blade1[:, 1] + division)
+            # self.ax.plot(blade2[:, 0], blade2[:, 1] + division)
         # self.ax.fill_between(blade_data[:, 0], blade_data[:, 1], color='b')
         # self.ax.set_title('Blade')
         self.ax.axis('equal')

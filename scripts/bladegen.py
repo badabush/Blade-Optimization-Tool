@@ -48,7 +48,7 @@ class BladeGen:
         if self.frontend == 'user':
             ImportExport()._export(xy_blade)
             self.debug_plot(self.xy_camber, xy_blade)
-        elif self.frontend == 'gui':
+        elif self.frontend == 'UI':
             self.xy_blade = xy_blade
             self._return()
 
@@ -64,20 +64,31 @@ class BladeGen:
 
         # TODO: omit obsolete parameters, add input parameters into dataframe
         ds = {}
-        ds['rth'] = r_th * 10        # fixme: rthickness behaves differently in v1 and v2 thdist
-        ds['beta'] = beta
-        ds['theta'] = np.deg2rad(np.sum(ds['beta']))
-        ds['lambd'] = np.deg2rad(lambd)
-        ds['xmax_camber'] = x_maxcamber
-        ds['xmax_th'] = x_maxth
-        ds['l_chord'] = l_chord
+        if self.nblade == 'single':
+            ds['rth'] = r_th * 10        # fixme: rthickness behaves differently in v1 and v2 thdist
+            ds['beta'] = beta
+            ds['theta'] = np.deg2rad(np.sum(ds['beta']))
+            ds['lambd'] = np.deg2rad(lambd)
+            ds['xmax_camber'] = x_maxcamber
+            ds['xmax_th'] = x_maxth
+            ds['l_chord'] = l_chord
+            ds['th_le'] = rth_le * ds['l_chord']
+            ds['th_te'] = rth_te * ds['l_chord']
+            ds['gamma_te'] = .07    # Lieblein Diffusion Factor for front and rear blade
 
-        ds['th_le'] = rth_le * ds['l_chord']
-        ds['th_te'] = rth_te * ds['l_chord']
+        elif self.nblade == 'tandem':
+            ds['rth'] = r_th * 10        # fixme: rthickness behaves differently in v1 and v2 thdist
+            ds['beta'] = beta
+            ds['theta'] = np.deg2rad(np.sum(ds['beta']))
+            ds['lambd'] = np.deg2rad(lambd)
+            ds['xmax_camber'] = x_maxcamber
+            ds['xmax_th'] = x_maxth
+            ds['l_chord'] = l_chord/2
+            ds['th_le'] = rth_le * ds['l_chord']
+            ds['th_te'] = rth_te * ds['l_chord']
+            ds['gamma_te'] = .14    # Lieblein Diffusion Factor for front and rear blade
         ds['npts'] = int(npts / 2)
 
-        # Lieblein Diffusion Factor for front and rear blade
-        ds['gammahk_t1'] = .14
 
         return ds
 
@@ -93,7 +104,6 @@ class BladeGen:
         x = self.x
         npts = ds['npts']
         th = ds['rth'] / 10
-        # Option 1: Simple
 
         yth = th * (1 - x) * (1.0675 * np.sqrt(x) - x * (.2756 - x * (2.4478 - 2.8385 * x))) / (
                 1 - .176 * x)  # thickness distribution
@@ -122,7 +132,7 @@ class BladeGen:
         dhk = 2 * th_te / c
 
         c = 1
-        gammahk = ds.gammahk_t1.values
+        gammahk = ds['gammahk_t1']
         x_short = x[np.where(x < (1 - th_te / c))]
 
         x_front = x_short[np.where(x_short < xd)]
@@ -178,8 +188,8 @@ class BladeGen:
         y_blade[xps.size] = y_blade[xps.size + 1] / 2
 
         # scale and rotate
-        x_blade = x_blade * c
-        y_blade = y_blade * c
+        x_blade = x_blade * ds['l_chord']
+        y_blade = y_blade * ds['l_chord']
         x_blade = np.cos(lambd) * x_blade - np.sin(lambd) * y_blade
         y_blade = np.sin(lambd) * x_blade + np.cos(lambd) * y_blade
 
@@ -343,7 +353,8 @@ class BladeGen:
 
     def _return(self):
         xy_blade = self.xy_blade.values
-        return xy_blade
+        xy_camber = self.xy_camber
+        return xy_blade, xy_camber
 
 
 if __name__ == "__main__":

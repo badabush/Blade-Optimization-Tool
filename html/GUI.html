@@ -1,0 +1,382 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>GUI module &#8212; thesis  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Scripts module" href="scripts.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="scripts.html" title="Scripts module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">thesis  documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gui-module">
+<h1>GUI module<a class="headerlink" href="#gui-module" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="main-window">
+<h2>Main window<a class="headerlink" href="#main-window" title="Permalink to this headline">¶</a></h2>
+<p>The Graphical User Interface for the BladeGen script.</p>
+<span class="target" id="module-scripts.UI.gui"></span><dl class="class">
+<dt id="scripts.UI.gui.PlotCanvas">
+<em class="property">class </em><code class="sig-prename descclassname">scripts.UI.gui.</code><code class="sig-name descname">PlotCanvas</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em>, <em class="sig-param">width=5</em>, <em class="sig-param">height=4</em>, <em class="sig-param">dpi=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#PlotCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.PlotCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.backends.backend_qt5agg.FigureCanvasQTAgg</span></code></p>
+<p>All the plotting commands are organized here. At GUI start, an empty empty figure is generated. On Update,
+BladeGen will be called with the user parameter and the plot will be updated.</p>
+<dl class="method">
+<dt id="scripts.UI.gui.PlotCanvas.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">ds</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#PlotCanvas.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.PlotCanvas.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="scripts.UI.gui.Ui">
+<em class="property">class </em><code class="sig-prename descclassname">scripts.UI.gui.</code><code class="sig-name descname">Ui</code><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code></p>
+<p>Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
+restraints.txt. Parameters with values or steps &lt;1 have to be scaled since the slider only accepts int values.
+Slider and Textboxes are linked, so change one will modify the other (and vice versa).
+Plot will save zoom state even on updating plot.</p>
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.get_spline_pts">
+<code class="sig-name descname">get_spline_pts</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.get_spline_pts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.get_spline_pts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method is called when invisible Label with data from the spline window is being updated. Get Points from string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>str</em>) – Value with coords of spline points</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.menu_default">
+<code class="sig-name descname">menu_default</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.menu_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.menu_default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.set_default">
+<code class="sig-name descname">set_default</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.set_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.set_default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.set_restraint">
+<code class="sig-name descname">set_restraint</code><span class="sig-paren">(</span><em class="sig-param">key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.set_restraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.set_restraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set min, max, default and link to label
+:param slider: All existing slider with key from keylist.
+:type slider: dict
+:param label: All existing label wiht key from keylist.
+:type label: dict
+:param restraint:
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.slider_control">
+<code class="sig-name descname">slider_control</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.slider_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.slider_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setting up slider and linking to label.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.spline_window">
+<code class="sig-name descname">spline_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.spline_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.spline_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens an additional spline window on when button ‘Spline’ has been clicked.
+:return:</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_box_beta1">
+<code class="sig-name descname">update_box_beta1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_box_beta1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_box_beta1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_box_beta2">
+<code class="sig-name descname">update_box_beta2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_box_beta2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_box_beta2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_box_dist_blades">
+<code class="sig-name descname">update_box_dist_blades</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_box_dist_blades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_box_dist_blades" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_box_l_chord">
+<code class="sig-name descname">update_box_l_chord</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_box_l_chord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_box_l_chord" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_box_lambd">
+<code class="sig-name descname">update_box_lambd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_box_lambd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_box_lambd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_box_npts">
+<code class="sig-name descname">update_box_npts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_box_npts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_box_npts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_box_rth">
+<code class="sig-name descname">update_box_rth</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_box_rth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_box_rth" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_box_thle">
+<code class="sig-name descname">update_box_thle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_box_thle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_box_thle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_box_thte">
+<code class="sig-name descname">update_box_thte</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_box_thte"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_box_thte" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_box_xmax_camber">
+<code class="sig-name descname">update_box_xmax_camber</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_box_xmax_camber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_box_xmax_camber" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_dist_blades">
+<code class="sig-name descname">update_dist_blades</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_dist_blades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_dist_blades" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_inputs">
+<code class="sig-name descname">update_inputs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_inputs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_inputs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_nblades_single">
+<code class="sig-name descname">update_nblades_single</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_nblades_single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_nblades_single" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_nblades_tandem">
+<code class="sig-name descname">update_nblades_tandem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_nblades_tandem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_nblades_tandem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_npts">
+<code class="sig-name descname">update_npts</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_npts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_npts" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_rth">
+<code class="sig-name descname">update_rth</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_rth"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_rth" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_thdist_V1">
+<code class="sig-name descname">update_thdist_V1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_thdist_V1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_thdist_V1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_thdist_V2">
+<code class="sig-name descname">update_thdist_V2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_thdist_V2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_thdist_V2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_thle">
+<code class="sig-name descname">update_thle</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_thle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_thle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_thte">
+<code class="sig-name descname">update_thte</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_thte"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_thte" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_xmax_camber">
+<code class="sig-name descname">update_xmax_camber</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_xmax_camber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_xmax_camber" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.gui.Ui.update_xmax_th">
+<code class="sig-name descname">update_xmax_th</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/gui.html#Ui.update_xmax_th"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.gui.Ui.update_xmax_th" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="spline-window">
+<h2>Spline window<a class="headerlink" href="#spline-window" title="Permalink to this headline">¶</a></h2>
+<p>Popup window Spline config.</p>
+<span class="target" id="module-scripts.UI.spline_ui"></span><dl class="class">
+<dt id="scripts.UI.spline_ui.PlotCanvas">
+<em class="property">class </em><code class="sig-prename descclassname">scripts.UI.spline_ui.</code><code class="sig-name descname">PlotCanvas</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em>, <em class="sig-param">width=5</em>, <em class="sig-param">height=4</em>, <em class="sig-param">dpi=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#PlotCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.PlotCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.backends.backend_qt5agg.FigureCanvasQTAgg</span></code></p>
+<dl class="method">
+<dt id="scripts.UI.spline_ui.PlotCanvas.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">xy</em>, <em class="sig-param">pts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#PlotCanvas.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.PlotCanvas.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="scripts.UI.spline_ui.SplineUi">
+<em class="property">class </em><code class="sig-prename descclassname">scripts.UI.spline_ui.</code><code class="sig-name descname">SplineUi</code><span class="sig-paren">(</span><em class="sig-param">ds</em>, <em class="sig-param">main_value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code></p>
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.close_window">
+<code class="sig-name descname">close_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.close_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.close_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p1_down">
+<code class="sig-name descname">update_p1_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p1_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p1_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p1_up">
+<code class="sig-name descname">update_p1_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p1_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p1_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p2_down">
+<code class="sig-name descname">update_p2_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p2_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p2_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p2_left">
+<code class="sig-name descname">update_p2_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p2_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p2_left" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p2_right">
+<code class="sig-name descname">update_p2_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p2_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p2_right" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p2_up">
+<code class="sig-name descname">update_p2_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p2_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p2_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p3_down">
+<code class="sig-name descname">update_p3_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p3_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p3_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p3_left">
+<code class="sig-name descname">update_p3_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p3_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p3_left" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p3_right">
+<code class="sig-name descname">update_p3_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p3_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p3_right" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p3_up">
+<code class="sig-name descname">update_p3_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p3_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p3_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p4_down">
+<code class="sig-name descname">update_p4_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p4_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p4_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_p4_up">
+<code class="sig-name descname">update_p4_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_p4_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_p4_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="scripts.UI.spline_ui.SplineUi.update_plot">
+<code class="sig-name descname">update_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/UI/spline_ui.html#SplineUi.update_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.UI.spline_ui.SplineUi.update_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">GUI module</a><ul>
+<li><a class="reference internal" href="#main-window">Main window</a></li>
+<li><a class="reference internal" href="#spline-window">Spline window</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="scripts.html"
+                        title="previous chapter">Scripts module</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/GUI.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="scripts.html" title="Scripts module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">thesis  documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Ga Man Liang.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>

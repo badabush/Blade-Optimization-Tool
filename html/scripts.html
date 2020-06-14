@@ -16,6 +16,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="GUI module" href="GUI.html" />
     <link rel="prev" title="List of Python Packages" href="packages.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -27,6 +28,9 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="GUI.html" title="GUI module"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="packages.html" title="List of Python Packages"
              accesskey="P">previous</a> |</li>
@@ -73,7 +77,7 @@ Does absolutely nothing at the moment.</p>
 <p>Generate a NACA65 blade from input parameters.</p>
 <span class="target" id="module-scripts.bladegen"></span><dl class="class">
 <dt id="scripts.bladegen.BladeGen">
-<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">frontend='user'</em>, <em class="sig-param">file=''</em>, <em class="sig-param">nblade='single'</em>, <em class="sig-param">th_dist_option=1</em>, <em class="sig-param">r_th=0.0215</em>, <em class="sig-param">beta1=25</em>, <em class="sig-param">beta2=25</em>, <em class="sig-param">x_maxcamber=0.4</em>, <em class="sig-param">x_maxth=0.3</em>, <em class="sig-param">l_chord=1.0</em>, <em class="sig-param">lambd=20</em>, <em class="sig-param">rth_le=0.01</em>, <em class="sig-param">rth_te=0.0135</em>, <em class="sig-param">npts=1000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">scripts.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param">frontend='user', file='', nblade='single', th_dist_option=1, r_th=0.0215, beta1=25, beta2=25, x_maxcamber=0.4, x_maxth=0.3, l_chord=1.0, lambd=20, rth_le=0.01, rth_te=0.0135, npts=1000, spline_pts=[9999]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="method">
 <dt id="scripts.bladegen.BladeGen.assert_input">
@@ -121,12 +125,12 @@ Returns vector with X and Y of camber line.</p>
 
 <dl class="method">
 <dt id="scripts.bladegen.BladeGen.debug_plot">
-<code class="sig-name descname">debug_plot</code><span class="sig-paren">(</span><em class="sig-param">xy_th</em>, <em class="sig-param">xy_camber</em>, <em class="sig-param">xy_blade</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.debug_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.debug_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">debug_plot</code><span class="sig-paren">(</span><em class="sig-param">xy_camber</em>, <em class="sig-param">xy_blade</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.debug_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.debug_plot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="scripts.bladegen.BladeGen.geom_gen">
-<code class="sig-name descname">geom_gen</code><span class="sig-paren">(</span><em class="sig-param">xy_th</em>, <em class="sig-param">xy_camber</em>, <em class="sig-param">lambd</em>, <em class="sig-param">c</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.geom_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.geom_gen" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">geom_gen</code><span class="sig-paren">(</span><em class="sig-param">xy_th</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.geom_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.geom_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate the Blade shape.
 Returns vector with X and Y of blade geometry.</p>
 <dl class="field-list simple">
@@ -149,7 +153,7 @@ Returns vector with X and Y of blade geometry.</p>
 
 <dl class="method">
 <dt id="scripts.bladegen.BladeGen.params">
-<code class="sig-name descname">params</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.params" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">params</code><span class="sig-paren">(</span><em class="sig-param">r_th</em>, <em class="sig-param">beta</em>, <em class="sig-param">x_maxcamber</em>, <em class="sig-param">x_maxth</em>, <em class="sig-param">l_chord</em>, <em class="sig-param">lambd</em>, <em class="sig-param">rth_le</em>, <em class="sig-param">rth_te</em>, <em class="sig-param">npts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.params" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate parameters.
 Return dataset (ds) with parameters.</p>
 <dl class="field-list simple">
@@ -177,6 +181,11 @@ Returns  vector with X and Y of thickness distribution.</p>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="scripts.bladegen.BladeGen.thickness_dist_v2">
+<code class="sig-name descname">thickness_dist_v2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladegen.html#BladeGen.thickness_dist_v2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladegen.BladeGen.thickness_dist_v2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -189,6 +198,11 @@ Returns  vector with X and Y of thickness distribution.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Class for importing existing xyz coordinates from txt and exporting generated blade to txt (z=0).</p>
 </dd></dl>
+
+<dl class="function">
+<dt id="scripts.bladetools.camber_spline">
+<code class="sig-prename descclassname">scripts.bladetools.</code><code class="sig-name descname">camber_spline</code><span class="sig-paren">(</span><em class="sig-param">npts</em>, <em class="sig-param">xy_points</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/scripts/bladetools.html#camber_spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#scripts.bladetools.camber_spline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="function">
 <dt id="scripts.bladetools.euclidean_dist">
@@ -387,6 +401,9 @@ Create and returns dataset containing xylower, xyupper, ….</p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="packages.html"
                         title="previous chapter">List of Python Packages</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="GUI.html"
+                        title="next chapter">GUI module</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -417,6 +434,9 @@ Create and returns dataset containing xylower, xyupper, ….</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="GUI.html" title="GUI module"
+             >next</a> |</li>
         <li class="right" >
           <a href="packages.html" title="List of Python Packages"
              >previous</a> |</li>

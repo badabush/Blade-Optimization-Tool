@@ -39,7 +39,9 @@
   <h1>Source code for scripts.bladetools</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">scipy.special</span> <span class="kn">import</span> <span class="n">binom</span>
 <span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="kn">import</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">import</span> <span class="nn">csv</span>
 
 
@@ -128,6 +130,32 @@
         <span class="n">xyz</span> <span class="o">=</span> <span class="n">xy</span>
         <span class="n">xyz</span><span class="p">[</span><span class="s1">&#39;z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">z</span>
         <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s1">&#39;../geo_output/xyz.txt&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">xyz</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.3f</span><span class="s1">, </span><span class="si">%.3f</span><span class="s1">, </span><span class="si">%.3f</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="camber_spline"><a class="viewcode-back" href="../../scripts.html#scripts.bladetools.camber_spline">[docs]</a><span class="k">def</span> <span class="nf">camber_spline</span><span class="p">(</span><span class="n">npts</span><span class="p">,</span> <span class="n">xy_points</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">bernstein</span><span class="p">(</span><span class="n">n</span><span class="p">,</span><span class="n">k</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Bernstein polynomial.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">coeff</span> <span class="o">=</span> <span class="n">binom</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_bpoly</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">coeff</span> <span class="o">*</span> <span class="n">x</span> <span class="o">**</span> <span class="n">k</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="n">k</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">_bpoly</span>
+
+
+    <span class="k">def</span> <span class="nf">bezier</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">npts</span><span class="p">):</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+        <span class="c1"># t = self.x</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">x</span> <span class="c1"># x-coord generation</span>
+        <span class="n">curve</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">npts</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="n">curve</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">bernstein</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">)(</span><span class="n">t</span><span class="p">),</span> <span class="n">pts</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">curve</span>
+    <span class="n">npts</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">npts</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="o">.</span><span class="mi">5</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">npts</span><span class="p">)))</span>  <span class="c1"># x-coord generation</span>
+    <span class="n">_x</span><span class="p">,</span> <span class="n">_y</span> <span class="o">=</span> <span class="n">bezier</span><span class="p">(</span><span class="n">xy_points</span><span class="p">,</span> <span class="n">npts</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">_x</span><span class="p">,</span><span class="n">_y</span><span class="p">]))</span></div>
 </pre></div>
 
           </div>

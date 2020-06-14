@@ -12,3 +12,4 @@ Welcome to thesis's documentation!
 
    packages
    scripts
+   GUI
