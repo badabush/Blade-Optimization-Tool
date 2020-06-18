@@ -3,14 +3,16 @@ from matplotlib import pyplot as plt
 from sklearn import preprocessing
 import pandas as pd
 import scipy.optimize as optimize
+from scipy.integrate import simps
 from roundedges import RoundEdges
 from bladetools import ImportExport, normalize, camber_spline
 
 
 class BladeGen:
 
-    def __init__(self, frontend='user', file='', nblade='single', th_dist_option=1, r_th=.0215, beta1=25, beta2=25,
-                 x_maxcamber=.4, x_maxth=.3, l_chord=1.0, lambd=20, rth_le=0.01, rth_te=0.0135, npts=1000, spline_pts=[9999]):
+    def __init__(self, frontend='user', file='', nblade='single', th_dist_option=0, r_th=.0215, alpha1=25, alpha2=25,
+                 x_maxcamber=.4, x_maxth=.3, l_chord=1.0, lambd=20, rth_le=0.01, rth_te=0.0135, npts=1000,
+                 spline_pts=[9999]):
 
         self.file = file
         if self.file != '':
@@ -21,30 +23,31 @@ class BladeGen:
                 print(e)
 
         # assert input
-        self.assert_input(nblade, r_th, beta1, beta2, x_maxcamber, rth_le, rth_te, npts)
+        self.assert_input(nblade, r_th, alpha1, alpha2, x_maxcamber, rth_le, rth_te, npts)
         # menu items
-        self.thdist_option = th_dist_option # th_dist v1 or v2
-        self.frontend = frontend # the interface to this script
+        self.thdist_option = th_dist_option  # th_dist v1 or v2
+        self.frontend = frontend  # the interface to this script
         self.nblade = nblade
 
         # pack parameters into dict
-        self.ds = self.params(r_th, [beta1, beta2], x_maxcamber, x_maxth, l_chord, lambd, rth_le,
-                        rth_te, npts)
+        self.ds = self.params(r_th, [alpha1, alpha2], x_maxcamber, x_maxth, l_chord, lambd, rth_le,
+                              rth_te, npts)
 
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.ds['npts'])))  # x-coord generation
 
-        if np.any(spline_pts == 9999):
+        if 9999 in spline_pts:
             self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         else:
-            self.xy_camber = camber_spline(self.ds['npts'], spline_pts)
-            # update x otherwise thickness doesnt fit?
-            self.x = self.xy_camber[:,0]
+            self.xy_cspline = camber_spline(self.ds['npts'], spline_pts)
+            self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
+            self.xy_camber[:, 1] = self.xy_camber[:, 1] * np.arctan(
+                np.gradient(self.xy_cspline[:, 1]) / np.gradient(self.xy_cspline[:, 0]))
+
         if self.thdist_option == 0:
             xy_th = self.thickness_dist_v1()
-            xy_blade = self.geom_gen(xy_th)
-            xy_blade = normalize(xy_blade)
+            xy_blade, self.xy_camber = self.geom_gen(xy_th)
         elif self.thdist_option == 1:
-            xy_blade = self.thickness_dist_v2()
+            xy_blade, self.xy_camber = self.thickness_dist_v2()
         if self.frontend == 'user':
             ImportExport()._export(xy_blade)
             self.debug_plot(self.xy_camber, xy_blade)
@@ -52,8 +55,8 @@ class BladeGen:
             self.xy_blade = xy_blade
             self._return()
 
-    def params(self, r_th, beta, x_maxcamber, x_maxth, l_chord, lambd, rth_le,
-                        rth_te, npts):
+    def params(self, r_th, alpha, x_maxcamber, x_maxth, l_chord, lambd, rth_le,
+               rth_te, npts):
         """
         Generate parameters.
         Return dataset (ds) with parameters.
@@ -65,30 +68,29 @@ class BladeGen:
         # TODO: omit obsolete parameters, add input parameters into dataframe
         ds = {}
         if self.nblade == 'single':
-            ds['rth'] = r_th * 10        # fixme: rthickness behaves differently in v1 and v2 thdist
-            ds['beta'] = beta
-            ds['theta'] = np.deg2rad(np.sum(ds['beta']))
+            ds['rth'] = r_th
+            ds['alpha'] = alpha
+            ds['theta'] = np.deg2rad(np.sum(ds['alpha']))
             ds['lambd'] = np.deg2rad(lambd)
             ds['xmax_camber'] = x_maxcamber
             ds['xmax_th'] = x_maxth
             ds['l_chord'] = l_chord
             ds['th_le'] = rth_le * ds['l_chord']
             ds['th_te'] = rth_te * ds['l_chord']
-            ds['gamma_te'] = .07    # Lieblein Diffusion Factor for front and rear blade
+            ds['gamma_te'] = .07  # Lieblein Diffusion Factor for front and rear blade
 
         elif self.nblade == 'tandem':
-            ds['rth'] = r_th * 10        # fixme: rthickness behaves differently in v1 and v2 thdist
-            ds['beta'] = beta
-            ds['theta'] = np.deg2rad(np.sum(ds['beta']))
+            ds['rth'] = r_th
+            ds['alpha'] = alpha
+            ds['theta'] = np.deg2rad(np.sum(ds['alpha']))
             ds['lambd'] = np.deg2rad(lambd)
             ds['xmax_camber'] = x_maxcamber
             ds['xmax_th'] = x_maxth
-            ds['l_chord'] = l_chord/2
+            ds['l_chord'] = l_chord / 2
             ds['th_le'] = rth_le * ds['l_chord']
             ds['th_te'] = rth_te * ds['l_chord']
-            ds['gamma_te'] = .14    # Lieblein Diffusion Factor for front and rear blade
+            ds['gamma_te'] = .14  # Lieblein Diffusion Factor for front and rear blade
         ds['npts'] = int(npts / 2)
-
 
         return ds
 
@@ -103,7 +105,7 @@ class BladeGen:
         ds = self.ds
         x = self.x
         npts = ds['npts']
-        th = ds['rth'] / 10
+        th = ds['rth']
 
         yth = th * (1 - x) * (1.0675 * np.sqrt(x) - x * (.2756 - x * (2.4478 - 2.8385 * x))) / (
                 1 - .176 * x)  # thickness distribution
@@ -120,6 +122,7 @@ class BladeGen:
     def thickness_dist_v2(self):
         # Option 2: NACA65 (Parabolic_Camber_V5)
         ds = self.ds
+        xy_camber = self.xy_camber
         c = ds['l_chord']
         th_te = ds['th_te']
         th_le = ds['th_le']
@@ -128,11 +131,10 @@ class BladeGen:
 
         xd = ds['xmax_th']
         rn = th_le / c
-        d = ds['rth']
+        d = ds['rth'] * 2
         dhk = 2 * th_te / c
-
-        c = 1
-        gammahk = ds['gammahk_t1']
+        c=1
+        gammahk = ds['gamma_te']
         x_short = x[np.where(x < (1 - th_te / c))]
 
         x_front = x_short[np.where(x_short < xd)]
@@ -171,11 +173,11 @@ class BladeGen:
         else:
             xy_th[:, 1] = np.concatenate([np.abs(yth), np.abs(yth_circ_te), [0]])
 
-        chi_camber = np.arctan(np.gradient(self.xy_camber[:, 1]) / np.gradient(self.xy_camber[:, 0]))
+        chi_camber = np.arctan(np.gradient(xy_camber[:, 1]) / np.gradient(xy_camber[:, 0]))
         xss = x - np.sin(chi_camber) * xy_th[:, 1]
         xps = x + np.sin(chi_camber) * xy_th[:, 1]
-        yss = self.xy_camber[:, 1] + np.cos(chi_camber) * xy_th[:, 1]
-        yps = self.xy_camber[:, 1] - np.cos(chi_camber) * xy_th[:, 1]
+        yss = xy_camber[:, 1] + np.cos(chi_camber) * xy_th[:, 1]
+        yps = xy_camber[:, 1] - np.cos(chi_camber) * xy_th[:, 1]
 
         # concatenate arrays
         x_blade = np.zeros(xss.size + xps.size)
@@ -188,21 +190,25 @@ class BladeGen:
         y_blade[xps.size] = y_blade[xps.size + 1] / 2
 
         # scale and rotate
+        # blade
         x_blade = x_blade * ds['l_chord']
         y_blade = y_blade * ds['l_chord']
-        x_blade = np.cos(lambd) * x_blade - np.sin(lambd) * y_blade
-        y_blade = np.sin(lambd) * x_blade + np.cos(lambd) * y_blade
+        X = np.cos(lambd) * x_blade - np.sin(lambd) * y_blade
+        Y = np.sin(lambd) * x_blade + np.cos(lambd) * y_blade
+        # camber
+        xy_camber = xy_camber * ds['l_chord']
+        X_camber = np.cos(lambd) * xy_camber[:, 0] - np.sin(lambd) * xy_camber[:, 1]
+        Y_camber = np.sin(lambd) * xy_camber[:, 0] + np.cos(lambd) * xy_camber[:, 1]
 
-        df = pd.DataFrame(data={'x': x_blade, 'y': y_blade})
-        return df
-
+        df = pd.DataFrame(data={'x': X, 'y': Y})
+        return df, np.transpose(np.array([X_camber, Y_camber]))
 
     def camberline(self, theta, a):
         """
         Calculate the parabolic-arc camberline from R.Aungier.
         Returns vector with X and Y of camber line.
 
-        :param theta: sum of beta1 and beta2 (Chi1 and Chi2 in R.Aungier)
+        :param theta: sum of alpha1 and alpha2 (Chi1 and Chi2 in R.Aungier)
         :type theta: float
         :param a: max. chamber position
         :type a: float
@@ -227,8 +233,6 @@ class BladeGen:
         xy_camber = np.transpose(np.array([x, ycambertemp]))
 
         return xy_camber
-
-
 
     def geom_gen(self, xy_th):
         """
@@ -272,6 +276,8 @@ class BladeGen:
         # scale with c
         xsurface = xsurface * c
         ysurface = ysurface * c
+        # scale with c
+        xy_camber = xy_camber * c
 
         try:
             if (self.thdist_option == 0):
@@ -290,17 +296,21 @@ class BladeGen:
                 xlen = xsurface.max() - xsurface.min()
                 xsurface = (xsurface / xlen) * c
         except ValueError as e:
-            print("Failed to round edges: " + e)
-        # rotate
+            print(e)
+        # rotate blade
         X = np.cos(lambd) * xsurface - np.sin(lambd) * ysurface
         Y = np.sin(lambd) * xsurface + np.cos(lambd) * ysurface
         xy_blade = np.transpose(np.array([X, Y]))
+        # rotate camber line
+        X_camber = np.cos(lambd) * xy_camber[:, 0] - np.sin(lambd) * xy_camber[:, 1]
+        Y_camber = np.sin(lambd) * xy_camber[:, 0] + np.cos(lambd) * xy_camber[:, 1]
+        xy_camber = np.transpose(np.array([X_camber, Y_camber]))
 
         # pack into pd Frame
         xy_blade = pd.DataFrame(data={'x': xy_blade[:, 0], 'y': xy_blade[:, 1]})
-        return xy_blade
+        return xy_blade, xy_camber
 
-    def assert_input(self, nblade, r_th, beta1, beta2, x_maxcamber, rth_le, rth_te, npts):
+    def assert_input(self, nblade, r_th, alpha1, alpha2, x_maxcamber, rth_le, rth_te, npts):
         """
         Assert input parameter are within defined range.
 
@@ -308,10 +318,10 @@ class BladeGen:
         :type nblade: str
         :param r_th: relative thickness, default: .0215
         :type r_th: float
-        :param beta1: inlet angle, default: 25
-        :type beta1: float
-        :param beta2: outlet angle, default: 25
-        :type beta2: float
+        :param alpha1: inlet angle, default: 25
+        :type alpha1: float
+        :param alpha2: outlet angle, default: 25
+        :type alpha2: float
         :param x_maxcamber: X position of max. chamber, default: .4
         :type x_maxcamber: float
         :param rth_le: rel. thickness leading edge as percentage of chord, default: .02
@@ -330,8 +340,8 @@ class BladeGen:
         assert (((rth_te <= .03) and (rth_te >= .01)) or rth_te == 0), "rth_te out of range"
 
         assert ((x_maxcamber > 0) and (x_maxcamber < 1)), "x max chamber out of range [0,1]."
-        # Blade arc flips above sum(beta1,beta2)>90
-        assert ((beta1 + beta2) <= 90), "Beta1 + Beta2 must be smaller than 90"
+        # Blade arc flips above sum(alpha1,alpha2)>90
+        assert ((alpha1 + alpha2) <= 90), "alpha1 + alpha2 must be smaller than 90"
 
         # Blade looks absolute horrible sub 500 points. Blade will be divided into 4 even parts, so npts%4==0
         # must be true.
@@ -343,12 +353,13 @@ class BladeGen:
         # plt.plot(self.x, xy_th[:, 1])
         # plt.subplot(132)
         # plt.subplot(133)
-        if (np.all(self.xy_in) != None):
-            plt.plot(self.xy_in.x, self.xy_in.y)
+        # if (np.all(self.xy_in) != None):
+        #     plt.plot(self.xy_in.x, self.xy_in.y)
         plt.plot(xy_blade.x, xy_blade.y)
-        # plt.plot(self.x, xy_camber[:, 1])
+        plt.plot(self.x, xy_camber[:, 1])
         plt.axis('equal')
         plt.legend(['imported blade', 'generated blade'])
+        plt.grid()
         plt.show()
 
     def _return(self):
@@ -358,5 +369,5 @@ class BladeGen:
 
 
 if __name__ == "__main__":
-    BladeGen(file='../geo_output/coords.txt', th_dist_option=1, lambd=28, rth_te=0.01, rth_le=.01,
-             l_chord=40, beta2=25, beta1=25, r_th=.04, x_maxth=.4)
+    BladeGen(file='../geo_output/coords.txt', th_dist_option=0, lambd=0, rth_te=0.00, rth_le=.0,
+             l_chord=1, alpha2=15, alpha1=15, r_th=.04, x_maxth=.5, spline_pts=[9999, 9999])

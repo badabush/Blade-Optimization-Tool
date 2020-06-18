@@ -7,15 +7,17 @@ import sys
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+from matplotlib import cm
 from bladetools import load_restraints
 import numpy as np
 import math
 from bladegen import BladeGen
 
+from UI.update_handle import UpdateHandler
 from UI.spline_ui import SplineUi
 
 
-class Ui(QtWidgets.QMainWindow):
+class Ui(QtWidgets.QMainWindow, UpdateHandler):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
         restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
@@ -27,7 +29,7 @@ class Ui(QtWidgets.QMainWindow):
         super(Ui, self).__init__()
         uic.loadUi('qtdesigner/mainwindow_v1.ui', self)
         # declaring param keys, load restraints for slider
-        self.param_keys = ['npts', 'beta1', 'beta2', 'lambd', 'rth', 'xmax_th', 'xmax_camber', 'l_chord', 'th_le',
+        self.param_keys = ['npts', 'alpha1', 'alpha2', 'lambd', 'rth', 'xmax_th', 'xmax_camber', 'l_chord', 'th_le',
                            'th_te', 'dist_blades']
         self.restraints = load_restraints('restraints.txt')
         self.menu_default()
@@ -35,7 +37,7 @@ class Ui(QtWidgets.QMainWindow):
         self.scale = 100000
         self.points = np.ones((3, 2)) * 9999
         # init plot
-        self.m = PlotCanvas(self, width=5, height=4)
+        self.m = PlotCanvas(self, width=8, height=10)
         toolbar = NavigationToolbar(self.m, self)
         centralwidget = self.fig_widget
         vbl = QtGui.QVBoxLayout(centralwidget)
@@ -43,10 +45,15 @@ class Ui(QtWidgets.QMainWindow):
         vbl.addWidget(self.m)
 
         # link buttons
-        self.update = self.findChild(QtWidgets.QPushButton, 'btn_update')
-        self.update.clicked.connect(self.update_inputs)
+        self.btn_update_all.clicked.connect(self.update_inputs)
+        self.btn_update_sel.clicked.connect(self.update_select)
         self.reset = self.findChild(QtWidgets.QPushButton, 'btn_default')
         self.reset.clicked.connect(self.set_default)
+
+        # radio
+        self.radio_blade1.toggled.connect(self.update_radio_blades)
+
+        # menu
         self.thdist_V1.triggered.connect(self.update_thdist_V1)
         self.thdist_V2.triggered.connect(self.update_thdist_V2)
         self.nblades_single.triggered.connect(self.update_nblades_single)
@@ -54,8 +61,15 @@ class Ui(QtWidgets.QMainWindow):
         self.slider_control()
         self.show()
 
+        # init points
+        self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
+        str_pts = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
+            self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
+            self.points[2, 1], self.points[3, 0], self.points[3, 1], self.points[4, 0], self.points[4, 1])
+        self.returned_values.setText(str_pts)
+
         # open spline popup on click
-        self.btn_spline.clicked.connect(self.spline_window)
+        self.btn_spline_camber.clicked.connect(self.spline_window)
 
         # get spline values from 2nd window
         self.returned_values.textChanged.connect(self.get_spline_pts)
@@ -72,13 +86,14 @@ class Ui(QtWidgets.QMainWindow):
         :return:
         """
         value = value.split(';')
-        points = np.zeros((4, 2))
+        points = np.zeros((5, 2))
         for i, line in enumerate(value):
             val_splt = line.split(',')
             points[i, 0] = float(val_splt[0])
             points[i, 1] = float(val_splt[1])
 
         self.points = points
+        print('main\n' + str(self.points))
 
     def spline_window(self):
         """
@@ -88,11 +103,13 @@ class Ui(QtWidgets.QMainWindow):
         self.spline_ui = SplineUi(self.ds, self.returned_values)
         self.spline_ui.show()
         self.points = self.spline_ui.points
-        0
 
     def menu_default(self):
-        self.thdist_ver = 0
+        self.thdist_ver = 1
         self.nblades = 'single'
+        self.radio_blade1.setHidden(True)
+        self.radio_blade2.setHidden(True)
+        self.btn_update_sel.setHidden(True)
 
     def slider_control(self):
         """
@@ -100,11 +117,11 @@ class Ui(QtWidgets.QMainWindow):
         """
         self.slider = {}
         self.label = {}
-        self.slider['beta1'] = self.slider_beta1
-        self.label['beta1'] = self.val_beta1
+        self.slider['alpha1'] = self.slider_alpha1
+        self.label['alpha1'] = self.val_alpha1
 
-        self.slider['beta2'] = self.slider_beta2
-        self.label['beta2'] = self.val_beta2
+        self.slider['alpha2'] = self.slider_alpha2
+        self.label['alpha2'] = self.val_alpha2
 
         self.slider['lambd'] = self.slider_lambd
         self.label['lambd'] = self.val_lambd
@@ -140,8 +157,8 @@ class Ui(QtWidgets.QMainWindow):
                 self.label[key].setValue(self.restraints[key][3])
 
         # connect labels->slider
-        self.label['beta1'].editingFinished.connect(self.update_box_beta1)
-        self.label['beta2'].editingFinished.connect(self.update_box_beta2)
+        self.label['alpha1'].editingFinished.connect(self.update_box_alpha1)
+        self.label['alpha2'].editingFinished.connect(self.update_box_alpha2)
         self.label['lambd'].editingFinished.connect(self.update_box_lambd)
         self.label['l_chord'].editingFinished.connect(self.update_box_l_chord)
         self.slider['npts'].valueChanged[int].connect(self.update_npts)
@@ -200,129 +217,6 @@ class Ui(QtWidgets.QMainWindow):
             slider.setValue(defaultval * self.scale)
             return 1
 
-    """
-    A very quick and dirty approach... Alternatively, creating a custom DoubleSlider class would be way cleaner.
-    TODO: fix this when bored. 
-    """
-
-    def update_box_beta1(self):
-        value = self.label['beta1'].value()
-        self.slider['beta1'].setSliderPosition(value)
-
-    def update_box_beta2(self):
-        value = self.label['beta2'].value()
-        self.slider['beta2'].setSliderPosition(value)
-
-    def update_box_l_chord(self):
-        value = self.label['l_chord'].value()
-        self.slider['l_chord'].setSliderPosition(value)
-
-    def update_box_lambd(self):
-        value = self.label['lambd'].value()
-        self.slider['lambd'].setSliderPosition(value)
-
-    def update_npts(self, value):
-        self.label['npts'].setValue(float(value) * 100)
-
-    def update_box_npts(self):
-        val_raw = self.label['npts'].value()
-        if (val_raw % 100) > 50:
-            value = math.ceil(val_raw / 100)
-        else:
-            value = math.floor(val_raw / 100)
-        self.label['npts'].setValue(float(value) * 100)
-        self.slider['npts'].setSliderPosition(value)
-
-    def update_rth(self, value):
-        self.label['rth'].setValue(float(value) / self.scale)
-
-    def update_box_rth(self):
-        value = self.label['rth'].value() * self.scale
-        self.slider['rth'].setSliderPosition(value)
-
-    def update_xmax_th(self, value):
-        self.label['xmax_th'].setValue(float(value) / self.scale)
-
-    def update_box_rth(self):
-        value = self.label['xmax_th'].value() * self.scale
-        self.slider['xmax_th'].setSliderPosition(value)
-
-    def update_xmax_camber(self, value):
-        self.label['xmax_camber'].setValue(float(value) / self.scale)
-
-    def update_box_xmax_camber(self):
-        value = self.label['xmax_camber'].value() * self.scale
-        self.slider['xmax_camber'].setSliderPosition(value)
-
-    def update_thle(self, value):
-        if (float(value) / self.scale) < 0.01 and (float(value) / self.scale) > 0.0:
-            self.label['th_le'].setValue(0.01)
-        else:
-            self.label['th_le'].setValue(float(value) / self.scale)
-
-    def update_box_thle(self):
-        value = self.label['th_le'].value()  # * self.scale
-        if value < 0.01 and value > 0.0:
-            value = 0.01 * self.scale
-        self.slider['th_le'].setSliderPosition(value)
-
-    def update_thte(self, value):
-        if (float(value) / self.scale) < 0.01 and (float(value) / self.scale) > 0.0:
-            self.label['th_te'].setValue(0.01)
-        else:
-            self.label['th_te'].setValue(float(value) / self.scale)
-
-    def update_box_thte(self):
-        value = self.label['th_te'].value()  # * self.scale
-        if value < 0.01 and value > 0.0:
-            value = 0.01 * self.scale
-        self.slider['th_te'].setSliderPosition(value)
-
-    def update_dist_blades(self, value):
-        self.label['dist_blades'].setValue(float(value) / self.scale)
-
-    def update_box_dist_blades(self):
-        value = self.label['dist_blades'].value() * self.scale
-        self.slider['dist_blades'].setSliderPosition(value)
-
-    def update_inputs(self):
-        # get values
-        ds = {}
-        for key in self.param_keys:
-            ds[key] = self.label[key].value()
-
-        # get values from menu items
-        ds['thdist_ver'] = self.thdist_ver
-        ds['nblades'] = self.nblades
-        ds['pts'] = self.points
-        self.m.plot(ds)
-        self.ds = ds
-        print('Updating Plot')
-
-    def set_default(self):
-        # set values
-        for key in self.param_keys:
-            self.label[key].setValue(self.restraints[key][3])
-            if key == 'npts':
-                self.slider[key].setSliderPosition(self.restraints[key][3] / 100)
-            elif self.restraints[key][1] > 1:
-                self.slider[key].setSliderPosition(self.restraints[key][3])
-            else:
-                self.slider[key].setSliderPosition(self.restraints[key][3] * self.scale)
-        print('Resetting Values')
-
-    def update_thdist_V1(self):
-        self.thdist_ver = 0
-
-    def update_thdist_V2(self):
-        self.thdist_ver = 1
-
-    def update_nblades_single(self):
-        self.nblades = 'single'
-
-    def update_nblades_tandem(self):
-        self.nblades = 'tandem'
-
 
 class PlotCanvas(FigureCanvas):
     """
@@ -347,7 +241,7 @@ class PlotCanvas(FigureCanvas):
 
         # self.plot()
 
-    def plot(self, ds):
+    def plot(self, ds, ds1=0, ds2=0):
         # get zoom state
         if self.xlim == (0, 0) and self.ylim == (0, 0):
             self.xlim = (-.1, 1)
@@ -356,27 +250,156 @@ class PlotCanvas(FigureCanvas):
             self.xlim = self.ax.get_xlim()
             self.ylim = self.ax.get_ylim()
         self.ax.cla()  # clear existing plots
-        bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
-                            beta1=ds['beta1'], beta2=ds['beta2'],
-                            lambd=ds['lambd'], r_th=ds['rth'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
-                            l_chord=ds['l_chord'], rth_le=ds['th_le'], rth_te=ds['th_te'], spline_pts=ds['pts'])
-        blade_data, camber_data = bladegen._return()
-        division = ds['dist_blades'] * ds['l_chord']
+
+        """
+        Update Single Blade/Both blades at once with the same parameters
+        """
+
         if ds['nblades'] == 'single':
-            self.ax.plot(blade_data[:, 0], blade_data[:, 1])
-            self.ax.plot(blade_data[:, 0], blade_data[:, 1] + division)
+            bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
+                                alpha1=ds['alpha1'], alpha2=ds['alpha2'],
+                                lambd=ds['lambd'], r_th=ds['rth'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
+                                l_chord=ds['l_chord'], rth_le=ds['th_le'], rth_te=ds['th_te'], spline_pts=ds['pts'])
+            blade_data, camber_data = bladegen._return()
+            division = ds['dist_blades'] * ds['l_chord']
+            self.ax.plot(blade_data[:, 0], blade_data[:, 1], color='royalblue')
+            self.ax.fill(blade_data[:, 0], blade_data[:, 1], color='cornflowerblue', alpha=.5)
+            self.ax.plot(blade_data[:, 0], blade_data[:, 1] + division, color='royalblue')
+            self.ax.fill(blade_data[:, 0], blade_data[:, 1] + division, color='cornflowerblue', alpha=.5)
+
+            self.ax.plot(camber_data[::15, 0], camber_data[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+            self.ax.plot(camber_data[::15, 0], camber_data[::15, 1] + division, linestyle='--', dashes=(5, 5),
+                         color='darkblue')
         elif ds['nblades'] == 'tandem':
-            blade1 = blade_data
-            blade2 = blade1
-            blade2[:,0] = blade2[:,0] + np.max(blade1[:, 0]) + .03 * (np.min(blade1[:, 0] + np.max(blade2[:, 0])))
-            blade2[:,1] = blade2[:,1] + (np.max(camber_data[:,1]) - camber_data[0,1]) - (1-0.915)*division
-            # blade2[:,1] = np.max()
-            self.ax.plot(blade1[:, 0], blade1[:, 1])
-            self.ax.plot(blade2[:, 0], blade2[:, 1])
-            # self.ax.plot(blade1[:, 0], blade1[:, 1] + division)
-            # self.ax.plot(blade2[:, 0], blade2[:, 1] + division)
-        # self.ax.fill_between(blade_data[:, 0], blade_data[:, 1], color='b')
-        # self.ax.set_title('Blade')
+            df_blades = {}
+            # Update either both blades at once or blades seperately.
+            dataselect = [ds1, ds2]
+            for i in [0,1]:
+                df = dataselect[i]
+                bladegen = BladeGen(frontend='UI', nblade=df['nblades'], th_dist_option=df['thdist_ver'],
+                                    npts=df['npts'],
+                                    alpha1=df['alpha1'], alpha2=df['alpha2'],
+                                    lambd=df['lambd'], r_th=df['rth'], x_maxth=df['xmax_th'],
+                                    x_maxcamber=df['xmax_camber'],
+                                    l_chord=df['l_chord'], rth_le=df['th_le'], rth_te=df['th_te'], spline_pts=df['pts'])
+                blade_data, camber_data = bladegen._return()
+                division = df['dist_blades'] * df['l_chord']
+                # Update simultaneously
+                blade1 = blade_data
+                blade2 = np.copy(blade1)
+                camber1 = camber_data
+                camber2 = np.copy(camber_data)
+                blade2[:, 0] = blade2[:, 0] + np.max(blade1[:, 0]) + .03 * (np.min(blade1[:, 0] + np.max(blade2[:, 0])))
+                blade2[:, 1] = blade2[:, 1] + (np.max(camber_data[:, 1]) - camber_data[0, 1]) - (
+                            1 - 0.915) * division / 10
+                camber2[:, 0] = camber2[:, 0] + np.max(camber1[:, 0]) + .03 * (
+                    np.min(camber1[:, 0] + np.max(camber2[:, 0])))
+                camber2[:, 1] = camber2[:, 1] + (np.max(camber_data[:, 1]) - camber_data[0, 1]) - (
+                        1 - 0.915) * division / 10
+                df_blades['blade1_%i' % (i+1)] = blade1
+                df_blades['blade2_%i' % (i+1)] = blade2
+                df_blades['camber1_%i' % (i+1)] = camber1
+                df_blades['camber2_%i' % (i+1)] = camber2
+
+            if ds['selected_blade'] == 0:
+                self.ax.plot(blade1[:, 0], blade1[:, 1], color='royalblue')
+                self.ax.fill(blade1[:, 0], blade1[:, 1], color='cornflowerblue')
+                self.ax.plot(camber1[::15, 0], camber1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+
+                self.ax.plot(blade2[:, 0], blade2[:, 1], color='indianred')
+                self.ax.fill(blade2[:, 0], blade2[:, 1], color='lightcoral')
+                self.ax.plot(camber2[::15, 0], camber2[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+
+                self.ax.plot(blade1[:, 0], blade1[:, 1] + division, color='royalblue')
+                self.ax.fill(blade1[:, 0], blade1[:, 1] + division, color='cornflowerblue')
+                self.ax.plot(blade2[:, 0], blade2[:, 1] + division, color='indianred')
+                self.ax.fill(blade2[:, 0], blade2[:, 1] + division, color='lightcoral')
+                
+            else:
+                self.ax.plot(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1], color='royalblue')
+                self.ax.fill(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1], color='cornflowerblue')
+                self.ax.plot(df_blades['camber1_1'][::15, 0], df_blades['camber1_1'][::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+
+                self.ax.plot(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1], color='indianred')
+                self.ax.fill(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1], color='lightcoral')
+                self.ax.plot(df_blades['camber2_2'][::15, 0], df_blades['camber2_2'][::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+
+                self.ax.plot(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1] + division, color='royalblue')
+                self.ax.fill(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1] + division, color='cornflowerblue')
+                self.ax.plot(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1] + division, color='indianred')
+                self.ax.fill(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1] + division, color='lightcoral')
+
+            # if ds['selected_blade'] == 1:
+            #     # Only update first blade
+            #     bladegen_sel1 = BladeGen(frontend='UI', nblade=ds1['nblades'], th_dist_option=ds1['thdist_ver'],
+            #                              npts=ds1['npts'],
+            #                              alpha1=ds1['alpha1'], alpha2=ds1['alpha2'],
+            #                              lambd=ds1['lambd'], r_th=ds1['rth'], x_maxth=ds1['xmax_th'],
+            #                              x_maxcamber=ds1['xmax_camber'],
+            #                              l_chord=ds1['l_chord'], rth_le=ds1['th_le'], rth_te=ds1['th_te'],
+            #                              spline_pts=ds1['pts'])
+            #     blade_data_sel1, camber_data_sel1 = bladegen_sel1._return()
+            #     division_sel1 = ds1['dist_blades'] * ds1['l_chord']
+            #     blade1_sel1 = blade_data_sel1
+            #     camber1_sel1 = camber_data_sel1
+            #     if ds2 != 0:
+            #
+            #     self.ax.plot(blade1_sel1[:, 0], blade1_sel1[:, 1], color='royalblue')
+            #     self.ax.fill(blade1_sel1[:, 0], blade1_sel1[:, 1], color='cornflowerblue')
+            #     self.ax.plot(camber1_sel1[::15, 0], camber1_sel1[::15, 1], linestyle='--', dashes=(5, 5),
+            #                  color='darkblue')
+            #
+            #     self.ax.plot(blade2_sel1[:, 0], blade2_sel1[:, 1], color='indianred')
+            #     self.ax.fill(blade2_sel1[:, 0], blade2_sel1[:, 1], color='lightcoral')
+            #     self.ax.plot(camber2_sel1[::15, 0], camber2_sel1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+            #
+            #     self.ax.plot(blade1_sel1[:, 0], blade1_sel1[:, 1] + division_sel1, color='royalblue')
+            #     self.ax.fill(blade1_sel1[:, 0], blade1_sel1[:, 1] + division_sel1, color='cornflowerblue')
+            #     self.ax.plot(blade2_sel1[:, 0], blade2_sel1[:, 1] + division, color='indianred')
+            #     self.ax.fill(blade2_sel1[:, 0], blade2_sel1[:, 1] + division, color='lightcoral')
+            #
+            #     print('Updating Blade 1')
+
+            # if ds['selected_blade'] == 2:
+            #     # Only update second blade in plot. Blade1 unchanged.
+            #
+            #     bladegen_sel2 = BladeGen(frontend='UI', nblade=ds2['nblades'], th_dist_option=ds2['thdist_ver'],
+            #                              npts=ds2['npts'],
+            #                              alpha1=ds2['alpha1'], alpha2=ds2['alpha2'],
+            #                              lambd=ds2['lambd'], r_th=ds2['rth'], x_maxth=ds2['xmax_th'],
+            #                              x_maxcamber=ds2['xmax_camber'],
+            #                              l_chord=ds2['l_chord'], rth_le=ds2['th_le'], rth_te=ds2['th_te'],
+            #                              spline_pts=ds2['pts'])
+            #     blade_data_sel2, camber_data_sel2 = bladegen_sel2._return()
+            #     division_sel2 = ds2['dist_blades'] * ds2['l_chord']
+            #     blade1_sel2 = blade_data_sel2
+            #     blade2_sel2 = np.copy(blade1_sel2)
+            #     camber1_sel2 = camber_data_sel2
+            #     camber2_sel2 = np.copy(camber1_sel2)
+            #     blade2_sel2[:, 0] = blade2_sel2[:, 0] + np.max(blade1_sel2[:, 0]) + .03 * (
+            #         np.min(blade1[:, 0] + np.max(blade2_sel2[:, 0])))
+            #     blade2_sel2[:, 1] = blade2_sel2[:, 1] + (np.max(camber1_sel2[:, 1]) - camber1_sel2[0, 1]) - (
+            #                 1 - 0.915) * division_sel2 / 10
+            #     camber2_sel2[:, 0] = camber2_sel2[:, 0] + np.max(camber1_sel2[:, 0]) + .03 * (
+            #         np.min(camber1_sel2[:, 0] + np.max(camber2_sel2[:, 0])))
+            #     camber2_sel2[:, 1] = camber2_sel2[:, 1] + (np.max(camber1_sel2[:, 1]) - camber1_sel2[0, 1]) - (
+            #                 1 - 0.915) * division_sel2 / 10
+            #
+            #     self.ax.plot(blade1[:, 0], blade1[:, 1], color='royalblue')
+            #     self.ax.fill(blade1[:, 0], blade1[:, 1], color='cornflowerblue')
+            #     self.ax.plot(camber1[::15, 0], camber1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+            #
+            #     self.ax.plot(blade2_sel2[:, 0], blade2_sel2[:, 1], color='indianred')
+            #     self.ax.fill(blade2_sel2[:, 0], blade2_sel2[:, 1], color='lightcoral')
+            #     self.ax.plot(camber2_sel2[::15, 0], camber2_sel2[::15, 1], linestyle='--', dashes=(5, 5),
+            #                  color='darkblue')
+            #
+            #     self.ax.plot(blade1[:, 0], blade1[:, 1] + division, color='royalblue')
+            #     self.ax.fill(blade1[:, 0], blade1[:, 1] + division, color='cornflowerblue')
+            #     self.ax.plot(blade2_sel2[:, 0], blade2_sel2[:, 1] + division, color='indianred')
+            #     self.ax.fill(blade2_sel2[:, 0], blade2_sel2[:, 1] + division, color='lightcoral')
+
+        #### DEBUG #######
         self.ax.axis('equal')
         self.ax.set_xlim(self.xlim)
         self.ax.set_ylim(self.ylim)

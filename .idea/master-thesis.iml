@@ -6,6 +6,8 @@
     </content>
     <orderEntry type="jdk" jdkName="Python 3.7 (master-thesis)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="workspace" level="project" />
+    <orderEntry type="library" name="ROS" level="project" />
   </component>
   <component name="ReSTService">
     <option name="DOC_DIR" value="$MODULE_DIR$" />

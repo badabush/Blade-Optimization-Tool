@@ -43,6 +43,7 @@ def normalize(xy):
     xy.y = xy.y - xy.y.min()
     return xy
 
+
 def load_restraints(filename):
     ds = {}
     with open(filename) as f:
@@ -94,7 +95,7 @@ class ImportExport:
 
 
 def camber_spline(npts, xy_points):
-    def bernstein(n,k):
+    def bernstein(n, k):
         """Bernstein polynomial.
         """
         coeff = binom(n, k)
@@ -104,16 +105,22 @@ def camber_spline(npts, xy_points):
 
         return _bpoly
 
+    def integral_fr_grad(n,k):
+        coeff = binom (n,k)
+        def _bpoly(x):
+            return coeff * 1 / (k + 1) * x ** (k + 1) * 1 / (n - k + 1) * (1 - x) ** (n - k + 1)
+        return _bpoly
 
     def bezier(pts, npts):
         n = len(pts)
         # t = self.x
-        t = x # x-coord generation
+        t = x  # x-coord generation
         curve = np.zeros((npts, 2))
         for i in range(n):
-            curve += np.outer(bernstein(n-1,i)(t), pts[i])
+            curve += np.outer(bernstein(n - 1, i)(t), pts[i])
         return curve
+
     npts = int(npts)
     x = .5 * (1 - np.cos(np.linspace(0, np.pi, npts)))  # x-coord generation
     _x, _y = bezier(xy_points, npts).T
-    return np.transpose(np.array([_x,_y]))
+    return np.transpose(np.array([_x, _y]))

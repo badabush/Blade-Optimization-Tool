@@ -1,65 +1,54 @@
-"""
-Sandbox to test things
-"""
-
+from bladetools import camber_spline
 import numpy as np
-import pandas as pd
 from matplotlib import pyplot as plt
-from scipy.interpolate import interp1d
-from scipy import interpolate
+from scipy.optimize import fsolve
+
+if __name__ == "__main__":
+    # points = np.array([[0, 0.1, 0.5, 0.75, 1], [0, 0.5, 0.6, 0.9, 1]]).T
+    points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.3, 1]]).T
+    # points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
+    foo = camber_spline(1000, points)
+    # dalpha = np.zeros((1000))
+    # dchord = np.zeros((1000))
+    # for i in range(0, 999):
+    #     dalpha[i] = foo[i+1,1] - foo[i,1]
+    #     dchord[i] = foo[i+1,0] - foo[i,0]
+    # dadc = dalpha/dchord
+
+    # grad = np.gradient(foo[:,0])
+    # foo2 = foo[:,0] * np.tan(foo[:,1])
+
+    foo2 = np.arctan(np.gradient(foo[:, 1]) / np.gradient(foo[:, 0]))
+    # foo2 = foo2/np.max(foo2)
+    x = foo[:,0]
+    a = .5
+    theta = np.deg2rad(30)
+    c = 1
+    b = c * (np.sqrt(1 + (((4 * np.tan(theta)) ** 2) * ((a / c) - (a / c) ** 2 - 3 / 16))) - 1) / (
+            4 * np.tan(theta))
+    ycambertemp = np.zeros(x.size)
+    for i in range(0, x.size):
+        xtemp = x[i]
+        y0 = 0.0
+        fun = lambda y: (-y + xtemp * (c - xtemp) / (
+                (((c - 2 * a) ** 2) / (4 * b ** 2)) * y + ((c - 2 * a) / b) * xtemp - (
+                (c ** 2 - 4 * a * c) / (4 * b))))
+        y = fsolve(fun, y0)
+        ycambertemp[i] = y
+
+    xy_camber = np.transpose(np.array([x, ycambertemp]))
 
 
-import scipy.interpolate as si
-
-
-def bspline(cv, n=100, degree=3):
-    """ Calculate n samples on a bspline
-
-        cv :      Array ov control vertices
-        n  :      Number of samples to return
-        degree:   Curve degree
-    """
-    cv = np.asarray(cv)
-    count = cv.shape[0]
-
-    # Prevent degree from exceeding count-1, otherwise splev will crash
-    degree = np.clip(degree,1,count-1)
-
-    # Calculate knot vector
-    kv = np.array([0]*degree + range(count-degree+1) + [count-degree]*degree,dtype='int')
-
-    # Calculate query range
-    u = np.linspace(0,(count-degree),n)
-
-    # Calculate result
-    return np.array(si.splev(u, (kv,cv.T,degree))).T
-
-
-def foo():
-    colors = ('b', 'g', 'r', 'c', 'm', 'y', 'k')
-
-    cv = np.array([[50., 25.],
-                   [59., 12.],
-                   [50., 10.],
-                   [57., 2.],
-                   [40., 4.],
-                   [40., 14.]])
-
-    plt.plot(cv[:, 0], cv[:, 1], 'o-', label='Control Points')
-
-    for d in range(1, 5):
-        p = bspline(cv, n=100, degree=d)
-        x, y = p.T
-        plt.plot(x, y, 'k-', label='Degree %s' % d, color=colors[d % len(colors)])
-
-    plt.minorticks_on()
-    plt.legend()
-    plt.xlabel('x')
-    plt.ylabel('y')
-    plt.xlim(35, 70)
-    plt.ylim(0, 30)
-    plt.gca().set_aspect('equal', adjustable='box')
+    # wolb = foo2 + np.abs(np.min(foo2))
+    # wolb = wolb * -1
+    # wolb = wolb + np.abs(np.min(wolb))
+    # wolb = wolb / np.max(wolb)
+    # kr = wolb
+    plt.plot(xy_camber[:,0], xy_camber[:,1] * foo2)
+    plt.plot(foo[:,0], foo2)
+    plt.plot(foo[:,0], foo[:,1])
+    plt.plot(points[:, 0], points[:, 1], 'x')
+    # # plt.plot(foo[:, 0], kr)
+    # plt.axis('equal')
     plt.show()
-
-if __name__ == '__main__':
-    foo()
+    pass
