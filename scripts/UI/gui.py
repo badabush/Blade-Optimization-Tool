@@ -29,7 +29,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         super(Ui, self).__init__()
         uic.loadUi('qtdesigner/mainwindow_v1.ui', self)
         # declaring param keys, load restraints for slider
-        self.param_keys = ['npts', 'alpha1', 'alpha2', 'lambd', 'rth', 'xmax_th', 'xmax_camber', 'l_chord', 'th_le',
+        self.param_keys = ['npts', 'alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'l_chord', 'th_le',
                            'th_te', 'dist_blades']
         self.restraints = load_restraints('restraints.txt')
         self.menu_default()
@@ -126,8 +126,8 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         self.slider['lambd'] = self.slider_lambd
         self.label['lambd'] = self.val_lambd
 
-        self.slider['rth'] = self.slider_rth
-        self.label['rth'] = self.val_rth
+        self.slider['th'] = self.slider_th
+        self.label['th'] = self.val_th
 
         self.slider['xmax_th'] = self.slider_xmax_th
         self.label['xmax_th'] = self.val_xmax_th
@@ -163,8 +163,8 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         self.label['l_chord'].editingFinished.connect(self.update_box_l_chord)
         self.slider['npts'].valueChanged[int].connect(self.update_npts)
         self.label['npts'].editingFinished.connect(self.update_box_npts)
-        self.slider['rth'].valueChanged[int].connect(self.update_rth)
-        self.label['rth'].editingFinished.connect(self.update_box_rth)
+        self.slider['th'].valueChanged[int].connect(self.update_th)
+        self.label['th'].editingFinished.connect(self.update_box_th)
         self.slider['xmax_th'].valueChanged[int].connect(self.update_xmax_th)
         self.label['xmax_th'].editingFinished.connect(self.update_box_xmax_th)
         self.slider['xmax_camber'].valueChanged[int].connect(self.update_xmax_camber)
@@ -262,8 +262,8 @@ class PlotCanvas(FigureCanvas):
         if ds['nblades'] == 'single':
             bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
                                 alpha1=ds['alpha1'], alpha2=ds['alpha2'],
-                                lambd=ds['lambd'], r_th=ds['rth'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
-                                l_chord=ds['l_chord'], rth_le=ds['th_le'], rth_te=ds['th_te'], spline_pts=ds['pts'])
+                                lambd=ds['lambd'], th=ds['th'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
+                                l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'], spline_pts=ds['pts'])
             blade_data, camber_data = bladegen._return()
             division = ds['dist_blades'] * ds['l_chord']
             self.ax.plot(blade_data[:, 0], blade_data[:, 1], color='royalblue')
@@ -273,19 +273,19 @@ class PlotCanvas(FigureCanvas):
 
             self.ax.plot(camber_data[::15, 0], camber_data[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
             self.ax.plot(camber_data[::15, 0], camber_data[::15, 1] + division, linestyle='--', dashes=(5, 5),
-                         color='darkblue')
+                         color='darkblue', alpha=.7)
         elif ds['nblades'] == 'tandem':
             df_blades = {}
             # Update either both blades at once or blades seperately.
             dataselect = [ds1, ds2]
-            for i in [0,1]:
+            for i in [0, 1]:
                 df = dataselect[i]
                 bladegen = BladeGen(frontend='UI', nblade=df['nblades'], th_dist_option=df['thdist_ver'],
                                     npts=df['npts'],
                                     alpha1=df['alpha1'], alpha2=df['alpha2'],
-                                    lambd=df['lambd'], r_th=df['rth'], x_maxth=df['xmax_th'],
+                                    lambd=df['lambd'], th=df['th'], x_maxth=df['xmax_th'],
                                     x_maxcamber=df['xmax_camber'],
-                                    l_chord=df['l_chord'], rth_le=df['th_le'], rth_te=df['th_te'], spline_pts=df['pts'])
+                                    l_chord=df['l_chord'], th_le=df['th_le'], th_te=df['th_te'], spline_pts=df['pts'])
                 blade_data, camber_data = bladegen._return()
                 division = df['dist_blades'] * df['l_chord']
                 # Update simultaneously
@@ -295,48 +295,57 @@ class PlotCanvas(FigureCanvas):
                 camber2 = np.copy(camber_data)
                 blade2[:, 0] = blade2[:, 0] + np.max(blade1[:, 0]) + .03 * (np.min(blade1[:, 0] + np.max(blade2[:, 0])))
                 blade2[:, 1] = blade2[:, 1] + (np.max(camber_data[:, 1]) - camber_data[0, 1]) - (
-                            1 - 0.915) * division / 10
+                        1 - 0.915) * division / 10
                 camber2[:, 0] = camber2[:, 0] + np.max(camber1[:, 0]) + .03 * (
                     np.min(camber1[:, 0] + np.max(camber2[:, 0])))
                 camber2[:, 1] = camber2[:, 1] + (np.max(camber_data[:, 1]) - camber_data[0, 1]) - (
                         1 - 0.915) * division / 10
-                df_blades['blade1_%i' % (i+1)] = blade1
-                df_blades['blade2_%i' % (i+1)] = blade2
-                df_blades['camber1_%i' % (i+1)] = camber1
-                df_blades['camber2_%i' % (i+1)] = camber2
+                df_blades['blade1_%i' % (i + 1)] = blade1
+                df_blades['blade2_%i' % (i + 1)] = blade2
+                df_blades['camber1_%i' % (i + 1)] = camber1
+                df_blades['camber2_%i' % (i + 1)] = camber2
 
             if ds['selected_blade'] == 0:
                 self.ax.plot(blade1[:, 0], blade1[:, 1], color='royalblue')
-                self.ax.fill(blade1[:, 0], blade1[:, 1], color='cornflowerblue')
-                self.ax.plot(camber1[::15, 0], camber1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+                self.ax.fill(blade1[:, 0], blade1[:, 1], color='cornflowerblue', alpha=.5)
+                self.ax.plot(camber1[::15, 0], camber1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue',
+                             alpha=.7)
 
                 self.ax.plot(blade2[:, 0], blade2[:, 1], color='indianred')
-                self.ax.fill(blade2[:, 0], blade2[:, 1], color='lightcoral')
-                self.ax.plot(camber2[::15, 0], camber2[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+                self.ax.fill(blade2[:, 0], blade2[:, 1], color='lightcoral', alpha=.5)
+                self.ax.plot(camber2[::15, 0], camber2[::15, 1], linestyle='--', dashes=(5, 5), color='darkred',
+                             alpha=.7)
 
                 self.ax.plot(blade1[:, 0], blade1[:, 1] + division, color='royalblue')
-                self.ax.fill(blade1[:, 0], blade1[:, 1] + division, color='cornflowerblue')
-                self.ax.plot(camber1[::15, 0], camber1[::15, 1]+ division, linestyle='--', dashes=(5, 5), color='darkblue')
+                self.ax.fill(blade1[:, 0], blade1[:, 1] + division, color='cornflowerblue', alpha=.5)
+                self.ax.plot(camber1[::15, 0], camber1[::15, 1] + division, linestyle='--', dashes=(5, 5),
+                             color='darkblue', alpha=.7)
                 self.ax.plot(blade2[:, 0], blade2[:, 1] + division, color='indianred')
-                self.ax.fill(blade2[:, 0], blade2[:, 1] + division, color='lightcoral')
-                self.ax.plot(camber2[::15, 0], camber2[::15, 1]+ division, linestyle='--', dashes=(5, 5), color='darkblue')
+                self.ax.fill(blade2[:, 0], blade2[:, 1] + division, color='lightcoral', alpha=.5)
+                self.ax.plot(camber2[::15, 0], camber2[::15, 1] + division, linestyle='--', dashes=(5, 5),
+                             color='darkred', alpha=.7)
 
             else:
                 self.ax.plot(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1], color='royalblue')
-                self.ax.fill(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1], color='cornflowerblue')
-                self.ax.plot(df_blades['camber1_1'][::15, 0], df_blades['camber1_1'][::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+                self.ax.fill(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1], color='cornflowerblue', alpha=.5)
+                self.ax.plot(df_blades['camber1_1'][::15, 0], df_blades['camber1_1'][::15, 1], linestyle='--',
+                             dashes=(5, 5), color='darkblue', alpha=.7)
 
                 self.ax.plot(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1], color='indianred')
-                self.ax.fill(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1], color='lightcoral')
-                self.ax.plot(df_blades['camber2_2'][::15, 0], df_blades['camber2_2'][::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
+                self.ax.fill(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1], color='lightcoral', alpha=.5)
+                self.ax.plot(df_blades['camber2_2'][::15, 0], df_blades['camber2_2'][::15, 1], linestyle='--',
+                             dashes=(5, 5), color='darkred', alpha=.7)
 
                 self.ax.plot(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1] + division, color='royalblue')
-                self.ax.fill(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1] + division, color='cornflowerblue')
-                self.ax.plot(df_blades['camber1_1'][::15, 0], df_blades['camber1_1'][::15, 1]+ division, linestyle='--', dashes=(5, 5), color='darkblue')
+                self.ax.fill(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1] + division,
+                             color='cornflowerblue', alpha=.5)
+                self.ax.plot(df_blades['camber1_1'][::15, 0], df_blades['camber1_1'][::15, 1] + division,
+                             linestyle='--', dashes=(5, 5), color='darkblue', alpha=.7)
                 self.ax.plot(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1] + division, color='indianred')
-                self.ax.fill(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1] + division, color='lightcoral')
-                self.ax.plot(df_blades['camber2_2'][::15, 0], df_blades['camber2_2'][::15, 1]+ division, linestyle='--', dashes=(5, 5), color='darkblue')
-
+                self.ax.fill(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1] + division, color='lightcoral',
+                             alpha=.5)
+                self.ax.plot(df_blades['camber2_2'][::15, 0], df_blades['camber2_2'][::15, 1] + division,
+                             linestyle='--', dashes=(5, 5), color='darkred', alpha=.7)
 
         #### DEBUG #######
         self.ax.axis('equal')

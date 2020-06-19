@@ -34,12 +34,12 @@ class UpdateHandler:
         self.label['npts'].setValue(float(value) * 100)
         self.slider['npts'].setSliderPosition(value)
 
-    def update_rth(self, value):
-        self.label['rth'].setValue(float(value) / self.scale)
+    def update_th(self, value):
+        self.label['th'].setValue(float(value) / self.scale)
 
-    def update_box_rth(self):
-        value = self.label['rth'].value() * self.scale
-        self.slider['rth'].setSliderPosition(value)
+    def update_box_th(self):
+        value = self.label['th'].value() * self.scale
+        self.slider['th'].setSliderPosition(value)
 
     def update_xmax_th(self, value):
         self.label['xmax_th'].setValue(float(value) / self.scale)
@@ -56,8 +56,8 @@ class UpdateHandler:
         self.slider['xmax_camber'].setSliderPosition(value)
 
     def update_thle(self, value):
-        if (float(value) / self.scale) < 0.01 and (float(value) / self.scale) > 0.0:
-            self.label['th_le'].setValue(0.01)
+        if (float(value) / self.scale) < 0.005 and (float(value) / self.scale) > 0.0:
+            self.label['th_le'].setValue(0.005)
         else:
             self.label['th_le'].setValue(float(value) / self.scale)
 
@@ -68,15 +68,15 @@ class UpdateHandler:
         self.slider['th_le'].setSliderPosition(value)
 
     def update_thte(self, value):
-        if (float(value) / self.scale) < 0.01 and (float(value) / self.scale) > 0.0:
-            self.label['th_te'].setValue(0.01)
+        if (float(value) / self.scale) < 0.005 and (float(value) / self.scale) > 0.0:
+            self.label['th_te'].setValue(0.005)
         else:
             self.label['th_te'].setValue(float(value) / self.scale)
 
     def update_box_thte(self):
         value = self.label['th_te'].value()  # * self.scale
-        if value < 0.01 and value > 0.0:
-            value = 0.01 * self.scale
+        if value < 0.005 and value > 0.0:
+            value = 0.005 * self.scale
         self.slider['th_te'].setSliderPosition(value)
 
     def update_dist_blades(self, value):
@@ -113,8 +113,8 @@ class UpdateHandler:
         self.slider['alpha2'].setSliderPosition(ds['alpha2'])
         self.label['lambd'].setValue(ds['lambd'])
         self.slider['lambd'].setSliderPosition(ds['lambd'])
-        self.label['rth'].setValue(ds['rth'])
-        self.slider['rth'].setSliderPosition(ds['rth'] * self.scale)
+        self.label['th'].setValue(ds['th'])
+        self.slider['th'].setSliderPosition(ds['th'] * self.scale)
         self.label['xmax_th'].setValue(ds['xmax_th'])
         self.slider['xmax_th'].setSliderPosition(ds['xmax_th'] * self.scale)
         self.label['xmax_camber'].setValue(ds['xmax_camber'])

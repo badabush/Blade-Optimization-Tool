@@ -10,8 +10,8 @@ from bladetools import ImportExport, normalize, camber_spline
 
 class BladeGen:
 
-    def __init__(self, frontend='user', file='', nblade='single', th_dist_option=0, r_th=.0215, alpha1=25, alpha2=25,
-                 x_maxcamber=.4, x_maxth=.3, l_chord=1.0, lambd=20, rth_le=0.01, rth_te=0.0135, npts=1000,
+    def __init__(self, frontend='user', file='', nblade='single', th_dist_option=0, th=.0215, alpha1=25, alpha2=25,
+                 x_maxcamber=.4, x_maxth=.3, l_chord=1.0, lambd=20, th_le=0.01, th_te=0.0135, npts=1000,
                  spline_pts=[9999]):
 
         self.file = file
@@ -23,15 +23,15 @@ class BladeGen:
                 print(e)
 
         # assert input
-        self.assert_input(nblade, r_th, alpha1, alpha2, x_maxcamber, rth_le, rth_te, npts)
+        self.assert_input(nblade, th, alpha1, alpha2, x_maxcamber, th_le, th_te, npts)
         # menu items
         self.thdist_option = th_dist_option  # th_dist v1 or v2
         self.frontend = frontend  # the interface to this script
         self.nblade = nblade
 
         # pack parameters into dict
-        self.ds = self.params(r_th, [alpha1, alpha2], x_maxcamber, x_maxth, l_chord, lambd, rth_le,
-                              rth_te, npts)
+        self.ds = self.params(th, [alpha1, alpha2], x_maxcamber, x_maxth, l_chord, lambd, th_le,
+                              th_te, npts)
 
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.ds['npts'])))  # x-coord generation
 
@@ -55,8 +55,8 @@ class BladeGen:
             self.xy_blade = xy_blade
             self._return()
 
-    def params(self, r_th, alpha, x_maxcamber, x_maxth, l_chord, lambd, rth_le,
-               rth_te, npts):
+    def params(self, th, alpha, x_maxcamber, x_maxth, l_chord, lambd, th_le,
+               th_te, npts):
         """
         Generate parameters.
         Return dataset (ds) with parameters.
@@ -68,27 +68,27 @@ class BladeGen:
         # TODO: omit obsolete parameters, add input parameters into dataframe
         ds = {}
         if self.nblade == 'single':
-            ds['rth'] = r_th
+            ds['l_chord'] = l_chord
+            ds['rth'] = th#* ds['l_chord']
             ds['alpha'] = alpha
             ds['theta'] = np.deg2rad(np.sum(ds['alpha']))
             ds['lambd'] = np.deg2rad(lambd)
             ds['xmax_camber'] = x_maxcamber
             ds['xmax_th'] = x_maxth
-            ds['l_chord'] = l_chord
-            ds['th_le'] = rth_le * ds['l_chord']
-            ds['th_te'] = rth_te * ds['l_chord']
+            ds['th_le'] = th_le #* ds['l_chord']
+            ds['th_te'] = th_te #* ds['l_chord']
             ds['gamma_te'] = .07  # Lieblein Diffusion Factor for front and rear blade
 
         elif self.nblade == 'tandem':
-            ds['rth'] = r_th
+            ds['l_chord'] = l_chord / 2
+            ds['rth'] = th #/ ds['l_chord']
             ds['alpha'] = alpha
             ds['theta'] = np.deg2rad(np.sum(ds['alpha']))
             ds['lambd'] = np.deg2rad(lambd)
             ds['xmax_camber'] = x_maxcamber
             ds['xmax_th'] = x_maxth
-            ds['l_chord'] = l_chord / 2
-            ds['th_le'] = rth_le * ds['l_chord']
-            ds['th_te'] = rth_te * ds['l_chord']
+            ds['th_le'] = th_le #* ds['l_chord']
+            ds['th_te'] = th_te #* ds['l_chord']
             ds['gamma_te'] = .14  # Lieblein Diffusion Factor for front and rear blade
         ds['npts'] = int(npts / 2)
 
@@ -129,9 +129,9 @@ class BladeGen:
         x = self.x
 
         xd = ds['xmax_th']
-        rn = th_le / ds['l_chord']
+        rn = 4*th_le
         d = ds['rth'] * 2
-        dhk = 2 * th_te / ds['l_chord']
+        dhk = 2 * th_te
         c=1
         gammahk = ds['gamma_te']
         x_short = x[np.where(x < (1 - th_te / c))]
@@ -156,7 +156,7 @@ class BladeGen:
                           )
         yth = np.concatenate([y_th_front, y_th_rear])
 
-        # fit trailing edge
+        # fit trailing edge radius
         r_te = yth[-1]
 
         yth_circ_te = np.array(
@@ -335,8 +335,8 @@ class BladeGen:
         assert ((nblade == 'single') or (nblade == 'tandem')), "single or tandem"
 
         # LE/TE Radius doesnt work properly outside of range
-        assert (((rth_le <= .03) and (rth_le >= .01)) or rth_le == 0), "rth_le out of range"
-        assert (((rth_te <= .03) and (rth_te >= .01)) or rth_te == 0), "rth_te out of range"
+        assert (((rth_le <= .03) and (rth_le >= .005)) or rth_le == 0), "rth_le out of range"
+        assert (((rth_te <= .03) and (rth_te >= .005)) or rth_te == 0), "rth_te out of range"
 
         assert ((x_maxcamber > 0) and (x_maxcamber < 1)), "x max chamber out of range [0,1]."
         # Blade arc flips above sum(alpha1,alpha2)>90
@@ -368,5 +368,5 @@ class BladeGen:
 
 
 if __name__ == "__main__":
-    BladeGen(file='../geo_output/coords.txt', th_dist_option=0, lambd=0, rth_te=0.00, rth_le=.0,
-             l_chord=1, alpha2=15, alpha1=15, r_th=.04, x_maxth=.5, spline_pts=[9999, 9999])
+    BladeGen(file='../geo_output/coords.txt', th_dist_option=0, lambd=0, th_te=0.00, th_le=.0,
+             l_chord=1, alpha2=15, alpha1=15, th=.04, x_maxth=.5, spline_pts=[9999, 9999])
