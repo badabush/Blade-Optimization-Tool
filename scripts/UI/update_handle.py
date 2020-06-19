@@ -1,3 +1,5 @@
+import math
+
 class UpdateHandler:
     """
     A very quick and dirty approach... Alternatively, creating a custom DoubleSlider class would be way cleaner.
@@ -42,7 +44,7 @@ class UpdateHandler:
     def update_xmax_th(self, value):
         self.label['xmax_th'].setValue(float(value) / self.scale)
 
-    def update_box_rth(self):
+    def update_box_xmax_th(self):
         value = self.label['xmax_th'].value() * self.scale
         self.slider['xmax_th'].setSliderPosition(value)
 
@@ -88,10 +90,39 @@ class UpdateHandler:
         # get radio state
         if self.radio_blade1.isChecked():
             self.select_blade = 1
+            self.ds_blade2 = self.get_labelval()
+            self.set_labelval(self.ds_blade1)
 
         elif self.radio_blade2.isChecked():
             self.select_blade = 2
+            self.ds_blade1 = self.get_labelval()
+            self.set_labelval(self.ds_blade2)
         print(self.select_blade)
+
+    def get_labelval(self):
+        # get values
+        ds = {}
+        for key in self.param_keys:
+            ds[key] = self.label[key].value()
+        return ds
+
+    def set_labelval(self, ds):
+        self.label['alpha1'].setValue(ds['alpha1'])
+        self.slider['alpha1'].setSliderPosition(ds['alpha1'])
+        self.label['alpha2'].setValue(ds['alpha2'])
+        self.slider['alpha2'].setSliderPosition(ds['alpha2'])
+        self.label['lambd'].setValue(ds['lambd'])
+        self.slider['lambd'].setSliderPosition(ds['lambd'])
+        self.label['rth'].setValue(ds['rth'])
+        self.slider['rth'].setSliderPosition(ds['rth'] * self.scale)
+        self.label['xmax_th'].setValue(ds['xmax_th'])
+        self.slider['xmax_th'].setSliderPosition(ds['xmax_th'] * self.scale)
+        self.label['xmax_camber'].setValue(ds['xmax_camber'])
+        self.slider['xmax_camber'].setSliderPosition(ds['xmax_camber'] * self.scale)
+        self.label['th_le'].setValue(ds['th_le'])
+        self.slider['th_le'].setSliderPosition(ds['th_le'] * self.scale)
+        self.label['th_te'].setValue(ds['th_te'])
+        self.slider['th_te'].setSliderPosition(ds['th_te'] * self.scale)
 
     def update_inputs(self):
         # get values
@@ -164,6 +195,8 @@ class UpdateHandler:
         self.btn_update_sel.setHidden(True)
 
     def update_nblades_tandem(self):
+        self.ds_blade1 = self.get_labelval()
+        self.ds_blade2 = self.get_labelval()
         self.nblades = 'tandem'
         self.radio_blade1.setVisible(True)
         self.radio_blade2.setVisible(True)

@@ -123,16 +123,15 @@ class BladeGen:
         # Option 2: NACA65 (Parabolic_Camber_V5)
         ds = self.ds
         xy_camber = self.xy_camber
-        c = ds['l_chord']
         th_te = ds['th_te']
         th_le = ds['th_le']
         lambd = ds['lambd']
         x = self.x
 
         xd = ds['xmax_th']
-        rn = th_le / c
+        rn = th_le / ds['l_chord']
         d = ds['rth'] * 2
-        dhk = 2 * th_te / c
+        dhk = 2 * th_te / ds['l_chord']
         c=1
         gammahk = ds['gamma_te']
         x_short = x[np.where(x < (1 - th_te / c))]

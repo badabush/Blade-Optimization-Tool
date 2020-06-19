@@ -166,9 +166,13 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         self.slider['rth'].valueChanged[int].connect(self.update_rth)
         self.label['rth'].editingFinished.connect(self.update_box_rth)
         self.slider['xmax_th'].valueChanged[int].connect(self.update_xmax_th)
+        self.label['xmax_th'].editingFinished.connect(self.update_box_xmax_th)
         self.slider['xmax_camber'].valueChanged[int].connect(self.update_xmax_camber)
+        self.label['xmax_camber'].editingFinished.connect(self.update_box_xmax_camber)
         self.slider['th_le'].valueChanged[int].connect(self.update_thle)
+        self.label['th_le'].editingFinished.connect(self.update_box_thle)
         self.slider['th_te'].valueChanged[int].connect(self.update_thte)
+        self.label['th_te'].editingFinished.connect(self.update_box_thte)
         self.slider['dist_blades'].valueChanged[int].connect(self.update_dist_blades)
         self.label['dist_blades'].editingFinished.connect(self.update_box_dist_blades)
 
@@ -312,9 +316,11 @@ class PlotCanvas(FigureCanvas):
 
                 self.ax.plot(blade1[:, 0], blade1[:, 1] + division, color='royalblue')
                 self.ax.fill(blade1[:, 0], blade1[:, 1] + division, color='cornflowerblue')
+                self.ax.plot(camber1[::15, 0], camber1[::15, 1]+ division, linestyle='--', dashes=(5, 5), color='darkblue')
                 self.ax.plot(blade2[:, 0], blade2[:, 1] + division, color='indianred')
                 self.ax.fill(blade2[:, 0], blade2[:, 1] + division, color='lightcoral')
-                
+                self.ax.plot(camber2[::15, 0], camber2[::15, 1]+ division, linestyle='--', dashes=(5, 5), color='darkblue')
+
             else:
                 self.ax.plot(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1], color='royalblue')
                 self.ax.fill(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1], color='cornflowerblue')
@@ -326,78 +332,11 @@ class PlotCanvas(FigureCanvas):
 
                 self.ax.plot(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1] + division, color='royalblue')
                 self.ax.fill(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1] + division, color='cornflowerblue')
+                self.ax.plot(df_blades['camber1_1'][::15, 0], df_blades['camber1_1'][::15, 1]+ division, linestyle='--', dashes=(5, 5), color='darkblue')
                 self.ax.plot(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1] + division, color='indianred')
                 self.ax.fill(df_blades['blade2_2'][:, 0], df_blades['blade2_2'][:, 1] + division, color='lightcoral')
+                self.ax.plot(df_blades['camber2_2'][::15, 0], df_blades['camber2_2'][::15, 1]+ division, linestyle='--', dashes=(5, 5), color='darkblue')
 
-            # if ds['selected_blade'] == 1:
-            #     # Only update first blade
-            #     bladegen_sel1 = BladeGen(frontend='UI', nblade=ds1['nblades'], th_dist_option=ds1['thdist_ver'],
-            #                              npts=ds1['npts'],
-            #                              alpha1=ds1['alpha1'], alpha2=ds1['alpha2'],
-            #                              lambd=ds1['lambd'], r_th=ds1['rth'], x_maxth=ds1['xmax_th'],
-            #                              x_maxcamber=ds1['xmax_camber'],
-            #                              l_chord=ds1['l_chord'], rth_le=ds1['th_le'], rth_te=ds1['th_te'],
-            #                              spline_pts=ds1['pts'])
-            #     blade_data_sel1, camber_data_sel1 = bladegen_sel1._return()
-            #     division_sel1 = ds1['dist_blades'] * ds1['l_chord']
-            #     blade1_sel1 = blade_data_sel1
-            #     camber1_sel1 = camber_data_sel1
-            #     if ds2 != 0:
-            #
-            #     self.ax.plot(blade1_sel1[:, 0], blade1_sel1[:, 1], color='royalblue')
-            #     self.ax.fill(blade1_sel1[:, 0], blade1_sel1[:, 1], color='cornflowerblue')
-            #     self.ax.plot(camber1_sel1[::15, 0], camber1_sel1[::15, 1], linestyle='--', dashes=(5, 5),
-            #                  color='darkblue')
-            #
-            #     self.ax.plot(blade2_sel1[:, 0], blade2_sel1[:, 1], color='indianred')
-            #     self.ax.fill(blade2_sel1[:, 0], blade2_sel1[:, 1], color='lightcoral')
-            #     self.ax.plot(camber2_sel1[::15, 0], camber2_sel1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
-            #
-            #     self.ax.plot(blade1_sel1[:, 0], blade1_sel1[:, 1] + division_sel1, color='royalblue')
-            #     self.ax.fill(blade1_sel1[:, 0], blade1_sel1[:, 1] + division_sel1, color='cornflowerblue')
-            #     self.ax.plot(blade2_sel1[:, 0], blade2_sel1[:, 1] + division, color='indianred')
-            #     self.ax.fill(blade2_sel1[:, 0], blade2_sel1[:, 1] + division, color='lightcoral')
-            #
-            #     print('Updating Blade 1')
-
-            # if ds['selected_blade'] == 2:
-            #     # Only update second blade in plot. Blade1 unchanged.
-            #
-            #     bladegen_sel2 = BladeGen(frontend='UI', nblade=ds2['nblades'], th_dist_option=ds2['thdist_ver'],
-            #                              npts=ds2['npts'],
-            #                              alpha1=ds2['alpha1'], alpha2=ds2['alpha2'],
-            #                              lambd=ds2['lambd'], r_th=ds2['rth'], x_maxth=ds2['xmax_th'],
-            #                              x_maxcamber=ds2['xmax_camber'],
-            #                              l_chord=ds2['l_chord'], rth_le=ds2['th_le'], rth_te=ds2['th_te'],
-            #                              spline_pts=ds2['pts'])
-            #     blade_data_sel2, camber_data_sel2 = bladegen_sel2._return()
-            #     division_sel2 = ds2['dist_blades'] * ds2['l_chord']
-            #     blade1_sel2 = blade_data_sel2
-            #     blade2_sel2 = np.copy(blade1_sel2)
-            #     camber1_sel2 = camber_data_sel2
-            #     camber2_sel2 = np.copy(camber1_sel2)
-            #     blade2_sel2[:, 0] = blade2_sel2[:, 0] + np.max(blade1_sel2[:, 0]) + .03 * (
-            #         np.min(blade1[:, 0] + np.max(blade2_sel2[:, 0])))
-            #     blade2_sel2[:, 1] = blade2_sel2[:, 1] + (np.max(camber1_sel2[:, 1]) - camber1_sel2[0, 1]) - (
-            #                 1 - 0.915) * division_sel2 / 10
-            #     camber2_sel2[:, 0] = camber2_sel2[:, 0] + np.max(camber1_sel2[:, 0]) + .03 * (
-            #         np.min(camber1_sel2[:, 0] + np.max(camber2_sel2[:, 0])))
-            #     camber2_sel2[:, 1] = camber2_sel2[:, 1] + (np.max(camber1_sel2[:, 1]) - camber1_sel2[0, 1]) - (
-            #                 1 - 0.915) * division_sel2 / 10
-            #
-            #     self.ax.plot(blade1[:, 0], blade1[:, 1], color='royalblue')
-            #     self.ax.fill(blade1[:, 0], blade1[:, 1], color='cornflowerblue')
-            #     self.ax.plot(camber1[::15, 0], camber1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue')
-            #
-            #     self.ax.plot(blade2_sel2[:, 0], blade2_sel2[:, 1], color='indianred')
-            #     self.ax.fill(blade2_sel2[:, 0], blade2_sel2[:, 1], color='lightcoral')
-            #     self.ax.plot(camber2_sel2[::15, 0], camber2_sel2[::15, 1], linestyle='--', dashes=(5, 5),
-            #                  color='darkblue')
-            #
-            #     self.ax.plot(blade1[:, 0], blade1[:, 1] + division, color='royalblue')
-            #     self.ax.fill(blade1[:, 0], blade1[:, 1] + division, color='cornflowerblue')
-            #     self.ax.plot(blade2_sel2[:, 0], blade2_sel2[:, 1] + division, color='indianred')
-            #     self.ax.fill(blade2_sel2[:, 0], blade2_sel2[:, 1] + division, color='lightcoral')
 
         #### DEBUG #######
         self.ax.axis('equal')
