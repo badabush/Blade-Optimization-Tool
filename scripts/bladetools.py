@@ -149,12 +149,13 @@ class AnnulusGen:
         y = self.r_inner * np.sin(t)
         blade_list = pd.DataFrame(columns=["blade_%i" % (i) for i in range(self.nblades)])
         for i, c in enumerate(t):
-            x_temp = self.blade1[:, 0]# * np.cos(c) + x[i]
-            y_temp = self.blade1[:, 1]# * np.sin(c) + y[i]
+            x_temp = np.linspace(0, 1, 100)
+            y_temp = np.linspace(0, 0.01, 100)
+            # x_temp = self.blade1[:, 0]# * np.cos(c) + x[i]
+            # y_temp = self.blade1[:, 1]# * np.sin(c) + y[i]
             x_blade = np.cos(c) * x_temp - np.sin(c) * y_temp
             y_blade = np.sin(c) * x_temp + np.cos(c) * y_temp
             blade_list['blade_%i' % (int(i))] = np.concatenate([x_blade + x[i], y_blade + y[i]])
-            # plt.plot(blade_list['blade_%i' % (int(i))].iloc[:1000],blade_list['blade_%i' % (int(i))].iloc[1000:])
         # plt.plot(x, y)
         # plt.axis('equal')
         # plt.show()
