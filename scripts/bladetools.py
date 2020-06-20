@@ -105,10 +105,12 @@ def camber_spline(npts, xy_points):
 
         return _bpoly
 
-    def integral_fr_grad(n,k):
-        coeff = binom (n,k)
+    def integral_fr_grad(n, k):
+        coeff = binom(n, k)
+
         def _bpoly(x):
             return coeff * 1 / (k + 1) * x ** (k + 1) * 1 / (n - k + 1) * (1 - x) ** (n - k + 1)
+
         return _bpoly
 
     def bezier(pts, npts):
@@ -124,3 +126,37 @@ def camber_spline(npts, xy_points):
     x = .5 * (1 - np.cos(np.linspace(0, np.pi, npts)))  # x-coord generation
     _x, _y = bezier(xy_points, npts).T
     return np.transpose(np.array([_x, _y]))
+
+
+class AnnulusGen:
+    def __init__(self, nblades, r_inner, blade1, blade2=0):
+        self.blade1 = blade1
+        if blade2 == 0:
+            # single blade
+            pass
+        else:
+            # tandem blade
+            self.blade2 = blade2
+        self.nblades = nblades
+        self.r_inner = r_inner
+        self.generate()
+        pass
+
+    def generate(self):
+        # generate inner circle
+        t = np.linspace(0, 2 * np.pi, self.nblades)
+        x = self.r_inner * np.cos(t)
+        y = self.r_inner * np.sin(t)
+        blade_list = pd.DataFrame(columns=["blade_%i" % (i) for i in range(self.nblades)])
+        for i, c in enumerate(t):
+            x_temp = self.blade1[:, 0]# * np.cos(c) + x[i]
+            y_temp = self.blade1[:, 1]# * np.sin(c) + y[i]
+            x_blade = np.cos(c) * x_temp - np.sin(c) * y_temp
+            y_blade = np.sin(c) * x_temp + np.cos(c) * y_temp
+            blade_list['blade_%i' % (int(i))] = np.concatenate([x_blade + x[i], y_blade + y[i]])
+            # plt.plot(blade_list['blade_%i' % (int(i))].iloc[:1000],blade_list['blade_%i' % (int(i))].iloc[1000:])
+        # plt.plot(x, y)
+        # plt.axis('equal')
+        # plt.show()
+
+        return blade_list

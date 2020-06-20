@@ -1,5 +1,6 @@
 import math
 
+
 class UpdateHandler:
     """
     A very quick and dirty approach... Alternatively, creating a custom DoubleSlider class would be way cleaner.
@@ -89,11 +90,13 @@ class UpdateHandler:
     def update_radio_blades(self):
         # get radio state
         if self.radio_blade1.isChecked():
+            self.update_b2_control_vis(0)
             self.select_blade = 1
             self.ds_blade2 = self.get_labelval()
             self.set_labelval(self.ds_blade1)
 
         elif self.radio_blade2.isChecked():
+            self.update_b2_control_vis(1)
             self.select_blade = 2
             self.ds_blade1 = self.get_labelval()
             self.set_labelval(self.ds_blade2)
@@ -138,18 +141,20 @@ class UpdateHandler:
         self.ds = ds
         self.ds1 = ds
         self.ds2 = ds
-        self.m.plot(self.ds,ds1=self.ds1,ds2=self.ds2)
+        self.ds2['x_offset'] = 0
+        self.ds2['y_offset'] = 0
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
         print('Updating Plot')
 
     def update_select(self):
         # get values
         if self.select_blade == 1:
             self.ds['selected_blade'] = 1
-            
+
             ds1 = {}
             for key in self.param_keys:
                 ds1[key] = self.label[key].value()
-    
+
             # get values from menu items
             ds1['thdist_ver'] = self.thdist_ver
             ds1['nblades'] = self.nblades
@@ -167,6 +172,8 @@ class UpdateHandler:
             ds2['thdist_ver'] = self.thdist_ver
             ds2['nblades'] = self.nblades
             ds2['pts'] = self.points
+            ds2['x_offset'] = 0
+            ds2['y_offset'] = 0
             self.ds2 = ds2
             self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
 
@@ -193,6 +200,7 @@ class UpdateHandler:
         self.radio_blade1.setHidden(True)
         self.radio_blade2.setHidden(True)
         self.btn_update_sel.setHidden(True)
+        self.update_b2_control_vis(0)
 
     def update_nblades_tandem(self):
         self.ds_blade1 = self.get_labelval()
@@ -203,3 +211,38 @@ class UpdateHandler:
         self.radio_blade1.setChecked(True)
 
         self.btn_update_sel.setVisible(True)
+
+    def update_B2_up(self):
+        self.ds2['y_offset'] += 0.01
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+
+
+    def update_B2_down(self):
+        self.ds2['y_offset'] -= 0.01
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+
+    def update_B2_left(self):
+        self.ds2['x_offset'] -= 0.01
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+
+    def update_B2_right(self):
+        self.ds2['x_offset'] += 0.01
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+        pass
+
+
+    def update_b2_control_vis(self, visible=0):
+        # Control for 2nd blade position
+        # hide at system start
+        if visible == 0:
+            self.label_pos_b2.setHidden(True)
+            self.btn_b2_up.setHidden(True)
+            self.btn_b2_down.setHidden(True)
+            self.btn_b2_left.setHidden(True)
+            self.btn_b2_right.setHidden(True)
+        else:
+            self.label_pos_b2.setVisible(True)
+            self.btn_b2_up.setVisible(True)
+            self.btn_b2_down.setVisible(True)
+            self.btn_b2_left.setVisible(True)
+            self.btn_b2_right.setVisible(True)

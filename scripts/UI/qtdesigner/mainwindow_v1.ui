@@ -351,8 +351,8 @@
      <rect>
       <x>500</x>
       <y>590</y>
-      <width>281</width>
-      <height>51</height>
+      <width>298</width>
+      <height>41</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
@@ -434,7 +434,7 @@
         <string>Update Selected</string>
        </property>
        <property name="shortcut">
-        <string>Ctrl+R</string>
+        <string>Ctrl+Shift+R</string>
        </property>
       </widget>
      </item>
@@ -464,11 +464,78 @@
      </item>
     </layout>
    </widget>
+   <widget class="QWidget" name="layoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>970</x>
+      <y>580</y>
+      <width>86</width>
+      <height>61</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridP2">
+     <item row="1" column="2">
+      <widget class="QToolButton" name="btn_b2_right">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::RightArrow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QToolButton" name="btn_b2_up">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::UpArrow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QToolButton" name="btn_b2_left">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::LeftArrow</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QToolButton" name="btn_b2_down">
+       <property name="text">
+        <string/>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::DownArrow</enum>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QLabel" name="label_pos_b2">
+    <property name="geometry">
+     <rect>
+      <x>830</x>
+      <y>590</y>
+      <width>141</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Position 2nd Blade</string>
+    </property>
+   </widget>
    <zorder>gridLayoutWidget</zorder>
    <zorder>gridLayoutWidget_2</zorder>
    <zorder>fig_widget</zorder>
    <zorder>horizontalLayoutWidget_2</zorder>
    <zorder>gridLayoutWidget_3</zorder>
+   <zorder>layoutWidget</zorder>
+   <zorder>label_pos_b2</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -499,8 +566,15 @@
      <addaction name="nblades_single"/>
      <addaction name="nblades_tandem"/>
     </widget>
+    <widget class="QMenu" name="menuBlade_Cluster">
+     <property name="title">
+      <string>Blade Cluster</string>
+     </property>
+     <addaction name="actionAnnulus"/>
+    </widget>
     <addaction name="menuThickness_Distribution_Type"/>
     <addaction name="menuNumber_of_Blades"/>
+    <addaction name="menuBlade_Cluster"/>
    </widget>
    <widget class="QMenu" name="menuOptimize">
     <property name="title">
@@ -541,6 +615,14 @@
    </property>
    <property name="shortcut">
     <string>Alt+Shift+2</string>
+   </property>
+  </action>
+  <action name="actionAnnulus">
+   <property name="text">
+    <string>Annulus (opens new window)</string>
+   </property>
+   <property name="shortcut">
+    <string/>
    </property>
   </action>
  </widget>
