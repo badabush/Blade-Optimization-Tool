@@ -1,0 +1,232 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>scripts.UI.annulus_ui &#8212; thesis  documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">thesis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scripts.UI.annulus_ui</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for scripts.UI.annulus_ui</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">PyQt5.QtWidgets</span> <span class="kn">import</span> <span class="n">QApplication</span><span class="p">,</span> <span class="n">QMainWindow</span><span class="p">,</span> <span class="n">QMenu</span><span class="p">,</span> <span class="n">QVBoxLayout</span><span class="p">,</span> <span class="n">QSizePolicy</span><span class="p">,</span> <span class="n">QMessageBox</span><span class="p">,</span> <span class="n">QWidget</span><span class="p">,</span> \
+    <span class="n">QPushButton</span>
+<span class="kn">from</span> <span class="nn">PyQt5.QtGui</span> <span class="kn">import</span> <span class="n">QIcon</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">uic</span>
+<span class="kn">from</span> <span class="nn">pyface.qt</span> <span class="kn">import</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtCore</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_qt5agg</span> <span class="kn">import</span> <span class="n">FigureCanvasQTAgg</span> <span class="k">as</span> <span class="n">FigureCanvas</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_qt5agg</span> <span class="kn">import</span> <span class="n">NavigationToolbar2QT</span> <span class="k">as</span> <span class="n">NavigationToolbar</span>
+<span class="kn">from</span> <span class="nn">matplotlib.figure</span> <span class="kn">import</span> <span class="n">Figure</span>
+<span class="kn">from</span> <span class="nn">scripts.bladetools</span> <span class="kn">import</span> <span class="n">AnnulusGen</span>
+<span class="kn">from</span> <span class="nn">bladetools</span> <span class="kn">import</span> <span class="n">load_restraints</span>
+
+<div class="viewcode-block" id="AnnulusUi"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.AnnulusUi">[docs]</a><span class="k">class</span> <span class="nc">AnnulusUi</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ds</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">AnnulusUi</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="n">uic</span><span class="o">.</span><span class="n">loadUi</span><span class="p">(</span><span class="s1">&#39;qtdesigner/annuluswindow.ui&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">restraints</span> <span class="o">=</span> <span class="n">load_restraints</span><span class="p">(</span><span class="s1">&#39;config/restraints_annulus.txt&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span> <span class="o">=</span> <span class="n">PlotCanvas</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="n">toolbar</span> <span class="o">=</span> <span class="n">NavigationToolbar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">centralwidget</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fig_widget</span>
+        <span class="n">vbl</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QVBoxLayout</span><span class="p">(</span><span class="n">centralwidget</span><span class="p">)</span>
+        <span class="n">vbl</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">toolbar</span><span class="p">)</span>
+        <span class="n">vbl</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">offset</span> <span class="o">=</span> <span class="n">offset</span>
+        <span class="c1"># init variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_inner</span> <span class="o">=</span> <span class="o">.</span><span class="mi">3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nblades</span> <span class="o">=</span> <span class="mi">30</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">scale</span> <span class="o">=</span> <span class="mi">100</span>
+
+        <span class="c1"># restraints for widgets</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_restraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restraints</span><span class="p">[</span><span class="s1">&#39;nblades&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_nblades</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slider_nblades</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_restraints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restraints</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slider_r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+
+        <span class="c1"># link label and slider</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_r</span><span class="o">.</span><span class="n">editingFinished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_box_r</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_r</span><span class="o">.</span><span class="n">valueChanged</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_r</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_nblades</span><span class="o">.</span><span class="n">editingFinished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_box_nblades</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_nblades</span><span class="o">.</span><span class="n">valueChanged</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_nblades</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_update</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_close</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close_window</span><span class="p">)</span>
+
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;single&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blade1</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_blades</span><span class="p">()</span>
+            <span class="n">_instance</span> <span class="o">=</span> <span class="n">AnnulusGen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nblades</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_inner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blade1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blade_list</span> <span class="o">=</span> <span class="n">_instance</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blade1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blade2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_blades</span><span class="p">()</span>
+            <span class="n">_instance</span> <span class="o">=</span> <span class="n">AnnulusGen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nblades</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_inner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blade1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blade2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blade_list</span> <span class="o">=</span> <span class="n">_instance</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+
+<div class="viewcode-block" id="AnnulusUi.build_blades"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.AnnulusUi.build_blades">[docs]</a>    <span class="k">def</span> <span class="nf">build_blades</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Reconstruct the blades from mainwindow.&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;single&#39;</span><span class="p">:</span>
+            <span class="n">blade1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;blade&#39;</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">blade1</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">blade1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;blade1_1&#39;</span><span class="p">]</span>
+            <span class="n">blade2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;blade2_2&#39;</span><span class="p">]</span>
+            <span class="n">blade2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">blade2</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">blade2</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">blade2</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">blade1</span><span class="p">,</span> <span class="n">blade2</span></div>
+
+
+<div class="viewcode-block" id="AnnulusUi.close_window"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.AnnulusUi.close_window">[docs]</a>    <span class="k">def</span> <span class="nf">close_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AnnulusUi.reset_pts"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.AnnulusUi.reset_pts">[docs]</a>    <span class="k">def</span> <span class="nf">reset_pts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="AnnulusUi.update_plot"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.AnnulusUi.update_plot">[docs]</a>    <span class="k">def</span> <span class="nf">update_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># get spline</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_inner</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_r</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nblades</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">label_nblades</span><span class="o">.</span><span class="n">value</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;single&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blade1</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_blades</span><span class="p">()</span>
+            <span class="n">_instance</span> <span class="o">=</span> <span class="n">AnnulusGen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nblades</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_inner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blade1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blade_list</span> <span class="o">=</span> <span class="n">_instance</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blade1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blade2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_blades</span><span class="p">()</span>
+            <span class="n">_instance</span> <span class="o">=</span> <span class="n">AnnulusGen</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nblades</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_inner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blade1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blade2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">blade_list</span> <span class="o">=</span> <span class="n">_instance</span><span class="o">.</span><span class="n">generate</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r_inner</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">blade_list</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnnulusUi.update_nblades"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.AnnulusUi.update_nblades">[docs]</a>    <span class="k">def</span> <span class="nf">update_nblades</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_nblades</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnnulusUi.update_box_nblades"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.AnnulusUi.update_box_nblades">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_nblades</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_nblades</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_nblades</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnnulusUi.update_r"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.AnnulusUi.update_r">[docs]</a>    <span class="k">def</span> <span class="nf">update_r</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_r</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnnulusUi.update_box_r"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.AnnulusUi.update_box_r">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_r</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_r</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_r</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="AnnulusUi.set_restraints"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.AnnulusUi.set_restraints">[docs]</a>    <span class="k">def</span> <span class="nf">set_restraints</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">restraint</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">slider</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">minval</span> <span class="o">=</span> <span class="n">restraint</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">maxval</span> <span class="o">=</span> <span class="n">restraint</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">restraint</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">defaultval</span> <span class="o">=</span> <span class="n">restraint</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+
+        <span class="n">label</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">minval</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">maxval</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">defaultval</span><span class="p">)</span>
+        <span class="n">slider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">minval</span><span class="o">*</span><span class="n">scale</span><span class="p">)</span>
+        <span class="n">slider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">maxval</span><span class="o">*</span><span class="n">scale</span><span class="p">)</span>
+        <span class="n">slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">defaultval</span><span class="o">*</span><span class="n">scale</span><span class="p">)</span></div></div>
+
+
+
+<div class="viewcode-block" id="PlotCanvas"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.PlotCanvas">[docs]</a><span class="k">class</span> <span class="nc">PlotCanvas</span><span class="p">(</span><span class="n">FigureCanvas</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
+        <span class="c1"># self.axes = fig.add_subplot(111)</span>
+
+        <span class="n">FigureCanvas</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fig</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="n">FigureCanvas</span><span class="o">.</span><span class="n">setSizePolicy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">,</span> <span class="n">QSizePolicy</span><span class="o">.</span><span class="n">Expanding</span><span class="p">)</span>
+        <span class="n">FigureCanvas</span><span class="o">.</span><span class="n">updateGeometry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">111</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xlim</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ylim</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># self.plot()</span>
+
+<div class="viewcode-block" id="PlotCanvas.plot"><a class="viewcode-back" href="../../../GUI.html#scripts.UI.annulus_ui.PlotCanvas.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">blade_list</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
+        <span class="c1"># print(pts)</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="n">blade_list</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">r</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">t</span><span class="p">),</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+        <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">blade_list</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:</span><span class="n">n2</span><span class="p">,</span> <span class="n">i</span><span class="p">],</span> <span class="n">blade_list</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">n2</span><span class="p">:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;royalblue&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">7</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span>
+         <span class="nb">range</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">&#39;equal&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div></div>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">thesis  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">scripts.UI.annulus_ui</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Ga Man Liang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.1.1.
+    </div>
+  </body>
+</html>

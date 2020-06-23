@@ -20,3 +20,13 @@ Popup window Spline config.
    :members:
    :undoc-members:
    :show-inheritance:
+
+Annulus window
+------------------------------
+
+Popup window Annulus config.
+
+.. automodule:: scripts.UI.annulus_ui
+   :members:
+   :undoc-members:
+   :show-inheritance:
