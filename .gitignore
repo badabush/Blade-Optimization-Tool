@@ -1,1 +1,5 @@
-scripts/__pycache__/
+/docs/output
+/.git
+/.idea
+/module/blade/__pychache__
+/module/UI/__pychache__
