@@ -1,5 +1,6 @@
-/docs/output
-/.git
-/.idea
-/module/blade/__pychache__
-/module/UI/__pychache__
+docs/output
+.git
+.idea
+module/blade/__pychache__
+module/UI/__pychache__
+/test
