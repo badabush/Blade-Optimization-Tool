@@ -138,8 +138,8 @@ def spline2camberdist(ds, delta_alpha):
 
 
     dalph = np.linspace(delta_alpha, 0, x.size)
-    yn = np.tan(dalph+y) * x
-    return yn
+    yn = np.tan(dalph*(1+y)) * x
+    return x, yn
 
 
 class AnnulusGen:
