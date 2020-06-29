@@ -137,6 +137,7 @@ class UpdateHandler:
         ds['thdist_ver'] = self.thdist_ver
         ds['nblades'] = self.nblades
         ds['pts'] = self.points
+        ds['pts_th'] = self.points_th
         ds['selected_blade'] = 0
         self.ds = ds
         self.ds1 = ds
@@ -159,6 +160,7 @@ class UpdateHandler:
             ds1['thdist_ver'] = self.thdist_ver
             ds1['nblades'] = self.nblades
             ds1['pts'] = self.points
+            ds1['pts_th'] = self.points_th
             self.ds1 = ds1
             self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
         elif self.select_blade == 2:
@@ -172,6 +174,7 @@ class UpdateHandler:
             ds2['thdist_ver'] = self.thdist_ver
             ds2['nblades'] = self.nblades
             ds2['pts'] = self.points
+            ds2['pts_th'] = self.points_th
             ds2['x_offset'] = 0
             ds2['y_offset'] = 0
             self.ds2 = ds2

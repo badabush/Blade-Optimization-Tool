@@ -13,7 +13,7 @@ class BladeGen:
 
     def __init__(self, frontend='user', file='', nblade='single', th_dist_option=0, th=.0215, alpha1=25, alpha2=25,
                  x_maxcamber=.4, x_maxth=.3, l_chord=1.0, lambd=20, th_le=0.01, th_te=0.0135, npts=1000,
-                 spline_pts=[9999]):
+                 spline_pts=[9999], thdist_points=[9999]):
 
         self.file = file
         if self.file != '':
@@ -49,7 +49,11 @@ class BladeGen:
             xy_th = self.thickness_dist_v1()
             xy_blade, self.xy_camber = self.geom_gen(xy_th)
         elif self.thdist_option == 1:
-            xy_blade, self.xy_camber = self.thickness_dist_v2()
+            if 9999 in spline_pts:
+                xy_blade, self.xy_camber = self.thickness_dist_v2()
+            else:
+                xyth = camber_spline(self.ds['npts'], thdist_points)
+                xy_blade, self.xy_camber = self.thickness_dist_v2(xyth)
         if self.frontend == 'user':
             ImportExport()._export(xy_blade)
             self.debug_plot(self.xy_camber, xy_blade)
@@ -122,7 +126,7 @@ class BladeGen:
 
         return xy_th
 
-    def thickness_dist_v2(self):
+    def thickness_dist_v2(self, xyth_spline=[9999, 9999]):
         # Option 2: NACA65 (Parabolic_Camber_V5)
         ds = self.ds
         xy_camber = self.xy_camber
@@ -137,7 +141,9 @@ class BladeGen:
         dhk = 2 * th_te
         c=1
         gammahk = ds['gamma_te']
+        # generate y thickness dist if not given by spline
         x_short = x[np.where(x < (1 - th_te / c))]
+        # if 9999 in yth_spline:
 
         x_front = x_short[np.where(x_short < xd)]
         y_th_front = .5 * (np.sqrt(2 * rn) * np.sqrt(x_front)
@@ -158,6 +164,9 @@ class BladeGen:
                                   c - x_rear) ** 3
                           )
         yth = np.concatenate([y_th_front, y_th_rear])
+        # else:
+        # ythn = xyth_spline[:x_short.size,1]
+        # yth = ythn/np.max(ythn) * np.max(yth)
 
         # fit trailing edge radius
         r_te = yth[-1]

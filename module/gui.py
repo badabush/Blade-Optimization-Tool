@@ -12,6 +12,7 @@ from module.blade.bladetools import load_restraints
 from module.blade.bladegen import BladeGen
 from module.UI.update_handle import UpdateHandler
 from module.UI.spline_ui import SplineUi
+from module.UI.spline_ui2 import SplineUi2
 from module.UI.annulus_ui import AnnulusUi
 
 
@@ -61,16 +62,23 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
 
         # init points
         self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
+        self.points_th = np.array([[0, 0.2, 0.4, 0.65, 1], [0, 0.45, 1.0, 0.25, 0]]).T
         str_pts = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
             self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
-            self.points[2, 1], self.points[3, 0], self.points[3, 1], self.points[4, 0], self.points[4, 1])
+            self.points[2, 1], self.points[3, 0], self.points[3, 1], self.points[4, 0], self.points[4, 1]) 
+        str_pts_th = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
+            self.points_th[0, 0], self.points_th[0, 1], self.points_th[1, 0], self.points_th[1, 1], self.points_th[2, 0],
+            self.points_th[2, 1], self.points_th[3, 0], self.points_th[3, 1], self.points_th[4, 0], self.points_th[4, 1])
         self.returned_values.setText(str_pts)
+        self.returned_values_th.setText(str_pts_th)
 
         # open spline popup on click
         self.btn_spline_camber.clicked.connect(self.spline_window)
+        self.btn_spline_th.clicked.connect(self.spline_window2)
 
         # get spline values from 2nd window
         self.returned_values.textChanged.connect(self.get_spline_pts)
+        self.returned_values_th.textChanged.connect(self.get_spline_th_pts)
         #
         #
         self.update_b2_control_vis(0)
@@ -98,7 +106,25 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
             points[i, 1] = float(val_splt[1])
 
         self.points = points
-        print('main\n' + str(self.points))
+        # print('main\n' + str(self.points))
+
+    def get_spline_th_pts(self, value):
+        """
+        Method is called when invisible Label with data from the spline window is being updated. Get Points from string.
+
+        :param value: Value with coords of spline points
+        :type value: str
+        :return:
+        """
+        value = value.split(';')
+        points = np.zeros((5, 2))
+        for i, line in enumerate(value):
+            val_splt = line.split(',')
+            points[i, 0] = float(val_splt[0])
+            points[i, 1] = float(val_splt[1])
+
+        self.points_th = points
+        # print('main\n' + str(self.points))
 
     def spline_window(self):
         """
@@ -106,6 +132,15 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         :return:
         """
         self.spline_ui = SplineUi(self.ds, self.returned_values)
+        self.spline_ui.show()
+        self.points = self.spline_ui.points
+
+    def spline_window2(self):
+        """
+        Opens an additional spline window on when button 'Spline' has been clicked.
+        :return:
+        """
+        self.spline_ui = SplineUi2(self.ds, self.returned_values_th)
         self.spline_ui.show()
         self.points = self.spline_ui.points
 
@@ -293,7 +328,8 @@ class PlotCanvas(FigureCanvas):
             bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
                                 alpha1=ds['alpha1'], alpha2=ds['alpha2'],
                                 lambd=ds['lambd'], th=ds['th'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
-                                l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'], spline_pts=ds['pts'])
+                                l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'], spline_pts=ds['pts'],
+                                thdist_points=ds['pts_th'])
             blade_data, camber_data = bladegen._return()
             division = ds['dist_blades'] * ds['l_chord']
             self.ax.plot(blade_data[:, 0], blade_data[:, 1], color='royalblue')
@@ -316,7 +352,8 @@ class PlotCanvas(FigureCanvas):
                                     alpha1=df['alpha1'], alpha2=df['alpha2'],
                                     lambd=df['lambd'], th=df['th'], x_maxth=df['xmax_th'],
                                     x_maxcamber=df['xmax_camber'],
-                                    l_chord=df['l_chord'], th_le=df['th_le'], th_te=df['th_te'], spline_pts=df['pts'])
+                                    l_chord=df['l_chord'], th_le=df['th_le'], th_te=df['th_te'], spline_pts=df['pts'],
+                                    thdist_points=df['pts_th'])
                 blade_data, camber_data = bladegen._return()
                 division = df['dist_blades'] * df['l_chord']
                 # Update simultaneously

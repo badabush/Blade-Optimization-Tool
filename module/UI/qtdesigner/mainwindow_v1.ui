@@ -345,6 +345,19 @@
      <zorder>label_8</zorder>
      <zorder>val_lchord</zorder>
     </widget>
+    <widget class="QLineEdit" name="returned_values_th">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>280</y>
+       <width>113</width>
+       <height>25</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>123</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="gridLayoutWidget_2">
     <property name="geometry">

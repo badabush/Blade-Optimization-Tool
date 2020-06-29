@@ -115,8 +115,8 @@ def camber_spline(npts, xy_points):
         return curve
 
     npts = int(npts)
-    # x = .5 * (1 - np.cos(np.linspace(0, np.pi, npts)))  # x-coord generation
-    x = np.linspace(0, 1, npts)
+    x = .5 * (1 - np.cos(np.linspace(0, np.pi, npts)))  # x-coord generation
+    # x = np.linspace(0, 1, npts)
     _x, _y = bezier(xy_points, npts).T
     return np.transpose(np.array([_x, _y]))
 
