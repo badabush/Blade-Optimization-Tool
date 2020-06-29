@@ -165,8 +165,8 @@ class BladeGen:
                           )
         yth = np.concatenate([y_th_front, y_th_rear])
         # else:
-        # ythn = xyth_spline[:x_short.size,1]
-        # yth = ythn/np.max(ythn) * np.max(yth)
+        ythn = xyth_spline[:x_short.size,1]
+        yth = ythn/np.max(ythn) * np.max(yth)
 
         # fit trailing edge radius
         r_te = yth[-1]
