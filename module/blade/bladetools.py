@@ -115,31 +115,51 @@ def camber_spline(npts, xy_points):
         return curve
 
     npts = int(npts)
-    x = .5 * (1 - np.cos(np.linspace(0, np.pi, npts)))  # x-coord generation
-    # x = np.linspace(0, 1, npts)
+    # x = .5 * (1 - np.cos(np.linspace(0, np.pi, npts)))  # x-coord generation
+    x = np.linspace(0, 1, npts)
     _x, _y = bezier(xy_points, npts).T
     return np.transpose(np.array([_x, _y]))
 
 
-def spline2camberdist(ds, delta_alpha):
-    x = np.sin(np.deg2rad(45)) * ds[:,0] + np.cos(np.deg2rad(45)) * ds[:,1]
-    y = -(np.cos(np.deg2rad(45)) * ds[:,0] - np.sin(np.deg2rad(45)) * ds[:,1])
-    x = x/np.max(x)
-    # y = np.round(y,5)
+def cdist_from_spline(xy_spline, delta_alpha):
+    # x_grad = np.gradient(xy_spline[:, 0])
+    x_grad = np.zeros(500)
+    x_grad = np.array([xy_spline[i, 0]-xy_spline[i-1, 0]for i in range(500)])
+    # y_grad = np.gradient(xy_spline[:, 1])
+    y_grad = np.zeros(500)
+    y_grad = np.array([xy_spline[i, 1]-xy_spline[i-1, 1]for i in range(500)])
+    diff = np.ones(500)
+    diff = y_grad / x_grad
+    diffmin = np.argmin(diff)
+    if diffmin != 0:
+        diff[diffmin:] = -diff[diffmin:]
+    steps = diff.size
+    angle = np.zeros(steps)
+    angle = np.cumsum(delta_alpha / steps * diff)
+    x_camber = xy_spline[:,0]
+    y_camber = np.zeros(steps)
 
-    # xgrad = np.gradient(ds[:,0])
-    ystep = np.gradient(ds[:,1])
-    # x = np.copy(ds[:, 0])
-    # find max position
-    if (np.argmax(np.round(ystep, 5))) == 0:
-        xmax_idx = int(x.size/2)
-    else:
-        xmax_idx = np.argmax(np.round(ystep, 5))
+    # doesnt work in list comprehension because it is referenced to itself?
+    for i in range(1, steps):
+        y_camber[i] = y_camber[i-1] - (x_grad[i] * np.tan(angle[i]))
+
+    # rotate
+    rotangle = -np.arctan(y_camber[-1]/x_camber[-1])
+    xy_camber = np.zeros_like(xy_spline)
+    xy_camber[:,0] = np.cos(rotangle) * x_camber - np.sin(rotangle) * y_camber
+    xy_camber[:,1] = np.sin(rotangle) * x_camber + np.cos(rotangle) * y_camber
+
+    # scale
+    xmax = np.max(xy_camber[:,0])
+    xy_camber[:, 0] = xy_camber[:,0]/xmax
+    xy_camber[:, 1] = xy_camber[:,1]/xmax
 
 
-    dalph = np.linspace(delta_alpha, 0, x.size)
-    yn = np.tan(dalph*(1+y)) * x
-    return x, yn
+    plt.cla
+    plt.plot(xy_camber[:,0], xy_camber[:,1])
+    plt.axis('equal')
+    # plt.show()
+    return xy_camber
 
 
 class AnnulusGen:

@@ -6,7 +6,7 @@ import scipy.optimize as optimize
 
 
 from .roundedges import RoundEdges
-from module.blade.bladetools import ImportExport, normalize, camber_spline, spline2camberdist
+from module.blade.bladetools import ImportExport, normalize, camber_spline, cdist_from_spline
 
 
 class BladeGen:
@@ -35,15 +35,14 @@ class BladeGen:
                               th_te, npts)
 
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.ds['npts'])))  # x-coord generation
+        self.x = np.linspace(0, 1, self.ds['npts'])
 
         if 9999 in spline_pts:
             self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         else:
             self.xy_cspline = camber_spline(self.ds['npts'], spline_pts)
-            # self.xy_cspline[:,0], self.xy_cspline[:,1] = spline2camberdist(self.xy_cspline, self.ds['theta'])
-            self.xy_camber = self.camberline2(self.ds['theta'], self.ds['xmax_camber'])
-            # self.xy_camber[:, 1] = self.xy_camber[:, 1] * np.arctan(
-            #     np.gradient(self.xy_cspline[:, 1]) / np.gradient(self.xy_cspline[:, 0]))
+            self.xy_camber = cdist_from_spline(self.xy_cspline, self.ds['theta'])
+            # self.xy_camber = self.camberline2(self.ds['theta'], self.ds['xmax_camber'])
 
         if self.thdist_option == 0:
             xy_th = self.thickness_dist_v1()
@@ -52,8 +51,8 @@ class BladeGen:
             if 9999 in spline_pts:
                 xy_blade, self.xy_camber = self.thickness_dist_v2()
             else:
-                xyth = camber_spline(self.ds['npts'], thdist_points)
-                xy_blade, self.xy_camber = self.thickness_dist_v2(xyth)
+                # xyth = camber_spline(self.ds['npts'], thdist_points)
+                xy_blade, self.xy_camber = self.thickness_dist_v2()
         if self.frontend == 'user':
             ImportExport()._export(xy_blade)
             self.debug_plot(self.xy_camber, xy_blade)
@@ -165,8 +164,8 @@ class BladeGen:
                           )
         yth = np.concatenate([y_th_front, y_th_rear])
         # else:
-        ythn = xyth_spline[:x_short.size,1]
-        yth = ythn/np.max(ythn) * np.max(yth)
+        # ythn = xyth_spline[:x_short.size,1]
+        # yth = ythn/np.max(ythn) * np.max(yth)
 
         # fit trailing edge radius
         r_te = yth[-1]
@@ -245,7 +244,7 @@ class BladeGen:
 
         return xy_camber
 
-    def camberline2(self, thetan, a):
+    def camberline2(self, theta, a):
         """
         Calculate the parabolic-arc camberline from R.Aungier.
         Returns vector with X and Y of camber line.
@@ -260,22 +259,11 @@ class BladeGen:
 
         x = self.x
         c = 1
-        xy_spline = self.xy_cspline
 
-        # rotate the spline 45deg
-        # x_spline = xy_spline[:,0]
-        # y_spline = np.gradient(xy_spline[:,1])
-        x_spline = np.sin(np.deg2rad(45)) * xy_spline[:,0] + np.cos(np.deg2rad(45)) * xy_spline[:,1]
-        y_spline = -(np.cos(np.deg2rad(45)) * xy_spline[:,0] - np.sin(np.deg2rad(45)) * xy_spline[:,1])
-
-        #norm y
-
-        angle = np.ones(x.size) * (thetan*(1+y_spline))
         ycambertemp = np.zeros(x.size)
         for i in range(0, x.size):
             xtemp = x[i]
             y0 = 0.0
-            theta = angle[i]
             b = c * (np.sqrt(1 + (((4 * np.tan(theta)) ** 2) * ((a / c) - (a / c) ** 2 - 3 / 16))) - 1) / (
                 4 * np.tan(theta))
 
