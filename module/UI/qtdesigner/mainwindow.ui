@@ -585,9 +585,16 @@
      </property>
      <addaction name="actionAnnulus"/>
     </widget>
+    <widget class="QMenu" name="menuImport_Export">
+     <property name="title">
+      <string>Import/Export</string>
+     </property>
+     <addaction name="actionload_from_file"/>
+    </widget>
     <addaction name="menuThickness_Distribution_Type"/>
     <addaction name="menuNumber_of_Blades"/>
     <addaction name="menuBlade_Cluster"/>
+    <addaction name="menuImport_Export"/>
    </widget>
    <widget class="QMenu" name="menuOptimize">
     <property name="title">
@@ -636,6 +643,11 @@
    </property>
    <property name="shortcut">
     <string/>
+   </property>
+  </action>
+  <action name="actionload_from_file">
+   <property name="text">
+    <string>load from file</string>
    </property>
   </action>
  </widget>

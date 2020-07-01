@@ -144,7 +144,11 @@ class UpdateHandler:
         self.ds2 = ds
         self.ds2['x_offset'] = 0
         self.ds2['y_offset'] = 0
-        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+        try:
+            import_blade = self.imported_blade
+        except AttributeError as e:
+            import_blade = 0
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, blade_import = import_blade)
         print('Updating Plot')
 
     def update_select(self):
@@ -162,7 +166,11 @@ class UpdateHandler:
             ds1['pts'] = self.points
             ds1['pts_th'] = self.points_th
             self.ds1 = ds1
-            self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+            try:
+                import_blade = self.imported_blade
+            except AttributeError as e:
+                import_blade = 0
+            self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, blade_import = import_blade)
         elif self.select_blade == 2:
             self.ds['selected_blade'] = 2
 
@@ -178,7 +186,11 @@ class UpdateHandler:
             ds2['x_offset'] = 0
             ds2['y_offset'] = 0
             self.ds2 = ds2
-            self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+            try:
+                import_blade = self.imported_blade
+            except AttributeError as e:
+                import_blade = 0
+            self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, blade_import = import_blade)
 
     def set_default(self):
         # set values

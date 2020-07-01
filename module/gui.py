@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QSizePolicy
+from PyQt5.QtWidgets import QSizePolicy, QFileDialog
 from PyQt5 import QtWidgets, uic
 from pyface.qt import QtGui
 import sys
@@ -11,12 +11,13 @@ from matplotlib.figure import Figure
 from module.blade.bladetools import load_restraints
 from module.blade.bladegen import BladeGen
 from module.UI.update_handle import UpdateHandler
+from module.UI.file_explorer import FileExplorer
 from module.UI.spline_ui import SplineUi
 from module.UI.spline_ui2 import SplineUi2
 from module.UI.annulus_ui import AnnulusUi
 
 
-class Ui(QtWidgets.QMainWindow, UpdateHandler):
+class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
         restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
@@ -26,7 +27,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
 
     def __init__(self):
         super(Ui, self).__init__()
-        uic.loadUi('UI/qtdesigner/mainwindow_v1.ui', self)
+        uic.loadUi('UI/qtdesigner/mainwindow.ui', self)
         # declaring param keys, load restraints for slider
         self.param_keys = ['npts', 'alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'l_chord', 'th_le',
                            'th_te', 'dist_blades']
@@ -57,6 +58,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         self.nblades_single.triggered.connect(self.update_nblades_single)
         self.nblades_tandem.triggered.connect(self.update_nblades_tandem)
         self.actionAnnulus.triggered.connect(self.annulus_window)
+        self.actionload_from_file.triggered.connect(self.openFileNameDialog)
         self.slider_control()
         self.show()
 
@@ -309,7 +311,7 @@ class PlotCanvas(FigureCanvas):
 
         # self.plot()
 
-    def plot(self, ds, ds1=0, ds2=0):
+    def plot(self, ds, ds1=0, ds2=0, blade_import=0):
         print(ds2)
         # get zoom state
         if self.xlim == (0, 0) and self.ylim == (0, 0):
@@ -426,11 +428,21 @@ class PlotCanvas(FigureCanvas):
                 df_blades['type'] = 'tandem'
                 self.plt_df = df_blades
 
+        """ Plot imported blade if exists """
+        try:
+            self.ax.plot(blade_import.x, blade_import.y, 'r')
+        except AttributeError:
+            print("Error plotting imported blade.")
         self.ax.axis('equal')
         self.ax.set_xlim(self.xlim)
         self.ax.set_ylim(self.ylim)
         self.ax.grid()
         self.draw()
+
+    def plot_import(self, ds):
+        x = ds.x
+        y = ds.y
+        self.ax.plot(x,y)
 
     def _return_blades(self):
         return self.plt_df
