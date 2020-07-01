@@ -131,8 +131,8 @@ def cdist_from_spline(xy_spline, delta_alpha):
     diff = np.ones(500)
     diff = y_grad / x_grad
     diffmin = np.argmin(diff)
-    if diffmin != 0:
-        diff[diffmin:] = -diff[diffmin:]
+    # if diffmin != 0:
+    #     diff[diffmin:] = -diff[diffmin:]
     steps = diff.size
     angle = np.zeros(steps)
     angle = np.cumsum(delta_alpha / steps * diff)
