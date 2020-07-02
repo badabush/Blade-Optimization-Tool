@@ -22,6 +22,8 @@ class FileExplorer:
             ie = ImportExport()
             blade = ie._import(fileName)
             self.imported_blade = normalize(blade)
+            self.update_in_control_vis(1)
+            self.imported_blade_vis = 1
 
     def saveFileDialog(self):
         options = QFileDialog.Options()

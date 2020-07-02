@@ -118,9 +118,9 @@ class ImportExport:
         :type xy: pdDataFrame
         """
         z = np.zeros(xy.shape[0])
-        xyz = xy * 20
+        xyz = xy
         xyz['z'] = z
-        np.savetxt(path + '.txt', np.round(xyz.values, 3), fmt='%f, %f, %f')
+        np.savetxt(path + '.txt', np.round(xyz.values, 5), fmt='%f, %f, %f')
 
 
 def camber_spline(npts, xy_points):
