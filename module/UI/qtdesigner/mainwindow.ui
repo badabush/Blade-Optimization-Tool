@@ -590,6 +590,7 @@
       <string>Import/Export</string>
      </property>
      <addaction name="actionload_from_file"/>
+     <addaction name="actionsave_as_txt"/>
     </widget>
     <addaction name="menuThickness_Distribution_Type"/>
     <addaction name="menuNumber_of_Blades"/>
@@ -648,6 +649,11 @@
   <action name="actionload_from_file">
    <property name="text">
     <string>load from file</string>
+   </property>
+  </action>
+  <action name="actionsave_as_txt">
+   <property name="text">
+    <string>save as txt</string>
    </property>
   </action>
  </widget>

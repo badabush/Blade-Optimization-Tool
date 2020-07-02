@@ -59,6 +59,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer):
         self.nblades_tandem.triggered.connect(self.update_nblades_tandem)
         self.actionAnnulus.triggered.connect(self.annulus_window)
         self.actionload_from_file.triggered.connect(self.openFileNameDialog)
+        self.actionsave_as_txt.triggered.connect(self.saveFileDialog)
         self.slider_control()
         self.show()
 

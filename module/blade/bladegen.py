@@ -32,8 +32,8 @@ class BladeGen:
         # pack parameters into dict
         self.ds = self.params(th, [alpha1, alpha2], x_maxcamber, x_maxth, l_chord, lambd, th_le,
                               th_te, npts)
-        # self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.ds['npts'])))  # x-coord generation
-        self.x = np.linspace(0, 1, self.ds['npts'])
+        self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.ds['npts'])))  # x-coord generation
+        # self.x = np.linspace(0, 1, self.ds['npts'])
 
         if 9999 in spline_pts:
             self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)

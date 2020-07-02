@@ -110,7 +110,7 @@ class ImportExport:
         except FileNotFoundError as e:
             print(e)
 
-    def _export(self, xy):
+    def _export(self, path, xy):
         """
         Export generated blade.
 
@@ -118,9 +118,9 @@ class ImportExport:
         :type xy: pdDataFrame
         """
         z = np.zeros(xy.shape[0])
-        xyz = xy
+        xyz = xy * 20
         xyz['z'] = z
-        np.savetxt('../geo_output/xyz.txt', np.round(xyz.values, 3), fmt='%.3f, %.3f, %.3f')
+        np.savetxt(path + '.txt', np.round(xyz.values, 3), fmt='%f, %f, %f')
 
 
 def camber_spline(npts, xy_points):
@@ -145,7 +145,7 @@ def camber_spline(npts, xy_points):
 
     npts = int(npts)
     x = .5 * (1 - np.cos(np.linspace(0, np.pi, npts)))  # x-coord generation
-    x = np.linspace(0, 1, npts)
+    # x = np.linspace(0, 1, npts)
     _x, _y = bezier(xy_points, npts).T
     return np.transpose(np.array([_x, _y]))
 
