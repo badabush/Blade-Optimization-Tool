@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Blade Optimization Tool</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QWidget" name="gridLayoutWidget">
@@ -266,7 +266,7 @@
         <bool>true</bool>
        </property>
        <property name="decimals">
-        <number>0</number>
+        <number>1</number>
        </property>
        <property name="singleStep">
         <double>0.000000000000000</double>
@@ -466,7 +466,7 @@
      <item row="1" column="1">
       <widget class="QPushButton" name="btn_hide_import">
        <property name="text">
-        <string>hide import</string>
+        <string>show/hide imp.</string>
        </property>
       </widget>
      </item>

@@ -1,0 +1,524 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>module.UI.update_handle &#8212; BOT - Blade Optimization Tool  documentation</title>
+    <link rel="stylesheet" href="../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for module.UI.update_handle</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+
+<div class="viewcode-block" id="UpdateHandler"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler">[docs]</a><span class="k">class</span> <span class="nc">UpdateHandler</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A very quick and dirty approach... Alternatively, creating a custom DoubleSlider class would be way cleaner.</span>
+<span class="sd">    TODO: fix this when bored.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_alpha1"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_alpha1">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_alpha1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get Value from Slider, apply to Label (alpha1).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;alpha1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;alpha1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_alpha2"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_alpha2">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_alpha2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get Value from Slider, apply to Label (alpha2).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;alpha2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;alpha2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_l_chord"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_l_chord">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_l_chord</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get Value from Slider, apply to Label chord length(l_chord) **obsolete**.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;l_chord&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;l_chord&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_lambd"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_lambd">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_lambd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get Value from Slider, apply to Label Lambda (lambd).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;lambd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;lambd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_npts"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_npts">[docs]</a>    <span class="k">def</span> <span class="nf">update_npts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set Label Value Number of Points (npts) with custom scale (100) **obsolete**.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;npts&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_npts"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_npts">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_npts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set Value for Label and Slider Position for Number of Points (npts) with custom scale (100) **obsolete**.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">val_raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;npts&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">val_raw</span> <span class="o">%</span> <span class="mi">100</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">50</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">val_raw</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">val_raw</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;npts&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;npts&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_th"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_th">[docs]</a>    <span class="k">def</span> <span class="nf">update_th</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set Label to input value with scale for thickness (th).</span>
+<span class="sd">        :param value: input value</span>
+<span class="sd">        :type value: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_th"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_th">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_th</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scale Value from Label, set Slider Position of thickness (th).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_xmax_th"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_xmax_th">[docs]</a>    <span class="k">def</span> <span class="nf">update_xmax_th</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set Label to input value with scale for maximum thickness x-coordinate (xmax_th).</span>
+<span class="sd">        :param value: input value</span>
+<span class="sd">        :type value: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;xmax_th&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_xmax_th"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_xmax_th">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_xmax_th</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scale Value from Label, set Slider Position of thickness (th).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;xmax_th&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;xmax_th&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_xmax_camber"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_xmax_camber">[docs]</a>    <span class="k">def</span> <span class="nf">update_xmax_camber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set Label to input value with scale for maximum camber position (xmax_camber).</span>
+<span class="sd">        :param value: input value</span>
+<span class="sd">        :type value: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;xmax_camber&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_xmax_camber"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_xmax_camber">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_xmax_camber</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scale Value from Label, set Slider Position of maximum camber position (xmax_camber).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;xmax_camber&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;xmax_camber&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_thle"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_thle">[docs]</a>    <span class="k">def</span> <span class="nf">update_thle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set Label to input value with scale and excluded range for thickness LE (thle).</span>
+<span class="sd">        :param value: input value</span>
+<span class="sd">        :type value: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.005</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th_le&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mf">0.005</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th_le&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_thle"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_thle">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_thle</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scale Value and exclude range from Label, set Slider Position of thickness LE (thle).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th_le&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>  <span class="c1"># * self.scale</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mf">0.01</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;th_le&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_thte"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_thte">[docs]</a>    <span class="k">def</span> <span class="nf">update_thte</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set Label to input value with scale and excluded range for thickness TE (thle).</span>
+<span class="sd">        :param value: input value</span>
+<span class="sd">        :type value: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">0.005</span> <span class="ow">and</span> <span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th_te&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="mf">0.005</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th_te&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_thte"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_thte">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_thte</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scale Value and exclude range from Label, set Slider Position of thickness TE (thte).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th_te&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>  <span class="c1"># * self.scale</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">&lt;</span> <span class="mf">0.005</span> <span class="ow">and</span> <span class="n">value</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="mf">0.005</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;th_te&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_dist_blades"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_dist_blades">[docs]</a>    <span class="k">def</span> <span class="nf">update_dist_blades</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set Label to input value with scale for y-distance between blades (the one above the single/tandem) (dist_blades)</span>
+<span class="sd">        :param value: input value</span>
+<span class="sd">        :type value: float</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;dist_blades&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_box_dist_blades"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_box_dist_blades">[docs]</a>    <span class="k">def</span> <span class="nf">update_box_dist_blades</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Scale Value from Label, set Slider Position of thickness (th).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;dist_blades&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;dist_blades&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_radio_blades"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_radio_blades">[docs]</a>    <span class="k">def</span> <span class="nf">update_radio_blades</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Radio Buttons for Tandem Blades (switch between blade 1 and 2). Make xy position control for 2nd blade visible</span>
+<span class="sd">        if 2nd blade is selected. Save values from slider/labels as soon as the other radio button is checked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get radio state</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">radio_blade1</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_b2_control_vis</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select_blade</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds_blade2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_labelval</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_labelval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_blade1</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">radio_blade2</span><span class="o">.</span><span class="n">isChecked</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_b2_control_vis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select_blade</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds_blade1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_labelval</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_labelval</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_blade2</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">select_blade</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.get_labelval"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.get_labelval">[docs]</a>    <span class="k">def</span> <span class="nf">get_labelval</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get values and save to dataset (radio button checked). Returns the dataset.</span>
+
+<span class="sd">        :return: ds</span>
+<span class="sd">        :rtype ds: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get values</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_keys</span><span class="p">:</span>
+            <span class="n">ds</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ds</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.set_labelval"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.set_labelval">[docs]</a>    <span class="k">def</span> <span class="nf">set_labelval</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ds</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get values from saved state and update slider position and labels (radio button checked).</span>
+
+<span class="sd">        :param ds: dataset from saved radio button</span>
+<span class="sd">        :type ds: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;alpha1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;alpha1&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;alpha1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;alpha1&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;alpha2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;alpha2&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;alpha2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;alpha2&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;lambd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;lambd&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;lambd&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;lambd&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;xmax_th&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;xmax_th&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;xmax_th&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;xmax_th&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;xmax_camber&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;xmax_camber&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;xmax_camber&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;xmax_camber&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th_le&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;th_le&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;th_le&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;th_le&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="s1">&#39;th_te&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;th_te&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="s1">&#39;th_te&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;th_te&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_all"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_all">[docs]</a>    <span class="k">def</span> <span class="nf">update_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If Button: [Update All] is clicked, get values from labels and plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get values</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_keys</span><span class="p">:</span>
+            <span class="n">ds</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+
+        <span class="c1"># get values from menu items</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;thdist_ver&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thdist_ver</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;nblades&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nblades</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;pts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;pts_th&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_th</span>
+        <span class="n">ds</span><span class="p">[</span><span class="s1">&#39;selected_blade&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds1</span> <span class="o">=</span> <span class="n">ds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds2</span> <span class="o">=</span> <span class="n">ds</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;x_offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;y_offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># try to get data from imported blade</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imported_blade_vis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">imported_blade</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">imported_blade</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s1">&#39;x_offset&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;y_offset&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">,</span> <span class="n">ds_import</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Updating Plot&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_select"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_select">[docs]</a>    <span class="k">def</span> <span class="nf">update_select</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If Button: [Update Select] is clicked, get values from labels and plot selected blade from radio buttons.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># get values</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imported_blade_vis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">imported_blade</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="s1">&#39;y&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">imported_blade</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s1">&#39;x_offset&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;y_offset&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_blade</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;selected_blade&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+            <span class="n">ds1</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_keys</span><span class="p">:</span>
+                <span class="n">ds1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+
+            <span class="c1"># get values from menu items</span>
+            <span class="n">ds1</span><span class="p">[</span><span class="s1">&#39;thdist_ver&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thdist_ver</span>
+            <span class="n">ds1</span><span class="p">[</span><span class="s1">&#39;nblades&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nblades</span>
+            <span class="n">ds1</span><span class="p">[</span><span class="s1">&#39;pts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span>
+            <span class="n">ds1</span><span class="p">[</span><span class="s1">&#39;pts_th&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_th</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds1</span> <span class="o">=</span> <span class="n">ds1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">,</span> <span class="n">ds_import</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">select_blade</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;selected_blade&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+
+            <span class="n">ds2</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_keys</span><span class="p">:</span>
+                <span class="n">ds2</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+
+            <span class="c1"># get values from menu items</span>
+            <span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;thdist_ver&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thdist_ver</span>
+            <span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;nblades&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nblades</span>
+            <span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;pts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span>
+            <span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;pts_th&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points_th</span>
+            <span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;x_offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;y_offset&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ds2</span> <span class="o">=</span> <span class="n">ds2</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">,</span> <span class="n">ds_import</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.set_default"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.set_default">[docs]</a>    <span class="k">def</span> <span class="nf">set_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        If Button: [default] is clicked, set all visible slider positions and label to default position defined in</span>
+<span class="sd">        restraints.txt.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># set values</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">param_keys</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restraints</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;npts&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restraints</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">restraints</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restraints</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">setSliderPosition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">restraints</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Resetting Values&#39;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_thdist_V1"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_thdist_V1">[docs]</a>    <span class="k">def</span> <span class="nf">update_thdist_V1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Menu option Thickness distribution V1 is selected.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thdist_ver</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_thdist_V2"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_thdist_V2">[docs]</a>    <span class="k">def</span> <span class="nf">update_thdist_V2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Menu option Thickness distribution V2 is selected (default).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thdist_ver</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_nblades_single"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_nblades_single">[docs]</a>    <span class="k">def</span> <span class="nf">update_nblades_single</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Menu option for single blades. Hide Tandem Radio buttons and [update select] button as well as the blade 2</span>
+<span class="sd">        position controls.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nblades</span> <span class="o">=</span> <span class="s1">&#39;single&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radio_blade1</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radio_blade2</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_update_sel</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_b2_control_vis</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_nblades_tandem"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_nblades_tandem">[docs]</a>    <span class="k">def</span> <span class="nf">update_nblades_tandem</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Menu option for tandem blades. Show Tandem Radio buttons and [update select] button as well as the blade 2</span>
+<span class="sd">        position controls.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds_blade1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_labelval</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds_blade2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_labelval</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nblades</span> <span class="o">=</span> <span class="s1">&#39;tandem&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radio_blade1</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radio_blade2</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">radio_blade1</span><span class="o">.</span><span class="n">setChecked</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">btn_update_sel</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_B2_up"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_B2_up">[docs]</a>    <span class="k">def</span> <span class="nf">update_B2_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Blade 2 position control, button [up].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;y_offset&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.01</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_B2_down"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_B2_down">[docs]</a>    <span class="k">def</span> <span class="nf">update_B2_down</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Blade 2 position control, button [down].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;y_offset&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">0.01</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_B2_left"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_B2_left">[docs]</a>    <span class="k">def</span> <span class="nf">update_B2_left</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Blade 2 position control, button [left].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;x_offset&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">0.01</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_B2_right"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_B2_right">[docs]</a>    <span class="k">def</span> <span class="nf">update_B2_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Blade 2 position control, button [right].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">[</span><span class="s1">&#39;x_offset&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.01</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_in_up"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_in_up">[docs]</a>    <span class="k">def</span> <span class="nf">update_in_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Imported Blade position control, button [up].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">[</span><span class="s1">&#39;y_offset&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">,</span> <span class="n">ds_import</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_in_down"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_in_down">[docs]</a>    <span class="k">def</span> <span class="nf">update_in_down</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Imported Blade position control, button [down].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">[</span><span class="s1">&#39;y_offset&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">0.001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">,</span> <span class="n">ds_import</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_in_left"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_in_left">[docs]</a>    <span class="k">def</span> <span class="nf">update_in_left</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Imported Blade position control, button [left].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">[</span><span class="s1">&#39;x_offset&#39;</span><span class="p">]</span> <span class="o">-=</span> <span class="mf">0.001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">,</span> <span class="n">ds_import</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_in_right"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_in_right">[docs]</a>    <span class="k">def</span> <span class="nf">update_in_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Imported Blade position control, button [right].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">[</span><span class="s1">&#39;x_offset&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mf">0.001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">,</span> <span class="n">ds1</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds1</span><span class="p">,</span> <span class="n">ds2</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds2</span><span class="p">,</span> <span class="n">ds_import</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ds_import</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_imported_blade"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_imported_blade">[docs]</a>    <span class="k">def</span> <span class="nf">update_imported_blade</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show/Hide imported blade in plot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">imported_blade_vis</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_in_control_vis</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imported_blade_vis</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_in_control_vis</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">imported_blade_vis</span> <span class="o">=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_b2_control_vis"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_b2_control_vis">[docs]</a>    <span class="k">def</span> <span class="nf">update_b2_control_vis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Control for 2nd blade position. Hide at GUI start.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">visible</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_pos_b2</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_b2_up</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_b2_down</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_b2_left</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_b2_right</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_pos_b2</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_b2_up</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_b2_down</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_b2_left</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_b2_right</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UpdateHandler.update_in_control_vis"><a class="viewcode-back" href="../../../GUI.html#module.UI.update_handle.UpdateHandler.update_in_control_vis">[docs]</a>    <span class="k">def</span> <span class="nf">update_in_control_vis</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Control for 2nd blade position. Hide at GUI start.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">visible</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_pos_in</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_in_up</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_in_down</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_in_left</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_in_right</span><span class="o">.</span><span class="n">setHidden</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">label_pos_in</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_in_up</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_in_down</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_in_left</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">btn_in_right</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2020, Ga Man Liang.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 2.4.4.
+    </div>
+  </body>
+</html>
