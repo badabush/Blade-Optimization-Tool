@@ -4,9 +4,8 @@ from sklearn import preprocessing
 import pandas as pd
 import scipy.optimize as optimize
 
-
 from .roundedges import RoundEdges
-from module.blade.bladetools import ImportExport, normalize, camber_spline, spline2camberdist
+from module.blade.bladetools import ImportExport, normalize, camber_spline, cdist_from_spline
 
 
 class BladeGen:
@@ -33,27 +32,28 @@ class BladeGen:
         # pack parameters into dict
         self.ds = self.params(th, [alpha1, alpha2], x_maxcamber, x_maxth, l_chord, lambd, th_le,
                               th_te, npts)
-
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, self.ds['npts'])))  # x-coord generation
+        # self.x = np.linspace(0, 1, self.ds['npts'])
 
         if 9999 in spline_pts:
             self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         else:
             self.xy_cspline = camber_spline(self.ds['npts'], spline_pts)
-            # self.xy_cspline[:,0], self.xy_cspline[:,1] = spline2camberdist(self.xy_cspline, self.ds['theta'])
-            self.xy_camber = self.camberline2(self.ds['theta'], self.ds['xmax_camber'])
-            # self.xy_camber[:, 1] = self.xy_camber[:, 1] * np.arctan(
-            #     np.gradient(self.xy_cspline[:, 1]) / np.gradient(self.xy_cspline[:, 0]))
+            self.xy_camber = cdist_from_spline(self.xy_cspline, self.ds['theta'])
+            # update x because bezier function in spline alters x slightly (otherwise thickness dist doesnt fit spline
+            self.x = self.xy_camber[:, 0]
 
         if self.thdist_option == 0:
             xy_th = self.thickness_dist_v1()
             xy_blade, self.xy_camber = self.geom_gen(xy_th)
+
         elif self.thdist_option == 1:
             if 9999 in spline_pts:
                 xy_blade, self.xy_camber = self.thickness_dist_v2()
             else:
-                xyth = camber_spline(self.ds['npts'], thdist_points)
-                xy_blade, self.xy_camber = self.thickness_dist_v2(xyth)
+                # xyth = camber_spline(self.ds['npts'], thdist_points)
+                xy_blade, self.xy_camber = self.thickness_dist_v2()
+
         if self.frontend == 'user':
             ImportExport()._export(xy_blade)
             self.debug_plot(self.xy_camber, xy_blade)
@@ -75,27 +75,27 @@ class BladeGen:
         ds = {}
         if self.nblade == 'single':
             ds['l_chord'] = l_chord
-            ds['rth'] = th#* ds['l_chord']
+            ds['rth'] = th  # * ds['l_chord']
             ds['alpha'] = alpha
             ds['theta'] = np.deg2rad(np.sum(ds['alpha']))
             ds['lambd'] = np.deg2rad(lambd)
-            ds['xmax_camber'] = .5 # FIXME: fixed value for spline camber development
+            ds['xmax_camber'] = .5  # FIXME: fixed value for spline camber development
             # ds['xmax_camber'] = x_maxcamber
             ds['xmax_th'] = x_maxth
-            ds['th_le'] = th_le #* ds['l_chord']
-            ds['th_te'] = th_te #* ds['l_chord']
+            ds['th_le'] = th_le  # * ds['l_chord']
+            ds['th_te'] = th_te  # * ds['l_chord']
             ds['gamma_te'] = .07  # Lieblein Diffusion Factor for front and rear blade
 
         elif self.nblade == 'tandem':
             ds['l_chord'] = l_chord / 2
-            ds['rth'] = th #/ ds['l_chord']
+            ds['rth'] = th  # / ds['l_chord']
             ds['alpha'] = alpha
             ds['theta'] = np.deg2rad(np.sum(ds['alpha']))
             ds['lambd'] = np.deg2rad(lambd)
             ds['xmax_camber'] = x_maxcamber
             ds['xmax_th'] = x_maxth
-            ds['th_le'] = th_le #* ds['l_chord']
-            ds['th_te'] = th_te #* ds['l_chord']
+            ds['th_le'] = th_le  # * ds['l_chord']
+            ds['th_te'] = th_te  # * ds['l_chord']
             ds['gamma_te'] = .14  # Lieblein Diffusion Factor for front and rear blade
         ds['npts'] = int(npts / 2)
 
@@ -134,12 +134,11 @@ class BladeGen:
         th_le = ds['th_le']
         lambd = ds['lambd']
         x = self.x
-
         xd = ds['xmax_th']
-        rn = 4*th_le
+        rn = 4 * th_le
         d = ds['rth'] * 2
         dhk = 2 * th_te
-        c=1
+        c = 1
         gammahk = ds['gamma_te']
         # generate y thickness dist if not given by spline
         x_short = x[np.where(x < (1 - th_te / c))]
@@ -242,59 +241,6 @@ class BladeGen:
             ycambertemp[i] = y
 
         xy_camber = np.transpose(np.array([x, ycambertemp]))
-
-        return xy_camber
-
-    def camberline2(self, thetan, a):
-        """
-        Calculate the parabolic-arc camberline from R.Aungier.
-        Returns vector with X and Y of camber line.
-
-        :param theta: sum of alpha1 and alpha2 (Chi1 and Chi2 in R.Aungier)
-        :type theta: float
-        :param a: max. chamber position
-        :type a: float
-        :return: xy_camber
-        :rtype xy_camber: (npts, 2) ndarray
-        """
-
-        x = self.x
-        c = 1
-        xy_spline = self.xy_cspline
-
-        # rotate the spline 45deg
-        # x_spline = xy_spline[:,0]
-        # y_spline = np.gradient(xy_spline[:,1])
-        x_spline = np.sin(np.deg2rad(45)) * xy_spline[:,0] + np.cos(np.deg2rad(45)) * xy_spline[:,1]
-        y_spline = -(np.cos(np.deg2rad(45)) * xy_spline[:,0] - np.sin(np.deg2rad(45)) * xy_spline[:,1])
-
-        #norm y
-
-        angle = np.ones(x.size) * (thetan*(1+y_spline))
-        ycambertemp = np.zeros(x.size)
-        for i in range(0, x.size):
-            xtemp = x[i]
-            y0 = 0.0
-            theta = angle[i]
-            b = c * (np.sqrt(1 + (((4 * np.tan(theta)) ** 2) * ((a / c) - (a / c) ** 2 - 3 / 16))) - 1) / (
-                4 * np.tan(theta))
-
-            fun = lambda y: (-y + xtemp * (c - xtemp) / (
-                    (((c - 2 * a) ** 2) / (4 * b ** 2)) * y + ((c - 2 * a) / b) * xtemp - (
-                    (c ** 2 - 4 * a * c) / (4 * b))))
-            y = optimize.fsolve(fun, y0)
-            ycambertemp[i] = y
-
-        xy_camber = np.transpose(np.array([x, ycambertemp]))
-
-        # see if dist is similar
-        chi = np.rad2deg(np.arctan(np.gradient(xy_camber[:,1])/np.gradient(xy_camber[:,0])))
-        woelb = chi + np.abs(np.min(chi))
-        woelb = -woelb
-        woelb = woelb + np.abs(np.min(woelb))
-        woelb = woelb/np.max(woelb)
-        plt.plot(x, woelb)
-        # plt.show()
 
         return xy_camber
 

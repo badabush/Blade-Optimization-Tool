@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QSizePolicy
+from PyQt5.QtWidgets import QSizePolicy, QFileDialog
 from PyQt5 import QtWidgets, uic
 from pyface.qt import QtGui
 import sys
@@ -7,16 +7,16 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-
 from module.blade.bladetools import load_restraints
 from module.blade.bladegen import BladeGen
 from module.UI.update_handle import UpdateHandler
+from module.UI.file_explorer import FileExplorer
 from module.UI.spline_ui import SplineUi
 from module.UI.spline_ui2 import SplineUi2
 from module.UI.annulus_ui import AnnulusUi
 
 
-class Ui(QtWidgets.QMainWindow, UpdateHandler):
+class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
         restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
@@ -26,7 +26,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
 
     def __init__(self):
         super(Ui, self).__init__()
-        uic.loadUi('UI/qtdesigner/mainwindow_v1.ui', self)
+        uic.loadUi('UI/qtdesigner/mainwindow.ui', self)
         # declaring param keys, load restraints for slider
         self.param_keys = ['npts', 'alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'l_chord', 'th_le',
                            'th_te', 'dist_blades']
@@ -47,7 +47,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         self.btn_update_sel.clicked.connect(self.update_select)
         self.reset = self.findChild(QtWidgets.QPushButton, 'btn_default')
         self.reset.clicked.connect(self.set_default)
-
+        self.btn_hide_import.clicked.connect(self.update_imported_blade)
         # radio
         self.radio_blade1.toggled.connect(self.update_radio_blades)
 
@@ -57,6 +57,9 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         self.nblades_single.triggered.connect(self.update_nblades_single)
         self.nblades_tandem.triggered.connect(self.update_nblades_tandem)
         self.actionAnnulus.triggered.connect(self.annulus_window)
+        self.actionload_from_file.triggered.connect(self.openFileNameDialog)
+        self.actionsave_as_txt.triggered.connect(self.saveFileDialog)
+
         self.slider_control()
         self.show()
 
@@ -65,10 +68,12 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         self.points_th = np.array([[0, 0.2, 0.4, 0.65, 1], [0, 0.45, 1.0, 0.25, 0]]).T
         str_pts = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
             self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
-            self.points[2, 1], self.points[3, 0], self.points[3, 1], self.points[4, 0], self.points[4, 1]) 
+            self.points[2, 1], self.points[3, 0], self.points[3, 1], self.points[4, 0], self.points[4, 1])
         str_pts_th = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
-            self.points_th[0, 0], self.points_th[0, 1], self.points_th[1, 0], self.points_th[1, 1], self.points_th[2, 0],
-            self.points_th[2, 1], self.points_th[3, 0], self.points_th[3, 1], self.points_th[4, 0], self.points_th[4, 1])
+            self.points_th[0, 0], self.points_th[0, 1], self.points_th[1, 0], self.points_th[1, 1],
+            self.points_th[2, 0],
+            self.points_th[2, 1], self.points_th[3, 0], self.points_th[3, 1], self.points_th[4, 0],
+            self.points_th[4, 1])
         self.returned_values.setText(str_pts)
         self.returned_values_th.setText(str_pts_th)
 
@@ -79,13 +84,18 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         # get spline values from 2nd window
         self.returned_values.textChanged.connect(self.get_spline_pts)
         self.returned_values_th.textChanged.connect(self.get_spline_th_pts)
-        #
+
         #
         self.update_b2_control_vis(0)
+        self.update_in_control_vis(0)
         self.btn_b2_up.clicked.connect(self.update_B2_up)
         self.btn_b2_down.clicked.connect(self.update_B2_down)
         self.btn_b2_left.clicked.connect(self.update_B2_left)
         self.btn_b2_right.clicked.connect(self.update_B2_right)
+        self.btn_in_up.clicked.connect(self.update_in_up)
+        self.btn_in_down.clicked.connect(self.update_in_down)
+        self.btn_in_left.clicked.connect(self.update_in_left)
+        self.btn_in_right.clicked.connect(self.update_in_right)
 
         # run once on startup
         self.update_inputs()
@@ -156,7 +166,6 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         except AttributeError:
             print("Plot first.")
 
-
     def menu_default(self):
         self.thdist_ver = 1
         self.nblades = 'single'
@@ -174,6 +183,8 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler):
         self.points = np.ones((3, 2)) * 9999
         # offset for moving 2nd blade
         self.blade2_offset = [0, 0]  # X,Y
+        self.in_blade_offset = [0, 0]
+        self.imported_blade_vis = 0
 
     def slider_control(self):
         """
@@ -309,7 +320,7 @@ class PlotCanvas(FigureCanvas):
 
         # self.plot()
 
-    def plot(self, ds, ds1=0, ds2=0):
+    def plot(self, ds, ds1=0, ds2=0, ds_import=0):
         print(ds2)
         # get zoom state
         if self.xlim == (0, 0) and self.ylim == (0, 0):
@@ -364,7 +375,7 @@ class PlotCanvas(FigureCanvas):
                 blade2[:, 0] = blade2[:, 0] + np.max(blade1[:, 0]) + .03 * (np.min(blade1[:, 0] + np.max(blade2[:, 0])))
                 # blade2[:, 1] = blade2[:, 1] + (np.max(camber_data[:, 1]) - camber_data[0, 1]) - (
                 #         1 - 0.915) * division / 10
-                blade2[:,1] = blade2[:,1]
+                blade2[:, 1] = blade2[:, 1]
                 camber2[:, 0] = camber2[:, 0] + np.max(camber1[:, 0]) + .03 * (
                     np.min(camber1[:, 0] + np.max(camber2[:, 0])))
                 # camber2[:, 1] = camber2[:, 1] + (np.max(camber_data[:, 1]) - camber_data[0, 1]) - (
@@ -426,11 +437,21 @@ class PlotCanvas(FigureCanvas):
                 df_blades['type'] = 'tandem'
                 self.plt_df = df_blades
 
+        """ Plot imported blade if exists """
+        try:
+            self.ax.plot(ds_import.x + ds_import.x_offset, ds_import.y + ds_import.y_offset, 'r')
+        except AttributeError:
+            print("Error plotting imported blade.")
         self.ax.axis('equal')
         self.ax.set_xlim(self.xlim)
         self.ax.set_ylim(self.ylim)
         self.ax.grid()
         self.draw()
+
+    def plot_import(self, ds):
+        x = ds.x
+        y = ds.y
+        self.ax.plot(x, y)
 
     def _return_blades(self):
         return self.plt_df

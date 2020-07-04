@@ -1,4 +1,5 @@
 import math
+import pandas as pd
 
 
 class UpdateHandler:
@@ -144,11 +145,29 @@ class UpdateHandler:
         self.ds2 = ds
         self.ds2['x_offset'] = 0
         self.ds2['y_offset'] = 0
-        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+        try:
+            # try to get data from imported blade
+            if self.imported_blade_vis == 1:
+                self.ds_import = pd.DataFrame(
+                    {'x': self.imported_blade.x, 'y': self.imported_blade.y, 'x_offset': 0, 'y_offset': 0})
+            else:
+                self.ds_import = 0
+        except AttributeError as e:
+            self.ds_import = 0
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
         print('Updating Plot')
 
     def update_select(self):
         # get values
+        try:
+            if self.imported_blade_vis == 1:
+                self.ds_import = pd.DataFrame(
+                    {'x': self.imported_blade.x, 'y': self.imported_blade.y, 'x_offset': 0, 'y_offset': 0})
+            else:
+                self.ds_import = 0
+        except AttributeError as e:
+            self.ds_import = 0
+
         if self.select_blade == 1:
             self.ds['selected_blade'] = 1
 
@@ -162,7 +181,7 @@ class UpdateHandler:
             ds1['pts'] = self.points
             ds1['pts_th'] = self.points_th
             self.ds1 = ds1
-            self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+            self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
         elif self.select_blade == 2:
             self.ds['selected_blade'] = 2
 
@@ -178,7 +197,7 @@ class UpdateHandler:
             ds2['x_offset'] = 0
             ds2['y_offset'] = 0
             self.ds2 = ds2
-            self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+            self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
     def set_default(self):
         # set values
@@ -219,7 +238,6 @@ class UpdateHandler:
         self.ds2['y_offset'] += 0.01
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
 
-
     def update_B2_down(self):
         self.ds2['y_offset'] -= 0.01
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
@@ -231,8 +249,27 @@ class UpdateHandler:
     def update_B2_right(self):
         self.ds2['x_offset'] += 0.01
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
-        pass
 
+    def update_in_up(self):
+        self.ds_import['y_offset'] += 0.001
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
+
+    def update_in_down(self):
+        self.ds_import['y_offset'] -= 0.001
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
+
+    def update_in_left(self):
+        self.ds_import['x_offset'] -= 0.001
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
+
+    def update_in_right(self):
+        self.ds_import['x_offset'] += 0.001
+        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
+
+    def update_imported_blade(self):
+        self.update_in_control_vis(0)
+        self.imported_blade_vis = 0
+        # del self.ds_import.y
 
     def update_b2_control_vis(self, visible=0):
         # Control for 2nd blade position
@@ -249,3 +286,19 @@ class UpdateHandler:
             self.btn_b2_down.setVisible(True)
             self.btn_b2_left.setVisible(True)
             self.btn_b2_right.setVisible(True)
+
+    def update_in_control_vis(self, visible=0):
+        # Control for 2nd blade position
+        # hide at system start
+        if visible == 0:
+            self.label_pos_in.setHidden(True)
+            self.btn_in_up.setHidden(True)
+            self.btn_in_down.setHidden(True)
+            self.btn_in_left.setHidden(True)
+            self.btn_in_right.setHidden(True)
+        else:
+            self.label_pos_in.setVisible(True)
+            self.btn_in_up.setVisible(True)
+            self.btn_in_down.setVisible(True)
+            self.btn_in_left.setVisible(True)
+            self.btn_in_right.setVisible(True)

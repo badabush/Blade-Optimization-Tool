@@ -1,9 +1,7 @@
 import numpy as np
 import pandas as pd
 from scipy.special import binom
-from numpy.linalg import norm
 from matplotlib import pyplot as plt
-import csv
 
 
 def euclidean_dist(xy1, xy2):
@@ -37,10 +35,41 @@ def min_dist(xy1, xy2):
     return idx1, idx2, dist.min()
 
 
+def rotate_flat(x, y):
+    try:
+        xmax_idx = x.idxmax()
+        ymax_idx = y.idxmax()
+    except AttributeError as e:
+        xmax_idx = np.argmax(x)
+        ymax_idx = np.argmax(y)
+    xp = x[xmax_idx]
+    yp = y[xmax_idx]
+
+    rotangle = -np.arctan(yp / xp)
+    X = np.cos(rotangle) * x - np.sin(rotangle) * y
+    Y = np.sin(rotangle) * x + np.cos(rotangle) * y
+
+    return X, Y, rotangle
+
+
 def normalize(xy):
+    X = xy.x
+    Y = xy.y
+
     # move so left-bottom-most point is @ 0,0
-    xy.x = xy.x - xy.x.min()
-    xy.y = xy.y - xy.y.min()
+    X = X - X.min()
+    Y = Y - Y.min()
+
+    X, Y, angle = rotate_flat(X, Y)
+
+    # normalize
+    xmax = X.max()
+    X = X / xmax
+    Y = Y / xmax
+
+    # rotate back
+    xy.x = np.cos(-angle) * X - np.sin(-angle) * Y
+    xy.y = np.sin(-angle) * X + np.cos(-angle) * Y
     return xy
 
 
@@ -81,7 +110,7 @@ class ImportExport:
         except FileNotFoundError as e:
             print(e)
 
-    def _export(self, xy):
+    def _export(self, path, xy):
         """
         Export generated blade.
 
@@ -91,7 +120,7 @@ class ImportExport:
         z = np.zeros(xy.shape[0])
         xyz = xy
         xyz['z'] = z
-        np.savetxt('../geo_output/xyz.txt', np.round(xyz.values, 3), fmt='%.3f, %.3f, %.3f')
+        np.savetxt(path + '.txt', np.round(xyz.values, 5), fmt='%f, %f, %f')
 
 
 def camber_spline(npts, xy_points):
@@ -121,25 +150,47 @@ def camber_spline(npts, xy_points):
     return np.transpose(np.array([_x, _y]))
 
 
-def spline2camberdist(ds, delta_alpha):
-    x = np.sin(np.deg2rad(45)) * ds[:,0] + np.cos(np.deg2rad(45)) * ds[:,1]
-    y = -(np.cos(np.deg2rad(45)) * ds[:,0] - np.sin(np.deg2rad(45)) * ds[:,1])
-    x = x/np.max(x)
-    # y = np.round(y,5)
+def cdist_from_spline(xy_spline, delta_alpha):
+    # x_grad = np.gradient(xy_spline[:, 0])
+    x_grad = np.zeros(500)
+    x_grad = np.array([xy_spline[i, 0] - xy_spline[i - 1, 0] for i in range(500)])
+    # y_grad = np.gradient(xy_spline[:, 1])
+    y_grad = np.zeros(500)
+    y_grad = np.array([xy_spline[i, 1] - xy_spline[i - 1, 1] for i in range(500)])
+    diff = np.ones(500)
+    diff = y_grad / x_grad
+    diffmin = np.argmin(diff)
+    # if diffmin != 0:
+    #     diff[diffmin:] = -diff[diffmin:]
+    steps = diff.size
+    angle = np.zeros(steps)
+    angle = np.cumsum(delta_alpha / steps * diff)
 
-    # xgrad = np.gradient(ds[:,0])
-    ystep = np.gradient(ds[:,1])
-    # x = np.copy(ds[:, 0])
-    # find max position
-    if (np.argmax(np.round(ystep, 5))) == 0:
-        xmax_idx = int(x.size/2)
-    else:
-        xmax_idx = np.argmax(np.round(ystep, 5))
+    # norm angle so it sums up to delta_alpha ([0] will be skipped anyways)
+    angle = angle / np.max(angle) * delta_alpha
+    x_camber = xy_spline[:, 0]
+    y_camber = np.zeros(steps)
 
+    # doesnt work in list comprehension because it is referenced to itself?
+    for i in range(1, steps):
+        y_camber[i] = y_camber[i - 1] - (x_grad[i] * np.tan(angle[i]))
 
-    dalph = np.linspace(delta_alpha, 0, x.size)
-    yn = np.tan(dalph*(1+y)) * x
-    return x, yn
+    # rotate
+    rotangle = -np.arctan(y_camber[-1] / x_camber[-1])
+    xy_camber = np.zeros_like(xy_spline)
+    xy_camber[:, 0] = np.cos(rotangle) * x_camber - np.sin(rotangle) * y_camber
+    xy_camber[:, 1] = np.sin(rotangle) * x_camber + np.cos(rotangle) * y_camber
+
+    # scale
+    xmax = np.max(xy_camber[:, 0])
+    xy_camber[:, 0] = xy_camber[:, 0] / xmax
+    xy_camber[:, 1] = xy_camber[:, 1] / xmax
+
+    plt.cla
+    plt.plot(xy_camber[:, 0], xy_camber[:, 1])
+    plt.axis('equal')
+    # plt.show()
+    return xy_camber
 
 
 class AnnulusGen:
