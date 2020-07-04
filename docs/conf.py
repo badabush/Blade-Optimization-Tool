@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 
 # -- Project information -----------------------------------------------------
 
-project = 'thesis'
+project = 'BOT - Blade Optimization Tool'
 copyright = '2020, Ga Man Liang'
 author = 'Ga Man Liang'
 

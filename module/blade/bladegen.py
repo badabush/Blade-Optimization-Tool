@@ -9,6 +9,9 @@ from module.blade.bladetools import ImportExport, normalize, camber_spline, cdis
 
 
 class BladeGen:
+    """
+    Generate a blade from parameters.
+    """
 
     def __init__(self, frontend='user', file='', nblade='single', th_dist_option=0, th=.0215, alpha1=25, alpha2=25,
                  x_maxcamber=.4, x_maxth=.3, l_chord=1.0, lambd=20, th_le=0.01, th_te=0.0135, npts=1000,

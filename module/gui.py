@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QSizePolicy, QFileDialog
+from PyQt5.QtWidgets import QSizePolicy
 from PyQt5 import QtWidgets, uic
 from pyface.qt import QtGui
 import sys
@@ -9,6 +9,7 @@ from matplotlib.figure import Figure
 
 from module.blade.bladetools import load_restraints
 from module.blade.bladegen import BladeGen
+from module.UI.initialize import Initialize
 from module.UI.update_handle import UpdateHandler
 from module.UI.file_explorer import FileExplorer
 from module.UI.spline_ui import SplineUi
@@ -16,7 +17,7 @@ from module.UI.spline_ui2 import SplineUi2
 from module.UI.annulus_ui import AnnulusUi
 
 
-class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer):
+class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
         restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
@@ -33,6 +34,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer):
         self.restraints = load_restraints('UI/config/restraints.txt')
         self.menu_default()  # set menu defaults
         self.init_variables()  # initialize some variables at GUI start
+        self.init_slider_control()
 
         # init plot
         self.m = PlotCanvas(self, width=8, height=10)
@@ -43,11 +45,12 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer):
         vbl.addWidget(self.m)
 
         # link buttons
-        self.btn_update_all.clicked.connect(self.update_inputs)
+        self.btn_update_all.clicked.connect(self.update_all)
         self.btn_update_sel.clicked.connect(self.update_select)
         self.reset = self.findChild(QtWidgets.QPushButton, 'btn_default')
         self.reset.clicked.connect(self.set_default)
         self.btn_hide_import.clicked.connect(self.update_imported_blade)
+
         # radio
         self.radio_blade1.toggled.connect(self.update_radio_blades)
 
@@ -60,32 +63,18 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer):
         self.actionload_from_file.triggered.connect(self.openFileNameDialog)
         self.actionsave_as_txt.triggered.connect(self.saveFileDialog)
 
-        self.slider_control()
-        self.show()
-
-        # init points
-        self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
-        self.points_th = np.array([[0, 0.2, 0.4, 0.65, 1], [0, 0.45, 1.0, 0.25, 0]]).T
-        str_pts = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
-            self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
-            self.points[2, 1], self.points[3, 0], self.points[3, 1], self.points[4, 0], self.points[4, 1])
-        str_pts_th = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
-            self.points_th[0, 0], self.points_th[0, 1], self.points_th[1, 0], self.points_th[1, 1],
-            self.points_th[2, 0],
-            self.points_th[2, 1], self.points_th[3, 0], self.points_th[3, 1], self.points_th[4, 0],
-            self.points_th[4, 1])
-        self.returned_values.setText(str_pts)
-        self.returned_values_th.setText(str_pts_th)
-
-        # open spline popup on click
+        """ Camber Spline window """
+        # open camber spline popup on click
         self.btn_spline_camber.clicked.connect(self.spline_window)
-        self.btn_spline_th.clicked.connect(self.spline_window2)
-
-        # get spline values from 2nd window
+        # get camber spline values from window
         self.returned_values.textChanged.connect(self.get_spline_pts)
+
+        """ Thickness Spline window """
+        # open camber spline popup on click
+        self.btn_spline_th.clicked.connect(self.spline_window2)
+        # get camber spline values from window
         self.returned_values_th.textChanged.connect(self.get_spline_th_pts)
 
-        #
         self.update_b2_control_vis(0)
         self.update_in_control_vis(0)
         self.btn_b2_up.clicked.connect(self.update_B2_up)
@@ -98,7 +87,8 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer):
         self.btn_in_right.clicked.connect(self.update_in_right)
 
         # run once on startup
-        self.update_inputs()
+        self.update_all()
+        self.show()
 
     def get_spline_pts(self, value):
         """
@@ -173,134 +163,10 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer):
         self.radio_blade2.setHidden(True)
         self.btn_update_sel.setHidden(True)
 
-    def init_variables(self):
-        """
-        All variables that need to be defined at system start are gathered here.
-        """
-        # Slider only accepts int values, so floats need to be scaled
-        self.scale = 100000
-        # points at GUI start are set to 9999, which initializes the default pattern for camber spline
-        self.points = np.ones((3, 2)) * 9999
-        # offset for moving 2nd blade
-        self.blade2_offset = [0, 0]  # X,Y
-        self.in_blade_offset = [0, 0]
-        self.imported_blade_vis = 0
-
-    def slider_control(self):
-        """
-        Setting up slider and linking to label.
-        """
-        self.slider = {}
-        self.label = {}
-        self.slider['alpha1'] = self.slider_alpha1
-        self.label['alpha1'] = self.val_alpha1
-
-        self.slider['alpha2'] = self.slider_alpha2
-        self.label['alpha2'] = self.val_alpha2
-
-        self.slider['lambd'] = self.slider_lambd
-        self.label['lambd'] = self.val_lambd
-
-        self.slider['th'] = self.slider_th
-        self.label['th'] = self.val_th
-
-        self.slider['xmax_th'] = self.slider_xmax_th
-        self.label['xmax_th'] = self.val_xmax_th
-
-        self.slider['xmax_camber'] = self.slider_xmax_camber
-        self.label['xmax_camber'] = self.val_xmax_camber
-
-        self.slider['th_le'] = self.slider_thle
-        self.label['th_le'] = self.val_thle
-
-        self.slider['th_te'] = self.slider_thte
-        self.label['th_te'] = self.val_thte
-
-        self.slider['l_chord'] = self.slider_lchord
-        self.label['l_chord'] = self.val_lchord
-
-        self.slider['npts'] = self.slider_npts
-        self.label['npts'] = self.val_npts
-
-        self.slider['dist_blades'] = self.slider_dist_blades
-        self.label['dist_blades'] = self.val_dist_blades
-        for key in self.slider:
-            retval = self.set_restraint(key)
-            if retval == 1:
-                # set default values for floats
-                self.label[key].setSingleStep(0.0001)
-                self.label[key].setValue(self.restraints[key][3])
-
-        # connect labels->slider
-        self.label['alpha1'].editingFinished.connect(self.update_box_alpha1)
-        self.label['alpha2'].editingFinished.connect(self.update_box_alpha2)
-        self.label['lambd'].editingFinished.connect(self.update_box_lambd)
-        self.label['l_chord'].editingFinished.connect(self.update_box_l_chord)
-        self.slider['npts'].valueChanged[int].connect(self.update_npts)
-        self.label['npts'].editingFinished.connect(self.update_box_npts)
-        self.slider['th'].valueChanged[int].connect(self.update_th)
-        self.label['th'].editingFinished.connect(self.update_box_th)
-        self.slider['xmax_th'].valueChanged[int].connect(self.update_xmax_th)
-        self.label['xmax_th'].editingFinished.connect(self.update_box_xmax_th)
-        self.slider['xmax_camber'].valueChanged[int].connect(self.update_xmax_camber)
-        self.label['xmax_camber'].editingFinished.connect(self.update_box_xmax_camber)
-        self.slider['th_le'].valueChanged[int].connect(self.update_thle)
-        self.label['th_le'].editingFinished.connect(self.update_box_thle)
-        self.slider['th_te'].valueChanged[int].connect(self.update_thte)
-        self.label['th_te'].editingFinished.connect(self.update_box_thte)
-        self.slider['dist_blades'].valueChanged[int].connect(self.update_dist_blades)
-        self.label['dist_blades'].editingFinished.connect(self.update_box_dist_blades)
-
-    def set_restraint(self, key):
-        """
-        Set min, max, default and link to label
-        :param slider: All existing slider with key from keylist.
-        :type slider: dict
-        :param label: All existing label wiht key from keylist.
-        :type label: dict
-        :param restraint:
-        :return:
-        """
-        slider = self.slider[key]
-        restraint = self.restraints[key]
-        label = self.label[key]
-
-        minval = restraint[0]
-        maxval = restraint[1]
-        step = restraint[2]
-        defaultval = restraint[3]
-
-        if (maxval > 1):
-            label.setMinimum(minval)
-            label.setMaximum(maxval)
-            label.setSingleStep(step)
-            label.setValue(defaultval)
-            if key == 'npts':
-                slider.setMinimum(minval / 100)
-                slider.setMaximum(maxval / 100)
-                slider.setValue(defaultval / 100)
-            else:
-                slider.setMinimum(minval)
-                slider.setMaximum(maxval)
-                slider.setTickInterval(step)
-                slider.setValue(defaultval)
-                slider.valueChanged[int].connect(label.setValue)
-            return 0
-        else:
-            label.setMinimum(minval)
-            label.setMaximum(maxval)
-            label.setSingleStep(step)
-            slider.setMinimum(minval * self.scale)
-            slider.setMaximum(maxval * self.scale)
-            slider.setSingleStep(step * self.scale)
-            slider.setValue(defaultval * self.scale)
-            return 1
-
-
 class PlotCanvas(FigureCanvas):
     """
-        All the plotting commands are organized here. At GUI start, an empty empty figure is generated. On Update,
-        BladeGen will be called with the user parameter and the plot will be updated.
+    All the plotting commands are organized here. At GUI start, an empty empty figure is generated. On Update,
+    BladeGen will be called with the user parameter and the plot will be updated.
     """
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -321,7 +187,20 @@ class PlotCanvas(FigureCanvas):
         # self.plot()
 
     def plot(self, ds, ds1=0, ds2=0, ds_import=0):
-        print(ds2)
+        """
+        Main window plot widget content. Differentiates between single/tandem, seperate control of tandem blades.
+
+        :param ds: Data from single blade
+        :type ds: pandas.DataFrame
+        :param ds1: Data from 1st tandem blade, 0 if not specified
+        :type ds1: pandas.DataFrame
+        :param ds2: Data from 2nd tandem blade, 0 if not specified
+        :type ds2: pandas.DataFrame
+        :param ds_import: Data from imported blade, 0 if not specified
+        :type ds_import: pandas.DataFrame
+        :return: None
+        """
+
         # get zoom state
         if self.xlim == (0, 0) and self.ylim == (0, 0):
             self.xlim = (-.1, 1)
@@ -336,6 +215,7 @@ class PlotCanvas(FigureCanvas):
         """
 
         if ds['nblades'] == 'single':
+            """Single blade"""
             bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
                                 alpha1=ds['alpha1'], alpha2=ds['alpha2'],
                                 lambd=ds['lambd'], th=ds['th'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
@@ -353,6 +233,7 @@ class PlotCanvas(FigureCanvas):
                          color='darkblue', alpha=.7)
             self.plt_df = {'type': 'single', 'blade': blade_data, 'camber': camber_data}
         elif ds['nblades'] == 'tandem':
+            """Tandem blades"""
             df_blades = {}
             # Update either both blades at once or blades seperately.
             dataselect = [ds1, ds2]
@@ -448,12 +329,9 @@ class PlotCanvas(FigureCanvas):
         self.ax.grid()
         self.draw()
 
-    def plot_import(self, ds):
-        x = ds.x
-        y = ds.y
-        self.ax.plot(x, y)
-
     def _return_blades(self):
+        """Returns DataFrame of blades"""
+
         return self.plt_df
 
 

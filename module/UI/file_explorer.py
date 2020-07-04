@@ -1,6 +1,4 @@
-import math
 from PyQt5.QtWidgets import QSizePolicy, QFileDialog
-from matplotlib import pyplot as plt
 import pandas as pd
 
 from module.blade.bladetools import ImportExport, normalize
@@ -9,11 +7,14 @@ from module.blade.bladegen import BladeGen
 
 class FileExplorer:
     """
-    A very quick and dirty approach... Alternatively, creating a custom DoubleSlider class would be way cleaner.
-    TODO: fix this when bored.
+    Class for Importing existing blade and exporting blade for the GUI.
     """
 
     def openFileNameDialog(self):
+        """
+        Opens a File Explorer to select .txt of blade for import.
+        :return: None
+        """
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "../geo_output/matlab",
@@ -26,6 +27,10 @@ class FileExplorer:
             self.imported_blade_vis = 1
 
     def saveFileDialog(self):
+        """
+        Opens a File Explorer to select path for blade export.
+        :return: None
+        """
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getSaveFileName(self, "QFileDialog.getSaveFileName()", "../geo_output/py",

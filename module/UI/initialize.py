@@ -1,9 +1,39 @@
+import numpy as np
+
+
 class Initialize:
     """
     Everything regarding labels and Slider are handled here (connecting Slider and Labels, setting restraints).
     """
 
-    def slider_control(self):
+    def init_variables(self):
+        """
+        Initialize variables at GUI start
+        """
+        # Slider only accepts int values, so floats need to be scaled
+        self.scale = 100000
+        # points at GUI start are set to 9999, which initializes the default pattern for camber spline
+        self.points = np.ones((3, 2)) * 9999
+        # offset for moving 2nd blade
+        self.blade2_offset = [0, 0]  # X,Y
+        self.in_blade_offset = [0, 0]
+        self.imported_blade_vis = 0
+
+        # init points for camber and thickness spline
+        self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
+        self.points_th = np.array([[0, 0.2, 0.4, 0.65, 1], [0, 0.45, 1.0, 0.25, 0]]).T
+        str_pts = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
+            self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
+            self.points[2, 1], self.points[3, 0], self.points[3, 1], self.points[4, 0], self.points[4, 1])
+        str_pts_th = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
+            self.points_th[0, 0], self.points_th[0, 1], self.points_th[1, 0], self.points_th[1, 1],
+            self.points_th[2, 0],
+            self.points_th[2, 1], self.points_th[3, 0], self.points_th[3, 1], self.points_th[4, 0],
+            self.points_th[4, 1])
+        self.returned_values.setText(str_pts)
+        self.returned_values_th.setText(str_pts_th)
+
+    def init_slider_control(self):
         """
         Setting up slider and linking to label.
         """
@@ -68,15 +98,15 @@ class Initialize:
         self.slider['dist_blades'].valueChanged[int].connect(self.update_dist_blades)
         self.label['dist_blades'].editingFinished.connect(self.update_box_dist_blades)
 
+
     def set_restraint(self, key):
         """
-        Set min, max, default and link to label
-        :param slider: All existing slider with key from keylist.
-        :type slider: dict
-        :param label: All existing label wiht key from keylist.
-        :type label: dict
-        :param restraint:
-        :return:
+        Set min, max, default and link to label. Boolean return indicates if data has float value (needs to be converted
+        because labels only have integer steps).
+
+        :param key: label/slider key
+        :type key: str
+        :return: bool
         """
         slider = self.slider[key]
         restraint = self.restraints[key]
