@@ -24,7 +24,7 @@ class UpdateHandler:
 
     def update_box_l_chord(self):
         """
-        Get Value from Slider, apply to Label chord length(l_chord) **obsolete**.
+        Get Value from Slider, apply to Label chord length(l_chord) **obsolete** .
         """
         value = self.label['l_chord'].value()
         self.slider['l_chord'].setSliderPosition(value)
