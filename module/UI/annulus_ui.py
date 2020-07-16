@@ -6,8 +6,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-
 from module.blade.bladetools import AnnulusGen, load_restraints
+
 
 class AnnulusUi(QtWidgets.QMainWindow):
 
@@ -42,6 +42,8 @@ class AnnulusUi(QtWidgets.QMainWindow):
         self.btn_update.clicked.connect(self.update_plot)
         self.btn_close.clicked.connect(self.close_window)
 
+        # TODO: seperating between single and tandem and the blade generation is obsolete (blade is a line in z-view),
+        #  but might be useful if a 'z'-shape is required in the future
 
         if self.ds['type'] == 'single':
             self.blade1, *_ = self.build_blades()
@@ -64,18 +66,13 @@ class AnnulusUi(QtWidgets.QMainWindow):
             blade2[:, 1] = blade2[:, 1] + self.offset[1]
             return blade1, blade2
 
-
     def close_window(self):
         self.close()
-
-    def reset_pts(self):
-        self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
-        self.update_plot()
 
     def update_plot(self):
         # get spline
         self.r_inner = self.label_r.value()
-        self.nblades = int(self.label_nblades.value())
+        self.nblades = int(self.label_nblades.value() + 1)
         if self.ds['type'] == 'single':
             self.blade1, *_ = self.build_blades()
             _instance = AnnulusGen(self.nblades, self.r_inner, self.blade1)
@@ -84,6 +81,10 @@ class AnnulusUi(QtWidgets.QMainWindow):
             self.blade1, self.blade2 = self.build_blades()
             _instance = AnnulusGen(self.nblades, self.r_inner, self.blade1, self.blade2)
             self.blade_list = _instance.generate()
+        # update dist label
+        dist = np.abs(self.blade_list.iloc[0, 0] - self.blade_list.iloc[0, 1])
+        self.update_dist(dist)
+        # update plot
         self.m.plot(self.r_inner, self.blade_list)
 
     def update_nblades(self, value):
@@ -100,6 +101,9 @@ class AnnulusUi(QtWidgets.QMainWindow):
         value = self.label_r.value() * self.scale
         self.slider_r.setSliderPosition(value)
 
+    def update_dist(self, value):
+        self.label_dist.setValue(value)
+
     def set_restraints(self, restraint, label, slider, scale=1):
         minval = restraint[0]
         maxval = restraint[1]
@@ -110,10 +114,9 @@ class AnnulusUi(QtWidgets.QMainWindow):
         label.setMaximum(maxval)
         label.setSingleStep(step)
         label.setValue(defaultval)
-        slider.setMinimum(minval*scale)
-        slider.setMaximum(maxval*scale)
-        slider.setValue(defaultval*scale)
-
+        slider.setMinimum(minval * scale)
+        slider.setMaximum(maxval * scale)
+        slider.setValue(defaultval * scale)
 
 
 class PlotCanvas(FigureCanvas):
@@ -133,15 +136,23 @@ class PlotCanvas(FigureCanvas):
 
         # self.plot()
 
-    def plot(self, r, blade_list):
+    def plot(self, r_inner, blade_list):
         self.ax.cla()
         # print(pts)
         shape = blade_list.shape
-        n2 = int(shape[0]/2)
+        n2 = int(shape[0] / 2)
+        # line directly connecting blade edges
         t = np.linspace(0, 2 * np.pi, shape[1])
-        self.ax.plot(r * np.cos(t), r * np.sin(t), alpha=.5)
+        # smooth circle at inner and outer edges
+        t2 = np.linspace(0, 2 * np.pi, 100)
+        self.ax.plot(r_inner * np.cos(t), r_inner * np.sin(t), 'k--', alpha=.3)
+        self.ax.plot(r_inner * np.cos(t2), r_inner * np.sin(t2), color='cornflowerblue', alpha=.5)
+        r_outer = r_inner + 1
+        self.ax.plot(r_outer * np.cos(t), r_outer * np.sin(t), 'k--', alpha=.3)
+        self.ax.plot(r_outer * np.cos(t2), r_outer * np.sin(t2), color='cornflowerblue', alpha=.5)
+        self.ax.plot([blade_list.iloc[0, 0], blade_list.iloc[0, 1]], [blade_list.iloc[n2, 0], blade_list.iloc[n2, 1]], color='indianred', alpha=1)
         [self.ax.plot(blade_list.iloc[:n2, i], blade_list.iloc[n2:, i], color='royalblue', alpha=.7) for i in
-         range(shape[1])]
+         range(shape[1] - 1)]
         self.ax.grid()
         self.ax.axis('equal')
         self.draw()
