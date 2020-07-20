@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.special import binom
 from matplotlib import pyplot as plt
+from module.blade import testspline
 
 
 def euclidean_dist(xy1, xy2):
@@ -120,7 +121,7 @@ class ImportExport:
         z = np.zeros(xy.shape[0])
         xyz = xy
         xyz['z'] = z
-        np.savetxt(path + '.txt', np.round(xyz.values, 5), fmt='%f, %f, %f')
+        np.savetxt(path, np.round(xyz.values, 5), fmt='%f, %f, %f')
 
 
 def camber_spline(npts, xy_points):
@@ -151,6 +152,14 @@ def camber_spline(npts, xy_points):
 
 
 def cdist_from_spline(xy_spline, delta_alpha):
+    """
+    Generate the camber spline from spline distribution spline window.
+
+    :param xy_spline:
+    :param delta_alpha:
+    :return:
+    """
+
     # x_grad = np.gradient(xy_spline[:, 0])
     x_grad = np.zeros(500)
     x_grad = np.array([xy_spline[i, 0] - xy_spline[i - 1, 0] for i in range(500)])
@@ -160,13 +169,12 @@ def cdist_from_spline(xy_spline, delta_alpha):
     diff = np.ones(500)
     diff = y_grad / x_grad
     diffmin = np.argmin(diff)
-    # if diffmin != 0:
-    #     diff[diffmin:] = -diff[diffmin:]
     steps = diff.size
     angle = np.zeros(steps)
+
     angle = np.cumsum(delta_alpha / steps * diff)
 
-    # norm angle so it sums up to delta_alpha ([0] will be skipped anyways)
+    # norm angle so it sums up to delta_alpha ([0] will be skipped anyways) | last value == del_alpha
     angle = angle / np.max(angle) * delta_alpha
     x_camber = xy_spline[:, 0]
     y_camber = np.zeros(steps)
@@ -186,9 +194,9 @@ def cdist_from_spline(xy_spline, delta_alpha):
     xy_camber[:, 0] = xy_camber[:, 0] / xmax
     xy_camber[:, 1] = xy_camber[:, 1] / xmax
 
-    plt.cla
-    plt.plot(xy_camber[:, 0], xy_camber[:, 1])
-    plt.axis('equal')
+    # plt.cla
+    # plt.plot(xy_camber[:, 0], xy_camber[:, 1])
+    # plt.axis('equal')
     # plt.show()
     return xy_camber
 

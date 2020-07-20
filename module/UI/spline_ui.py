@@ -6,8 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-
-from module.blade.bladetools import camber_spline
+from module.blade.testspline import compute_spline
 
 
 class SplineUi(QtWidgets.QMainWindow):
@@ -79,14 +78,16 @@ class SplineUi(QtWidgets.QMainWindow):
     def _return(self):
         print('returning values')
         str_pts = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
-        self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
-        self.points[2, 1], self.points[3, 0], self.points[3, 1],self.points[4, 0], self.points[4, 1])
+            self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
+            self.points[2, 1], self.points[3, 0], self.points[3, 1], self.points[4, 0], self.points[4, 1])
         self.main_value.setText(str_pts)
         self.close()
 
     def update_plot(self):
         # get spline
-        xy = camber_spline(self.ds['npts'], self.points)
+        # xy = camber_spline(self.ds['npts'], self.points)
+        xy = compute_spline(self.points[:,0], self.points[:,1])
+
         self.m.plot(xy, self.points)
 
     # this is becoming very ugly again. Fix this as soon as shorter solution is found.
@@ -106,6 +107,7 @@ class SplineUi(QtWidgets.QMainWindow):
     def update_p1_right(self):
         self.points[1, 0] = self.points[1, 0] + self.step
         self.update_plot()
+
     # </P1><P2>
     def update_p2_down(self):
         self.points[2, 1] = self.points[2, 1] - self.step
@@ -122,6 +124,7 @@ class SplineUi(QtWidgets.QMainWindow):
     def update_p2_right(self):
         self.points[2, 0] = self.points[2, 0] + self.step
         self.update_plot()
+
     # </P2><P3>
     def update_p3_down(self):
         self.points[3, 1] = self.points[3, 1] - self.step
@@ -139,6 +142,8 @@ class SplineUi(QtWidgets.QMainWindow):
         self.points[3, 0] = self.points[3, 0] + self.step
         self.update_plot()
     # </P3>
+
+
 class PlotCanvas(FigureCanvas):
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -162,7 +167,7 @@ class PlotCanvas(FigureCanvas):
         self.ax.plot(xy[:, 0], xy[:, 1])
         self.ax.plot(pts[:, 0], pts[:, 1], 'go')
         self.ax.plot([0, 1], [0, 1], 'ro')
-        self.ax.plot(np.arange(20)/20, np.arange(20)/20, 'k.', markersize=.5, alpha=.5)
+        self.ax.plot(np.arange(20) / 20, np.arange(20) / 20, 'k.', markersize=.5, alpha=.5)
         self.ax.grid()
         self.ax.axis('equal')
         self.draw()

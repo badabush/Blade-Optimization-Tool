@@ -6,7 +6,7 @@ import scipy.optimize as optimize
 
 from .roundedges import RoundEdges
 from module.blade.bladetools import ImportExport, normalize, camber_spline, cdist_from_spline
-
+from module.blade.testspline import compute_spline
 
 class BladeGen:
     """
@@ -41,9 +41,10 @@ class BladeGen:
         if 9999 in spline_pts:
             self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         else:
-            self.xy_cspline = camber_spline(self.ds['npts'], spline_pts)
+            # self.xy_cspline = camber_spline(self.ds['npts'], spline_pts)
+            self.xy_cspline = compute_spline(spline_pts[:,0], spline_pts[:,1])
             self.xy_camber = cdist_from_spline(self.xy_cspline, self.ds['theta'])
-            # update x because bezier function in spline alters x slightly (otherwise thickness dist doesnt fit spline
+            # update x because spline function in spline differs x slightly (otherwise thickness dist doesnt fit spline)
             self.x = self.xy_camber[:, 0]
 
         if self.thdist_option == 0:
