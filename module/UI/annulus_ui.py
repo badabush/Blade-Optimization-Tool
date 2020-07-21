@@ -55,7 +55,10 @@ class AnnulusUi(QtWidgets.QMainWindow):
             self.blade_list = _instance.generate()
 
     def build_blades(self):
-        "Reconstruct the blades from mainwindow."
+        """
+        Reconstruct the blades from mainwindow.
+        """
+
         if self.ds['type'] == 'single':
             blade1 = self.ds['blade']
             return blade1, 0
@@ -67,9 +70,15 @@ class AnnulusUi(QtWidgets.QMainWindow):
             return blade1, blade2
 
     def close_window(self):
+        """
+        Close window on button click.
+        """
         self.close()
 
     def update_plot(self):
+        """
+        Update Plot with input parameters.
+        """
         # get spline
         self.r_inner = self.label_r.value()
         self.nblades = int(self.label_nblades.value() + 1)
@@ -88,23 +97,63 @@ class AnnulusUi(QtWidgets.QMainWindow):
         self.m.plot(self.r_inner, self.blade_list)
 
     def update_nblades(self, value):
+        """
+        Update number of blades in label.
+
+        :param value: value of label
+        :type value: float
+        """
+
         self.label_nblades.setValue(value)
 
     def update_box_nblades(self):
+        """
+        Update number of blades on slider.
+        """
         value = self.label_nblades.value()
         self.slider_nblades.setSliderPosition(value)
 
     def update_r(self, value):
+        """
+        Update inner radius in label.
+
+        :param value: value of label
+        :type value: float
+        """
         self.label_r.setValue(float(value) / self.scale)
 
     def update_box_r(self):
+        """
+        Update inner radius on slider.
+        """
+
         value = self.label_r.value() * self.scale
         self.slider_r.setSliderPosition(value)
 
     def update_dist(self, value):
+        """
+        Update distance in label.
+
+        :param value: value of label
+        :type value: float
+        """
+
         self.label_dist.setValue(value)
 
-    def set_restraints(self, restraint, label, slider, scale=1):
+    def set_restraints(self, restraint, label, slider, scale=1.0):
+        """
+        Load restraints from file and apply to label and slider.
+
+        :param restraint: from file, contains minval, maxval, steps, default
+        :type restraint: list
+        :param label: label of widget
+        :type label: pyqt.Widget.label
+        :param slider: slider of widget
+        :type slider: pyqt.Widget.slider
+        :param scale: scale to apply between float label and int slider (default=1)
+        :type scale: float
+        :return:
+        """
         minval = restraint[0]
         maxval = restraint[1]
         step = restraint[2]
@@ -120,7 +169,9 @@ class AnnulusUi(QtWidgets.QMainWindow):
 
 
 class PlotCanvas(FigureCanvas):
-
+    """
+    Class to handle Plot inside window. Very similar to main window plot.
+    """
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         # self.axes = fig.add_subplot(111)
@@ -137,6 +188,15 @@ class PlotCanvas(FigureCanvas):
         # self.plot()
 
     def plot(self, r_inner, blade_list):
+        """
+        Method to handle all plotting tasks.
+
+        :param r_inner: inner radius
+        :type r_inner: float
+        :param blade_list: list of blades with correct rotation and position to plot.
+        :type blade_list: list
+        :return:
+        """
         self.ax.cla()
         # print(pts)
         shape = blade_list.shape

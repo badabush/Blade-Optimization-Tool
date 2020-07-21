@@ -7,13 +7,16 @@ class GeomTurboFile:
 
     def __init__(self, type, blade, r, l, N):
         """
-
         :param type: single or tandem
-        :param blade: np.array [npts, 3] with r, y, x
-        :param r:
-        :param l:
-        :param N:
+        :type type: str
+        :param blade: list with array of single blade or list of arrays for tandem blades, cols: r, y, x
+        :type blade: list
+        :param r: ?
+        :param l: ?
+        :param N: ?
         """
+
+        # Path to templates and file-saving folder
         self.temp_path = Path(os.getcwd() + "/template")
         self.save_path = Path(os.getcwd() + "/../../geo_output/numeca")
         self.r = r
@@ -29,6 +32,7 @@ class GeomTurboFile:
         elif self.type == "tandem":
             self.layer = 0.0010
 
+        # compute parameters for file
         self.rh = self.r - self.layer / 2
         self.rs = self.r + self.layer / 2
         self.rhub = np.ones(self.npts) * self.rh
@@ -42,18 +46,26 @@ class GeomTurboFile:
         self.shroud[:, 0] = self.zhub
         self.shroud[:, 1] = self.rshroud
 
+        # Generate file from parameters
         if self.type == "single":
             fname = "single.geomTurbo"
-            self.gen_file(fname, blade)
+            self.gen_file(fname, blade[0])
         else:
             fname = "tandem.geomTurbo"
             self.gen_file(fname, blade[0], blade[1])
 
     def gen_file(self, fname, blade, blade_av=0):
         """
-        Generating geomTurbo file for Single blade from Template
-        :return:
+        Generating geomTurbo file for Single or tandem blade from Template.
+
+        :param fname: filename.geomTurbo
+        :type fname: str
+        :param blade: single blade or tandem blade 1
+        :type blade: np.array
+        :param blade_av: tandem blade 2 (optional)
+        :type blade_av: np.array
         """
+
         len_blade = len(blade)
         if self.type == "single":
             f = open(self.temp_path / "single_template.geomTurbo", "r")
@@ -96,7 +108,7 @@ class GeomTurboFile:
             str_upper2 + "\t\t %.16f\t%.16f\t%.16f\n" % (upper[i, 0], upper[i, 1], upper[i, 2]) for i in
             range(len(upper)))
         str_upper2 = "\t\t +%d\n" % (len(upper)) + str_upper2
-        f_str = f_str.replace("?IN_UPPER2", str_upper1[:-1])  # replace, get rid of trailing \n
+        f_str = f_str.replace("?IN_UPPER2", str_upper2[:-1])  # replace, get rid of trailing \n
 
         # lower (Druckseite)
         lower = np.zeros((int(np.ceil(len_blade / 2)), 3))
@@ -122,7 +134,7 @@ class GeomTurboFile:
         str_lower2 = "\t\t +%d\n" % (len(lower)) + str_lower2
         f_str = f_str.replace("?IN_LOWER2", str_lower2[:-1])  # replace, get rid of trailing \n
 
-        # TANDEM SPLITTER
+        # TANDEM specific addins
         if self.type == "tandem":
             # upper (Saugseite)
             upper = np.zeros((int(np.ceil(len_blade / 2)), 3))
@@ -145,7 +157,7 @@ class GeomTurboFile:
                 str_upper2 + "\t\t %.16f\t%.16f\t%.16f\n" % (upper[i, 0], upper[i, 1], upper[i, 2]) for i in
                 range(len(upper)))
             str_upper2 = "\t\t +%d\n" % (len(upper)) + str_upper2
-            f_str = f_str.replace("?IN_UPPERAV2", str_upper1[:-1])  # replace, get rid of trailing \n
+            f_str = f_str.replace("?IN_UPPERAV2", str_upper2[:-1])  # replace, get rid of trailing \n
 
             # lower (Druckseite)
             lower = np.zeros((int(np.ceil(len_blade / 2)), 3))
@@ -170,7 +182,6 @@ class GeomTurboFile:
                 range(len(lower)))
             str_lower2 = "\t\t +%d\n" % (len(lower)) + str_lower2
             f_str = f_str.replace("?IN_LOWERAV2", str_lower2[:-1])  # replace, get rid of trailing \n
-
 
         # replace tabspace with 8 whitespaces TODO: check if it works without this cleanup
         f_str = f_str.replace("\t\t", "        ")

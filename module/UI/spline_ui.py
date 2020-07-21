@@ -33,6 +33,8 @@ class SplineUi(QtWidgets.QMainWindow):
             self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
         # run once on window open
         self.update_plot()
+
+        # connect arrow buttons with spline movement
         self.p1_down.clicked.connect(self.update_p1_down)
         self.p1_up.clicked.connect(self.update_p1_up)
         self.p1_left.clicked.connect(self.update_p1_left)
@@ -48,6 +50,7 @@ class SplineUi(QtWidgets.QMainWindow):
         self.p3_left.clicked.connect(self.update_p3_left)
         self.p3_right.clicked.connect(self.update_p3_right)
 
+        # connect buttons for saving and resetting
         self.btn_save.clicked.connect(self._return)
         self.btn_reset.clicked.connect(self.reset_pts)
 
@@ -69,13 +72,22 @@ class SplineUi(QtWidgets.QMainWindow):
         self.points = points
 
     def close_window(self):
+        """
+        Close Window.
+        """
         self.close()
 
     def reset_pts(self):
+        """
+        Reset points back to default (straight line).
+        """
         self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
         self.update_plot()
 
     def _return(self):
+        """
+        Return Points back to main window by saving it to an invisible label.
+        """
         print('returning values')
         str_pts = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
             self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
@@ -84,8 +96,9 @@ class SplineUi(QtWidgets.QMainWindow):
         self.close()
 
     def update_plot(self):
-        # get spline
-        # xy = camber_spline(self.ds['npts'], self.points)
+        """
+        Update plot in spline window by calling the plot class with new points.
+        """
         xy = compute_spline(self.points[:,0], self.points[:,1])
 
         self.m.plot(xy, self.points)
@@ -93,58 +106,97 @@ class SplineUi(QtWidgets.QMainWindow):
     # this is becoming very ugly again. Fix this as soon as shorter solution is found.
     # <P1>
     def update_p1_down(self):
+        """
+        Point 1 position control, button [down].
+        """
         self.points[1, 1] = self.points[1, 1] - self.step
         self.update_plot()
 
     def update_p1_up(self):
+        """
+        Point 1 position control, button [up].
+        """
         self.points[1, 1] = self.points[1, 1] + self.step
         self.update_plot()
 
     def update_p1_left(self):
+        """
+        Point 1 position control, button [left].
+        """
         self.points[1, 0] = self.points[1, 0] - self.step
         self.update_plot()
 
     def update_p1_right(self):
+        """
+        Point 1 position control, button [right].
+        """
         self.points[1, 0] = self.points[1, 0] + self.step
         self.update_plot()
 
     # </P1><P2>
     def update_p2_down(self):
+        """
+        Point 2 position control, button [down].
+        """
         self.points[2, 1] = self.points[2, 1] - self.step
         self.update_plot()
 
     def update_p2_up(self):
+        """
+        Point 2 position control, button [up].
+        """
         self.points[2, 1] = self.points[2, 1] + self.step
         self.update_plot()
 
     def update_p2_left(self):
+        """
+        Point 2 position control, button [left].
+        """
         self.points[2, 0] = self.points[2, 0] - self.step
         self.update_plot()
 
     def update_p2_right(self):
+        """
+        Point 2 position control, button [right].
+        """
         self.points[2, 0] = self.points[2, 0] + self.step
         self.update_plot()
 
     # </P2><P3>
     def update_p3_down(self):
+        """
+        Point 3 position control, button [down].
+        """
         self.points[3, 1] = self.points[3, 1] - self.step
         self.update_plot()
 
     def update_p3_up(self):
+        """
+        Point 3 position control, button [up].
+        """
         self.points[3, 1] = self.points[3, 1] + self.step
         self.update_plot()
 
     def update_p3_left(self):
+        """
+        Point 3 position control, button [left].
+        """
         self.points[3, 0] = self.points[3, 0] - self.step
         self.update_plot()
 
     def update_p3_right(self):
+        """
+        Point 3 position control, button [right].
+        """
         self.points[3, 0] = self.points[3, 0] + self.step
         self.update_plot()
     # </P3>
 
 
 class PlotCanvas(FigureCanvas):
+    """
+    Class for Plotting inside of Spline Window. Very similar to main window plot class.
+    """
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
@@ -162,6 +214,15 @@ class PlotCanvas(FigureCanvas):
         # self.plot()
 
     def plot(self, xy, pts):
+        """
+        Method for handling all plotting tasks.
+        :param xy: xy-coords of spline
+        :type xy: np.array
+        :param pts: Points on spline.
+        :type pts: list
+        :return:
+        """
+
         self.ax.cla()
         # print(pts)
         self.ax.plot(xy[:, 0], xy[:, 1])

@@ -65,21 +65,21 @@
         <span class="n">vbl</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">toolbar</span><span class="p">)</span>
         <span class="n">vbl</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="mf">0.05</span>  <span class="c1"># step to move on arrow click</span>
-        <span class="c1"># init points</span>
-        <span class="c1"># self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_spline_pts</span><span class="p">()</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
+
         <span class="c1"># run once on window open</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span>
+
+        <span class="c1"># Connect Buttons to updating plot.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p1_down</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_p1_down</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p1_up</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_p1_up</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p1_left</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_p1_left</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p1_right</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_p1_right</span><span class="p">)</span>
 
-        <span class="c1"># self.p2_down.clicked.connect(self.update_p2_down)</span>
-        <span class="c1"># self.p2_up.clicked.connect(self.update_p2_up)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p2_left</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_p2_left</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p2_right</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_p2_right</span><span class="p">)</span>
 
@@ -88,6 +88,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">p3_left</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_p3_left</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">p3_right</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_p3_right</span><span class="p">)</span>
 
+        <span class="c1"># Connect buttons for saving and reset</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">btn_save</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_return</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">btn_reset</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reset_pts</span><span class="p">)</span>
 
@@ -109,13 +110,22 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">points</span></div>
 
 <div class="viewcode-block" id="SplineUi2.close_window"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.close_window">[docs]</a>    <span class="k">def</span> <span class="nf">close_window</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Close Window on button clicked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SplineUi2.reset_pts"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.reset_pts">[docs]</a>    <span class="k">def</span> <span class="nf">reset_pts</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reset Points to default.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.45</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">_return</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return Points back to main window by saving to an invisible label.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;returning values&#39;</span><span class="p">)</span>
         <span class="n">str_pts</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%f</span><span class="s2">,</span><span class="si">%f</span><span class="s2">;</span><span class="si">%f</span><span class="s2">,</span><span class="si">%f</span><span class="s2">;</span><span class="si">%f</span><span class="s2">,</span><span class="si">%f</span><span class="s2">;</span><span class="si">%f</span><span class="s2">,</span><span class="si">%f</span><span class="s2">;</span><span class="si">%f</span><span class="s2">,</span><span class="si">%f</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
@@ -124,6 +134,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
 <div class="viewcode-block" id="SplineUi2.update_plot"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_plot">[docs]</a>    <span class="k">def</span> <span class="nf">update_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update Plot inside window by calling plot method with updated points.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># get spline</span>
         <span class="n">xy</span> <span class="o">=</span> <span class="n">camber_spline</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ds</span><span class="p">[</span><span class="s1">&#39;npts&#39;</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">m</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">xy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">)</span></div>
@@ -131,54 +144,89 @@
     <span class="c1"># this is becoming very ugly again. Fix this as soon as shorter solution is found.</span>
     <span class="c1"># &lt;P1&gt;</span>
 <div class="viewcode-block" id="SplineUi2.update_p1_down"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_p1_down">[docs]</a>    <span class="k">def</span> <span class="nf">update_p1_down</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Point 1 position control, button [down].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SplineUi2.update_p1_up"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_p1_up">[docs]</a>    <span class="k">def</span> <span class="nf">update_p1_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Point 1 position control, button [up].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SplineUi2.update_p1_left"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_p1_left">[docs]</a>    <span class="k">def</span> <span class="nf">update_p1_left</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Point 1 position control, button [left].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SplineUi2.update_p1_right"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_p1_right">[docs]</a>    <span class="k">def</span> <span class="nf">update_p1_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Point 1 position control, button [right].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
-    <span class="c1"># &lt;/P1&gt;&lt;P2&gt;</span>
-    <span class="c1"># def update_p2_down(self):</span>
-    <span class="c1">#     self.points[2, 1] = self.points[2, 1] - self.step</span>
-    <span class="c1">#     self.update_plot()</span>
-    <span class="c1">#</span>
-    <span class="c1"># def update_p2_up(self):</span>
-    <span class="c1">#     self.points[2, 1] = self.points[2, 1] + self.step</span>
-    <span class="c1">#     self.update_plot()</span>
 
 <div class="viewcode-block" id="SplineUi2.update_p2_left"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_p2_left">[docs]</a>    <span class="k">def</span> <span class="nf">update_p2_left</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Point 2 position control, button [left].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SplineUi2.update_p2_right"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_p2_right">[docs]</a>    <span class="k">def</span> <span class="nf">update_p2_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Point 2 position control, button [right].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
     <span class="c1"># &lt;/P2&gt;&lt;P3&gt;</span>
 <div class="viewcode-block" id="SplineUi2.update_p3_down"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_p3_down">[docs]</a>    <span class="k">def</span> <span class="nf">update_p3_down</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Point 3 position control, button [down].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SplineUi2.update_p3_up"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_p3_up">[docs]</a>    <span class="k">def</span> <span class="nf">update_p3_up</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Point 3 position control, button [up].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SplineUi2.update_p3_left"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_p3_left">[docs]</a>    <span class="k">def</span> <span class="nf">update_p3_left</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Point 3 position control, button [left].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SplineUi2.update_p3_right"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.SplineUi2.update_p3_right">[docs]</a>    <span class="k">def</span> <span class="nf">update_p3_right</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Point 3 position control, button [right].</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">points</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div></div>
     <span class="c1"># &lt;/P3&gt;</span>
+
 <div class="viewcode-block" id="PlotCanvas"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.PlotCanvas">[docs]</a><span class="k">class</span> <span class="nc">PlotCanvas</span><span class="p">(</span><span class="n">FigureCanvas</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for plotting inside thickness dist spline window. Very similar to main window plot.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
         <span class="n">fig</span> <span class="o">=</span> <span class="n">Figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">),</span> <span class="n">dpi</span><span class="o">=</span><span class="n">dpi</span><span class="p">)</span>
@@ -196,6 +244,9 @@
         <span class="c1"># self.plot()</span>
 
 <div class="viewcode-block" id="PlotCanvas.plot"><a class="viewcode-back" href="../../../GUI.html#module.UI.spline_ui2.PlotCanvas.plot">[docs]</a>    <span class="k">def</span> <span class="nf">plot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xy</span><span class="p">,</span> <span class="n">pts</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to handle all plotting tasks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">cla</span><span class="p">()</span>
         <span class="c1"># print(pts)</span>
         <span class="n">thdist_default</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;../module/UI/config/thdist_default.txt&quot;</span><span class="p">)</span>

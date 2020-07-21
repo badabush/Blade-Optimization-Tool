@@ -16,6 +16,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Optimizer" href="optimizer.html" />
     <link rel="prev" title="Scripts module" href="scripts.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -27,6 +28,9 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="optimizer.html" title="Optimizer"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="scripts.html" title="Scripts module"
              accesskey="P">previous</a> |</li>
@@ -271,7 +275,7 @@ restraints.txt.</p>
 <dl class="method">
 <dt id="module.UI.update_handle.UpdateHandler.update_box_l_chord">
 <code class="sig-name descname">update_box_l_chord</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/update_handle.html#UpdateHandler.update_box_l_chord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.update_handle.UpdateHandler.update_box_l_chord" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get Value from Slider, apply to Label chord length(l_chord) <strong>obsolete</strong>.</p>
+<dd><p>Get Value from Slider, apply to Label chord length(l_chord) <strong>obsolete</strong> .</p>
 </dd></dl>
 
 <dl class="method">
@@ -481,10 +485,17 @@ if 2nd blade is selected. Save values from slider/labels as soon as the other ra
 <dt id="module.UI.spline_ui.PlotCanvas">
 <em class="property">class </em><code class="sig-prename descclassname">module.UI.spline_ui.</code><code class="sig-name descname">PlotCanvas</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em>, <em class="sig-param">width=5</em>, <em class="sig-param">height=4</em>, <em class="sig-param">dpi=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#PlotCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.PlotCanvas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.backends.backend_qt5agg.FigureCanvasQTAgg</span></code></p>
+<p>Class for Plotting inside of Spline Window. Very similar to main window plot class.</p>
 <dl class="method">
 <dt id="module.UI.spline_ui.PlotCanvas.plot">
 <code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">xy</em>, <em class="sig-param">pts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#PlotCanvas.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.PlotCanvas.plot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method for handling all plotting tasks.
+:param xy: xy-coords of spline
+:type xy: np.array
+:param pts: Points on spline.
+:type pts: list
+:return:</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -495,7 +506,8 @@ if 2nd blade is selected. Save values from slider/labels as soon as the other ra
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.close_window">
 <code class="sig-name descname">close_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.close_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.close_window" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Close Window.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.get_spline_pts">
@@ -514,72 +526,86 @@ if 2nd blade is selected. Save values from slider/labels as soon as the other ra
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.reset_pts">
 <code class="sig-name descname">reset_pts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.reset_pts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.reset_pts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reset points back to default (straight line).</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p1_down">
 <code class="sig-name descname">update_p1_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p1_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p1_down" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 1 position control, button [down].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p1_left">
 <code class="sig-name descname">update_p1_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p1_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p1_left" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 1 position control, button [left].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p1_right">
 <code class="sig-name descname">update_p1_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p1_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p1_right" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 1 position control, button [right].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p1_up">
 <code class="sig-name descname">update_p1_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p1_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p1_up" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 1 position control, button [up].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p2_down">
 <code class="sig-name descname">update_p2_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p2_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p2_down" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 2 position control, button [down].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p2_left">
 <code class="sig-name descname">update_p2_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p2_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p2_left" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 2 position control, button [left].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p2_right">
 <code class="sig-name descname">update_p2_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p2_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p2_right" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 2 position control, button [right].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p2_up">
 <code class="sig-name descname">update_p2_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p2_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p2_up" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 2 position control, button [up].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p3_down">
 <code class="sig-name descname">update_p3_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p3_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p3_down" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 3 position control, button [down].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p3_left">
 <code class="sig-name descname">update_p3_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p3_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p3_left" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 3 position control, button [left].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p3_right">
 <code class="sig-name descname">update_p3_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p3_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p3_right" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 3 position control, button [right].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_p3_up">
 <code class="sig-name descname">update_p3_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_p3_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_p3_up" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 3 position control, button [up].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui.SplineUi.update_plot">
 <code class="sig-name descname">update_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui.html#SplineUi.update_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui.SplineUi.update_plot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update plot in spline window by calling the plot class with new points.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -591,10 +617,12 @@ if 2nd blade is selected. Save values from slider/labels as soon as the other ra
 <dt id="module.UI.spline_ui2.PlotCanvas">
 <em class="property">class </em><code class="sig-prename descclassname">module.UI.spline_ui2.</code><code class="sig-name descname">PlotCanvas</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em>, <em class="sig-param">width=5</em>, <em class="sig-param">height=4</em>, <em class="sig-param">dpi=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#PlotCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.PlotCanvas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.backends.backend_qt5agg.FigureCanvasQTAgg</span></code></p>
+<p>Class for plotting inside thickness dist spline window. Very similar to main window plot.</p>
 <dl class="method">
 <dt id="module.UI.spline_ui2.PlotCanvas.plot">
 <code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">xy</em>, <em class="sig-param">pts</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#PlotCanvas.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.PlotCanvas.plot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Method to handle all plotting tasks.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -605,7 +633,8 @@ if 2nd blade is selected. Save values from slider/labels as soon as the other ra
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.close_window">
 <code class="sig-name descname">close_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.close_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.close_window" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Close Window on button clicked.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.get_spline_pts">
@@ -624,62 +653,74 @@ if 2nd blade is selected. Save values from slider/labels as soon as the other ra
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.reset_pts">
 <code class="sig-name descname">reset_pts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.reset_pts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.reset_pts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Reset Points to default.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_p1_down">
 <code class="sig-name descname">update_p1_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_p1_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_p1_down" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 1 position control, button [down].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_p1_left">
 <code class="sig-name descname">update_p1_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_p1_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_p1_left" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 1 position control, button [left].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_p1_right">
 <code class="sig-name descname">update_p1_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_p1_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_p1_right" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 1 position control, button [right].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_p1_up">
 <code class="sig-name descname">update_p1_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_p1_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_p1_up" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 1 position control, button [up].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_p2_left">
 <code class="sig-name descname">update_p2_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_p2_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_p2_left" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 2 position control, button [left].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_p2_right">
 <code class="sig-name descname">update_p2_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_p2_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_p2_right" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 2 position control, button [right].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_p3_down">
 <code class="sig-name descname">update_p3_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_p3_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_p3_down" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 3 position control, button [down].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_p3_left">
 <code class="sig-name descname">update_p3_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_p3_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_p3_left" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 3 position control, button [left].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_p3_right">
 <code class="sig-name descname">update_p3_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_p3_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_p3_right" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 3 position control, button [right].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_p3_up">
 <code class="sig-name descname">update_p3_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_p3_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_p3_up" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Point 3 position control, button [up].</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.spline_ui2.SplineUi2.update_plot">
 <code class="sig-name descname">update_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/spline_ui2.html#SplineUi2.update_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.spline_ui2.SplineUi2.update_plot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update Plot inside window by calling plot method with updated points.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -700,42 +741,78 @@ if 2nd blade is selected. Save values from slider/labels as soon as the other ra
 <dl class="method">
 <dt id="module.UI.annulus_ui.AnnulusUi.close_window">
 <code class="sig-name descname">close_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#AnnulusUi.close_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.AnnulusUi.close_window" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="module.UI.annulus_ui.AnnulusUi.reset_pts">
-<code class="sig-name descname">reset_pts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#AnnulusUi.reset_pts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.AnnulusUi.reset_pts" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Close window on button click.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.annulus_ui.AnnulusUi.set_restraints">
-<code class="sig-name descname">set_restraints</code><span class="sig-paren">(</span><em class="sig-param">restraint</em>, <em class="sig-param">label</em>, <em class="sig-param">slider</em>, <em class="sig-param">scale=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#AnnulusUi.set_restraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.AnnulusUi.set_restraints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">set_restraints</code><span class="sig-paren">(</span><em class="sig-param">restraint</em>, <em class="sig-param">label</em>, <em class="sig-param">slider</em>, <em class="sig-param">scale=1.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#AnnulusUi.set_restraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.AnnulusUi.set_restraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load restraints from file and apply to label and slider.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>restraint</strong> (<em>list</em>) – from file, contains minval, maxval, steps, default</p></li>
+<li><p><strong>label</strong> (<em>pyqt.Widget.label</em>) – label of widget</p></li>
+<li><p><strong>slider</strong> (<em>pyqt.Widget.slider</em>) – slider of widget</p></li>
+<li><p><strong>scale</strong> (<em>float</em>) – scale to apply between float label and int slider (default=1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.annulus_ui.AnnulusUi.update_box_nblades">
 <code class="sig-name descname">update_box_nblades</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#AnnulusUi.update_box_nblades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.AnnulusUi.update_box_nblades" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update number of blades on slider.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.annulus_ui.AnnulusUi.update_box_r">
 <code class="sig-name descname">update_box_r</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#AnnulusUi.update_box_r"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.AnnulusUi.update_box_r" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update inner radius on slider.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="module.UI.annulus_ui.AnnulusUi.update_dist">
+<code class="sig-name descname">update_dist</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#AnnulusUi.update_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.AnnulusUi.update_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update distance in label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – value of label</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.annulus_ui.AnnulusUi.update_nblades">
 <code class="sig-name descname">update_nblades</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#AnnulusUi.update_nblades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.AnnulusUi.update_nblades" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update number of blades in label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – value of label</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.annulus_ui.AnnulusUi.update_plot">
 <code class="sig-name descname">update_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#AnnulusUi.update_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.AnnulusUi.update_plot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update Plot with input parameters.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="module.UI.annulus_ui.AnnulusUi.update_r">
 <code class="sig-name descname">update_r</code><span class="sig-paren">(</span><em class="sig-param">value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#AnnulusUi.update_r"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.AnnulusUi.update_r" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Update inner radius in label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – value of label</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -743,10 +820,23 @@ if 2nd blade is selected. Save values from slider/labels as soon as the other ra
 <dt id="module.UI.annulus_ui.PlotCanvas">
 <em class="property">class </em><code class="sig-prename descclassname">module.UI.annulus_ui.</code><code class="sig-name descname">PlotCanvas</code><span class="sig-paren">(</span><em class="sig-param">parent=None</em>, <em class="sig-param">width=5</em>, <em class="sig-param">height=4</em>, <em class="sig-param">dpi=100</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#PlotCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.PlotCanvas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.backends.backend_qt5agg.FigureCanvasQTAgg</span></code></p>
+<p>Class to handle Plot inside window. Very similar to main window plot.</p>
 <dl class="method">
 <dt id="module.UI.annulus_ui.PlotCanvas.plot">
-<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">r</em>, <em class="sig-param">blade_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#PlotCanvas.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.PlotCanvas.plot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param">r_inner</em>, <em class="sig-param">blade_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/annulus_ui.html#PlotCanvas.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.annulus_ui.PlotCanvas.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to handle all plotting tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_inner</strong> (<em>float</em>) – inner radius</p></li>
+<li><p><strong>blade_list</strong> (<em>list</em>) – list of blades with correct rotation and position to plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -778,6 +868,9 @@ if 2nd blade is selected. Save values from slider/labels as soon as the other ra
   <h4>Previous topic</h4>
   <p class="topless"><a href="scripts.html"
                         title="previous chapter">Scripts module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="optimizer.html"
+                        title="next chapter">Optimizer</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -808,6 +901,9 @@ if 2nd blade is selected. Save values from slider/labels as soon as the other ra
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="optimizer.html" title="Optimizer"
+             >next</a> |</li>
         <li class="right" >
           <a href="scripts.html" title="Scripts module"
              >previous</a> |</li>

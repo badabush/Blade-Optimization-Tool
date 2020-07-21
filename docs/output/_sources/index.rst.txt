@@ -13,3 +13,4 @@ BOT - Blade Optimization Tool
    packages
    scripts
    GUI
+   optimizer
