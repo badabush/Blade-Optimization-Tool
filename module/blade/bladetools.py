@@ -160,19 +160,17 @@ def cdist_from_spline(xy_spline, delta_alpha):
     :return:
     """
 
-    # x_grad = np.gradient(xy_spline[:, 0])
-    x_grad = np.zeros(500)
-    x_grad = np.array([xy_spline[i, 0] - xy_spline[i - 1, 0] for i in range(500)])
-    # y_grad = np.gradient(xy_spline[:, 1])
+    # # x_grad = np.gradient(xy_spline[:, 0])
+    # x_grad = np.zeros(500)
+    # x_grad = np.array([xy_spline[i, 0] - xy_spline[i - 1, 0] for i in range(500)])
+    x_grad = np.gradient(xy_spline[:, 0])
     y_grad = np.zeros(500)
-    y_grad = np.array([xy_spline[i, 1] - xy_spline[i - 1, 1] for i in range(500)])
+    y_grad = np.gradient(xy_spline[:,1])
     diff = np.ones(500)
-    diff = y_grad / x_grad
-    diffmin = np.argmin(diff)
     steps = diff.size
     angle = np.zeros(steps)
 
-    angle = np.cumsum(delta_alpha / steps * diff)
+    angle = np.cumsum(delta_alpha / steps * y_grad)
 
     # norm angle so it sums up to delta_alpha ([0] will be skipped anyways) | last value == del_alpha
     angle = angle / np.max(angle) * delta_alpha
