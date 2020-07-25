@@ -18,6 +18,10 @@ class Initialize:
         self.blade2_offset = [0, 0]  # X,Y
         self.in_blade_offset = [0, 0]
         self.imported_blade_vis = 0
+        # fixed parameters since they wont be changed anyways
+        self.length_chord = 1
+        self.number_of_points = 1000
+        self.state = 0
 
         # init points for camber and thickness spline
         self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
@@ -32,6 +36,7 @@ class Initialize:
             self.points_th[4, 1])
         self.returned_values.setText(str_pts)
         self.returned_values_th.setText(str_pts_th)
+
 
     def init_slider_control(self):
         """
@@ -63,12 +68,6 @@ class Initialize:
         self.slider['th_te'] = self.slider_thte
         self.label['th_te'] = self.val_thte
 
-        self.slider['l_chord'] = self.slider_lchord
-        self.label['l_chord'] = self.val_lchord
-
-        self.slider['npts'] = self.slider_npts
-        self.label['npts'] = self.val_npts
-
         self.slider['dist_blades'] = self.slider_dist_blades
         self.label['dist_blades'] = self.val_dist_blades
         for key in self.slider:
@@ -82,9 +81,6 @@ class Initialize:
         self.label['alpha1'].editingFinished.connect(self.update_box_alpha1)
         self.label['alpha2'].editingFinished.connect(self.update_box_alpha2)
         self.label['lambd'].editingFinished.connect(self.update_box_lambd)
-        self.label['l_chord'].editingFinished.connect(self.update_box_l_chord)
-        self.slider['npts'].valueChanged[int].connect(self.update_npts)
-        self.label['npts'].editingFinished.connect(self.update_box_npts)
         self.slider['th'].valueChanged[int].connect(self.update_th)
         self.label['th'].editingFinished.connect(self.update_box_th)
         self.slider['xmax_th'].valueChanged[int].connect(self.update_xmax_th)
@@ -97,7 +93,6 @@ class Initialize:
         self.label['th_te'].editingFinished.connect(self.update_box_thte)
         self.slider['dist_blades'].valueChanged[int].connect(self.update_dist_blades)
         self.label['dist_blades'].editingFinished.connect(self.update_box_dist_blades)
-
 
     def set_restraint(self, key):
         """

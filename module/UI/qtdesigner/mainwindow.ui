@@ -648,10 +648,18 @@
      <addaction name="actionload_from_file"/>
      <addaction name="actionsave_as_txt"/>
     </widget>
+    <widget class="QMenu" name="menuSave_Load_Config">
+     <property name="title">
+      <string>Save/Load Config</string>
+     </property>
+     <addaction name="actionSave_config"/>
+     <addaction name="actionLoad_config"/>
+    </widget>
     <addaction name="menuThickness_Distribution_Type"/>
     <addaction name="menuNumber_of_Blades"/>
     <addaction name="menuBlade_Cluster"/>
     <addaction name="menuImport_Export"/>
+    <addaction name="menuSave_Load_Config"/>
    </widget>
    <widget class="QMenu" name="menuOptimize">
     <property name="title">
@@ -710,6 +718,22 @@
   <action name="actionsave_as_txt">
    <property name="text">
     <string>save as txt</string>
+   </property>
+  </action>
+  <action name="actionSave_config">
+   <property name="text">
+    <string>save configuration</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionLoad_config">
+   <property name="text">
+    <string>load configuration</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+L</string>
    </property>
   </action>
  </widget>

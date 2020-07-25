@@ -15,9 +15,10 @@ from module.UI.file_explorer import FileExplorer
 from module.UI.spline_ui import SplineUi
 from module.UI.spline_ui2 import SplineUi2
 from module.UI.annulus_ui import AnnulusUi
+from module.UI.save_load_config import SaveLoadConfig
 
 
-class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize):
+class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoadConfig):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
         restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
@@ -29,7 +30,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize):
         super(Ui, self).__init__()
         uic.loadUi('UI/qtdesigner/mainwindow.ui', self)
         # declaring param keys, load restraints for slider
-        self.param_keys = ['npts', 'alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'l_chord', 'th_le',
+        self.param_keys = ['alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'th_le',
                            'th_te', 'dist_blades']
         self.restraints = load_restraints('UI/config/restraints.txt')
         self.menu_default()  # set menu defaults
@@ -63,6 +64,10 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize):
         self.actionload_from_file.triggered.connect(self.openFileNameDialog)
         self.actionsave_as_txt.triggered.connect(self.saveFileDialog)
 
+        #save/load blade config
+        self.actionSave_config.triggered.connect(self.save_config)
+        self.actionLoad_config.triggered.connect(self.load_config)
+
         """ Camber Spline window """
         # open camber spline popup on click
         self.btn_spline_camber.clicked.connect(self.spline_window)
@@ -72,6 +77,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize):
         """ Thickness Spline window """
         # open camber spline popup on click
         self.btn_spline_th.clicked.connect(self.spline_window2)
+
         # get camber spline values from window
         self.returned_values_th.textChanged.connect(self.get_spline_th_pts)
 
@@ -87,6 +93,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize):
         self.btn_in_right.clicked.connect(self.update_in_right)
 
         # run once on startup
+
         self.update_all()
         self.show()
 
@@ -200,7 +207,6 @@ class PlotCanvas(FigureCanvas):
         :type ds_import: pandas.DataFrame
         :return: None
         """
-
         # get zoom state
         if self.xlim == (0, 0) and self.ylim == (0, 0):
             self.xlim = (-.1, 1)
@@ -273,18 +279,18 @@ class PlotCanvas(FigureCanvas):
                 self.ax.plot(camber1[::15, 0], camber1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue',
                              alpha=.7)
 
-                self.ax.plot(blade2[:, 0], blade2[:, 1], color='indianred')
-                self.ax.fill(blade2[:, 0], blade2[:, 1], color='lightcoral', alpha=.5)
-                self.ax.plot(camber2[::15, 0], camber2[::15, 1], linestyle='--', dashes=(5, 5), color='darkred',
+                self.ax.plot(blade2[:, 0] + ds2['x_offset'], blade2[:, 1]  + ds2['y_offset'], color='indianred')
+                self.ax.fill(blade2[:, 0] + ds2['x_offset'], blade2[:, 1] + ds2['y_offset'], color='lightcoral', alpha=.5)
+                self.ax.plot(camber2[::15, 0] + ds2['x_offset'], camber2[::15, 1] + ds2['y_offset'], linestyle='--', dashes=(5, 5), color='darkred',
                              alpha=.7)
 
                 self.ax.plot(blade1[:, 0], blade1[:, 1] + division, color='royalblue')
                 self.ax.fill(blade1[:, 0], blade1[:, 1] + division, color='cornflowerblue', alpha=.5)
                 self.ax.plot(camber1[::15, 0], camber1[::15, 1] + division, linestyle='--', dashes=(5, 5),
                              color='darkblue', alpha=.7)
-                self.ax.plot(blade2[:, 0], blade2[:, 1] + division, color='indianred')
-                self.ax.fill(blade2[:, 0], blade2[:, 1] + division, color='lightcoral', alpha=.5)
-                self.ax.plot(camber2[::15, 0], camber2[::15, 1] + division, linestyle='--', dashes=(5, 5),
+                self.ax.plot(blade2[:, 0] + ds2['x_offset'], blade2[:, 1] + division + ds2['y_offset'], color='indianred')
+                self.ax.fill(blade2[:, 0] + ds2['x_offset'], blade2[:, 1] + division + ds2['y_offset'], color='lightcoral', alpha=.5)
+                self.ax.plot(camber2[::15, 0] + ds2['x_offset'], camber2[::15, 1] + division + ds2['y_offset'], linestyle='--', dashes=(5, 5),
                              color='darkred', alpha=.7)
 
             else:

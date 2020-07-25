@@ -22,25 +22,12 @@ class UpdateHandler:
         value = self.label['alpha2'].value()
         self.slider['alpha2'].setSliderPosition(value)
 
-    def update_box_l_chord(self):
-        """
-        Get Value from Slider, apply to Label chord length(l_chord) **obsolete** .
-        """
-        value = self.label['l_chord'].value()
-        self.slider['l_chord'].setSliderPosition(value)
-
     def update_box_lambd(self):
         """
         Get Value from Slider, apply to Label Lambda (lambd).
         """
         value = self.label['lambd'].value()
         self.slider['lambd'].setSliderPosition(value)
-
-    def update_npts(self, value):
-        """
-        Set Label Value Number of Points (npts) with custom scale (100) **obsolete**.
-        """
-        self.label['npts'].setValue(float(value) * 100)
 
     def update_box_npts(self):
         """
@@ -226,11 +213,15 @@ class UpdateHandler:
         ds['pts'] = self.points
         ds['pts_th'] = self.points_th
         ds['selected_blade'] = 0
+        ds['npts'] = self.number_of_points
+        ds['l_chord'] = self.length_chord
         self.ds = ds
-        self.ds1 = ds
-        self.ds2 = ds
-        self.ds2['x_offset'] = 0
-        self.ds2['y_offset'] = 0
+
+        self.ds1 = self.ds
+        self.ds2 = self.ds
+        self.ds2['x_offset'] = self.blade2_offset[0]
+        self.ds2['y_offset'] = self.blade2_offset[1]
+
         try:
             # try to get data from imported blade
             if self.imported_blade_vis == 1:
@@ -258,33 +249,36 @@ class UpdateHandler:
             self.ds_import = 0
 
         if self.select_blade == 1:
-            self.ds['selected_blade'] = 1
 
+            self.ds['selected_blade'] = 1
             ds1 = {}
             for key in self.param_keys:
                 ds1[key] = self.label[key].value()
-
             # get values from menu items
             ds1['thdist_ver'] = self.thdist_ver
             ds1['nblades'] = self.nblades
             ds1['pts'] = self.points
             ds1['pts_th'] = self.points_th
+            ds1['npts'] = self.number_of_points
+            ds1['l_chord'] = self.length_chord
             self.ds1 = ds1
             self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
-        elif self.select_blade == 2:
-            self.ds['selected_blade'] = 2
 
+        elif self.select_blade == 2:
+
+            self.ds['selected_blade'] = 2
             ds2 = {}
             for key in self.param_keys:
                 ds2[key] = self.label[key].value()
-
             # get values from menu items
             ds2['thdist_ver'] = self.thdist_ver
             ds2['nblades'] = self.nblades
             ds2['pts'] = self.points
             ds2['pts_th'] = self.points_th
-            ds2['x_offset'] = 0
-            ds2['y_offset'] = 0
+            ds2['npts'] = self.number_of_points
+            ds2['l_chord'] = self.length_chord
+            ds2['x_offset'] = self.blade2_offset[0]
+            ds2['y_offset'] = self.blade2_offset[1]
             self.ds2 = ds2
             self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
@@ -340,33 +334,38 @@ class UpdateHandler:
         self.radio_blade1.setChecked(True)
 
         self.btn_update_sel.setVisible(True)
+        # self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
 
     def update_B2_up(self):
         """
         Blade 2 position control, button [up].
         """
-        self.ds2['y_offset'] += 0.01
+        self.blade2_offset[1] += 0.01
+        self.ds2['y_offset'] = self.blade2_offset[1]
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
 
     def update_B2_down(self):
         """
         Blade 2 position control, button [down].
         """
-        self.ds2['y_offset'] -= 0.01
+        self.blade2_offset[1] -= 0.01
+        self.ds2['y_offset'] = self.blade2_offset[1]
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
 
     def update_B2_left(self):
         """
         Blade 2 position control, button [left].
         """
-        self.ds2['x_offset'] -= 0.01
+        self.blade2_offset[0] -= 0.01
+        self.ds2['x_offset'] = self.blade2_offset[0]
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
 
     def update_B2_right(self):
         """
         Blade 2 position control, button [right].
         """
-        self.ds2['x_offset'] += 0.01
+        self.blade2_offset[0] += 0.01
+        self.ds2['x_offset'] = self.blade2_offset[0]
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
 
     def update_in_up(self):

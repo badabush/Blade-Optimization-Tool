@@ -41,7 +41,6 @@ class BladeGen:
         if 9999 in spline_pts:
             self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         else:
-            # self.xy_cspline = camber_spline(self.ds['npts'], spline_pts)
             self.xy_cspline = compute_spline(spline_pts[:,0], spline_pts[:,1])
             self.xy_camber = cdist_from_spline(self.xy_cspline, self.ds['theta'])
             # update x because spline function in spline differs x slightly (otherwise thickness dist doesnt fit spline)
