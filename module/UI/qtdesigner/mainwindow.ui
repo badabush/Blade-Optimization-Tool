@@ -612,7 +612,7 @@
      <x>0</x>
      <y>0</y>
      <width>1110</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuBlade_generator">
@@ -665,6 +665,7 @@
     <property name="title">
      <string>Optimize</string>
     </property>
+    <addaction name="actionCredential"/>
    </widget>
    <addaction name="menuBlade_generator"/>
    <addaction name="menuOptimize"/>
@@ -734,6 +735,11 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+L</string>
+   </property>
+  </action>
+  <action name="actionCredential">
+   <property name="text">
+    <string>connect to putty</string>
    </property>
   </action>
  </widget>

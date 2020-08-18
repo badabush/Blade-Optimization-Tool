@@ -15,6 +15,7 @@ from module.UI.file_explorer import FileExplorer
 from module.UI.spline_ui import SplineUi
 from module.UI.spline_ui2 import SplineUi2
 from module.UI.annulus_ui import AnnulusUi
+from module.UI.putty_login_ui import PuttyLoginUi
 from module.UI.save_load_config import SaveLoadConfig
 
 
@@ -63,6 +64,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         self.actionAnnulus.triggered.connect(self.annulus_window)
         self.actionload_from_file.triggered.connect(self.openFileNameDialog)
         self.actionsave_as_txt.triggered.connect(self.saveFileDialog)
+        self.actionCredential.triggered.connect(self.putty_login_window)
 
         #save/load blade config
         self.actionSave_config.triggered.connect(self.save_config)
@@ -132,6 +134,13 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
 
         self.points_th = points
         # print('main\n' + str(self.points))
+
+    def putty_login_window(self):
+        """
+        Opens Popup for login into putty.
+        """
+        self.login_ui = PuttyLoginUi()
+        self.login_ui.show()
 
     def spline_window(self):
         """
