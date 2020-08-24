@@ -38,6 +38,10 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         self.init_variables()  # initialize some variables at GUI start
         self.init_slider_control()
 
+        # tabs
+        self.tabWidget.setTabText(0, "BladeDesigner")
+        self.tabWidget.setTabText(1, "Optimizer")
+
         # init plot
         self.m = PlotCanvas(self, width=8, height=10)
         toolbar = NavigationToolbar(self.m, self)

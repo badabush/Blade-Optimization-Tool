@@ -14,596 +14,619 @@
    <string>Blade Optimization Tool</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QWidget" name="gridLayoutWidget">
+   <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>60</y>
-      <width>371</width>
-      <height>562</height>
+      <x>0</x>
+      <y>0</y>
+      <width>1101</width>
+      <height>741</height>
      </rect>
     </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <property name="horizontalSpacing">
-      <number>20</number>
-     </property>
-     <property name="verticalSpacing">
-      <number>30</number>
-     </property>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>x max thickn.</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>alpha1</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QSlider" name="slider_alpha1">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>x max camber</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QSlider" name="slider_lambd">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QSlider" name="slider_alpha2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>alpha2</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="1">
-      <widget class="QSlider" name="slider_th">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>lambd</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>thickness</string>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="0">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>LE thickness</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QSlider" name="slider_xmax_th">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QLabel" name="label_10">
-       <property name="text">
-        <string>TE thickness</string>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="1">
-      <widget class="QSlider" name="slider_xmax_camber">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="1">
-      <widget class="QSlider" name="slider_thle">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_11">
-       <property name="text">
-        <string># points</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QSlider" name="slider_npts">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="1">
-      <widget class="QSlider" name="slider_thte">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="2">
-      <widget class="QDoubleSpinBox" name="val_th">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>4</number>
-       </property>
-       <property name="singleStep">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="2">
-      <widget class="QDoubleSpinBox" name="val_xmax_th">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>4</number>
-       </property>
-       <property name="singleStep">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="6" column="2">
-      <widget class="QDoubleSpinBox" name="val_xmax_camber">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>4</number>
-       </property>
-       <property name="singleStep">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="7" column="2">
-      <widget class="QDoubleSpinBox" name="val_thle">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>4</number>
-       </property>
-       <property name="singleStep">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="2">
-      <widget class="QDoubleSpinBox" name="val_thte">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>4</number>
-       </property>
-       <property name="singleStep">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QDoubleSpinBox" name="val_npts">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>0</number>
-       </property>
-       <property name="singleStep">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QDoubleSpinBox" name="val_alpha1">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>0</number>
-       </property>
-       <property name="singleStep">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="2">
-      <widget class="QDoubleSpinBox" name="val_alpha2">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>0</number>
-       </property>
-       <property name="singleStep">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="2">
-      <widget class="QDoubleSpinBox" name="val_lambd">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>1</number>
-       </property>
-       <property name="singleStep">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="0">
-      <widget class="QLabel" name="label_12">
-       <property name="text">
-        <string>division</string>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="1">
-      <widget class="QSlider" name="slider_dist_blades">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="9" column="2">
-      <widget class="QDoubleSpinBox" name="val_dist_blades">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="decimals">
-        <number>2</number>
-       </property>
-       <property name="singleStep">
-        <double>0.000000000000000</double>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="fig_widget" native="true">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>20</y>
-      <width>581</width>
-      <height>551</height>
-     </rect>
+    <property name="currentIndex">
+     <number>0</number>
     </property>
-    <widget class="QLineEdit" name="returned_values">
-     <property name="geometry">
-      <rect>
-       <x>80</x>
-       <y>230</y>
-       <width>113</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>123</string>
-     </property>
+    <widget class="QWidget" name="tab_bladedesign">
+     <attribute name="title">
+      <string>Tab 1</string>
+     </attribute>
+     <widget class="QWidget" name="horizontalLayoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>232</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_3">
+       <item>
+        <widget class="QRadioButton" name="radio_blade1">
+         <property name="text">
+          <string>Blade 1</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radio_blade2">
+         <property name="text">
+          <string>Blade 2</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>371</width>
+        <height>562</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_2">
+       <property name="horizontalSpacing">
+        <number>20</number>
+       </property>
+       <property name="verticalSpacing">
+        <number>30</number>
+       </property>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>x max thickn.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>alpha1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QSlider" name="slider_alpha1">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>x max camber</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QSlider" name="slider_lambd">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QSlider" name="slider_alpha2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>alpha2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QSlider" name="slider_th">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>lambd</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>thickness</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>LE thickness</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QSlider" name="slider_xmax_th">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>TE thickness</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QSlider" name="slider_xmax_camber">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QSlider" name="slider_thle">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_11">
+         <property name="text">
+          <string># points</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QSlider" name="slider_npts">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QSlider" name="slider_thte">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QDoubleSpinBox" name="val_th">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>4</number>
+         </property>
+         <property name="singleStep">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QDoubleSpinBox" name="val_xmax_th">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>4</number>
+         </property>
+         <property name="singleStep">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QDoubleSpinBox" name="val_xmax_camber">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>4</number>
+         </property>
+         <property name="singleStep">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QDoubleSpinBox" name="val_thle">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>4</number>
+         </property>
+         <property name="singleStep">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="QDoubleSpinBox" name="val_thte">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>4</number>
+         </property>
+         <property name="singleStep">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QDoubleSpinBox" name="val_npts">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>0</number>
+         </property>
+         <property name="singleStep">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QDoubleSpinBox" name="val_alpha1">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>0</number>
+         </property>
+         <property name="singleStep">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QDoubleSpinBox" name="val_alpha2">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>0</number>
+         </property>
+         <property name="singleStep">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QDoubleSpinBox" name="val_lambd">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="singleStep">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>division</string>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="1">
+        <widget class="QSlider" name="slider_dist_blades">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="2">
+        <widget class="QDoubleSpinBox" name="val_dist_blades">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>2</number>
+         </property>
+         <property name="singleStep">
+          <double>0.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>650</x>
+        <y>560</y>
+        <width>86</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridP2_3">
+       <item row="1" column="2">
+        <widget class="QToolButton" name="btn_in_right">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::RightArrow</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QToolButton" name="btn_in_up">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::UpArrow</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QToolButton" name="btn_in_left">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::LeftArrow</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QToolButton" name="btn_in_down">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::DownArrow</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QLabel" name="label_pos_in">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>570</y>
+        <width>151</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Position import mask</string>
+      </property>
+     </widget>
+     <widget class="QWidget" name="gridLayoutWidget_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>620</y>
+        <width>391</width>
+        <height>80</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="1">
+        <widget class="QPushButton" name="btn_default">
+         <property name="text">
+          <string>default</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="btn_update_sel">
+         <property name="text">
+          <string>Update Selected</string>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+Shift+R</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="btn_spline_th">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Thickness Spline</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="btn_spline_camber">
+         <property name="text">
+          <string>Camber Spline</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="btn_update_all">
+         <property name="text">
+          <string>Update All</string>
+         </property>
+         <property name="shortcut">
+          <string>Ctrl+R</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QPushButton" name="btn_hide_import">
+         <property name="text">
+          <string>show/hide imp.</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>960</x>
+        <y>560</y>
+        <width>86</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridP2">
+       <item row="1" column="2">
+        <widget class="QToolButton" name="btn_b2_right">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::RightArrow</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QToolButton" name="btn_b2_up">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::UpArrow</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QToolButton" name="btn_b2_left">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::LeftArrow</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QToolButton" name="btn_b2_down">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="arrowType">
+          <enum>Qt::DownArrow</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="fig_widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>490</x>
+        <y>0</y>
+        <width>581</width>
+        <height>551</height>
+       </rect>
+      </property>
+      <widget class="QLineEdit" name="returned_values">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>240</y>
+         <width>113</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>123</string>
+       </property>
+      </widget>
+      <widget class="QWidget" name="horizontalLayoutWidget">
+       <property name="geometry">
+        <rect>
+         <x>230</x>
+         <y>190</y>
+         <width>306</width>
+         <height>80</height>
+        </rect>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <widget class="QLabel" name="label_8">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>chord length</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QSlider" name="slider_lchord">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QDoubleSpinBox" name="val_lchord">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="singleStep">
+           <double>0.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+       </layout>
+       <zorder>slider_lchord</zorder>
+       <zorder>label_8</zorder>
+       <zorder>val_lchord</zorder>
+      </widget>
+      <widget class="QLineEdit" name="returned_values_th">
+       <property name="geometry">
+        <rect>
+         <x>90</x>
+         <y>280</y>
+         <width>113</width>
+         <height>25</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>123</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QLabel" name="label_pos_b2">
+      <property name="geometry">
+       <rect>
+        <x>800</x>
+        <y>570</y>
+        <width>141</width>
+        <height>41</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Position 2nd Blade</string>
+      </property>
+     </widget>
     </widget>
-    <widget class="QWidget" name="horizontalLayoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>230</x>
-       <y>190</y>
-       <width>173</width>
-       <height>80</height>
-      </rect>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QLabel" name="label_8">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="text">
-         <string>chord length</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSlider" name="slider_lchord">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QDoubleSpinBox" name="val_lchord">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
-        <property name="decimals">
-         <number>0</number>
-        </property>
-        <property name="singleStep">
-         <double>0.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-     </layout>
-     <zorder>slider_lchord</zorder>
-     <zorder>label_8</zorder>
-     <zorder>val_lchord</zorder>
+    <widget class="QWidget" name="tab_optimizer">
+     <attribute name="title">
+      <string>Tab 2</string>
+     </attribute>
     </widget>
-    <widget class="QLineEdit" name="returned_values_th">
-     <property name="geometry">
-      <rect>
-       <x>90</x>
-       <y>280</y>
-       <width>113</width>
-       <height>25</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>123</string>
-     </property>
-    </widget>
-   </widget>
-   <widget class="QWidget" name="horizontalLayoutWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>20</y>
-      <width>232</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <layout class="QHBoxLayout" name="horizontalLayout_3">
-     <item>
-      <widget class="QRadioButton" name="radio_blade1">
-       <property name="text">
-        <string>Blade 1</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QRadioButton" name="radio_blade2">
-       <property name="text">
-        <string>Blade 2</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="gridLayoutWidget_3">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>640</y>
-      <width>391</width>
-      <height>80</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_3">
-     <item row="0" column="1">
-      <widget class="QPushButton" name="btn_default">
-       <property name="text">
-        <string>default</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QPushButton" name="btn_update_sel">
-       <property name="text">
-        <string>Update Selected</string>
-       </property>
-       <property name="shortcut">
-        <string>Ctrl+Shift+R</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QPushButton" name="btn_spline_th">
-       <property name="enabled">
-        <bool>false</bool>
-       </property>
-       <property name="text">
-        <string>Thickness Spline</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QPushButton" name="btn_spline_camber">
-       <property name="text">
-        <string>Camber Spline</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="2">
-      <widget class="QPushButton" name="btn_update_all">
-       <property name="text">
-        <string>Update All</string>
-       </property>
-       <property name="shortcut">
-        <string>Ctrl+R</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QPushButton" name="btn_hide_import">
-       <property name="text">
-        <string>show/hide imp.</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QWidget" name="layoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>970</x>
-      <y>580</y>
-      <width>86</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridP2">
-     <item row="1" column="2">
-      <widget class="QToolButton" name="btn_b2_right">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::RightArrow</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QToolButton" name="btn_b2_up">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::UpArrow</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QToolButton" name="btn_b2_left">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::LeftArrow</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QToolButton" name="btn_b2_down">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::DownArrow</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-   <widget class="QLabel" name="label_pos_b2">
-    <property name="geometry">
-     <rect>
-      <x>810</x>
-      <y>590</y>
-      <width>141</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Position 2nd Blade</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_pos_in">
-    <property name="geometry">
-     <rect>
-      <x>500</x>
-      <y>590</y>
-      <width>151</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Position import mask</string>
-    </property>
-   </widget>
-   <widget class="QWidget" name="layoutWidget_2">
-    <property name="geometry">
-     <rect>
-      <x>660</x>
-      <y>580</y>
-      <width>86</width>
-      <height>61</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridP2_3">
-     <item row="1" column="2">
-      <widget class="QToolButton" name="btn_in_right">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::RightArrow</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QToolButton" name="btn_in_up">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::UpArrow</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QToolButton" name="btn_in_left">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::LeftArrow</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QToolButton" name="btn_in_down">
-       <property name="text">
-        <string/>
-       </property>
-       <property name="arrowType">
-        <enum>Qt::DownArrow</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
