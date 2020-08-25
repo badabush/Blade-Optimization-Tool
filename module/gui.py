@@ -12,8 +12,8 @@ from module.blade.bladegen import BladeGen
 from module.UI.initialize import Initialize
 from module.UI.update_handle import UpdateHandler
 from module.UI.file_explorer import FileExplorer
-from module.UI.spline_ui import SplineUi
-from module.UI.spline_ui2 import SplineUi2
+from module.UI.camber_spline_ui import CamberSplineUi
+from module.UI.thdist_spline_ui import ThdistSplineUi
 from module.UI.annulus_ui import AnnulusUi
 from module.UI.putty_login_ui import PuttyLoginUi
 from module.UI.save_load_config import SaveLoadConfig
@@ -76,13 +76,13 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
 
         """ Camber Spline window """
         # open camber spline popup on click
-        self.btn_spline_camber.clicked.connect(self.spline_window)
+        self.btn_spline_camber.clicked.connect(self.camber_spline_window)
         # get camber spline values from window
         self.returned_values.textChanged.connect(self.get_spline_pts)
 
         """ Thickness Spline window """
         # open camber spline popup on click
-        self.btn_spline_th.clicked.connect(self.spline_window2)
+        self.btn_spline_th.clicked.connect(self.thdist_spline_window)
 
         # get camber spline values from window
         self.returned_values_th.textChanged.connect(self.get_spline_th_pts)
@@ -146,23 +146,23 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         self.login_ui = PuttyLoginUi()
         self.login_ui.show()
 
-    def spline_window(self):
+    def camber_spline_window(self):
         """
         Opens an additional spline window on when button 'Spline' has been clicked.
         :return:
         """
-        self.spline_ui = SplineUi(self.ds, self.returned_values)
-        self.spline_ui.show()
-        self.points = self.spline_ui.points
+        self.cspline_ui = CamberSplineUi(self.ds, self.returned_values)
+        self.cspline_ui.show()
+        self.points = self.cspline_ui.points
 
-    def spline_window2(self):
+    def thdist_spline_window(self):
         """
         Opens an additional spline window on when button 'Spline' has been clicked.
         :return:
         """
-        self.spline_ui = SplineUi2(self.ds, self.returned_values_th)
-        self.spline_ui.show()
-        self.points = self.spline_ui.points
+        self.tspline_ui = ThdistSplineUi(self.ds, self.returned_values_th)
+        self.tspline_ui.show()
+        self.points = self.tspline_ui.points
 
     def annulus_window(self):
         """

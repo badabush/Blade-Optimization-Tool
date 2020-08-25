@@ -6,15 +6,14 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
+from module.blade.testspline import compute_spline
 
-from module.blade.bladetools import camber_spline
 
-
-class SplineUi2(QtWidgets.QMainWindow):
+class CamberSplineUi(QtWidgets.QMainWindow):
 
     def __init__(self, ds, main_value):
-        super(SplineUi2, self).__init__()
-        uic.loadUi('UI/qtdesigner/splinewindow2.ui', self)
+        super(CamberSplineUi, self).__init__()
+        uic.loadUi('UI/qtdesigner/splinewindow.ui', self)
 
         self.ds = ds
         self.main_value = main_value
@@ -26,21 +25,23 @@ class SplineUi2(QtWidgets.QMainWindow):
         vbl.addWidget(toolbar)
         vbl.addWidget(self.m)
         self.step = 0.05  # step to move on arrow click
-
+        # init points
+        # self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
         try:
             self.get_spline_pts()
         except:
-            self.points = np.array([[0, 0.25, 0.4, 0.75, 1], [0, 0.25, 1.0, 0.25, 0]]).T
-
+            self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
         # run once on window open
         self.update_plot()
 
-        # Connect Buttons to updating plot.
+        # connect arrow buttons with spline movement
         self.p1_down.clicked.connect(self.update_p1_down)
         self.p1_up.clicked.connect(self.update_p1_up)
         self.p1_left.clicked.connect(self.update_p1_left)
         self.p1_right.clicked.connect(self.update_p1_right)
 
+        self.p2_down.clicked.connect(self.update_p2_down)
+        self.p2_up.clicked.connect(self.update_p2_up)
         self.p2_left.clicked.connect(self.update_p2_left)
         self.p2_right.clicked.connect(self.update_p2_right)
 
@@ -49,7 +50,7 @@ class SplineUi2(QtWidgets.QMainWindow):
         self.p3_left.clicked.connect(self.update_p3_left)
         self.p3_right.clicked.connect(self.update_p3_right)
 
-        # Connect buttons for saving and reset
+        # connect buttons for saving and resetting
         self.btn_save.clicked.connect(self._return)
         self.btn_reset.clicked.connect(self.reset_pts)
 
@@ -72,34 +73,34 @@ class SplineUi2(QtWidgets.QMainWindow):
 
     def close_window(self):
         """
-        Close Window on button clicked.
+        Close Window.
         """
         self.close()
 
     def reset_pts(self):
         """
-        Reset Points to default.
+        Reset points back to default (straight line).
         """
-        self.points = np.array([[0, 0.1, 0.4, 0.75, 1], [0, 0.45, 1.0, 0.45, 0]]).T
+        self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
         self.update_plot()
 
     def _return(self):
         """
-        Return Points back to main window by saving to an invisible label.
+        Return Points back to main window by saving it to an invisible label.
         """
         print('returning values')
         str_pts = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
-        self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
-        self.points[2, 1], self.points[3, 0], self.points[3, 1],self.points[4, 0], self.points[4, 1])
+            self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
+            self.points[2, 1], self.points[3, 0], self.points[3, 1], self.points[4, 0], self.points[4, 1])
         self.main_value.setText(str_pts)
         self.close()
 
     def update_plot(self):
         """
-        Update Plot inside window by calling plot method with updated points.
+        Update plot in spline window by calling the plot class with new points.
         """
-        # get spline
-        xy = camber_spline(self.ds['npts'], self.points)
+        xy = compute_spline(self.points[:,0], self.points[:,1])
+
         self.m.plot(xy, self.points)
 
     # this is becoming very ugly again. Fix this as soon as shorter solution is found.
@@ -108,7 +109,6 @@ class SplineUi2(QtWidgets.QMainWindow):
         """
         Point 1 position control, button [down].
         """
-
         self.points[1, 1] = self.points[1, 1] - self.step
         self.update_plot()
 
@@ -116,7 +116,6 @@ class SplineUi2(QtWidgets.QMainWindow):
         """
         Point 1 position control, button [up].
         """
-
         self.points[1, 1] = self.points[1, 1] + self.step
         self.update_plot()
 
@@ -124,7 +123,6 @@ class SplineUi2(QtWidgets.QMainWindow):
         """
         Point 1 position control, button [left].
         """
-
         self.points[1, 0] = self.points[1, 0] - self.step
         self.update_plot()
 
@@ -132,15 +130,28 @@ class SplineUi2(QtWidgets.QMainWindow):
         """
         Point 1 position control, button [right].
         """
-
         self.points[1, 0] = self.points[1, 0] + self.step
+        self.update_plot()
+
+    # </P1><P2>
+    def update_p2_down(self):
+        """
+        Point 2 position control, button [down].
+        """
+        self.points[2, 1] = self.points[2, 1] - self.step
+        self.update_plot()
+
+    def update_p2_up(self):
+        """
+        Point 2 position control, button [up].
+        """
+        self.points[2, 1] = self.points[2, 1] + self.step
         self.update_plot()
 
     def update_p2_left(self):
         """
         Point 2 position control, button [left].
         """
-
         self.points[2, 0] = self.points[2, 0] - self.step
         self.update_plot()
 
@@ -150,12 +161,12 @@ class SplineUi2(QtWidgets.QMainWindow):
         """
         self.points[2, 0] = self.points[2, 0] + self.step
         self.update_plot()
+
     # </P2><P3>
     def update_p3_down(self):
         """
         Point 3 position control, button [down].
         """
-
         self.points[3, 1] = self.points[3, 1] - self.step
         self.update_plot()
 
@@ -163,7 +174,6 @@ class SplineUi2(QtWidgets.QMainWindow):
         """
         Point 3 position control, button [up].
         """
-
         self.points[3, 1] = self.points[3, 1] + self.step
         self.update_plot()
 
@@ -171,7 +181,6 @@ class SplineUi2(QtWidgets.QMainWindow):
         """
         Point 3 position control, button [left].
         """
-
         self.points[3, 0] = self.points[3, 0] - self.step
         self.update_plot()
 
@@ -179,14 +188,14 @@ class SplineUi2(QtWidgets.QMainWindow):
         """
         Point 3 position control, button [right].
         """
-
         self.points[3, 0] = self.points[3, 0] + self.step
         self.update_plot()
     # </P3>
 
+
 class PlotCanvas(FigureCanvas):
     """
-    Class for plotting inside thickness dist spline window. Very similar to main window plot.
+    Class for Plotting inside of Spline Window. Very similar to main window plot class.
     """
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -206,19 +215,20 @@ class PlotCanvas(FigureCanvas):
 
     def plot(self, xy, pts):
         """
-        Method to handle all plotting tasks.
+        Method for handling all plotting tasks.
+        :param xy: xy-coords of spline
+        :type xy: np.array
+        :param pts: Points on spline.
+        :type pts: list
+        :return:
         """
+
         self.ax.cla()
         # print(pts)
-        thdist_default = np.loadtxt("../module/UI/config/thdist_default.txt")
-        thdist_default = np.reshape(thdist_default, (500,2))
-        self.ax.plot(xy[:, 0], xy[:, 1]/np.max(xy[:, 1]))
+        self.ax.plot(xy[:, 0], xy[:, 1])
         self.ax.plot(pts[:, 0], pts[:, 1], 'go')
-        self.ax.plot([0, 1], [0, 0], 'ro')
-        # self.ax.plot(np.arange(20)/20, np.arange(20)/20, 'k.', markersize=.5, alpha=.5)
-        self.ax.plot(thdist_default[:,0], thdist_default[:,1]/np.max(thdist_default[:,1]), 'k--', markersize=.5, alpha=.5)
+        self.ax.plot([0, 1], [0, 1], 'ro')
+        self.ax.plot(np.arange(20) / 20, np.arange(20) / 20, 'k.', markersize=.5, alpha=.5)
         self.ax.grid()
-        # self.ax.axis('equal')
-        self.ax.set_xlim([-0.1, 1.1])
-        self.ax.set_ylim([-0.1, 1.1])
+        self.ax.axis('equal')
         self.draw()

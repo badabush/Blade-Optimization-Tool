@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import QSizePolicy
 from PyQt5 import QtWidgets, uic
+from module.optimizer.ssh_login import ssh_connect
 
 class PuttyLoginUi(QtWidgets.QMainWindow):
 
