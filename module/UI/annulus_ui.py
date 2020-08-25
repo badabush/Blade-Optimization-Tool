@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from module.blade.bladetools import AnnulusGen, load_restraints
+from module.blade.bladetools import AnnulusGen, load_config_file
 
 
 class AnnulusUi(QtWidgets.QMainWindow):
@@ -14,7 +14,7 @@ class AnnulusUi(QtWidgets.QMainWindow):
     def __init__(self, ds, offset):
         super(AnnulusUi, self).__init__()
         uic.loadUi('UI/qtdesigner/annuluswindow.ui', self)
-        self.restraints = load_restraints('UI/config/restraints_annulus.txt')
+        self.restraints = load_config_file('UI/config/restraints_annulus.txt')
         self.m = PlotCanvas(self, width=5, height=4)
         toolbar = NavigationToolbar(self.m, self)
         centralwidget = self.fig_widget

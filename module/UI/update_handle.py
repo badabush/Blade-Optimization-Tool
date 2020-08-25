@@ -210,8 +210,8 @@ class UpdateHandler:
         # get values from menu items
         ds['thdist_ver'] = self.thdist_ver
         ds['nblades'] = self.nblades
-        ds['pts'] = self.points
-        ds['pts_th'] = self.points_th
+        ds['pts'] = self.camber_spline_pts
+        ds['pts_th'] = self.thdist_spline_pts
         ds['selected_blade'] = 0
         ds['npts'] = self.number_of_points
         ds['l_chord'] = self.length_chord
@@ -257,8 +257,8 @@ class UpdateHandler:
             # get values from menu items
             ds1['thdist_ver'] = self.thdist_ver
             ds1['nblades'] = self.nblades
-            ds1['pts'] = self.points
-            ds1['pts_th'] = self.points_th
+            ds1['pts'] = self.camber_spline_pts
+            ds1['pts_th'] = self.thdist_spline_pts
             ds1['npts'] = self.number_of_points
             ds1['l_chord'] = self.length_chord
             self.ds1 = ds1
@@ -273,8 +273,8 @@ class UpdateHandler:
             # get values from menu items
             ds2['thdist_ver'] = self.thdist_ver
             ds2['nblades'] = self.nblades
-            ds2['pts'] = self.points
-            ds2['pts_th'] = self.points_th
+            ds2['pts'] = self.camber_spline_pts
+            ds2['pts_th'] = self.thdist_spline_pts
             ds2['npts'] = self.number_of_points
             ds2['l_chord'] = self.length_chord
             ds2['x_offset'] = self.blade2_offset[0]

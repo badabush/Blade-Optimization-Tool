@@ -7,14 +7,16 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 
 
-from module.blade.bladetools import camber_spline
+# from module.blade.bladetools import camber_spline
+from module.blade.testspline import compute_spline
+from module.blade.bladetools import load_config_file
 
 
 class ThdistSplineUi(QtWidgets.QMainWindow):
 
     def __init__(self, ds, main_value):
         super(ThdistSplineUi, self).__init__()
-        uic.loadUi('UI/qtdesigner/splinewindow2.ui', self)
+        uic.loadUi('UI/qtdesigner/thdistsplinewindow.ui', self)
 
         self.ds = ds
         self.main_value = main_value
@@ -27,10 +29,13 @@ class ThdistSplineUi(QtWidgets.QMainWindow):
         vbl.addWidget(self.m)
         self.step = 0.05  # step to move on arrow click
 
+        config_file = load_config_file('UI/config/init_values.csv')
+        self.default_pts = [config_file['tspline_pts_x'], config_file['tspline_pts_y']]
+
         try:
             self.get_spline_pts()
         except:
-            self.points = np.array([[0, 0.25, 0.4, 0.75, 1], [0, 0.25, 1.0, 0.25, 0]]).T
+            self.points = np.array([self.default_pts[0], self.default_pts[1]]).T
 
         # run once on window open
         self.update_plot()
@@ -80,7 +85,7 @@ class ThdistSplineUi(QtWidgets.QMainWindow):
         """
         Reset Points to default.
         """
-        self.points = np.array([[0, 0.1, 0.4, 0.75, 1], [0, 0.45, 1.0, 0.45, 0]]).T
+        self.points = np.array([self.default_pts[0], self.default_pts[1]]).T
         self.update_plot()
 
     def _return(self):
@@ -99,7 +104,8 @@ class ThdistSplineUi(QtWidgets.QMainWindow):
         Update Plot inside window by calling plot method with updated points.
         """
         # get spline
-        xy = camber_spline(self.ds['npts'], self.points)
+        # xy = camber_spline(self.ds['npts'], self.points)
+        xy = compute_spline(self.points[:,0], self.points[:,1])
         self.m.plot(xy, self.points)
 
     # this is becoming very ugly again. Fix this as soon as shorter solution is found.

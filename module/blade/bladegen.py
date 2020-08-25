@@ -5,7 +5,7 @@ import pandas as pd
 import scipy.optimize as optimize
 
 from .roundedges import RoundEdges
-from module.blade.bladetools import ImportExport, normalize, camber_spline, cdist_from_spline
+from module.blade.bladetools import ImportExport, normalize, cdist_from_spline
 from module.blade.testspline import compute_spline
 
 class BladeGen:
@@ -51,10 +51,9 @@ class BladeGen:
             xy_blade, self.xy_camber = self.geom_gen(xy_th)
 
         elif self.thdist_option == 1:
-            if 9999 in spline_pts:
+            if 9999 in thdist_points:
                 xy_blade, self.xy_camber = self.thickness_dist_v2()
             else:
-                # xyth = camber_spline(self.ds['npts'], thdist_points)
                 xy_blade, self.xy_camber = self.thickness_dist_v2()
 
         if self.frontend == 'user':
