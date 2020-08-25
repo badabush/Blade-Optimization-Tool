@@ -1,4 +1,5 @@
 import numpy as np
+from module.blade.bladetools import load_config_file
 
 
 class Initialize:
@@ -10,30 +11,35 @@ class Initialize:
         """
         Initialize variables at GUI start
         """
+        init_val = load_config_file("UI/config/init_values.csv")
         # Slider only accepts int values, so floats need to be scaled
-        self.scale = 100000
+        self.scale = init_val['scale']
         # points at GUI start are set to 9999, which initializes the default pattern for camber spline
-        self.points = np.ones((3, 2)) * 9999
+        self.camber_spline_pts = np.ones((3, 2)) * 9999
         # offset for moving 2nd blade
         self.blade2_offset = [0, 0]  # X,Y
         self.in_blade_offset = [0, 0]
         self.imported_blade_vis = 0
         # fixed parameters since they wont be changed anyways
-        self.length_chord = 1
-        self.number_of_points = 1000
+        self.length_chord = init_val['lchord']
+        self.number_of_points = init_val['npts']
         self.state = 0
 
         # init points for camber and thickness spline
-        self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
-        self.points_th = np.array([[0, 0.2, 0.4, 0.65, 1], [0, 0.45, 1.0, 0.25, 0]]).T
+        self.camber_spline_pts = np.array([init_val['cspline_pts_x'], init_val['cspline_pts_y']]).T
+        self.thdist_spline_pts = np.array([init_val['tspline_pts_x'], init_val['tspline_pts_y']]).T
         str_pts = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
-            self.points[0, 0], self.points[0, 1], self.points[1, 0], self.points[1, 1], self.points[2, 0],
-            self.points[2, 1], self.points[3, 0], self.points[3, 1], self.points[4, 0], self.points[4, 1])
+            self.camber_spline_pts[0, 0], self.camber_spline_pts[0, 1],
+            self.camber_spline_pts[1, 0], self.camber_spline_pts[1, 1],
+            self.camber_spline_pts[2, 0], self.camber_spline_pts[2, 1],
+            self.camber_spline_pts[3, 0], self.camber_spline_pts[3, 1],
+            self.camber_spline_pts[4, 0], self.camber_spline_pts[4, 1])
         str_pts_th = "%f,%f;%f,%f;%f,%f;%f,%f;%f,%f" % (
-            self.points_th[0, 0], self.points_th[0, 1], self.points_th[1, 0], self.points_th[1, 1],
-            self.points_th[2, 0],
-            self.points_th[2, 1], self.points_th[3, 0], self.points_th[3, 1], self.points_th[4, 0],
-            self.points_th[4, 1])
+            self.thdist_spline_pts[0, 0], self.thdist_spline_pts[0, 1],
+            self.thdist_spline_pts[1, 0], self.thdist_spline_pts[1, 1],
+            self.thdist_spline_pts[2, 0], self.thdist_spline_pts[2, 1],
+            self.thdist_spline_pts[3, 0], self.thdist_spline_pts[3, 1],
+            self.thdist_spline_pts[4, 0], self.thdist_spline_pts[4, 1])
         self.returned_values.setText(str_pts)
         self.returned_values_th.setText(str_pts_th)
 

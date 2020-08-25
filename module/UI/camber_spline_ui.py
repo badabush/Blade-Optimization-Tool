@@ -7,13 +7,14 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from matplotlib.figure import Figure
 
 from module.blade.testspline import compute_spline
+from module.blade.bladetools import load_config_file
 
 
 class CamberSplineUi(QtWidgets.QMainWindow):
 
     def __init__(self, ds, main_value):
         super(CamberSplineUi, self).__init__()
-        uic.loadUi('UI/qtdesigner/splinewindow.ui', self)
+        uic.loadUi('UI/qtdesigner/cambersplinewindow.ui', self)
 
         self.ds = ds
         self.main_value = main_value
@@ -25,12 +26,14 @@ class CamberSplineUi(QtWidgets.QMainWindow):
         vbl.addWidget(toolbar)
         vbl.addWidget(self.m)
         self.step = 0.05  # step to move on arrow click
+        config_file = load_config_file('UI/config/init_values.csv')
+        self.default_pts = [config_file['cspline_pts_x'], config_file['cspline_pts_y']]
         # init points
         # self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
         try:
             self.get_spline_pts()
         except:
-            self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
+            self.points = np.array([self.default_pts[0], self.default_pts[1]]).T
         # run once on window open
         self.update_plot()
 
@@ -81,7 +84,7 @@ class CamberSplineUi(QtWidgets.QMainWindow):
         """
         Reset points back to default (straight line).
         """
-        self.points = np.array([[0, 0.25, 0.5, 0.75, 1], [0, 0.25, 0.5, 0.75, 1]]).T
+        self.points = np.array([self.default_pts[0], self.default_pts[1]]).T
         self.update_plot()
 
     def _return(self):

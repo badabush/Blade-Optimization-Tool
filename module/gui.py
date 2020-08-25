@@ -7,7 +7,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from module.blade.bladetools import load_restraints
+from module.blade.bladetools import load_config_file
 from module.blade.bladegen import BladeGen
 from module.UI.initialize import Initialize
 from module.UI.update_handle import UpdateHandler
@@ -33,7 +33,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         # declaring param keys, load restraints for slider
         self.param_keys = ['alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'th_le',
                            'th_te', 'dist_blades']
-        self.restraints = load_restraints('UI/config/restraints.txt')
+        self.restraints = load_config_file('UI/config/restraints.txt')
         self.menu_default()  # set menu defaults
         self.init_variables()  # initialize some variables at GUI start
         self.init_slider_control()
@@ -118,7 +118,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
             points[i, 0] = float(val_splt[0])
             points[i, 1] = float(val_splt[1])
 
-        self.points = points
+        self.camber_spline_pts = points
         # print('main\n' + str(self.points))
 
     def get_spline_th_pts(self, value):
@@ -153,7 +153,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         """
         self.cspline_ui = CamberSplineUi(self.ds, self.returned_values)
         self.cspline_ui.show()
-        self.points = self.cspline_ui.points
+        self.camber_spline_pts = self.cspline_ui.points
 
     def thdist_spline_window(self):
         """
@@ -162,7 +162,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         """
         self.tspline_ui = ThdistSplineUi(self.ds, self.returned_values_th)
         self.tspline_ui.show()
-        self.points = self.tspline_ui.points
+        self.thdist_spline_pts = self.tspline_ui.points
 
     def annulus_window(self):
         """

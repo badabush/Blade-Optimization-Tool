@@ -74,15 +74,26 @@ def normalize(xy):
     return xy
 
 
-def load_restraints(filename):
+def load_config_file(filename):
     ds = {}
     with open(filename) as f:
         for line in f:
             item = line.strip(';\n').split(',')
-            try:
-                ds[item[0]] = [float(item[1]), float(item[2]), float(item[3]), float(item[4])]
-            except IndexError as e:
-                print(e)
+            if len(item) == 1:
+                continue
+            elif len(item) == 2:
+                ds[item[0]] = float(item[1])
+            else:
+                ds[item[0]] = [float(item[i]) for i in range(1, len(item))]
+
+
+            # if len(item) == 2:
+            #     ds[item[0]] = float(item[1])
+            # else:
+            #     try:
+            #         ds[item[0]] = [float(item[1]), float(item[2]), float(item[3]), float(item[4])]
+            #     except IndexError as e:
+            #         print(e)
     return ds
 
 
@@ -160,15 +171,11 @@ def cdist_from_spline(xy_spline, delta_alpha):
     :return:
     """
 
-    # # x_grad = np.gradient(xy_spline[:, 0])
-    # x_grad = np.zeros(500)
-    # x_grad = np.array([xy_spline[i, 0] - xy_spline[i - 1, 0] for i in range(500)])
     x_grad = np.gradient(xy_spline[:, 0])
     y_grad = np.zeros(500)
     y_grad = np.gradient(xy_spline[:,1])
     diff = np.ones(500)
     steps = diff.size
-    angle = np.zeros(steps)
 
     angle = np.cumsum(delta_alpha / steps * y_grad)
 
