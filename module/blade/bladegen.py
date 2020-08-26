@@ -4,9 +4,10 @@ from sklearn import preprocessing
 import pandas as pd
 import scipy.optimize as optimize
 
-from .roundedges import RoundEdges
 from module.blade.bladetools import ImportExport, normalize, cdist_from_spline
 from module.blade.testspline import compute_spline
+from module.blade.roundedges import RoundEdges
+
 
 class BladeGen:
     """
@@ -41,7 +42,7 @@ class BladeGen:
         if 9999 in spline_pts:
             self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         else:
-            self.xy_cspline = compute_spline(spline_pts[:,0], spline_pts[:,1])
+            self.xy_cspline = compute_spline(spline_pts[:, 0], spline_pts[:, 1])
             self.xy_camber = cdist_from_spline(self.xy_cspline, self.ds['theta'])
             # update x because spline function in spline differs x slightly (otherwise thickness dist doesnt fit spline)
             self.x = self.xy_camber[:, 0]
@@ -54,7 +55,7 @@ class BladeGen:
             if 9999 in thdist_points:
                 xy_blade, self.xy_camber = self.thickness_dist_v2()
             else:
-                xy_blade, self.xy_camber = self.thickness_dist_v2()
+                xy_blade, self.xy_camber = self.thickness_dist_v2(thdist_points)
 
         if self.frontend == 'user':
             ImportExport()._export(xy_blade)
@@ -142,48 +143,86 @@ class BladeGen:
         dhk = 2 * th_te
         c = 1
         gammahk = ds['gamma_te']
-        # generate y thickness dist if not given by spline
-        x_short = x[np.where(x < (1 - th_te / c))]
-        # if 9999 in yth_spline:
+        # if thickness dist spline points are given, take thdist from spline
+        if not 9999 in xyth_spline:
+            xy_th = compute_spline(xyth_spline[:, 0], xyth_spline[:, 1] * ds['rth'])
+            n_half = int(xy_th.shape[0]/2)
+            xy_th_front = np.array([xy_th[i,:] if xy_th[i,1] > th_le else [xy_th[i,0], np.nan] for i in range(0, n_half)])
+            xy_th_rear = np.array([xy_th[i,:] if xy_th[i,1] >= th_te else [xy_th[i,0], np.nan] for i in range(n_half, xy_th.shape[0])])
+            try:
+                # find position of nan entry before/after value
+                idx_front = np.argwhere(np.isnan(xy_th_front[:,1]))[-1]
+                idx_rear = np.argwhere(np.isnan(xy_th_rear[:,1]))[0]
 
-        x_front = x_short[np.where(x_short < xd)]
-        y_th_front = .5 * (np.sqrt(2 * rn) * np.sqrt(x_front)
-                           + (((3 * d) / xd) - (15 / 8) * np.sqrt(2 * rn / xd) - (3 * xd * (d - dhk)) / (
-                        (c - xd) ** 2) + (2 * xd * np.tan(gammahk / 2)) / (c - xd)) * x_front
-                           + ((5 / 4) * np.sqrt((2 * rn) / (xd ** 3)) - (3 * d) / (xd ** 2) - (
-                        4 * np.tan(gammahk / 2)) / (c - xd) + (6 * (d - dhk)) / ((c - xd) ** 2)) * x_front ** 2
-                           + ((2 * np.tan(gammahk / 2)) / (xd * (c - xd)) - (3 * (d - dhk)) / (
-                        xd * (c - xd) ** 2) - (3 / 8) * np.sqrt((2 * rn) / (xd ** 5)) + d / (
-                                      xd ** 3)) * x_front ** 3
-                           )
-
-        x_rear = x_short[np.where(x_short >= xd)]
-        y_th_rear = .5 * (dhk + (2 * np.tan(gammahk / 2)) * (c - x_rear)
-                          + (((3 * (d - dhk)) / (c - xd) ** 2) - (4 * np.tan(gammahk / 2)) / (c - xd)) * (
-                                  c - x_rear) ** 2
-                          + (((2 * np.tan(gammahk / 2)) / (c - xd) ** 2) - ((2 * (d - dhk)) / (c - xd) ** 3)) * (
-                                  c - x_rear) ** 3
-                          )
-        yth = np.concatenate([y_th_front, y_th_rear])
-        # else:
-        # ythn = xyth_spline[:x_short.size,1]
-        # yth = ythn/np.max(ythn) * np.max(yth)
-
-        # fit trailing edge radius
-        r_te = yth[-1]
-
-        yth_circ_te = np.array(
-            [np.sqrt(np.abs(r_te ** 2 - (X - (1 - r_te)) ** 2)) if (X > (1 - th_te / c)) else np.nan for X
-             in x])
-        # omit nans
-        yth_circ_te = yth_circ_te[np.where(np.isnan(yth_circ_te) == False)]
-        xy_th = np.zeros((x.size, 2))
-        xy_th[:, 0] = x
-
-        if (np.abs(x.size - yth.size - yth_circ_te.size) == 0):
-            xy_th[:, 1] = np.concatenate([np.abs(yth), np.abs(yth_circ_te)])
+                xy_th = np.vstack((xy_th_front, xy_th_rear))
+                count_nans = np.isnan(xy_th[:,1]).sum()
+                if count_nans > 60:
+                    idx_start = int(np.floor(count_nans/6))
+                    # idx_start = int(np.floor(th_le*2000))
+                    idx_end = xy_th.shape[0]-int(np.floor(count_nans/6))
+                    # idx_end = 470
+                    yth = np.zeros(xy_th.shape[0])
+                    pointer = int(idx_front)
+                    for i in range(idx_start, idx_end):
+                        if pointer>(n_half+idx_rear):
+                            break
+                        if i%3==0:
+                            # yth[i] = np.nan
+                            yth[i] = xy_th[pointer,1]
+                            pointer+=2
+                        else:
+                            # yth[i] = xy_th[pointer,1]
+                            # pointer+=1
+                            yth[i] = np.nan
+                yth = pd.DataFrame({'x': xy_th[:,0], 'y':yth})
+                yth.y.interpolate(method='piecewise_polynomial', order=5,inplace=True)
+                yth.y.loc[:n_half] = np.where((yth.y.loc[:n_half] <= th_le), np.nan, yth.y.loc[:n_half])
+                yth.y.loc[n_half:] = np.where((yth.y.loc[n_half:] <= th_te), np.nan, yth.y.loc[n_half:])
+                yth.y.iloc[0] = 0
+                yth.y.iloc[-1] = 0
+                yth.y.interpolate(method='linear', inplace=True)
+                xy_th = yth.to_numpy()
+            except IndexError:
+                print("Error while rounding edges")
         else:
-            xy_th[:, 1] = np.concatenate([np.abs(yth), np.abs(yth_circ_te), [0]])
+            # generate y thickness dist if not given by spline
+            x_short = x[np.where(x < (1 - th_te / c))]
+
+            x_front = x_short[np.where(x_short < xd)]
+            y_th_front = .5 * (np.sqrt(2 * rn) * np.sqrt(x_front)
+                               + (((3 * d) / xd) - (15 / 8) * np.sqrt(2 * rn / xd) - (3 * xd * (d - dhk)) / (
+                            (c - xd) ** 2) + (2 * xd * np.tan(gammahk / 2)) / (c - xd)) * x_front
+                               + ((5 / 4) * np.sqrt((2 * rn) / (xd ** 3)) - (3 * d) / (xd ** 2) - (
+                            4 * np.tan(gammahk / 2)) / (c - xd) + (6 * (d - dhk)) / ((c - xd) ** 2)) * x_front ** 2
+                               + ((2 * np.tan(gammahk / 2)) / (xd * (c - xd)) - (3 * (d - dhk)) / (
+                            xd * (c - xd) ** 2) - (3 / 8) * np.sqrt((2 * rn) / (xd ** 5)) + d / (
+                                          xd ** 3)) * x_front ** 3
+                               )
+
+            x_rear = x_short[np.where(x_short >= xd)]
+            y_th_rear = .5 * (dhk + (2 * np.tan(gammahk / 2)) * (c - x_rear)
+                              + (((3 * (d - dhk)) / (c - xd) ** 2) - (4 * np.tan(gammahk / 2)) / (c - xd)) * (
+                                      c - x_rear) ** 2
+                              + (((2 * np.tan(gammahk / 2)) / (c - xd) ** 2) - ((2 * (d - dhk)) / (c - xd) ** 3)) * (
+                                      c - x_rear) ** 3
+                              )
+            yth = np.concatenate([y_th_front, y_th_rear])
+
+            # fit trailing edge radius
+            r_te = yth[-1]
+
+            yth_circ_te = np.array(
+                [np.sqrt(np.abs(r_te ** 2 - (X - (1 - r_te)) ** 2)) if (X > (1 - th_te / c)) else np.nan for X
+                 in x])
+            # omit nans
+            yth_circ_te = yth_circ_te[np.where(np.isnan(yth_circ_te) == False)]
+            xy_th = np.zeros((x.size, 2))
+            xy_th[:, 0] = x
+
+            if (np.abs(x.size - yth.size - yth_circ_te.size) == 0):
+                xy_th[:, 1] = np.concatenate([np.abs(yth), np.abs(yth_circ_te)])
+            else:
+                xy_th[:, 1] = np.concatenate([np.abs(yth), np.abs(yth_circ_te), [0]])
 
         chi_camber = np.arctan(np.gradient(xy_camber[:, 1]) / np.gradient(xy_camber[:, 0]))
         xss = x - np.sin(chi_camber) * xy_th[:, 1]
