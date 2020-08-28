@@ -41,12 +41,12 @@ class RoundEdges:
         self.fit_circle(ds, idx_low, idx_up)
         # self.debug_plot([x, y], [self.x, self.y], ds)
 
-        self.return_xy()
+        # self.return_xy()
 
     def return_xy(self):
         x = self.x
         y = self.y
-        return [x, y]
+        return x, y
 
     def prior_geom(self):
         """
