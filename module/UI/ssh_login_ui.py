@@ -2,10 +2,10 @@ from PyQt5.QtWidgets import QSizePolicy
 from PyQt5 import QtWidgets, uic
 from module.optimizer.ssh_login import ssh_connect
 
-class PuttyLoginUi(QtWidgets.QMainWindow):
+class SSHLoginUi(QtWidgets.QMainWindow):
 
     def __init__(self):
-        super(PuttyLoginUi, self).__init__()
+        super(SSHLoginUi, self).__init__()
         uic.loadUi('UI/qtdesigner/loginwindow.ui', self)
         self.btn_cls.clicked.connect(self.close_window)
         self.btn_login.clicked.connect(self.connect)
@@ -18,7 +18,10 @@ class PuttyLoginUi(QtWidgets.QMainWindow):
 
         if (not self.input_usr) or (not self.input_pwd):
             return
-        ssh_connect.ssh_cmd("130.149.110.81", username, password, "top")
+
+        ssh_obj = ssh_connect.Ssh_Util(username, password)
+        ssh_obj.connect()
+
 
 
     def close_window(self):

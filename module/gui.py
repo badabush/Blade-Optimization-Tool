@@ -15,7 +15,7 @@ from module.UI.file_explorer import FileExplorer
 from module.UI.camber_spline_ui import CamberSplineUi
 from module.UI.thdist_spline_ui import ThdistSplineUi
 from module.UI.annulus_ui import AnnulusUi
-from module.UI.putty_login_ui import PuttyLoginUi
+from module.UI.ssh_login_ui import SSHLoginUi
 from module.UI.save_load_config import SaveLoadConfig
 
 
@@ -143,7 +143,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         """
         Opens Popup for login into putty.
         """
-        self.login_ui = PuttyLoginUi()
+        self.login_ui = SSHLoginUi()
         self.login_ui.show()
 
     def camber_spline_window(self):
