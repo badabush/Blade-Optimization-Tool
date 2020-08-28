@@ -18,6 +18,8 @@ class PuttyLoginUi(QtWidgets.QMainWindow):
 
         if (not self.input_usr) or (not self.input_pwd):
             return
+        ssh_connect.ssh_cmd("130.149.110.81", username, password, "top")
+
 
     def close_window(self):
         """
