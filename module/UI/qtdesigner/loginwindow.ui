@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>461</width>
-    <height>189</height>
+    <width>435</width>
+    <height>214</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,40 +20,19 @@
       <x>100</x>
       <y>40</y>
       <width>249</width>
-      <height>91</height>
+      <height>122</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Username:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="1">
-      <widget class="QLineEdit" name="input_pwd">
-       <property name="echoMode">
-        <enum>QLineEdit::Password</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Password:</string>
-       </property>
-      </widget>
-     </item>
      <item row="0" column="1">
       <widget class="QLineEdit" name="input_usr"/>
      </item>
-     <item row="3" column="1">
+     <item row="4" column="1">
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QPushButton" name="btn_login">
+        <widget class="QPushButton" name="btn_create">
          <property name="text">
-          <string>Login</string>
+          <string>Create</string>
          </property>
         </widget>
        </item>
@@ -65,6 +44,78 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="input_pwd">
+       <property name="echoMode">
+        <enum>QLineEdit::Password</enum>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Username:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Password:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Node:</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QComboBox" name="comboBox">
+       <item>
+        <property name="text">
+         <string>node05</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node06</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node07</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node08</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node09</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node10</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node11</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node12</string>
+        </property>
+       </item>
+      </widget>
      </item>
     </layout>
    </widget>

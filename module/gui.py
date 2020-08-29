@@ -6,20 +6,22 @@ import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
+from datetime import datetime
 
 from module.blade.bladetools import load_config_file
 from module.blade.bladegen import BladeGen
 from module.UI.initialize import Initialize
-from module.UI.update_handle import UpdateHandler
+from module.UI.bladedesigner_handle import BDUpdateHandler
 from module.UI.file_explorer import FileExplorer
 from module.UI.camber_spline_ui import CamberSplineUi
 from module.UI.thdist_spline_ui import ThdistSplineUi
 from module.UI.annulus_ui import AnnulusUi
 from module.UI.ssh_login_ui import SSHLoginUi
 from module.UI.save_load_config import SaveLoadConfig
+from module.UI.optimizer_handle import OptimHandler
 
 
-class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoadConfig):
+class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
         restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
@@ -41,6 +43,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         # tabs
         self.tabWidget.setTabText(0, "BladeDesigner")
         self.tabWidget.setTabText(1, "Optimizer")
+        self.tabWidget.setCurrentIndex(0) #set default tab
 
         # init plot
         self.m = PlotCanvas(self, width=8, height=10)
@@ -68,7 +71,10 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         self.actionAnnulus.triggered.connect(self.annulus_window)
         self.actionload_from_file.triggered.connect(self.openFileNameDialog)
         self.actionsave_as_txt.triggered.connect(self.saveFileDialog)
-        self.actionCredential.triggered.connect(self.putty_login_window)
+        self.actionCredential.triggered.connect(self.ssh_config_window)
+
+        # optimizer inits
+        self.optim_handler_init()
 
         #save/load blade config
         self.actionSave_config.triggered.connect(self.save_config)
@@ -97,6 +103,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         self.btn_in_down.clicked.connect(self.update_in_down)
         self.btn_in_left.clicked.connect(self.update_in_left)
         self.btn_in_right.clicked.connect(self.update_in_right)
+
 
         # run once on startup
 
@@ -139,7 +146,7 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         self.points_th = points
         # print('main\n' + str(self.points))
 
-    def putty_login_window(self):
+    def ssh_config_window(self):
         """
         Opens Popup for login into putty.
         """
@@ -182,6 +189,12 @@ class Ui(QtWidgets.QMainWindow, UpdateHandler, FileExplorer, Initialize, SaveLoa
         self.radio_blade1.setHidden(True)
         self.radio_blade2.setHidden(True)
         self.btn_update_sel.setHidden(True)
+
+    def outputbox(self, msg):
+        datetimeobj = datetime.now()
+        ts_str = datetimeobj.strftime("[%H:%M:%S]   ")
+        self.box_terminal.append(ts_str + msg)
+
 
 class PlotCanvas(FigureCanvas):
     """

@@ -2,8 +2,10 @@ import math
 import pandas as pd
 
 
-class UpdateHandler:
+class BDUpdateHandler:
     """
+    Contains update GUI elements for the BladeDesign Tab.
+
     A very quick and dirty approach... Alternatively, creating a custom DoubleSlider class would be way cleaner.
     TODO: fix this when bored.
     """

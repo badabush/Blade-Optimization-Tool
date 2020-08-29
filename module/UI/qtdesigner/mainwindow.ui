@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1110</width>
-    <height>769</height>
+    <width>1101</width>
+    <height>1033</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_bladedesign">
      <attribute name="title">
@@ -626,6 +626,75 @@
      <attribute name="title">
       <string>Tab 2</string>
      </attribute>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>241</width>
+        <height>151</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Basic Commands</string>
+      </property>
+      <widget class="QWidget" name="gridLayoutWidget_2">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>20</y>
+         <width>241</width>
+         <height>131</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridOptimizer">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="btn_testconnect">
+          <property name="text">
+           <string>test Connection to Cluster</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QPushButton" name="btn_topcmd">
+          <property name="text">
+           <string>Display CPU usage</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QPushButton" name="pushButton_3">
+          <property name="text">
+           <string>PushButton</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>750</y>
+      <width>1071</width>
+      <height>171</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Output:</string>
+    </property>
+    <widget class="QTextBrowser" name="box_terminal">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>20</y>
+       <width>1071</width>
+       <height>141</height>
+      </rect>
+     </property>
     </widget>
    </widget>
   </widget>
@@ -634,7 +703,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1110</width>
+     <width>1101</width>
      <height>22</height>
     </rect>
    </property>
@@ -762,7 +831,7 @@
   </action>
   <action name="actionCredential">
    <property name="text">
-    <string>connect to putty</string>
+    <string>create config</string>
    </property>
   </action>
  </widget>
