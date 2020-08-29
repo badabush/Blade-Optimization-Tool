@@ -1,5 +1,6 @@
 /.idea
 docs/output/
+module/optimizer/ssh_login/ssh_config.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,git
