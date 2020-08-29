@@ -1,6 +1,6 @@
 /.idea
 docs/output/
-module/optimizer/ssh_login/ssh_config.json
+module/optimizer/ssh_login/ssh_config.ini
 module/optimizer/numeca_api
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,git
