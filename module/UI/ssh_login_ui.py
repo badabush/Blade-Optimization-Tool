@@ -12,8 +12,8 @@ class SSHLoginUi(QtWidgets.QMainWindow):
         self.setTabOrder(self.input_pwd, self.comboBox)
         self.setTabOrder(self.comboBox, self.btn_create)
         self.setTabOrder(self.btn_create, self.btn_cls)
-        self.btn_create.clicked.ssh_connect(self.create_config)
-        self.btn_cls.clicked.ssh_connect(self.close_window)
+        self.btn_create.clicked.connect(self.create_config)
+        self.btn_cls.clicked.connect(self.close_window)
         # Connect Buttons to updating plot.
 
 
