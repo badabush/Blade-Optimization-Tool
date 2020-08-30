@@ -60,6 +60,7 @@ class BladeGen:
         if self.frontend == 'user':
             ImportExport()._export(xy_blade)
             self.debug_plot(self.xy_camber, xy_blade)
+
         elif self.frontend == 'UI':
             self.xy_blade = xy_blade
             self._return()

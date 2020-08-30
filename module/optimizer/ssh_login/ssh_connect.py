@@ -10,30 +10,30 @@ from jumpssh import SSHSession
 
 
 class Ssh_Util:
-    "Class to connect to remote server"
+    """
+    Class to connect to SSH.
+    """
 
     def __init__(self):
+        self.failure = 0
         self.read_config()
+        try:
+            self.conf_ssh = self.config["ssh"]
 
-        self.conf_ssh = self.conf_file["ssh"]
-        self.ssh_output = None
-        self.ssh_error = None
-        self.client = None
-
-        self.host = self.conf_ssh["host"]
-        self.username = self.conf_ssh["user"]
-        self.password = self.conf_ssh["passwd"]
-        # self.username = username
-        # self.password = passwd
-        self.timeout = float(self.conf_ssh["timeout"])
-        self.commands = ["ssh -X node05"]
-        self.node = self.conf_ssh["node"]
-        # self.pkey = conf_file.PKEY
-        self.port = int(self.conf_ssh["port"])
-        # self.uploadremotefilepath = conf_file.UPLOADREMOTEFILEPATH
-        # self.uploadlocalfilepath = conf_file.UPLOADLOCALFILEPATH
-        # self.downloadremotefilepath = conf_file.DOWNLOADREMOTEFILEPATH
-        # self.downloadlocalfilepath = conf_file.DOWNLOADLOCALFILEPATH
+            self.host = self.conf_ssh["host"]
+            self.username = self.conf_ssh["user"]
+            self.password = self.conf_ssh["passwd"]
+            self.key = self.conf_ssh["key"]
+            self.timeout = float(self.conf_ssh["timeout"])
+            self.commands = ["ssh -X node05"]
+            self.node = self.conf_ssh["node"]
+            self.port = int(self.conf_ssh["port"])
+            # self.ssh_output = None
+            # self.ssh_error = None
+            # self.client = None
+        except AttributeError as e:
+            self.failure = 1
+            return
 
     @staticmethod
     def generate_config(username, password, node):
@@ -46,8 +46,8 @@ class Ssh_Util:
 
         config["ssh"] = {"host": "130.149.110.81",
                          "user": username,
-                         "passwd": ciphered_text,
-                         "key": key,
+                         "passwd": ciphered_text.decode('utf-8'),
+                         "key": key.decode('utf-8'),
                          "node": node,
                          "timeout": "10.0",
                          "port": "22"}
@@ -56,24 +56,37 @@ class Ssh_Util:
             config.write(configfile)
 
     def read_config(self):
+        """
+        Reads in the config.ini file containing login, host and node number information.
+        """
+
         self.path = Path(os.getcwd() + "/optimizer/ssh_login/")
 
         # read config
-        config = configparser.ConfigParser()
-        self.conf_file = config.read(self.path / "ssh_config.ini")
+        self.config = configparser.ConfigParser()
+        try:
+            self.config.read(self.path / "ssh_config.ini")
+        except ImportError as e:
+            self.failure = 1
+            print(e)
 
+    def ssh_connect(self):
+        """
+        Tries to connect to the specific node on the ssh with login information.
+        """
 
-    def connect(self):
-        cipher_suite = Fernet(self.conf_ssh["key"])
+        try:
+            cipher_suite = Fernet(self.key)
+            self.gateway_session = SSHSession(host=self.host, username=self.username,
+                                         password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8')).open()
+            self.remote_session = self.gateway_session.get_remote_session(self.node,
+                                                                password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode(
+                                                                    'utf-8'), timeout=5)
+            return 0
+        except ValueError as e:
+            return 1
 
-        gateway_session = SSHSession(host=self.host, username=self.username,
-                                     password=(cipher_suite.decrypt(self.password)).decode('utf-8')).open()
-        remote_session = gateway_session.get_remote_session('node05',
-                                                            password=(cipher_suite.decrypt(self.password)).decode(
-                                                                'utf-8'), timeout=5)
-        top_usage = remote_session.get_cmd_output('top -b -n 1')  # TODO: check if CPU is clear for calc
-        print(top_usage)
-
+        # pure paramiko approach
         # gateway_session = paramiko.SSHClient()
         # gateway_session.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         # hostname = 'localhost'
@@ -87,10 +100,20 @@ class Ssh_Util:
         #     timeout=self.timeout)
 
 
-# ---USAGE EXAMPLES
-if __name__ == '__main__':
-    print("Start of %s" % __file__)
+    def send_cmd(self, cmd):
+        """
+        Sends command to the ssh-pty and return the stdout.
+        """
+        try:
+            stdout = self.remote_session.get_cmd_output(cmd)
+            return stdout
 
-    # Initialize the ssh object
-    ssh_obj = Ssh_Util()
-    ssh_obj.connect()
+        except AttributeError:
+            return None
+
+# if __name__ == '__main__':
+#     print("Start of %s" % __file__)
+#
+#     # Initialize the ssh object
+#     ssh_obj = Ssh_Util()
+#     ssh_obj.ssh_connect()

@@ -7,12 +7,17 @@ class SSHLoginUi(QtWidgets.QMainWindow):
     def __init__(self):
         super(SSHLoginUi, self).__init__()
         uic.loadUi('UI/qtdesigner/loginwindow.ui', self)
+        # chronological tabbing order
+        self.setTabOrder(self.input_usr, self.input_pwd)
+        self.setTabOrder(self.input_pwd, self.comboBox)
+        self.setTabOrder(self.comboBox, self.btn_create)
+        self.setTabOrder(self.btn_create, self.btn_cls)
+        self.btn_create.clicked.connect(self.create_config)
         self.btn_cls.clicked.connect(self.close_window)
-        self.btn_login.clicked.connect(self.connect)
         # Connect Buttons to updating plot.
-        # self.p1_down.clicked.connect(self.update_p1_down)
 
-    def connect(self):
+
+    def create_config(self):
         username = self.input_usr.text()
         password = self.input_pwd.text()
 
@@ -20,6 +25,7 @@ class SSHLoginUi(QtWidgets.QMainWindow):
             return
 
         Ssh_Util.generate_config(username, password, 'node05')
+        self.close()
         # ssh_obj = ssh_connect.Ssh_Util(username, password)
         # ssh_obj.connect()
 

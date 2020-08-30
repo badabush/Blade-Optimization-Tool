@@ -2,7 +2,7 @@ from PyQt5.QtWidgets import QSizePolicy, QFileDialog
 import numpy as np
 
 from module.blade.bladetools import ImportExport, normalize
-from module.UI.update_handle import UpdateHandler
+from module.UI.bladedesigner_handle import BDUpdateHandler
 from pathlib import Path
 import os
 import csv
