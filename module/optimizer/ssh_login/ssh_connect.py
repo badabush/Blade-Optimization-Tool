@@ -16,11 +16,12 @@ class Ssh_Util:
         self.failure = 0
         self.read_config()
         try:
-            self.conf_ssh = self.conf_file["ssh"]
+            self.conf_ssh = self.config["ssh"]
 
             self.host = self.conf_ssh["host"]
             self.username = self.conf_ssh["user"]
             self.password = self.conf_ssh["passwd"]
+            self.key = self.conf_ssh["key"]
             self.timeout = float(self.conf_ssh["timeout"])
             self.commands = ["ssh -X node05"]
             self.node = self.conf_ssh["node"]
@@ -43,8 +44,8 @@ class Ssh_Util:
 
         config["ssh"] = {"host": "130.149.110.81",
                          "user": username,
-                         "passwd": ciphered_text,
-                         "key": key,
+                         "passwd": ciphered_text.decode('utf-8'),
+                         "key": key.decode('utf-8'),
                          "node": node,
                          "timeout": "10.0",
                          "port": "22"}
@@ -56,25 +57,24 @@ class Ssh_Util:
         self.path = Path(os.getcwd() + "/optimizer/ssh_login/")
 
         # read config
-        config = configparser.ConfigParser()
+        self.config = configparser.ConfigParser()
         try:
-            conf_file = config.read(self.path / "ssh_config.ini")
-            if not conf_file:
-                return 0
-            else:
-                self.conf_file = config.read(self.path / "ssh_config.ini")
+            self.config.read(self.path / "ssh_config.ini")
         except ImportError as e:
             self.failure = 1
             print(e)
 
-    def connect(self):
-        cipher_suite = Fernet(self.conf_ssh["key"])
-
-        self.gateway_session = SSHSession(host=self.host, username=self.username,
-                                     password=(cipher_suite.decrypt(self.password)).decode('utf-8')).open()
-        self.remote_session = self.gateway_session.get_remote_session('node05',
-                                                            password=(cipher_suite.decrypt(self.password)).decode(
-                                                                'utf-8'), timeout=5)
+    def ssh_connect(self):
+        try:
+            cipher_suite = Fernet(self.key)
+            self.gateway_session = SSHSession(host=self.host, username=self.username,
+                                         password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8')).open()
+            self.remote_session = self.gateway_session.get_remote_session(self.node,
+                                                                password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode(
+                                                                    'utf-8'), timeout=5)
+            return 0
+        except ValueError as e:
+            return 1
 
         # pure paramiko approach
         # gateway_session = paramiko.SSHClient()
@@ -100,4 +100,4 @@ if __name__ == '__main__':
 
     # Initialize the ssh object
     ssh_obj = Ssh_Util()
-    ssh_obj.connect()
+    ssh_obj.ssh_connect()

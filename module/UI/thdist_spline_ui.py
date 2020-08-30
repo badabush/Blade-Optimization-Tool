@@ -20,7 +20,7 @@ class ThdistSplineUi(QtWidgets.QMainWindow):
 
         self.ds = ds
         self.main_value = main_value
-        self.btn_close.clicked.connect(self.close_window)
+        self.btn_close.clicked.create_config(self.close_window)
         self.m = PlotCanvas(self, width=5, height=4)
         toolbar = NavigationToolbar(self.m, self)
         centralwidget = self.fig_widget
@@ -41,22 +41,22 @@ class ThdistSplineUi(QtWidgets.QMainWindow):
         self.update_plot()
 
         # Connect Buttons to updating plot.
-        self.p1_down.clicked.connect(self.update_p1_down)
-        self.p1_up.clicked.connect(self.update_p1_up)
-        self.p1_left.clicked.connect(self.update_p1_left)
-        self.p1_right.clicked.connect(self.update_p1_right)
+        self.p1_down.clicked.create_config(self.update_p1_down)
+        self.p1_up.clicked.create_config(self.update_p1_up)
+        self.p1_left.clicked.create_config(self.update_p1_left)
+        self.p1_right.clicked.create_config(self.update_p1_right)
 
-        self.p2_left.clicked.connect(self.update_p2_left)
-        self.p2_right.clicked.connect(self.update_p2_right)
+        self.p2_left.clicked.create_config(self.update_p2_left)
+        self.p2_right.clicked.create_config(self.update_p2_right)
 
-        self.p3_down.clicked.connect(self.update_p3_down)
-        self.p3_up.clicked.connect(self.update_p3_up)
-        self.p3_left.clicked.connect(self.update_p3_left)
-        self.p3_right.clicked.connect(self.update_p3_right)
+        self.p3_down.clicked.create_config(self.update_p3_down)
+        self.p3_up.clicked.create_config(self.update_p3_up)
+        self.p3_left.clicked.create_config(self.update_p3_left)
+        self.p3_right.clicked.create_config(self.update_p3_right)
 
         # Connect buttons for saving and reset
-        self.btn_save.clicked.connect(self._return)
-        self.btn_reset.clicked.connect(self.reset_pts)
+        self.btn_save.clicked.create_config(self._return)
+        self.btn_reset.clicked.create_config(self.reset_pts)
 
     def get_spline_pts(self):
         """

@@ -34,13 +34,13 @@ class AnnulusUi(QtWidgets.QMainWindow):
         self.set_restraints(self.restraints['r'], self.label_r, self.slider_r, self.scale)
 
         # link label and slider
-        self.label_r.editingFinished.connect(self.update_box_r)
-        self.slider_r.valueChanged[int].connect(self.update_r)
-        self.label_nblades.editingFinished.connect(self.update_box_nblades)
-        self.slider_nblades.valueChanged[int].connect(self.update_nblades)
+        self.label_r.editingFinished.create_config(self.update_box_r)
+        self.slider_r.valueChanged[int].create_config(self.update_r)
+        self.label_nblades.editingFinished.create_config(self.update_box_nblades)
+        self.slider_nblades.valueChanged[int].create_config(self.update_nblades)
 
-        self.btn_update.clicked.connect(self.update_plot)
-        self.btn_close.clicked.connect(self.close_window)
+        self.btn_update.clicked.create_config(self.update_plot)
+        self.btn_close.clicked.create_config(self.close_window)
 
         # TODO: seperating between single and tandem and the blade generation is obsolete (blade is a line in z-view),
         #  but might be useful if a 'z'-shape is required in the future
