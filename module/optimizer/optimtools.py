@@ -1,6 +1,10 @@
 import pandas as pd
-from io import StringIO as S
 def read_top_usage(top_usage):
+    """
+    Cleans up the stdout from the command top. Does the formatting into lines, dropping header,
+    packing into a pdDataFrame, sorting cpu (descending) and dropping some columns w/ unneccessary information.
+    """
+
     ss = top_usage.split('\r\n')
     msg = []
     for i in range(6, len(ss)):
@@ -15,3 +19,5 @@ def read_top_usage(top_usage):
     # drop some columns
     df.drop(columns=["PR", "NI", "VIRT", "RES", "SHR", "S"], inplace=True)
     return df
+
+

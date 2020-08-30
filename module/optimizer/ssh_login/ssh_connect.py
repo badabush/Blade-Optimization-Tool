@@ -10,7 +10,9 @@ from jumpssh import SSHSession
 
 
 class Ssh_Util:
-    "Class to connect to remote server"
+    """
+    Class to connect to SSH.
+    """
 
     def __init__(self):
         self.failure = 0
@@ -54,6 +56,10 @@ class Ssh_Util:
             config.write(configfile)
 
     def read_config(self):
+        """
+        Reads in the config.ini file containing login, host and node number information.
+        """
+
         self.path = Path(os.getcwd() + "/optimizer/ssh_login/")
 
         # read config
@@ -65,6 +71,10 @@ class Ssh_Util:
             print(e)
 
     def ssh_connect(self):
+        """
+        Tries to connect to the specific node on the ssh with login information.
+        """
+
         try:
             cipher_suite = Fernet(self.key)
             self.gateway_session = SSHSession(host=self.host, username=self.username,
@@ -89,11 +99,17 @@ class Ssh_Util:
         #     src_addr=(hostname, self.port),
         #     timeout=self.timeout)
 
-    # 'top -b -n 1'
-    def send_cmd(self, cmd):
-        stdout = self.remote_session.get_cmd_output(cmd)  # TODO: check if CPU is clear for calc
-        return stdout
 
+    def send_cmd(self, cmd):
+        """
+        Sends command to the ssh-pty and return the stdout.
+        """
+        try:
+            stdout = self.remote_session.get_cmd_output(cmd)
+            return stdout
+
+        except AttributeError:
+            return None
 
 # if __name__ == '__main__':
 #     print("Start of %s" % __file__)

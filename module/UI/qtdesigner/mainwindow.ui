@@ -663,9 +663,9 @@
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QPushButton" name="pushButton_3">
+         <widget class="QPushButton" name="btn_quota">
           <property name="text">
-           <string>PushButton</string>
+           <string>quota</string>
           </property>
          </widget>
         </item>
@@ -704,7 +704,7 @@
      <x>0</x>
      <y>0</y>
      <width>1101</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuBlade_generator">
