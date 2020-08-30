@@ -95,9 +95,9 @@ class Ssh_Util:
         return stdout
 
 
-if __name__ == '__main__':
-    print("Start of %s" % __file__)
-
-    # Initialize the ssh object
-    ssh_obj = Ssh_Util()
-    ssh_obj.ssh_connect()
+# if __name__ == '__main__':
+#     print("Start of %s" % __file__)
+#
+#     # Initialize the ssh object
+#     ssh_obj = Ssh_Util()
+#     ssh_obj.ssh_connect()

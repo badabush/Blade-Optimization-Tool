@@ -12,4 +12,6 @@ def read_top_usage(top_usage):
     df['%MEM'] = df['%MEM'].astype('float')
     df.sort_values(by=['%CPU'], ascending=False, inplace=True)
     df.reset_index(drop=True, inplace=True)
+    # drop some columns
+    df.drop(columns=["PR", "NI", "VIRT", "RES", "SHR", "S"], inplace=True)
     return df

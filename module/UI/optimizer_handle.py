@@ -2,6 +2,9 @@ import pandas as pd
 
 from module.optimizer.ssh_login import ssh_connect
 from module.optimizer.optimtools import read_top_usage
+from module.UI.pandasviewer import pandasModel
+from PyQt5.QtWidgets import QTableView
+from PyQt5 import QtCore
 
 
 class OptimHandler:
@@ -29,17 +32,19 @@ class OptimHandler:
             self.outputbox("Established Connection successfully.")
 
     def display_top(self):
-        try:
-            if not self.sshobj:
-                self.ssh_connect()
-        except AttributeError as e:
+
+        if not hasattr(self, 'sshobj'):
             self.ssh_connect()
+        try:
             self.outputbox("Connecting...")
             stdout = self.sshobj.send_cmd("top -b -n 1")
             top_usage = read_top_usage(stdout)
-            # pandasframe cannot be displayed without further implementation.
-            self.outputbox(stdout)
-        finally:
-            self.outputbox("Error while sending 'top -b -n 1' command.")
 
+            self.pdwindow = pandasModel(top_usage)
+            self.view = QTableView()
+            self.view.setModel(self.pdwindow)
+            self.view.resize(800, 600)
+            self.view.show()
+        except ValueError:
+            self.outputbox("Error displaying pdTable.")
 
