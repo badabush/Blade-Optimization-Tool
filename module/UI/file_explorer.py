@@ -1,5 +1,7 @@
 from PyQt5.QtWidgets import QSizePolicy, QFileDialog
+from PyQt5 import QtGui
 import pandas as pd
+from os.path import expanduser
 
 from module.blade.bladetools import ImportExport, normalize
 from module.blade.bladegen import BladeGen
@@ -9,6 +11,16 @@ class FileExplorer:
     """
     Class for Importing existing blade and exporting blade for the GUI.
     """
+
+    def openFileNameDialogNumeca(self):
+        """
+        Opens a File Explorer to select Numeca files.
+        :return: None
+        """
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        input_dir = QFileDialog.getExistingDirectory(self, "Open a folder", expanduser("~"))
+        self.box_pathtodir.setText(input_dir)
 
     def openFileNameDialog(self):
         """

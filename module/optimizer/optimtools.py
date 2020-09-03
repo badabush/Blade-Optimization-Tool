@@ -1,4 +1,6 @@
 import pandas as pd
+
+
 def read_top_usage(top_usage):
     """
     Cleans up the stdout from the command top. Does the formatting into lines, dropping header,
@@ -21,3 +23,5 @@ def read_top_usage(top_usage):
     return df
 
 
+def run_script(ssh, paths):
+    pass

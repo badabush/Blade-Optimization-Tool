@@ -1,6 +1,5 @@
 import paramiko
 import os, sys
-import json
 from pathlib import Path
 from cryptography.fernet import Fernet
 import configparser
