@@ -80,7 +80,7 @@ class Ssh_Util:
                                          password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8')).open()
             self.remote_session = self.gateway_session.get_remote_session(self.node,
                                                                 password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode(
-                                                                    'utf-8'), timeout=5)
+                                                                    'utf-8'), timeout=5, )
             return 0
         except ValueError as e:
             return 1

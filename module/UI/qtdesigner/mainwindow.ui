@@ -731,7 +731,7 @@
        </rect>
       </property>
       <property name="title">
-       <string>GroupBox</string>
+       <string>FineTurbo</string>
       </property>
       <widget class="QWidget" name="gridLayoutWidget_5">
        <property name="geometry">
@@ -758,6 +758,20 @@
         </item>
        </layout>
       </widget>
+     </widget>
+     <widget class="QLabel" name="label_13">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>20</y>
+        <width>211</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Make sure the folder lies on the cluster and
+is accessed via samba</string>
+      </property>
      </widget>
     </widget>
    </widget>

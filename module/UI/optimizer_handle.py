@@ -74,7 +74,9 @@ class OptimHandler:
 
         try:
             self.outputbox("Passing Command.")
-            stdout = self.sshobj.send_cmd("quota")
+            stdout = self.sshobj.send_cmd('export DISPLAY="localhost:16.0"')
+            self.outputbox(stdout)
+            stdout = self.sshobj.send_cmd("echo $DISPLAY")
             self.outputbox(stdout)
         except AttributeError:
             self.outputbox("Connecting...")
@@ -93,7 +95,6 @@ class OptimHandler:
         except jumpssh.exception.RunCmdError:
             self.outputbox("Error closing Session.")
 
-
     def run_script(self):
         """
         Open file explorer to set project path.
@@ -105,6 +106,12 @@ class OptimHandler:
 
         projectpath = self.box_pathtodir.text()
         self.generate_script(projectpath)
+        if projectpath[0] == "/" and projectpath[1] == "/":
+            projectpath = projectpath[1:]
+        projectpath = Path(projectpath)
+        projectpath = projectpath.parts
+        usr_folder = projectpath[-2]
+        proj_folder = projectpath[-1]
 
         # run fine131 with script
         if not hasattr(self, 'sshobj'):
@@ -114,10 +121,11 @@ class OptimHandler:
             return
         try:
             self.outputbox("opening FineTurbo..")
-            stdout = self.sshobj.send_cmd("cd "+ self.scriptpath)
-            stdout = self.sshobj.send_cmd("/opt/numeca/bin/fine131 -script " + self.scriptname + "-batch")
+            stdout = self.sshobj.send_cmd('export DISPLAY="localhost:16.0"')
+            stdout = self.sshobj.send_cmd("/opt/numeca/bin/fine131 -script " + "/home/HLR/" + usr_folder + "/" +
+                                          proj_folder + "/py_script/" + self.scriptname + "-batch -print")
             self.outputbox(stdout)
-        except (jumpssh.exception.RunCmdError,jumpssh.exception.ConnectionError) as e:
+        except (jumpssh.exception.RunCmdError, jumpssh.exception.ConnectionError) as e:
             self.outputbox(e)
 
     def generate_script(self, dirpath):
@@ -125,8 +133,8 @@ class OptimHandler:
         Generate the script for running fine turbo.
         """
         self.scriptname = "script_run.py"
-        file = open(dirpath + "/py_script/"+self.scriptname, "w")
-        igg_name = "Erstes_Netz_Tandem.igg"
+        file = open(dirpath + "/py_script/" + self.scriptname, "w")
+        iec_name = "parent_V3/parent_V3.iec"
         # clean path for usage on the cluster
         if dirpath[0] == "/" and dirpath[1] == "/":
             dirpath = dirpath[1:]
@@ -136,9 +144,24 @@ class OptimHandler:
         proj_folder = dirpath[-1]
         self.scriptpath = "/home/HLR/" + usr_folder + "/" + proj_folder + "/py_script/"
         self.unixprojpath = "/home/HLR/" + usr_folder + "/" + proj_folder
-        file.write("open_igg_project(" + self.scriptpath + igg_name + ")")
+        task_idx = str(0)
+        no_iter = str(500)
+        file.write('script_version(2.2)\n' +
+                   'FT.open_project("/home/HLR/' + usr_folder + '/' + proj_folder + '/' + iec_name + '")\n' +
+                   'FT.set_active_computations([1])\n' +
+                   'FT.link_mesh_file("/home/HLR/' + usr_folder + '/' + proj_folder + '/Erstes_Netz_Tandem.igg",0)\n' +
+                   'FT.set_nb_iter_max(' + no_iter + ')\n' +
+                   'FT.task(' + task_idx + ').remove()\n' +
+                   'FT.new_task()\n' +
+                   'FT.task(' + task_idx + ').new_subtask()\n' +
+                   'FT.task(' + task_idx + ').subtask(0).set_run_file("/home/HLR/' + usr_folder + '/' + proj_folder + '/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.run")\n' +
+                   # 'FT.task(' + task_idx + ').start()\n' +
+                   'FT.task(' + task_idx + ').subtask(0).set_compiler(3)\n' +
+                   'FT.task(' + task_idx + ').start()'
+                   )
         file.close()
-        self.outputbox("Writing script file to /home/HLR/" + usr_folder + "/" + proj_folder + "/py_script/"+self.scriptname)
+        self.outputbox(
+            "Writing script file to /home/HLR/" + usr_folder + "/" + proj_folder + "/py_script/" + self.scriptname)
         # open_igg_project("/home/HLR/liang/Tandem_Opti/Erstes_Netz_Tandem.igg")
         # save_project("/home/HLR/liang/Tandem_Opti/Erstes_Netz_Tandem.igg")
         # FT.link_mesh_file("/home/HLR/liang/Tandem_Opti/Erstes_Netz_Tandem.igg", 0)
