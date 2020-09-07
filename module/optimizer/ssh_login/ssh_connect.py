@@ -4,6 +4,8 @@ import socket
 import logging
 import Xlib.support.connect as xlib_connect
 import Xlib
+import subprocess
+
 from pathlib import Path
 from cryptography.fernet import Fernet
 import configparser
@@ -93,6 +95,9 @@ class Ssh_Util:
         # local_x11_display = xlib_connect.get_display(os.environ['DISPLAY'])
         # local_x11_socket = xlib_connect.get_socket(*local_x11_display[:3])
         try:
+            #start xming
+            # XmingProc = subprocess.Popen("C:/Program Files (x86)/Xming/Xming.exe :0 -clipboard -multiwindow")
+
             ssh_client = paramiko.SSHClient()
             ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             cipher_suite = Fernet(self.key)
@@ -105,9 +110,7 @@ class Ssh_Util:
             self.remote_session = paramiko.SSHClient()
             self.remote_session.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.remote_session.connect(self.node, username=self.username, password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8'), sock=session)
-            return 0
-        except ValueError as e:
-            return 1
+
         # session.request_x11(single_connection=True)
         # session.exec_command('xterm')
         # x11_chan = transport.accept()
@@ -147,7 +150,9 @@ class Ssh_Util:
         #     dest_addr=(self.host, self.port),
         #     src_addr=(hostname, self.port),
         #     timeout=self.timeout)
-
+            return 0
+        except ValueError as e:
+            return 1
 
     def send_cmd(self, cmd):
         """

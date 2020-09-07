@@ -701,6 +701,13 @@
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Project directory:</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="2">
          <widget class="QPushButton" name="btn_projectpath">
           <property name="text">
@@ -711,10 +718,17 @@
         <item row="0" column="1">
          <widget class="QLineEdit" name="box_pathtodir"/>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="label_2">
+        <item row="1" column="0">
+         <widget class="QLabel" name="label_14">
           <property name="text">
-           <string>Project directory:</string>
+           <string>DISPLAY:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QLineEdit" name="box_DISPLAY">
+          <property name="text">
+           <string>localhost:16.0</string>
           </property>
          </widget>
         </item>
@@ -724,10 +738,10 @@
      <widget class="QGroupBox" name="groupBox_4">
       <property name="geometry">
        <rect>
-        <x>120</x>
-        <y>300</y>
+        <x>890</x>
+        <y>10</y>
         <width>171</width>
-        <height>111</height>
+        <height>91</height>
        </rect>
       </property>
       <property name="title">
@@ -739,7 +753,7 @@
          <x>0</x>
          <y>20</y>
          <width>160</width>
-         <height>80</height>
+         <height>61</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_4">
@@ -763,14 +777,28 @@
       <property name="geometry">
        <rect>
         <x>680</x>
-        <y>20</y>
-        <width>211</width>
-        <height>61</height>
+        <y>30</y>
+        <width>201</width>
+        <height>31</height>
        </rect>
       </property>
       <property name="text">
        <string>Make sure the folder lies on the cluster and
 is accessed via samba</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_15">
+      <property name="geometry">
+       <rect>
+        <x>680</x>
+        <y>70</y>
+        <width>201</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>fineTurbo requires a display to run.
+inside VNC enter: echo $DISPLAY</string>
       </property>
      </widget>
     </widget>

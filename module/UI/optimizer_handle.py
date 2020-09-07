@@ -103,7 +103,9 @@ class OptimHandler:
         if self.box_pathtodir.text() == "":
             self.outputbox("Set Path to Project Directory first!")
             return 0
-
+        # get display address
+        self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
+        # project path
         projectpath = self.box_pathtodir.text()
         self.generate_script(projectpath)
         if projectpath[0] == "/" and projectpath[1] == "/":
@@ -121,9 +123,8 @@ class OptimHandler:
             return
         try:
             self.outputbox("opening FineTurbo..")
-            # stdout = self.sshobj.send_cmd('export DISPLAY="localhost:16.0"')
-            stdout = self.sshobj.send_cmd("/opt/numeca/bin/fine131 -script " + "/home/HLR/" + usr_folder + "/" +
-                                          proj_folder + "/py_script/" + self.scriptname + "-batch -print")
+            stdout = self.sshobj.send_cmd(self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + usr_folder + "/" +
+                                          proj_folder + "/py_script/" + self.scriptname + " -batch -print")
             self.outputbox(stdout)
         except (jumpssh.exception.RunCmdError, jumpssh.exception.ConnectionError) as e:
             self.outputbox(e)
