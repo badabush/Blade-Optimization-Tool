@@ -116,12 +116,12 @@ class OptimHandler:
         # run fine131 with script
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
-        if self.sshobj.remote_session.is_active() == False:
+        if self.sshobj.transport.is_active() == False:
             self.outputbox("Could not find active session.")
             return
         try:
             self.outputbox("opening FineTurbo..")
-            stdout = self.sshobj.send_cmd('export DISPLAY="localhost:16.0"')
+            # stdout = self.sshobj.send_cmd('export DISPLAY="localhost:16.0"')
             stdout = self.sshobj.send_cmd("/opt/numeca/bin/fine131 -script " + "/home/HLR/" + usr_folder + "/" +
                                           proj_folder + "/py_script/" + self.scriptname + "-batch -print")
             self.outputbox(stdout)

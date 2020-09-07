@@ -7,7 +7,7 @@ def read_top_usage(top_usage):
     packing into a pdDataFrame, sorting cpu (descending) and dropping some columns w/ unneccessary information.
     """
 
-    ss = top_usage.split('\r\n')
+    ss = top_usage.split('\n')
     msg = []
     for i in range(6, len(ss)):
         line = ss[i].split()

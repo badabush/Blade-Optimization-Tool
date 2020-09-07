@@ -1,11 +1,14 @@
 import paramiko
-import os, sys
+import os, sys, select
+import socket
+import logging
+import Xlib.support.connect as xlib_connect
+import Xlib
 from pathlib import Path
 from cryptography.fernet import Fernet
 import configparser
+LOGGER = logging.getLogger(__name__)
 
-# install via pip install jumpssh
-from jumpssh import SSHSession
 
 
 class Ssh_Util:
@@ -74,24 +77,71 @@ class Ssh_Util:
         Tries to connect to the specific node on the ssh with login information.
         """
 
+        # try:
+        #     cipher_suite = Fernet(self.key)
+        #     self.gateway_session = SSHSession(host=self.host, username=self.username,
+        #                                  password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8')).open()
+        #     self.remote_session = self.gateway_session.get_remote_session(self.node,
+        #                                                         password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode(
+        #                                                             'utf-8'), timeout=5)
+        #     # self.remote_session.
+        #     return 0
+        # except ValueError as e:
+        #     return 1
+
+        # pure paramiko approach
+        # local_x11_display = xlib_connect.get_display(os.environ['DISPLAY'])
+        # local_x11_socket = xlib_connect.get_socket(*local_x11_display[:3])
         try:
+            ssh_client = paramiko.SSHClient()
+            ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             cipher_suite = Fernet(self.key)
-            self.gateway_session = SSHSession(host=self.host, username=self.username,
-                                         password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8')).open()
-            self.remote_session = self.gateway_session.get_remote_session(self.node,
-                                                                password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode(
-                                                                    'utf-8'), timeout=5, )
+            ssh_client.connect(hostname=self.host, username=self.username, password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8'),
+                                    timeout=self.timeout)
+            # transport = ssh_client.get_transport()
+            self.transport = ssh_client.get_transport()
+            session = self.transport.open_channel("direct-tcpip", (self.node, 22), (self.host, 22))
+
+            self.remote_session = paramiko.SSHClient()
+            self.remote_session.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            self.remote_session.connect(self.node, username=self.username, password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8'), sock=session)
             return 0
         except ValueError as e:
             return 1
+        # session.request_x11(single_connection=True)
+        # session.exec_command('xterm')
+        # x11_chan = transport.accept()
+        #
+        # session_fileno = session.fileno()
+        # x11_chan_fileno = x11_chan.fileno()
+        # local_x11_socket_fileno = local_x11_socket.fileno()
+        #
+        # poller = select.poll()
+        # poller.register(session_fileno, select.POLLIN)
+        # poller.register(x11_chan_fileno, select.POLLIN)
+        # poller.register(local_x11_socket, select.POLLIN)
+        # while not session.exit_status_ready():
+        #     poll = poller.poll()
+        #     if not poll:  # this should not happen, as we don't have a timeout.
+        #         break
+        #     for fd, event in poll:
+        #         if fd == session_fileno:
+        #             while session.recv_ready():
+        #                 sys.stdout.write(session.recv(4096))
+        #             while session.recv_stderr_ready():
+        #                 sys.stderr.write(session.recv_stderr(4096))
+        #         if fd == x11_chan_fileno:
+        #             local_x11_socket.sendall(x11_chan.recv(4096))
+        #         if fd == local_x11_socket_fileno:
+        #             x11_chan.send(local_x11_socket.recv(4096))
+        #
+        # print('Exit status:', session.recv_exit_status())
+        # while session.recv_ready():
+        #     sys.stdout.write(session.recv(4096))
+        # while session.recv_stderr_ready():
+        #     sys.stdout.write(session.recv_stderr(4096))
+        # session.close()
 
-        # pure paramiko approach
-        # gateway_session = paramiko.SSHClient()
-        # gateway_session.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        # hostname = 'localhost'
-        # gateway_session.connect(hostname=self.host, username=self.username, password=self.password,
-        #                         timeout=self.timeout)
-        # transport = gateway_session.get_transport()
         # ssh_channel = transport.open_channel(
         #     kind="direct-tcpip",
         #     dest_addr=(self.host, self.port),
@@ -104,8 +154,8 @@ class Ssh_Util:
         Sends command to the ssh-pty and return the stdout.
         """
         try:
-            stdout = self.remote_session.get_cmd_output(cmd)
-            return stdout
+            stdin, stdout, stderr = self.remote_session.exec_command(cmd)
+            return stdout.read().decode("utf-8")
 
         except AttributeError:
             return None
