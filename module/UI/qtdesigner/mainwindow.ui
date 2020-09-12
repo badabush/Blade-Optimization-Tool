@@ -801,6 +801,38 @@ is accessed via samba</string>
 inside VNC enter: echo $DISPLAY</string>
       </property>
      </widget>
+     <widget class="QToolButton" name="btn_kill">
+      <property name="geometry">
+       <rect>
+        <x>920</x>
+        <y>100</y>
+        <width>111</width>
+        <height>61</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>KILL</string>
+      </property>
+      <property name="popupMode">
+       <enum>QToolButton::DelayedPopup</enum>
+      </property>
+      <property name="toolButtonStyle">
+       <enum>Qt::ToolButtonTextBesideIcon</enum>
+      </property>
+      <property name="arrowType">
+       <enum>Qt::NoArrow</enum>
+      </property>
+     </widget>
+     <widget class="QWidget" name="optimfig_widget" native="true">
+      <property name="geometry">
+       <rect>
+        <x>320</x>
+        <y>150</y>
+        <width>581</width>
+        <height>551</height>
+       </rect>
+      </property>
+     </widget>
     </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox_2">

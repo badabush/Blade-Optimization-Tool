@@ -1,5 +1,6 @@
 import pandas as pd
-
+import xml.etree.ElementTree as ET
+from pathlib import Path
 
 def read_top_usage(top_usage):
     """
@@ -22,6 +23,3 @@ def read_top_usage(top_usage):
     df.drop(columns=["PR", "NI", "VIRT", "RES", "SHR", "S"], inplace=True)
     return df
 
-
-def run_script(ssh, paths):
-    pass

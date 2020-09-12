@@ -1,12 +1,23 @@
 from pathlib import Path
+import jumpssh
+import time
+import threading
+import os
+
+from PyQt5.QtWidgets import QSizePolicy
+from pyqtgraph import PlotWidget, plot
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+from matplotlib.figure import Figure
+import matplotlib.animation as animation
+from pyface.qt import QtGui
+from PyQt5.QtWidgets import QTableView
 
 from module.optimizer.ssh_login import ssh_connect
 from module.optimizer.optimtools import read_top_usage
 from module.UI.pandasviewer import pandasModel
-from PyQt5.QtWidgets import QTableView
-from module.UI.file_explorer import FileExplorer
-
-import jumpssh
+from module.optimizer.xml_parser import parse_res
+from module.optimizer.generate_script import gen_script
 
 
 class OptimHandler:
@@ -24,6 +35,17 @@ class OptimHandler:
         self.btn_close_connection.clicked.connect(self.close_connection)
         self.btn_projectpath.clicked.connect(self.openFileNameDialogNumeca)
         self.btn_run.clicked.connect(self.run_script)
+        self.btn_kill.clicked.connect(self.kill_loop)
+        self.box_terminal.moveCursor(QtGui.QTextCursor.End)
+
+        # init plot
+        self.optifig = OptimPlotCanvas(self, width=8, height=10)
+        toolbar = NavigationToolbar(self.optifig, self)
+        centralwidget = self.optimfig_widget
+        vbl = QtGui.QVBoxLayout(centralwidget)
+        vbl.addWidget(toolbar)
+        vbl.addWidget(self.optifig)
+        # self.setCentralWidget(self.graphWidget)
 
     def ssh_connect(self):
         """
@@ -107,7 +129,7 @@ class OptimHandler:
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
         # project path
         projectpath = self.box_pathtodir.text()
-        self.generate_script(projectpath)
+        self.scriptname = gen_script(projectpath)
         if projectpath[0] == "/" and projectpath[1] == "/":
             projectpath = projectpath[1:]
         projectpath = Path(projectpath)
@@ -123,51 +145,82 @@ class OptimHandler:
             return
         try:
             self.outputbox("opening FineTurbo..")
-            stdout = self.sshobj.send_cmd(self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + usr_folder + "/" +
-                                          proj_folder + "/py_script/" + self.scriptname + " -batch -print")
+            # sending command with display | fine version location | script + location | batch | print
+            stdout = self.sshobj.send_cmd(
+                self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + usr_folder + "/" +
+                proj_folder + "/py_script/" + self.scriptname + " -batch -print")
             self.outputbox(stdout)
+
+            # start thread to read xmf
+            t = threading.Thread(name='xmf_reader', target=self.read_xmf)
+            t.start()
+
         except (jumpssh.exception.RunCmdError, jumpssh.exception.ConnectionError) as e:
             self.outputbox(e)
 
-    def generate_script(self, dirpath):
-        """
-        Generate the script for running fine turbo.
-        """
-        self.scriptname = "script_run.py"
-        file = open(dirpath + "/py_script/" + self.scriptname, "w")
-        iec_name = "parent_V3/parent_V3.iec"
-        # clean path for usage on the cluster
-        if dirpath[0] == "/" and dirpath[1] == "/":
-            dirpath = dirpath[1:]
-        dirpath = Path(dirpath)
-        dirpath = dirpath.parts
-        usr_folder = dirpath[-2]
-        proj_folder = dirpath[-1]
-        self.scriptpath = "/home/HLR/" + usr_folder + "/" + proj_folder + "/py_script/"
-        self.unixprojpath = "/home/HLR/" + usr_folder + "/" + proj_folder
-        task_idx = str(0)
-        no_iter = str(500)
-        file.write('script_version(2.2)\n' +
-                   'FT.open_project("/home/HLR/' + usr_folder + '/' + proj_folder + '/' + iec_name + '")\n' +
-                   'FT.set_active_computations([1])\n' +
-                   'FT.link_mesh_file("/home/HLR/' + usr_folder + '/' + proj_folder + '/Erstes_Netz_Tandem.igg",0)\n' +
-                   'FT.set_nb_iter_max(' + no_iter + ')\n' +
-                   'FT.task(' + task_idx + ').remove()\n' +
-                   'FT.new_task()\n' +
-                   'FT.task(' + task_idx + ').new_subtask()\n' +
-                   'FT.task(' + task_idx + ').subtask(0).set_run_file("/home/HLR/' + usr_folder + '/' + proj_folder + '/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.run")\n' +
-                   # 'FT.task(' + task_idx + ').start()\n' +
-                   'FT.task(' + task_idx + ').subtask(0).set_compiler(3)\n' +
-                   'FT.task(' + task_idx + ').start()'
-                   )
-        file.close()
-        self.outputbox(
-            "Writing script file to /home/HLR/" + usr_folder + "/" + proj_folder + "/py_script/" + self.scriptname)
-        # open_igg_project("/home/HLR/liang/Tandem_Opti/Erstes_Netz_Tandem.igg")
-        # save_project("/home/HLR/liang/Tandem_Opti/Erstes_Netz_Tandem.igg")
-        # FT.link_mesh_file("/home/HLR/liang/Tandem_Opti/Erstes_Netz_Tandem.igg", 0)
-        # FT.task(0).start()
-        # FT.task(0).subtask(0).set_condition(0)
-        # FT.task(0).start()
-        # FT.task(0).subtask(0).set_condition(1)
-        # FT.save_selected_computations()
+    def read_xmf(self):
+        self.outputbox("starting thread for reading xmf")
+        self.kill = False
+        self.idx = 0
+        res_file = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.res"
+        # delete old .res file
+        os.remove(res_file)
+        timeout = 0
+        # check for file .res existance, timeout 30s
+        while timeout <= 30:
+            if os.path.exists(res_file):
+                break
+            self.outputbox("Waiting for Process, timeout (" + str(timeout) + "/30)")
+            timeout += 1
+            time.sleep(1)
+        # time.sleep(10)
+        while (self.kill == False):
+            # Copying the res file is neccessary because otherwise it will interrupt the taskmanager process from writing.
+            # copy res file
+            res_copy = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/copyres.res"
+            os.popen(
+                'Y: & cd Tandem_Opti\parent_V3\parent_V3_brustinzidenz\ & copy parent_V3_brustinzidenz.res copyres.res')
+
+            try:
+                ds, self.idx = parse_res(res_copy, int(self.idx))
+                if not self.idx == 0:
+                    self.optifig.animate(ds)
+                    self.outputbox("idx: " + str(self.idx))
+            except TypeError as e:
+                print(e)
+            time.sleep(1)
+
+    def kill_loop(self):
+        self.kill = True
+
+
+class OptimPlotCanvas(FigureCanvas):
+    """
+    All the plotting commands are organized here. At GUI start, an empty empty figure is generated. On Update,
+    BladeGen will be called with the user parameter and the plot will be updated.
+    """
+
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        FigureCanvas.__init__(self, fig)
+        self.setParent(parent)
+        FigureCanvas.setSizePolicy(self,
+                                   QSizePolicy.Expanding,
+                                   QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+        self.ax = self.figure.add_subplot(111)
+        self.ax.grid()
+        self.xlim = (0, 0)
+        self.ylim = (0, 0)
+        ani = animation.FuncAnimation(fig, self.animate, interval=500)
+
+    def animate(self, ds):
+        xs = []
+        ys = []
+        for key, val in ds.items():
+            xs.append(int(key))
+            ys.append(float(val[8]))
+
+        # self.ax.clear()
+        self.ax.plot(xs, ys, color='royalblue')
+        self.draw()
