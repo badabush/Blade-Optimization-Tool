@@ -3,6 +3,7 @@ import jumpssh
 import time
 import threading
 import os
+import queue
 
 from PyQt5.QtWidgets import QSizePolicy
 from pyqtgraph import PlotWidget, plot
@@ -13,10 +14,11 @@ import matplotlib.animation as animation
 from pyface.qt import QtGui
 from PyQt5.QtWidgets import QTableView
 
+
 from module.optimizer.ssh_login import ssh_connect
 from module.optimizer.optimtools import read_top_usage
 from module.UI.pandasviewer import pandasModel
-from module.optimizer.xml_parser import parse_res
+from module.optimizer.xml_parser import parse_res, testparse
 from module.optimizer.generate_script import gen_script
 
 
@@ -161,10 +163,13 @@ class OptimHandler:
     def read_xmf(self):
         self.outputbox("starting thread for reading xmf")
         self.kill = False
-        self.idx = 0
+        ds_res = {}
         res_file = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.res"
         # delete old .res file
-        os.remove(res_file)
+        try:
+            os.remove(res_file)
+        except FileNotFoundError:
+            pass
         timeout = 0
         # check for file .res existance, timeout 30s
         while timeout <= 30:
@@ -173,22 +178,26 @@ class OptimHandler:
             self.outputbox("Waiting for Process, timeout (" + str(timeout) + "/30)")
             timeout += 1
             time.sleep(1)
-        # time.sleep(10)
-        while (self.kill == False):
-            # Copying the res file is neccessary because otherwise it will interrupt the taskmanager process from writing.
-            # copy res file
-            res_copy = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/copyres.res"
-            os.popen(
-                'Y: & cd Tandem_Opti\parent_V3\parent_V3_brustinzidenz\ & copy parent_V3_brustinzidenz.res copyres.res')
+        #start thread for .res reader generator
 
+        q = queue.Queue()
+        t2 = threading.Thread(name='res_generator', target=testparse, args=(res_file, q))
+        t2.start()
+
+        while (self.kill == False):
             try:
-                ds, self.idx = parse_res(res_copy, int(self.idx))
-                if not self.idx == 0:
-                    self.optifig.animate(ds)
-                    self.outputbox("idx: " + str(self.idx))
+                # get new data from queue
+                val = q.get()
+                idx = int(val[0])
+                ds_res[idx] = val
+                print(val)
+                self.optifig.animate(ds_res)
+                # self.outputbox("idx: " + str(self.idx))
             except TypeError as e:
                 print(e)
-            time.sleep(1)
+            time.sleep(.1)
+
+
 
     def kill_loop(self):
         self.kill = True

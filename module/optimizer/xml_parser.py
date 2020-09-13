@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 import xmltodict
 import time
+import queue
 
 
 def parse_xml(file):
@@ -55,12 +56,34 @@ def parse_res(file, idx):
                         continue
                     ds[token[0]] = token
                     i = int(token[0])
-                    print(token)
+                    # print(token)
                     # f.close()
             # f.close()
             return ds, i
     except FileNotFoundError:
         print("File not found, waiting for process to start.")
+
+
+def testparse(file, q):
+    fp = open(file, 'r')
+    while True:
+        tokenized = read_by_token(fp)
+        for token in tokenized:
+            if token[0].isdigit() and len(token) > 1:
+                q.put(token)
+            # else:
+            #     time.sleep(.1)
+        # new = fp.readline()
+        # # Once all lines are read this just returns ''
+        # # until the file changes and a new line appears
+        #
+        # if new:
+        #     # yield (new)
+        #     print(new)
+        #     if new[0].isdigit() and len(new) > 1:
+        #         q.put(new)
+        # else:
+        #     time.sleep(.1)
 
 
 if __name__ in "__main__":
