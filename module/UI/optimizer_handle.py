@@ -1,5 +1,5 @@
 from pathlib import Path
-import jumpssh
+import paramiko
 import time
 import threading
 import os
@@ -45,7 +45,6 @@ class OptimHandler:
         vbl = QtGui.QVBoxLayout(centralwidget)
         vbl.addWidget(toolbar)
         vbl.addWidget(self.optifig)
-        # self.setCentralWidget(self.graphWidget)
 
     def ssh_connect(self):
         """
@@ -114,7 +113,7 @@ class OptimHandler:
                 self.sshobj.gateway_session.close()
             else:
                 self.outputbox("No active Session.")
-        except jumpssh.exception.RunCmdError:
+        except paramiko.ssh_exception.NoValidConnectionsError:
             self.outputbox("Error closing Session.")
 
     def run_script(self):
@@ -155,7 +154,7 @@ class OptimHandler:
             t = threading.Thread(name='res_reader', target=self.read_res)
             t.start()
 
-        except (jumpssh.exception.RunCmdError, jumpssh.exception.ConnectionError) as e:
+        except (paramiko.ssh_exception.NoValidConnectionsError) as e:
             self.outputbox(e)
 
 
@@ -183,6 +182,7 @@ class OptimHandler:
             self.outputbox("Waiting for Process, timeout (" + str(timeout) + "/30)")
             timeout += 1
             time.sleep(1)
+
         #start thread for .res reader generator
         if (timeout == 30):
             return

@@ -1,13 +1,9 @@
-# https://stackoverflow.com/questions/2148119/how-to-convert-an-xml-string-to-a-dictionary
-
-import pandas as pd
-import xml.etree.ElementTree as ET
 from pathlib import Path
-import xmltodict
-import time
-import queue
 
 def read_by_token(fileobj):
+    """
+    Reads lines, drops everything except tokens (str, values, etc.) and appends to a list. Yields list.
+    """
     for line in fileobj:
         ds = []
         for token in line.split():
@@ -16,6 +12,9 @@ def read_by_token(fileobj):
 
 
 def parse_res(file, q, kill):
+    """
+    Worker thread to read new lines from res. Only queues relevant lines. Breaks loop when kill==True
+    """
     fp = open(file, 'r')
     while True:
         tokenized = read_by_token(fp)
@@ -26,8 +25,3 @@ def parse_res(file, q, kill):
         # break loop when kill==True
         if kill:
             break
-
-
-if __name__ in "__main__":
-    file = Path("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.xmf")
-    file2 = Path("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/copyres.res")

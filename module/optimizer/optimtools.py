@@ -1,6 +1,4 @@
 import pandas as pd
-import xml.etree.ElementTree as ET
-from pathlib import Path
 
 def read_top_usage(top_usage):
     """

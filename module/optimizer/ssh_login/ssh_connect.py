@@ -1,10 +1,6 @@
 import paramiko
-import os, sys, select
-import socket
+import os
 import logging
-import Xlib.support.connect as xlib_connect
-import Xlib
-import subprocess
 
 from pathlib import Path
 from cryptography.fernet import Fernet
@@ -79,25 +75,7 @@ class Ssh_Util:
         Tries to connect to the specific node on the ssh with login information.
         """
 
-        # try:
-        #     cipher_suite = Fernet(self.key)
-        #     self.gateway_session = SSHSession(host=self.host, username=self.username,
-        #                                  password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8')).open()
-        #     self.remote_session = self.gateway_session.get_remote_session(self.node,
-        #                                                         password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode(
-        #                                                             'utf-8'), timeout=5)
-        #     # self.remote_session.
-        #     return 0
-        # except ValueError as e:
-        #     return 1
-
-        # pure paramiko approach
-        # local_x11_display = xlib_connect.get_display(os.environ['DISPLAY'])
-        # local_x11_socket = xlib_connect.get_socket(*local_x11_display[:3])
         try:
-            #start xming
-            # XmingProc = subprocess.Popen("C:/Program Files (x86)/Xming/Xming.exe :0 -clipboard -multiwindow")
-
             ssh_client = paramiko.SSHClient()
             ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             cipher_suite = Fernet(self.key)
@@ -111,45 +89,6 @@ class Ssh_Util:
             self.remote_session.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             self.remote_session.connect(self.node, username=self.username, password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8'), sock=session)
 
-        # session.request_x11(single_connection=True)
-        # session.exec_command('xterm')
-        # x11_chan = transport.accept()
-        #
-        # session_fileno = session.fileno()
-        # x11_chan_fileno = x11_chan.fileno()
-        # local_x11_socket_fileno = local_x11_socket.fileno()
-        #
-        # poller = select.poll()
-        # poller.register(session_fileno, select.POLLIN)
-        # poller.register(x11_chan_fileno, select.POLLIN)
-        # poller.register(local_x11_socket, select.POLLIN)
-        # while not session.exit_status_ready():
-        #     poll = poller.poll()
-        #     if not poll:  # this should not happen, as we don't have a timeout.
-        #         break
-        #     for fd, event in poll:
-        #         if fd == session_fileno:
-        #             while session.recv_ready():
-        #                 sys.stdout.write(session.recv(4096))
-        #             while session.recv_stderr_ready():
-        #                 sys.stderr.write(session.recv_stderr(4096))
-        #         if fd == x11_chan_fileno:
-        #             local_x11_socket.sendall(x11_chan.recv(4096))
-        #         if fd == local_x11_socket_fileno:
-        #             x11_chan.send(local_x11_socket.recv(4096))
-        #
-        # print('Exit status:', session.recv_exit_status())
-        # while session.recv_ready():
-        #     sys.stdout.write(session.recv(4096))
-        # while session.recv_stderr_ready():
-        #     sys.stdout.write(session.recv_stderr(4096))
-        # session.close()
-
-        # ssh_channel = transport.open_channel(
-        #     kind="direct-tcpip",
-        #     dest_addr=(self.host, self.port),
-        #     src_addr=(hostname, self.port),
-        #     timeout=self.timeout)
             return 0
         except ValueError as e:
             return 1
@@ -164,10 +103,3 @@ class Ssh_Util:
 
         except AttributeError:
             return None
-
-# if __name__ == '__main__':
-#     print("Start of %s" % __file__)
-#
-#     # Initialize the ssh object
-#     ssh_obj = Ssh_Util()
-#     ssh_obj.ssh_connect()
