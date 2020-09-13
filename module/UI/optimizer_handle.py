@@ -6,7 +6,6 @@ import os
 import queue
 
 from PyQt5.QtWidgets import QSizePolicy
-from pyqtgraph import PlotWidget, plot
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
@@ -14,11 +13,10 @@ import matplotlib.animation as animation
 from pyface.qt import QtGui
 from PyQt5.QtWidgets import QTableView
 
-
 from module.optimizer.ssh_login import ssh_connect
 from module.optimizer.optimtools import read_top_usage
 from module.UI.pandasviewer import pandasModel
-from module.optimizer.xml_parser import parse_res, testparse
+from module.optimizer.xml_parser import parse_res
 from module.optimizer.generate_script import gen_script
 
 
@@ -153,15 +151,21 @@ class OptimHandler:
                 proj_folder + "/py_script/" + self.scriptname + " -batch -print")
             self.outputbox(stdout)
 
-            # start thread to read xmf
-            t = threading.Thread(name='xmf_reader', target=self.read_xmf)
+            # start thread to read res file
+            t = threading.Thread(name='res_reader', target=self.read_res)
             t.start()
 
         except (jumpssh.exception.RunCmdError, jumpssh.exception.ConnectionError) as e:
             self.outputbox(e)
 
-    def read_xmf(self):
-        self.outputbox("starting thread for reading xmf")
+
+    def read_res(self):
+        """
+        Waiting for FineTurbo to create the .res file, then read it periodically in one thread and plot it in another
+        thread. New data is handled by queueing.
+        """
+
+        self.outputbox("starting thread for reading .res-file.")
         self.kill = False
         ds_res = {}
         res_file = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.res"
@@ -171,7 +175,8 @@ class OptimHandler:
         except FileNotFoundError:
             pass
         timeout = 0
-        # check for file .res existance, timeout 30s
+        # wait for fineTurbo to start calculation by checking for the existance of .res-file
+        # timeout at 30s
         while timeout <= 30:
             if os.path.exists(res_file):
                 break
@@ -179,9 +184,12 @@ class OptimHandler:
             timeout += 1
             time.sleep(1)
         #start thread for .res reader generator
+        if (timeout == 30):
+            return
 
+        self.outputbox("Beginning computation ..")
         q = queue.Queue()
-        t2 = threading.Thread(name='res_generator', target=testparse, args=(res_file, q))
+        t2 = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q, self.kill))
         t2.start()
 
         while (self.kill == False):
@@ -197,16 +205,13 @@ class OptimHandler:
                 print(e)
             time.sleep(.1)
 
-
-
     def kill_loop(self):
         self.kill = True
 
 
 class OptimPlotCanvas(FigureCanvas):
     """
-    All the plotting commands are organized here. At GUI start, an empty empty figure is generated. On Update,
-    BladeGen will be called with the user parameter and the plot will be updated.
+    Real-Time plot of data from .res file.
     """
 
     def __init__(self, parent=None, width=5, height=4, dpi=100):
@@ -221,15 +226,18 @@ class OptimPlotCanvas(FigureCanvas):
         self.ax.grid()
         self.xlim = (0, 0)
         self.ylim = (0, 0)
-        ani = animation.FuncAnimation(fig, self.animate, interval=500)
+        ani = animation.FuncAnimation(fig, self.animate, interval=1000)
 
     def animate(self, ds):
         xs = []
-        ys = []
+        inlet = []
+        outlet = []
         for key, val in ds.items():
             xs.append(int(key))
-            ys.append(float(val[8]))
+            inlet.append(float(val[8]))
+            outlet.append(float(val[9]))
 
         # self.ax.clear()
-        self.ax.plot(xs, ys, color='royalblue')
+        self.ax.plot(xs, inlet, color='royalblue')
+        self.ax.plot(xs, outlet, color='indianred')
         self.draw()
