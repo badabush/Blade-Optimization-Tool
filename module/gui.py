@@ -191,9 +191,13 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         self.btn_update_sel.setHidden(True)
 
     def outputbox(self, msg):
+        """
+        Terminal in Optimizer window at the bottom.
+        """
         datetimeobj = datetime.now()
         ts_str = datetimeobj.strftime("[%H:%M:%S]   ")
         self.box_terminal.append(ts_str + msg)
+        self.box_terminal.moveCursor(QtGui.QTextCursor.End)
 
 
 class PlotCanvas(FigureCanvas):

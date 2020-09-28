@@ -1,6 +1,6 @@
 from pathlib import Path
 import paramiko
-import time
+import time, datetime
 import threading
 import os
 import queue
@@ -36,7 +36,7 @@ class OptimHandler:
         self.btn_projectpath.clicked.connect(self.openFileNameDialogNumeca)
         self.btn_run.clicked.connect(self.run_script)
         self.btn_kill.clicked.connect(self.kill_loop)
-        self.box_terminal.moveCursor(QtGui.QTextCursor.End)
+        self.opt_btn_update_param.clicked.connect(self.update_param)
 
         # init plot
         self.optifig = OptimPlotCanvas(self, width=8, height=10)
@@ -60,6 +60,9 @@ class OptimHandler:
             self.outputbox("Error while connecting.")
         else:
             self.outputbox("Established Connection successfully.")
+
+    def update_param(self):
+        self.opt_param["niter"] = int(self.opt_input_iteration.value())
 
     def display_top(self):
         """
@@ -128,7 +131,7 @@ class OptimHandler:
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
         # project path
         projectpath = self.box_pathtodir.text()
-        self.scriptname = gen_script(projectpath)
+        self.scriptfile = gen_script(projectpath, self.opt_param)
         if projectpath[0] == "/" and projectpath[1] == "/":
             projectpath = projectpath[1:]
         projectpath = Path(projectpath)
@@ -147,7 +150,7 @@ class OptimHandler:
             # sending command with display | fine version location | script + location | batch | print
             stdout = self.sshobj.send_cmd(
                 self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + usr_folder + "/" +
-                proj_folder + "/py_script/" + self.scriptname + " -batch -print")
+                proj_folder + "/py_script/" + self.scriptfile + " -batch -print")
             self.outputbox(stdout)
 
             # start thread to read res file
@@ -156,7 +159,6 @@ class OptimHandler:
 
         except (paramiko.ssh_exception.NoValidConnectionsError) as e:
             self.outputbox(e)
-
 
     def read_res(self):
         """
@@ -183,15 +185,17 @@ class OptimHandler:
             timeout += 1
             time.sleep(1)
 
-        #start thread for .res reader generator
-        if (timeout == 30):
+        # start thread for .res reader generator
+        if (timeout >= 30):
+            self.outputbox("Error starting the process. Close existing Fine Taskmanager window.")
             return
 
-        self.outputbox("Beginning computation ..")
+        self.outputbox("Starting computation ..")
+        start_time = datetime.datetime.now()
         q = queue.Queue()
         t2 = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q, self.kill))
         t2.start()
-
+        niter = self.opt_param["niter"]
         while (self.kill == False):
             try:
                 # get new data from queue
@@ -200,13 +204,36 @@ class OptimHandler:
                 ds_res[idx] = val
                 print(val)
                 self.optifig.animate(ds_res)
-                # self.outputbox("idx: " + str(self.idx))
+
+                if (idx == (niter + 100)):
+                    self.outputbox("Cleaning up.")
+                    time.sleep(5)
+                    self.kill_loop()
+                    elapsed_time = datetime.datetime.now() - start_time
+                    min, sec = divmod(elapsed_time.seconds, 60)
+                    hour, min = divmod(min, 60)
+                    self.outputbox("Total time elapsed: " + hour + ":" + min + ":" + sec)
             except TypeError as e:
                 print(e)
             time.sleep(.1)
 
     def kill_loop(self):
         self.kill = True
+        if not hasattr(self, 'sshobj'):
+            self.ssh_connect()
+        try:
+            self.outputbox("Attempting to kill process.")
+            stdout = self.sshobj.send_cmd(
+                'ps aux | grep -v grep | grep "/opt/numeca/fine131/LINUX/fine/taskManagerx86_64" | grep "[f]ine" | grep "' + self.box_DISPLAY.text() + '"' + " | awk '{print $2}'")
+            if stdout == "":
+                self.outputbox("No running processes found.")
+                return
+            else:
+                stdout = self.sshobj.send_cmd("kill " + str(stdout))
+                self.outputbox("Killed fine taskManager.")
+
+        except AttributeError:
+            self.outputbox("Error killing the process.")
 
 
 class OptimPlotCanvas(FigureCanvas):
@@ -223,6 +250,7 @@ class OptimPlotCanvas(FigureCanvas):
                                    QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
         self.ax = self.figure.add_subplot(111)
+        self.ax.legend()
         self.ax.grid()
         self.xlim = (0, 0)
         self.ylim = (0, 0)
@@ -238,6 +266,6 @@ class OptimPlotCanvas(FigureCanvas):
             outlet.append(float(val[9]))
 
         # self.ax.clear()
-        self.ax.plot(xs, inlet, color='royalblue')
-        self.ax.plot(xs, outlet, color='indianred')
+        self.ax.plot(xs, inlet, color='royalblue', label="Inlet")
+        self.ax.plot(xs, outlet, color='indianred', label="Outlet")
         self.draw()

@@ -770,6 +770,22 @@
           </property>
          </widget>
         </item>
+        <item row="0" column="1">
+         <widget class="QToolButton" name="btn_kill">
+          <property name="text">
+           <string>KILL</string>
+          </property>
+          <property name="popupMode">
+           <enum>QToolButton::DelayedPopup</enum>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextBesideIcon</enum>
+          </property>
+          <property name="arrowType">
+           <enum>Qt::NoArrow</enum>
+          </property>
+         </widget>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -801,28 +817,6 @@ is accessed via samba</string>
 inside VNC enter: echo $DISPLAY</string>
       </property>
      </widget>
-     <widget class="QToolButton" name="btn_kill">
-      <property name="geometry">
-       <rect>
-        <x>920</x>
-        <y>100</y>
-        <width>111</width>
-        <height>61</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>KILL</string>
-      </property>
-      <property name="popupMode">
-       <enum>QToolButton::DelayedPopup</enum>
-      </property>
-      <property name="toolButtonStyle">
-       <enum>Qt::ToolButtonTextBesideIcon</enum>
-      </property>
-      <property name="arrowType">
-       <enum>Qt::NoArrow</enum>
-      </property>
-     </widget>
      <widget class="QWidget" name="optimfig_widget" native="true">
       <property name="geometry">
        <rect>
@@ -832,6 +826,76 @@ inside VNC enter: echo $DISPLAY</string>
         <height>551</height>
        </rect>
       </property>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_5">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>230</y>
+        <width>171</width>
+        <height>361</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Control:</string>
+      </property>
+      <widget class="QWidget" name="gridLayoutWidget_6">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>20</y>
+         <width>160</width>
+         <height>321</height>
+        </rect>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="0" column="0">
+         <widget class="QLabel" name="opt_label_iteration">
+          <property name="text">
+           <string>#Iteration: 100 +</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QDoubleSpinBox" name="opt_input_iteration">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="minimum">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>50000.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>100.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>1000.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QToolButton" name="opt_btn_update_param">
+          <property name="text">
+           <string>Update</string>
+          </property>
+          <property name="popupMode">
+           <enum>QToolButton::DelayedPopup</enum>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextBesideIcon</enum>
+          </property>
+          <property name="arrowType">
+           <enum>Qt::NoArrow</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </widget>
    </widget>

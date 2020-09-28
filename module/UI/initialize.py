@@ -43,6 +43,10 @@ class Initialize:
         self.returned_values.setText(str_pts)
         self.returned_values_th.setText(str_pts_th)
 
+        ### Optimizer variables
+        self.opt_param = {}
+        self.opt_param["niter"] = 1000
+
 
     def init_slider_control(self):
         """
