@@ -265,7 +265,10 @@ class OptimPlotCanvas(FigureCanvas):
             inlet.append(float(val[8]))
             outlet.append(float(val[9]))
 
-        # self.ax.clear()
         self.ax.plot(xs, inlet, color='royalblue', label="Inlet")
         self.ax.plot(xs, outlet, color='indianred', label="Outlet")
+        if len(ds) == 1:
+            self.ax.legend()
+        elif len(ds) == 100:
+            self.ax.axvline(100, '--', alpha=0.3)
         self.draw()
