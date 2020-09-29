@@ -12,3 +12,24 @@ Generation of NUMECA file (geomTurbo) from GUI-blades.
    :members:
    :undoc-members:
    :show-inheritance:
+
+pyscript Generation for FineTurbo
+---------------------------------------
+
+Generates the python script file for FineTurbo.
+
+.. automodule:: module.optimizer.generate_script
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Optimtools
+--------------------------------
+
+Collection of small functions used inside the Optimizer tab.
+
+.. automodule:: module.optimizer.optimtools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+

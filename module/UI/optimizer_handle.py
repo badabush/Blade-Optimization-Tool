@@ -14,9 +14,8 @@ from pyface.qt import QtGui
 from PyQt5.QtWidgets import QTableView
 
 from module.optimizer.ssh_login import ssh_connect
-from module.optimizer.optimtools import read_top_usage
+from module.optimizer.optimtools import read_top_usage, parse_res
 from module.UI.pandasviewer import pandasModel
-from module.optimizer.xml_parser import parse_res
 from module.optimizer.generate_script import gen_script
 
 
@@ -169,6 +168,7 @@ class OptimHandler:
         self.outputbox("starting thread for reading .res-file.")
         self.kill = False
         ds_res = {}
+        #TODO: replace hardcoded path
         res_file = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.res"
         # delete old .res file
         try:
@@ -181,6 +181,8 @@ class OptimHandler:
         while timeout <= 30:
             if os.path.exists(res_file):
                 break
+            elif self.kill:
+                return
             self.outputbox("Waiting for Process, timeout (" + str(timeout) + "/30)")
             timeout += 1
             time.sleep(1)
@@ -212,12 +214,17 @@ class OptimHandler:
                     elapsed_time = datetime.datetime.now() - start_time
                     min, sec = divmod(elapsed_time.seconds, 60)
                     hour, min = divmod(min, 60)
-                    self.outputbox("Total time elapsed: " + hour + ":" + min + ":" + sec)
+                    self.outputbox("Total time elapsed: " + str(hour) + ":" + str(min) + ":" + str(sec))
             except TypeError as e:
                 print(e)
             time.sleep(.1)
 
     def kill_loop(self):
+        """
+        Kills the loop and the process of the TaskManager.
+
+        :raise: AttributeError
+        """
         self.kill = True
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()

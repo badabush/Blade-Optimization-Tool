@@ -22,12 +22,12 @@ Class for handling all initializations, inherits to main window.
    :undoc-members:
    :show-inheritance:
 
-Update Handle
+Bladedesigner Handle
 ...........................
 
-Class that contains button/label/slider controls, inherits to main window.
+Class that contains UI elements for Bladedesigner, inherits to main window.
 
-.. automodule:: module.UI.update_handle
+.. automodule:: module.UI.bladedesigner_handle
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ Camber Spline window
 
 Popup window Spline config.
 
-.. automodule:: module.UI.spline_ui
+.. automodule:: module.UI.thdist_spline_ui
    :members:
    :undoc-members:
    :show-inheritance:
@@ -57,7 +57,7 @@ Thickness Spline window
 
 Popup window Spline config.
 
-.. automodule:: module.UI.spline_ui2
+.. automodule:: module.UI.camber_spline_ui
    :members:
    :undoc-members:
    :show-inheritance:
@@ -71,3 +71,34 @@ Popup window Annulus config.
    :members:
    :undoc-members:
    :show-inheritance:
+
+Optimizer handle
+-----------------------------
+
+Class that contains UI elements for the optimizer, inherits to main window.
+
+.. automodule:: module.UI.optimizer_handle
+    :members:
+    :undoc_members:
+    :show-inheritance:
+
+SSH Login
+-----------------------------
+
+The Login window for the SSH credentials.
+
+.. automodule:: module.UI.ssh_login_ui
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Pandasviewer
+-----------------------------
+
+Displays the pandas DataFrame of 'top usage' as a table, sorted by CPU.
+
+.. automodule:: module.UI.pandasviewer
+    :members:
+    :undoc-members:
+    :show-inheritance:
+

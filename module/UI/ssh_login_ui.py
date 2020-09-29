@@ -26,8 +26,6 @@ class SSHLoginUi(QtWidgets.QMainWindow):
 
         Ssh_Util.generate_config(username, password, 'node05')
         self.close()
-        # ssh_obj = ssh_connect.Ssh_Util(username, password)
-        # ssh_obj.connect()
 
 
 
