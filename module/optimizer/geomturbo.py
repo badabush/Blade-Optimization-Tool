@@ -5,7 +5,7 @@ import os
 
 class GeomTurboFile:
 
-    def __init__(self, type, blade, r, l, N):
+    def __init__(self, path, type, blade, r, l, N):
         """
         :param type: single or tandem
         :type type: str
@@ -15,10 +15,10 @@ class GeomTurboFile:
         :param l: ?
         :param N: ?
         """
-
+        filename = "testgeo.geomTurbo"
         # Path to templates and file-saving folder
-        self.temp_path = Path(os.getcwd() + "/template")
-        self.save_path = Path(os.getcwd() + "/../../geo_output/numeca")
+        self.temp_path = Path(os.getcwd() + "/optimizer/template/")
+        self.save_path = Path(path)
         self.r = r
         self.l = l
         self.N = N
@@ -49,9 +49,11 @@ class GeomTurboFile:
         # Generate file from parameters
         if self.type == "single":
             fname = "single.geomTurbo"
+            fname = filename
             self.gen_file(fname, blade[0])
         else:
             fname = "tandem.geomTurbo"
+            fname = filename
             self.gen_file(fname, blade[0], blade[1])
 
     def gen_file(self, fname, blade, blade_av=0):
@@ -66,7 +68,7 @@ class GeomTurboFile:
         :type blade_av: np.array
         """
 
-        len_blade = len(blade)
+        len_blade = blade.shape[0]
         if self.type == "single":
             f = open(self.temp_path / "single_template.geomTurbo", "r")
         else:
@@ -193,4 +195,4 @@ if __name__ == "__main__":
     blade = np.zeros((600, 3))  # dummy data
     blade[:, 1] = np.linspace(0, 1, 600)
     blade[:, 2] = np.linspace(-1, 0, 600)
-    foo = GeomTurboFile("tandem", [blade, blade], 1, 1, 1)
+    foo = GeomTurboFile("path", "tandem", [blade, blade], 1, 1, 1)

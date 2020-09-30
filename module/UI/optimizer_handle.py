@@ -37,9 +37,11 @@ class OptimHandler:
         self.btn_projectiec.clicked.connect(self.project_explorer_iec)
         self.btn_projectigg.clicked.connect(self.project_explorer_igg)
         self.btn_projectrun.clicked.connect(self.project_explorer_run)
+        self.btn_projectgeomturbo.clicked.connect(self.project_explorer_geomturbo)
         self.btn_run.clicked.connect(self.run_script)
         self.btn_kill.clicked.connect(self.kill_loop)
         self.opt_btn_update_param.clicked.connect(self.update_param)
+        # self.btn_load_geomturbo.clicked.connect(self.load_geomturbo)
 
         # init plot
         self.optifig = OptimPlotCanvas(self, width=8, height=10)
@@ -54,6 +56,9 @@ class OptimHandler:
         self.box_pathtoiec.setText("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3.iec")
         self.box_pathtoigg.setText("//130.149.110.81/liang/Tandem_Opti/Erstes_Netz_Tandem.igg")
         self.box_pathtorun.setText("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.run")
+        self.box_pathtogeomturbo.setText("//130.149.110.81/liang/Tandem_Opti/BOT/geomturbo_files/tandem.geomTurbo")
+
+
 
     def ssh_connect(self):
         """
@@ -144,8 +149,14 @@ class OptimHandler:
         paths['iec'] = self.box_pathtoiec.text()
         paths['igg'] = self.box_pathtoigg.text()
         paths['run'] = self.box_pathtorun.text()
+        paths['geomturbo'] = self.box_pathtogeomturbo.text()
+
         self.paths = cleanpaths(paths)
-        self.scriptfile = gen_script(self.paths, self.opt_param)
+        if self.checkbox_load_blade:
+            self.load_geomturbo()
+            self.scriptfile = gen_script(self.paths, self.opt_param, load_blade=1)
+        else:
+            self.scriptfile = gen_script(self.paths, self.opt_param, load_blade=0)
 
         # run fine131 with script
         if not hasattr(self, 'sshobj'):

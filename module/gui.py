@@ -19,9 +19,10 @@ from module.UI.annulus_ui import AnnulusUi
 from module.UI.ssh_login_ui import SSHLoginUi
 from module.UI.save_load_config import SaveLoadConfig
 from module.UI.optimizer_handle import OptimHandler
+from module.UI.optimizer_loadblade import LoadBlade
 
 
-class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig):
+class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig, LoadBlade):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
         restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.

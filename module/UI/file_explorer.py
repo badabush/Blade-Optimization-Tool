@@ -22,7 +22,6 @@ class FileExplorer:
         input_dir = QFileDialog.getExistingDirectory(self, "Open a folder", expanduser("~"))
         self.box_pathtodir.setText(input_dir)
 
-
     def project_explorer_iec(self):
         """
         Opens a File Explorer to select iec file.
@@ -33,7 +32,6 @@ class FileExplorer:
         fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", self.box_pathtodir.text(),
                                                   "IEC Files (*.iec)", options=options)
         self.box_pathtoiec.setText(fileName)
-
 
     def project_explorer_igg(self):
         """
@@ -46,7 +44,6 @@ class FileExplorer:
                                                   "Mesh Files (*.igg)", options=options)
         self.box_pathtoigg.setText(fileName)
 
-
     def project_explorer_run(self):
         """
         Opens a File Explorer to select run file.
@@ -57,6 +54,17 @@ class FileExplorer:
         fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", self.box_pathtodir.text(),
                                                   "RUN Files (*.run)", options=options)
         self.box_pathtorun.setText(fileName)
+
+    def project_explorer_geomturbo(self):
+        """
+        Opens a File Explorer to select geomTurbo file.
+        :return: None
+        """
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", self.box_pathtodir.text(),
+                                                  "geomTurbo Files (*.geomTurbo)", options=options)
+        self.box_pathtogeomturbo.setText(fileName)
 
     def openFileNameDialog(self):
         """
@@ -100,11 +108,11 @@ class FileExplorer:
                 ds = pd.DataFrame({'x': blade_data[:, 0], 'y': blade_data[:, 1]})
                 ie._export(fileName, ds)
             else:
-                head,_sep,tail = fileName.rpartition(".")
+                head, _sep, tail = fileName.rpartition(".")
                 if head == "":
                     head = tail
                 for i in range(2):
-                    if (i==0):
+                    if (i == 0):
                         ds = self.ds1
 
                         fname = head + "_FV.txt"
@@ -116,10 +124,10 @@ class FileExplorer:
                                         alpha1=ds['alpha1'], alpha2=ds['alpha2'],
                                         lambd=ds['lambd'], th=ds['th'], x_maxth=ds['xmax_th'],
                                         x_maxcamber=ds['xmax_camber'],
-                                        l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'], spline_pts=ds['pts'],
+                                        l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'],
+                                        spline_pts=ds['pts'],
                                         thdist_points=ds['pts_th'])
                     blade_data, _ = bladegen._return()
                     ds = pd.DataFrame({'x': blade_data[:, 0], 'y': blade_data[:, 1]})
 
                     ie._export(fname, ds)
-
