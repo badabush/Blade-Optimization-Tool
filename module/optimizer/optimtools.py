@@ -1,4 +1,5 @@
 import pandas as pd
+from pathlib import Path
 
 def read_top_usage(top_usage):
     """
@@ -46,3 +47,32 @@ def parse_res(file, q, kill):
         # break loop when kill==True
         if kill:
             break
+
+
+def cleanpaths(paths):
+    """
+    Cleans up input paths for usage in generate_script and optimhandle.
+    """
+
+    path_list = []
+    for key, path in paths.items():
+        if path[0] == "/" and path[1] == "/":
+            path = path[1:]
+        path = Path(path)
+        path_list.append(path.parts)
+
+    # dict entry for every file/folder path.
+    paths['dir_raw'] = paths['dir']
+    if paths['dir'][0] == "/" and paths['dir'][1] == "/":
+        paths['dir'] = paths['dir'][1:]
+    paths['dir'] = Path(paths['dir'])
+    paths['dir'] = paths['dir'].parts
+
+    paths['usr_folder'] = paths['dir'][-2]
+    paths['proj_folder'] = paths['dir'][-1]
+    paths['iec'] = path_list[1][-2] + '/' + path_list[1][-1]  # iec file
+    paths['igg'] = path_list[2][-1]  # igg file
+    paths['run'] = path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1]  # run file
+    paths['res'] = paths['dir_raw'] + '/' + path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1][:-3] + 'res'  # res file
+
+    return paths

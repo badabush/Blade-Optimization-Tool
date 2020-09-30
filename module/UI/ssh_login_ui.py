@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QSizePolicy
 from PyQt5 import QtWidgets, uic
-from module.optimizer.ssh_login.ssh_connect import Ssh_Util
+from module.optimizer.ssh_login.ssh_connect import SshUtil
 
 class SSHLoginUi(QtWidgets.QMainWindow):
 
@@ -24,7 +24,7 @@ class SSHLoginUi(QtWidgets.QMainWindow):
         if (not self.input_usr) or (not self.input_pwd):
             return
 
-        Ssh_Util.generate_config(username, password, 'node05')
+        SshUtil.generate_config(username, password, 'node05')
         self.close()
 
 

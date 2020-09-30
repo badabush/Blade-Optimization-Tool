@@ -14,7 +14,7 @@ from pyface.qt import QtGui
 from PyQt5.QtWidgets import QTableView
 
 from module.optimizer.ssh_login import ssh_connect
-from module.optimizer.optimtools import read_top_usage, parse_res
+from module.optimizer.optimtools import read_top_usage, parse_res, cleanpaths
 from module.UI.pandasviewer import pandasModel
 from module.optimizer.generate_script import gen_script
 
@@ -28,11 +28,15 @@ class OptimHandler:
         """
         Initialize optimizer tab gui elements e.g. link buttons
         """
+
         self.btn_testconnect.clicked.connect(self.ssh_connect)
         self.btn_topcmd.clicked.connect(self.display_top)
         self.btn_quota.clicked.connect(self.cmd_quota)
         self.btn_close_connection.clicked.connect(self.close_connection)
-        self.btn_projectpath.clicked.connect(self.openFileNameDialogNumeca)
+        self.btn_projectpath.clicked.connect(self.project_explorer_dir)
+        self.btn_projectiec.clicked.connect(self.project_explorer_iec)
+        self.btn_projectigg.clicked.connect(self.project_explorer_igg)
+        self.btn_projectrun.clicked.connect(self.project_explorer_run)
         self.btn_run.clicked.connect(self.run_script)
         self.btn_kill.clicked.connect(self.kill_loop)
         self.opt_btn_update_param.clicked.connect(self.update_param)
@@ -45,11 +49,17 @@ class OptimHandler:
         vbl.addWidget(toolbar)
         vbl.addWidget(self.optifig)
 
+        # set default paths for lazy development
+        self.box_pathtodir.setText("//130.149.110.81/liang/Tandem_Opti")
+        self.box_pathtoiec.setText("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3.iec")
+        self.box_pathtoigg.setText("//130.149.110.81/liang/Tandem_Opti/Erstes_Netz_Tandem.igg")
+        self.box_pathtorun.setText("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.run")
+
     def ssh_connect(self):
         """
         Connect with user data via ssh to the selected node.
         """
-        self.sshobj = ssh_connect.Ssh_Util()
+        self.sshobj = ssh_connect.SshUtil()
         if self.sshobj.failure:
             self.outputbox("No config.ini file found. Setup credentials first!")
             return
@@ -129,14 +139,13 @@ class OptimHandler:
         # get display address
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
         # project path
-        projectpath = self.box_pathtodir.text()
-        self.scriptfile = gen_script(projectpath, self.opt_param)
-        if projectpath[0] == "/" and projectpath[1] == "/":
-            projectpath = projectpath[1:]
-        projectpath = Path(projectpath)
-        projectpath = projectpath.parts
-        usr_folder = projectpath[-2]
-        proj_folder = projectpath[-1]
+        paths = {}
+        paths['dir'] = self.box_pathtodir.text()
+        paths['iec'] = self.box_pathtoiec.text()
+        paths['igg'] = self.box_pathtoigg.text()
+        paths['run'] = self.box_pathtorun.text()
+        self.paths = cleanpaths(paths)
+        self.scriptfile = gen_script(self.paths, self.opt_param)
 
         # run fine131 with script
         if not hasattr(self, 'sshobj'):
@@ -148,8 +157,8 @@ class OptimHandler:
             self.outputbox("opening FineTurbo..")
             # sending command with display | fine version location | script + location | batch | print
             stdout = self.sshobj.send_cmd(
-                self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + usr_folder + "/" +
-                proj_folder + "/py_script/" + self.scriptfile + " -batch -print")
+                self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
+                self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
             self.outputbox(stdout)
 
             # start thread to read res file
@@ -168,8 +177,8 @@ class OptimHandler:
         self.outputbox("starting thread for reading .res-file.")
         self.kill = False
         ds_res = {}
-        #TODO: replace hardcoded path
-        res_file = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.res"
+
+        res_file = self.paths['res']
         # delete old .res file
         try:
             os.remove(res_file)
@@ -277,5 +286,5 @@ class OptimPlotCanvas(FigureCanvas):
         if len(ds) == 1:
             self.ax.legend()
         elif len(ds) == 100:
-            self.ax.axvline(100, '--', alpha=0.3)
+            self.ax.axvline(100, alpha=0.3)
         self.draw()

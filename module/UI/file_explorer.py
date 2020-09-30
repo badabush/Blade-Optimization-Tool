@@ -9,18 +9,54 @@ from module.blade.bladegen import BladeGen
 
 class FileExplorer:
     """
-    Class for Importing existing blade and exporting blade for the GUI.
+    Class for File dialog popups.
     """
 
-    def openFileNameDialogNumeca(self):
+    def project_explorer_dir(self):
         """
-        Opens a File Explorer to select Numeca files.
+        Opens a File Explorer to select Project folder.
         :return: None
         """
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         input_dir = QFileDialog.getExistingDirectory(self, "Open a folder", expanduser("~"))
         self.box_pathtodir.setText(input_dir)
+
+
+    def project_explorer_iec(self):
+        """
+        Opens a File Explorer to select iec file.
+        :return: None
+        """
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", self.box_pathtodir.text(),
+                                                  "IEC Files (*.iec)", options=options)
+        self.box_pathtoiec.setText(fileName)
+
+
+    def project_explorer_igg(self):
+        """
+        Opens a File Explorer to select igg file.
+        :return: None
+        """
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", self.box_pathtodir.text(),
+                                                  "Mesh Files (*.igg)", options=options)
+        self.box_pathtoigg.setText(fileName)
+
+
+    def project_explorer_run(self):
+        """
+        Opens a File Explorer to select run file.
+        :return: None
+        """
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", self.box_pathtodir.text(),
+                                                  "RUN Files (*.run)", options=options)
+        self.box_pathtorun.setText(fileName)
 
     def openFileNameDialog(self):
         """

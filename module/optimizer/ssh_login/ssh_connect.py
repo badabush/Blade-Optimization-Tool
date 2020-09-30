@@ -9,7 +9,7 @@ LOGGER = logging.getLogger(__name__)
 
 
 
-class Ssh_Util:
+class SshUtil:
     """
     Class to connect to SSH.
     """
