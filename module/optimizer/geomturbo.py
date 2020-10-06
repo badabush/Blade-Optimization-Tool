@@ -100,9 +100,9 @@ class GeomTurboFile:
         f_str = f_str.replace("?IN_SHROUD", str_shroud[:-1])  # replace, get rid of trailing \n
 
         # upper (Saugseite)
-        upper = np.zeros((len_blade,3))
-        upper[:, 1] = blade[len_blade-2:, 1] / self.scale
-        upper[:, 2] = blade[len_blade-2:, 2] / self.scale
+        upper = np.zeros((len_blade, 3))
+        upper[:, 1] = blade[len_blade - 2:, 1] / self.scale
+        upper[:, 2] = blade[len_blade - 2:, 2] / self.scale
         # upper = upper[::-1]
 
         # upper section 1
@@ -124,9 +124,9 @@ class GeomTurboFile:
         f_str = f_str.replace("?IN_UPPER2", str_upper2[:-1])  # replace, get rid of trailing \n
 
         # lower (Druckseite)
-        lower = np.zeros((len_blade,3))
-        lower[:, 1] = blade[:len_blade, 1] / self.scale
-        lower[:, 2] = blade[:len_blade, 2] / self.scale
+        lower = np.zeros((len_blade - 1, 3))
+        lower[:, 1] = blade[:len_blade - 1, 1] / self.scale
+        lower[:, 2] = blade[:len_blade - 1, 2] / self.scale
         lower = lower[::-1]
 
         # lower section 1
@@ -155,8 +155,8 @@ class GeomTurboFile:
         if self.type == "tandem":
             # upper (Saugseite)
             upper = np.zeros((len_blade, 3))
-            upper[:, 1] = blade_av[len_blade-2:, 1]   / self.scale + self.spacing[0]
-            upper[:, 2] = blade_av[len_blade-2:, 2]   / self.scale + self.spacing[1]
+            upper[:, 1] = blade_av[len_blade - 2:, 1] / self.scale + self.spacing[0]
+            upper[:, 2] = blade_av[len_blade - 2:, 2] / self.scale + self.spacing[1]
             # upper = upper[::-1]
             # upper section 1
             upper[:, 0] = self.rh
@@ -177,9 +177,9 @@ class GeomTurboFile:
             f_str = f_str.replace("?IN_UPPERAV2", str_upper2[:-1])  # replace, get rid of trailing \n
 
             # lower (Druckseite)
-            lower = np.zeros((len_blade, 3))
-            lower[:, 1] = blade_av[:len_blade, 1]  / self.scale+ self.spacing[0]
-            lower[:, 2] = blade_av[:len_blade, 2]  / self.scale+ self.spacing[1]
+            lower = np.zeros((len_blade - 1, 3))
+            lower[:, 1] = blade_av[:len_blade-1, 1] / self.scale + self.spacing[0]
+            lower[:, 2] = blade_av[:len_blade-1, 2] / self.scale + self.spacing[1]
             lower = lower[::-1]
 
             # lower section 1
