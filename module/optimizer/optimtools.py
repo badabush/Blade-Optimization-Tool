@@ -74,4 +74,6 @@ def cleanpaths(paths):
     paths['igg'] = path_list[2][-1]  # igg file
     paths['run'] = path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1]  # run file
     paths['res'] = paths['dir_raw'] + '/' + path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1][:-3] + 'res'  # res file
+    paths['template'] = paths['dir_raw'] + '/BOT/template'
+    paths['template_unix'] = paths['usr_folder'] + '/' + paths['proj_folder'] + '/BOT/template'
     return paths

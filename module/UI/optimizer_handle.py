@@ -2,7 +2,7 @@ from pathlib import Path
 import paramiko
 import time, datetime
 import threading
-import os
+import os, glob
 import queue
 
 from PyQt5.QtWidgets import QSizePolicy
@@ -31,7 +31,7 @@ class OptimHandler:
 
         self.btn_testconnect.clicked.connect(self.ssh_connect)
         self.btn_topcmd.clicked.connect(self.display_top)
-        self.btn_quota.clicked.connect(self.cmd_quota)
+        self.btn_quota.clicked.connect(self.create_meshfile)
         self.btn_close_connection.clicked.connect(self.close_connection)
         self.btn_projectpath.clicked.connect(self.project_explorer_dir)
         self.btn_projectiec.clicked.connect(self.project_explorer_iec)
@@ -41,7 +41,10 @@ class OptimHandler:
         self.btn_run.clicked.connect(self.run_script)
         self.btn_kill.clicked.connect(self.kill_loop)
         self.opt_btn_update_param.clicked.connect(self.update_param)
-        # self.btn_load_geomturbo.clicked.connect(self.load_geomturbo)
+
+        # init LEDs
+        self.toggle_leds(self.led_connection, 0)
+        self.toggle_leds(self.led_mesh, 0)
 
         # init plot
         self.optifig = OptimPlotCanvas(self, width=8, height=10)
@@ -55,10 +58,30 @@ class OptimHandler:
         self.box_pathtodir.setText("//130.149.110.81/liang/Tandem_Opti")
         self.box_pathtoiec.setText("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3.iec")
         self.box_pathtoigg.setText("//130.149.110.81/liang/Tandem_Opti/Erstes_Netz_Tandem.igg")
-        self.box_pathtorun.setText("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.run")
+        self.box_pathtorun.setText(
+            "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.run")
         self.box_pathtogeomturbo.setText("//130.149.110.81/liang/Tandem_Opti/BOT/geomturbo_files/testgeom.geomTurbo")
 
+        # grab paths
 
+        self.paths = {}
+        self.grab_paths
+
+    def toggle_leds(self, led, state):
+        if state == 0:
+            pixmap = QtGui.QPixmap(os.getcwd() + "/UI/icons/red-led-on.png")
+        else:
+            pixmap = QtGui.QPixmap(os.getcwd() + "/UI/icons/green-led-on.png")
+        pixmap2 = pixmap.scaled(20, 20)
+        led.setPixmap(pixmap2)
+
+    def grab_paths(self):
+        self.paths['dir'] = self.box_pathtodir.text()
+        self.paths['iec'] = self.box_pathtoiec.text()
+        self.paths['igg'] = self.box_pathtoigg.text()
+        self.paths['run'] = self.box_pathtorun.text()
+        self.paths['geomturbo'] = self.box_pathtogeomturbo.text()
+        self.paths = cleanpaths(self.paths)
 
     def ssh_connect(self):
         """
@@ -72,8 +95,10 @@ class OptimHandler:
         rcode = self.sshobj.ssh_connect()
         if rcode:
             self.outputbox("Error while connecting.")
+            self.toggle_leds(self.led_connection, 0)
         else:
             self.outputbox("Established Connection successfully.")
+            self.toggle_leds(self.led_connection, 1)
 
     def update_param(self):
         self.opt_param["niter"] = int(self.opt_input_iteration.value())
@@ -102,20 +127,17 @@ class OptimHandler:
         except ValueError:
             self.outputbox("Error displaying pdTable.")
 
-    def cmd_quota(self):
+    def create_meshfile(self):
         """
         Send command quota, displays stdout.
         """
         # check for existing connection
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
-
         try:
-            self.outputbox("Passing Command.")
-            stdout = self.sshobj.send_cmd('export DISPLAY="localhost:16.0"')
-            self.outputbox(stdout)
-            stdout = self.sshobj.send_cmd("echo $DISPLAY")
-            self.outputbox(stdout)
+            t = threading.Thread(name = "create_meshfile", target=self.run_igg)
+            t.start()
+            # self.run_igg()
         except AttributeError:
             self.outputbox("Connecting...")
 
@@ -123,6 +145,7 @@ class OptimHandler:
         """
         Closes the active ssh session.
         """
+
         try:
             if hasattr(self, 'sshobj'):
                 self.outputbox("Closing Session.")
@@ -138,22 +161,16 @@ class OptimHandler:
         Open file explorer to set project path.
         """
 
+        # refresh paths
+        self.grab_paths()
+
         if self.box_pathtodir.text() == "":
             self.outputbox("Set Path to Project Directory first!")
             return 0
         # get display address
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
-        # project path
-        paths = {}
-        paths['dir'] = self.box_pathtodir.text()
-        paths['iec'] = self.box_pathtoiec.text()
-        paths['igg'] = self.box_pathtoigg.text()
-        paths['run'] = self.box_pathtorun.text()
-        paths['geomturbo'] = self.box_pathtogeomturbo.text()
 
-        self.paths = cleanpaths(paths)
         if self.checkbox_load_blade:
-            self.load_geomturbo()
             self.scriptfile = gen_script(self.paths, self.opt_param, load_blade=1)
         else:
             self.scriptfile = gen_script(self.paths, self.opt_param, load_blade=0)
@@ -238,6 +255,40 @@ class OptimHandler:
             except TypeError as e:
                 print(e)
             time.sleep(.1)
+
+    def run_igg(self):
+        # delete existing stuff in folder
+        # todo: replace hardcoded path
+
+        # refresh paths
+        self.grab_paths()
+        path = self.paths['template']
+        # delete existing files in /autogrid/
+        try:
+            files = glob.glob(path + '/autogrid/*')
+            for f in files:
+                os.remove(f)
+        except OSError:
+            pass
+        # create .geomTurbo and .trb in /autogrid/
+        fname = "test_template"
+        self.create_geomturbo(fname)
+        self.create_trb(fname)
+        self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
+        self.outputbox("Generating Mesh. This might take a while.")
+        stdout = self.sshobj.send_cmd(
+            self.display + "/opt/numeca/bin/igg131 -batch -print -autogrid5 " +
+            "-trb /home/HLR/" + self.paths["template_unix"] + "/autogrid/" + fname + ".trb " +
+            " -geomTurbo /home/HLR/" + self.paths["template_unix"] + "/autogrid/" + fname + ".geomTurbo " +
+            " -mesh /home/HLR/" + self.paths["template_unix"] + "/autogrid/" + fname + ".igg " +
+            "-niversion 131"
+        )
+        # self.outputbox(stdout)
+        if ("Writing Configuration File... Done" in stdout) and ("Exit IGG Background Session" in stdout):
+            self.outputbox("Successfully created Meshfile in Autogrid.")
+            self.toggle_leds(self.led_mesh, 1)
+        else:
+            self.outputbox("Error creating Meshfile with Autogrid.")
 
     def kill_loop(self):
         """
