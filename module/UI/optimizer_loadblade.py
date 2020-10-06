@@ -1,11 +1,14 @@
 import pandas as pd
 import numpy as np
+import os
+from pathlib import Path
+
 from module.blade.bladegen import BladeGen
 from module.optimizer.geomturbo import GeomTurboFile
 
 
 class LoadBlade:
-    def load_geomturbo(self):
+    def create_geomturbo(self, fname):
         blade = []
         # generate blades from parameter
         ds = self.ds
@@ -44,7 +47,7 @@ class LoadBlade:
                 blade_flip[:, 0] = blade_data[:, 1]
                 blade_flip[:, 1] = blade_data[:, 0]
                 blade.append(np.array([z, blade_flip[:, 0], blade_flip[:, 1]]).T)
-        path = self.paths["dir_raw"] + '/BOT/geomturbo_files/'
+        path = self.paths["template"] + "/autogrid/"
         rh = 0.5 * 0.172
         r = 0.043 * 0.01 + rh
         c_t = 0.043
@@ -54,6 +57,16 @@ class LoadBlade:
         N_t = np.round((2 * np.pi * rh) / s_t, 2)
 
         try:
-            GeomTurboFile(path, ds['nblades'], blade, r, l, 2 * np.pi * rh / N_t)
+            GeomTurboFile(fname, path, ds['nblades'], blade, r, l, 2 * np.pi * rh / N_t)
         except:
             print("error creating geomTurbo file.")
+
+    def create_trb(self, fname):
+        temp_path = Path(os.getcwd() + "/optimizer/template/")
+        save_path = Path(self.paths["template"] + "/autogrid/")
+        try:
+            f = open(temp_path / "trb_template.trb", "r")
+            fsave = open(save_path / (fname + ".trb"), "w")
+            fsave.write(f.read())
+        except FileNotFoundError:
+            print("TRB template file not found.")

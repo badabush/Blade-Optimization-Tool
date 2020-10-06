@@ -21,7 +21,7 @@ def gen_script(paths, param, load_blade):
     file.write('script_version(2.2)\n' +
                'FT.open_project("/home/HLR/' + paths['usr_folder'] + '/' + paths['proj_folder'] + '/' + paths['iec'] + '")\n' +
                'FT.set_active_computations([1])\n' +
-                import_geomturbo +
+                # import_geomturbo +
                'FT.link_mesh_file("/home/HLR/' + paths['usr_folder'] + '/' + paths['proj_folder'] + '/' + paths['igg'] + '",0)\n' +
                'FT.set_nb_iter_max(' + no_iter + ')\n' +
                'FT.set_output_writing_frequency(' + writing_frequency + ')\n' +

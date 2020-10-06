@@ -5,7 +5,7 @@ import os
 
 class GeomTurboFile:
 
-    def __init__(self, path, type, blade, r, l, N):
+    def __init__(self, fname, path, type, blade, r, l, N):
         """
         :param type: single or tandem
         :type type: str
@@ -15,7 +15,6 @@ class GeomTurboFile:
         :param l: ?
         :param N: number of blades
         """
-        filename = "testgeo.geomTurbo"
         # Path to templates and file-saving folder
         self.temp_path = Path(os.getcwd() + "/optimizer/template/")
         self.save_path = Path(path)
@@ -29,7 +28,7 @@ class GeomTurboFile:
         self.scale = 25
         self.spacing = [0.0005, 0.02]
         self.zhub = np.linspace(0 - l / 3, 0 + 2 * l / 3, self.npts)
-
+        self.fname = fname + ".geomTurbo"
         if self.type == "single":
             self.layer = 0.0016
         elif self.type == "tandem":
@@ -52,14 +51,12 @@ class GeomTurboFile:
         # Generate file from parameters
         if self.type == "single":
             # fname = "single.geomTurbo"
-            fname = filename
-            self.gen_file(fname, blade[0])
+            self.gen_file(blade[0])
         else:
             # fname = "tandem.geomTurbo"
-            fname = filename
-            self.gen_file(fname, blade[0], blade[1])
+            self.gen_file(blade[0], blade[1])
 
-    def gen_file(self, fname, blade, blade_av=0):
+    def gen_file(self, blade, blade_av=0):
         """
         Generating geomTurbo file for Single or tandem blade from Template.
 
@@ -205,7 +202,7 @@ class GeomTurboFile:
 
         # replace tabspace with 8 whitespaces TODO: check if it works without this cleanup
         f_str = f_str.replace("\t\t", "        ")
-        fsave = open(self.save_path / fname, "w")
+        fsave = open(self.save_path / self.fname, "w")
         fsave.write(f_str)
 
 
