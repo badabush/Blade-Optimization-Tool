@@ -9,7 +9,7 @@ class LoadBlade:
         blade = []
         # generate blades from parameter
         ds = self.ds
-        z = np.zeros(int(ds['npts']/2))
+        z = np.zeros(int(ds['npts'] / 2))
         if ds['nblades'] == 'single':
             bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'],
                                 npts=ds['npts'],
@@ -21,9 +21,9 @@ class LoadBlade:
             print('save single blade')
             blade_data, _ = bladegen._return()
             blade_flip = np.zeros(blade_data.shape)
-            blade_flip[:,0] = blade_data[:,1]
-            blade_flip[:,1] = blade_data[:,0]
-            blade.append(np.array([z,blade_flip[:,0], blade_flip[:,1]]).T)
+            blade_flip[:, 0] = blade_data[:, 1]
+            blade_flip[:, 1] = blade_data[:, 0]
+            blade.append(np.array([z, blade_flip[:, 0], blade_flip[:, 1]]).T)
         else:
             for i in range(2):
                 if (i == 0):
@@ -41,8 +41,8 @@ class LoadBlade:
                 # blade = pd.DataFrame({'x': blade_data[:, 0], 'y': blade_data[:, 1]})
                 # flip blade
                 blade_flip = np.zeros(blade_data.shape)
-                blade_flip[:,0] = blade_data[:,1]
-                blade_flip[:,1] = blade_data[:,0]
+                blade_flip[:, 0] = blade_data[:, 1]
+                blade_flip[:, 1] = blade_data[:, 0]
                 blade.append(np.array([z, blade_flip[:, 0], blade_flip[:, 1]]).T)
         path = self.paths["dir_raw"] + '/BOT/geomturbo_files/'
         rh = 0.5 * 0.172
@@ -53,4 +53,7 @@ class LoadBlade:
         l = 0.12
         N_t = np.round((2 * np.pi * rh) / s_t, 2)
 
-        GeomTurboFile(path, ds['nblades'], blade, r, l, 2 * np.pi * rh/N_t)
+        try:
+            GeomTurboFile(path, ds['nblades'], blade, r, l, 2 * np.pi * rh / N_t)
+        except:
+            print("error creating geomTurbo file.")
