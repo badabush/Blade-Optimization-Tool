@@ -1,110 +1,171 @@
 GEOMETRY TURBO
-VERSION 5.5
-TOLERANCE                                          1E-006
-NI_BEGIN	CHANNEL
-   NI_BEGIN	basic_curve
-      NAME			hub_crv_1
-      DISCRETISATION		10
-      DATA_REDUCTION		0
-      NI_BEGIN	zrcurve
-         ZR
-?IN_HUBCURVE
-      NI_END	zrcurve
-   NI_END	basic_curve
-   NI_BEGIN	basic_curve
-      NAME			shroud_crv_1
-      DISCRETISATION		10
-      DATA_REDUCTION		0
-      NI_BEGIN	zrcurve
-         ZR
-?IN_SHROUD
-      NI_END	zrcurve
-   NI_END	basic_curve
-   NI_BEGIN	channel_curve hub
-      NAME		hub
-      VERTEX	CURVE_P	hub_crv_1	0
-      VERTEX	CURVE_P	hub_crv_1	1
-   NI_END	channel_curve hub
-   NI_BEGIN	channel_curve shroud
-      NAME		shroud
-      VERTEX	CURVE_P	shroud_crv_1	0
-      VERTEX	CURVE_P	shroud_crv_1	1
-   NI_END	channel_curve shroud
-NI_END	CHANNEL
-NI_BEGIN	NIROW
-   NAME		row 1
-   TYPE		normal
-   PERIODICITY	2.456154e-02
-   NI_BEGIN	NIBLADE
-      NAME		main blade
-      NI_BEGIN	NIBLADEGEOMETRY
-         TYPE			GEOMTURBO
-         GEOMETRY_MODIFIED	0
-         GEOMETRY TURBO VERSION 5
-         blade_expansion_factor_hub       2
-         blade_expansion_factor_shroud    1.5
-         intersection_npts                10
-         intersection_control             0
-         data_reduction                   0
-         data_reduction_spacing_tolerance 1E-006
-         data_reduction_angle_tolerance   90
-         number_of_blades               2.456154e-02
-         suction
-         SECTIONAL
-         2
-         # section 1
-         XYZ
+VERSION		 5.8
+TOLERANCE	 1e-06
+UNITS        Meters
+UNITS-FACTOR 1
+cascade yes
+NI_BEGIN CHANNEL 
+ NI_BEGIN basic_curve
+  NAME		 hub_crv_1
+  DISCRETISATION 10
+  DATA_REDUCTION 0
+  NI_BEGIN zrcurve
+   ZR
+   ?IN_HUBCURVE
+  NI_END zrcurve
+ NI_END   basic_curve
+ NI_BEGIN basic_curve
+  NAME		 shroud_crv_1
+  DISCRETISATION 10
+  DATA_REDUCTION 0
+  NI_BEGIN zrcurve
+   ZR
+   ?IN_SHROUD
+  NI_END zrcurve
+ NI_END   basic_curve
+ NI_BEGIN channel_curve hub    
+  NAME		 hub
+  VERTEX	 CURVE_P hub_crv_1 0
+  VERTEX	 CURVE_P hub_crv_1 1
+ NI_END   channel_curve hub    
+ NI_BEGIN channel_curve shroud 
+  NAME		 shroud
+  VERTEX	 CURVE_P shroud_crv_1 0
+  VERTEX	 CURVE_P shroud_crv_1 1
+ NI_END   channel_curve shroud 
+ NI_BEGIN channel_curve nozzle 
+  NAME		 nozzle
+ NI_END   channel_curve nozzle 
+NI_END   CHANNEL 
+NI_BEGIN nirow
+  NAME			row 1
+  TYPE			normal
+  PERIODICITY			?PERIODICITY
+  GEOMETRY_PERIODICITY_NUMBER 1
+  ROTATION_SPEED		0
+NI_BEGIN NINonAxiSurfaces hub
+  NAME			non axisymmetric hub
+  REPETITION			0
+NI_END   NINonAxiSurfaces hub
+NI_BEGIN NINonAxiSurfaces shroud
+  NAME			non axisymmetric shroud
+  REPETITION			0
+NI_END   NINonAxiSurfaces shroud
+NI_BEGIN NINonAxiSurfaces tip_gap
+  NAME			non axisymmetric tip gap
+  REPETITION			0
+NI_END   NINonAxiSurfaces tip_gap
+NI_BEGIN NIBlade
+  NAME			main blade
+NI_BEGIN nibladegeometry
+	TYPE	GEOMTURBO
+	GEOMETRY_MODIFIED	0
+intersection_npts    10
+intersection_control 0
+intersection_check_ratio 5
+blade_expansion_factor_hub	  2
+blade_expansion_factor_shroud 1.5
+blade_tangential_definition	  0
+number_of_blades    ?NOB_AV
+suction
+SECTIONAL
+2
+# section 1
+XYZ
 ?IN_UPPER1
-         # section 2
-         XYZ
+# section 2
+XYZ
 ?IN_UPPER2
-         pressure
-         SECTIONAL
-         2
-         # section 1
-         XYZ
+pressure
+SECTIONAL
+2
+# section 1
+XYZ
 ?IN_LOWER1
-         # section 2
-         XYZ
+# section 2
+XYZ
 ?IN_LOWER2
-      NI_END	NIBLADEGEOMETRY
-   NI_END	NIBLADE
-   NI_BEGIN	NIBLADE
-      NAME		splitter 1
-      NI_BEGIN	NIBLADEGEOMETRY
-         TYPE			GEOMTURBO
-         GEOMETRY_MODIFIED	0
-         GEOMETRY TURBO VERSION 5
-         blade_expansion_factor_hub       2
-         blade_expansion_factor_shroud    1.5
-         intersection_npts                10
-         intersection_control             0
-         data_reduction                   0
-         data_reduction_spacing_tolerance 1E-006
-         data_reduction_angle_tolerance   90
-         number_of_blades               2.456154e-02
-         suction
-         SECTIONAL
-         2
-         # section 1
-         XYZ
+NI_END   nibladegeometry
+NI_BEGIN nisolid_angle_at_leading_edge
+3
+-1.49707991229514e-15 0.08593 -0.924242998403148
+-3.12385750947386e-18 0.0864300008655337 -0.924242998402276
+-4.06575814682064e-20 0.08693 -0.924242998402688
+NI_END   nisolid_angle_at_leading_edge
+NI_BEGIN nisolid_angle_at_trailing_edge
+3
+0.0158284566539548 0.08593 0.600510718421417
+0.0158284566539548 0.0864300014007262 0.600510718421387
+0.0158284566539548 0.08693 0.600510718421403
+NI_END   nisolid_angle_at_trailing_edge
+  DUPLICATION_NUMBER		1
+  DUPLICATION_ZANGLE		1e+30
+  DUPLICATION_BLADE_ANGLE	0
+  DUPLICATION_BLADE_AXIS	1 0 0
+  DUPLICATION_BLADE_AXISPt	0 0 0
+  SOLID_BODY_CONFIGURATION	0
+NI_END   NIBlade
+NI_BEGIN NIBlade
+  NAME			splitter 1
+NI_BEGIN nibladegeometry
+	TYPE	GEOMTURBO
+	GEOMETRY_MODIFIED	0
+intersection_npts    10
+intersection_control 0
+intersection_check_ratio 5
+blade_expansion_factor_hub	  2
+blade_expansion_factor_shroud 1.5
+blade_tangential_definition	  0
+number_of_blades    ?NOB_FV
+suction
+SECTIONAL
+2
+# section 1
+XYZ
 ?IN_UPPERAV1
-         # section 2
-         XYZ
+# section 2
+XYZ
 ?IN_UPPERAV2
-         pressure
-         SECTIONAL
-         2
-         # section 1
-         XYZ
+pressure
+SECTIONAL
+2
+# section 1
+XYZ
 ?IN_LOWERAV1
-         # section 2
-         XYZ
+# section 2
+XYZ
 ?IN_LOWERAV2
-      NI_END	NIBLADEGEOMETRY
-   NI_END	NIBLADE
-NI_END	NIROW
-NI_END	GEOMTURBO
+NI_END   nibladegeometry
+NI_BEGIN nisolid_angle_at_leading_edge
+3
+0.0164774046349974 0.08593 -0.734616903567
+0.0164774046349968 0.086430001422134 -0.734616903566724
+0.0164774046349959 0.08693 -0.734616903566212
+NI_END   nisolid_angle_at_leading_edge
+NI_BEGIN nisolid_angle_at_trailing_edge
+3
+0.0364497194551858 0.08593 0.0965550780129096
+0.0364497194551858 0.0864300020982606 0.0965550780128115
+0.0364497194551858 0.08693 0.0965550780121058
+NI_END   nisolid_angle_at_trailing_edge
+  DUPLICATION_NUMBER		1
+  DUPLICATION_ZANGLE		1e+30
+  DUPLICATION_BLADE_ANGLE	0
+  DUPLICATION_BLADE_AXIS	1 0 0
+  DUPLICATION_BLADE_AXISPt	0 0 0
+  SOLID_BODY_CONFIGURATION	0
+NI_END   NIBlade
+NI_END   nirow
+NI_END GEOMTURBO
 
 NI_BEGIN GEOMETRY
+# IGG GEOMETRY VERSION 5
+#  Number of Points   :
+0
+#  Number of Curves   :
+0
+#  Number of Surfaces :
+0
+#  Number of Groups :
+0
 NI_END   GEOMETRY
