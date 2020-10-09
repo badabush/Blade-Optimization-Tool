@@ -19,7 +19,7 @@ from module.UI.annulus_ui import AnnulusUi
 from module.UI.ssh_login_ui import SSHLoginUi
 from module.UI.save_load_config import SaveLoadConfig
 from module.UI.optimizer_handle import OptimHandler
-from module.UI.optimizer_loadblade import LoadBlade
+from module.optimizer.optimizer_loadblade import LoadBlade
 
 
 class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig, LoadBlade):

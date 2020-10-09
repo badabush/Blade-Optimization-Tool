@@ -1,15 +1,9 @@
-import sys
-import pandas as pd
-from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QApplication, QTableView
 from PyQt5.QtCore import QAbstractTableModel, Qt
 
 class pandasModel(QAbstractTableModel):
 
     def __init__(self, data):
         QAbstractTableModel.__init__(self)
-        # super(pandasModel, self).__init__()
-        # uic.loadUi('UI/qtdesigner/pdtablewindow.ui', self)
         self._data = data
 
     def rowCount(self, parent=None):

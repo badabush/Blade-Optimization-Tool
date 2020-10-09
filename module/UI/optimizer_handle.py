@@ -1,4 +1,3 @@
-from pathlib import Path
 import paramiko
 import time, datetime
 import threading
@@ -14,9 +13,9 @@ from pyface.qt import QtGui
 from PyQt5.QtWidgets import QTableView
 
 from module.optimizer.ssh_login import ssh_connect
-from module.optimizer.optimtools import read_top_usage, parse_res, cleanpaths
-from module.UI.pandasviewer import pandasModel
+from module.optimizer.optimtools import read_top_usage, parse_res, cleanpaths, read_xmf
 from module.optimizer.generate_script import gen_script
+from module.optimizer.pandasviewer import pandasModel
 
 
 class OptimHandler:
@@ -57,7 +56,7 @@ class OptimHandler:
         # set default paths for lazy development
         self.box_pathtodir.setText("//130.149.110.81/liang/Tandem_Opti")
         self.box_pathtoiec.setText("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3.iec")
-        self.box_pathtoigg.setText("//130.149.110.81/liang/Tandem_Opti/Erstes_Netz_Tandem.igg")
+        self.box_pathtoigg.setText("//130.149.110.81/liang/Tandem_Opti/BOT/template/autogrid/test_template.igg")
         self.box_pathtorun.setText(
             "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.run")
         self.box_pathtogeomturbo.setText("//130.149.110.81/liang/Tandem_Opti/BOT/geomturbo_files/testgeom.geomTurbo")
@@ -66,6 +65,13 @@ class OptimHandler:
 
         self.paths = {}
         self.grab_paths
+
+        # init XMF dict
+        self.xmf_param = {}  # [['Inlet', Outlet'], ...]
+        self.xmf_param['abs_total_pressure'] = []
+        self.xmf_param['static_pressure'] = []
+
+        self.first_run = True
 
     def toggle_leds(self, led, state):
         if state == 0:
@@ -189,9 +195,10 @@ class OptimHandler:
                 self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
             self.outputbox(stdout)
 
-            # start thread to read res file
-            t = threading.Thread(name='res_reader', target=self.read_res)
-            t.start()
+            if self.first_run == True:
+                # start thread to read res file
+                t = threading.Thread(name='res_reader', target=self.read_res)
+                t.start()
 
         except (paramiko.ssh_exception.NoValidConnectionsError) as e:
             self.outputbox(e)
@@ -204,14 +211,17 @@ class OptimHandler:
 
         self.outputbox("starting thread for reading .res-file.")
         self.kill = False
+        self.pause_loop = False
         ds_res = {}
 
+
         res_file = self.paths['res']
+        xmf_file = self.paths['xmf']
         # delete old .res file
         try:
             os.remove(res_file)
-        except FileNotFoundError:
-            pass
+        except (FileNotFoundError, PermissionError):
+            print("No .res file removed.")
         timeout = 0
         # wait for fineTurbo to start calculation by checking for the existance of .res-file
         # timeout at 30s
@@ -226,32 +236,47 @@ class OptimHandler:
 
         # start thread for .res reader generator
         if (timeout >= 30):
-            self.outputbox("Error starting the process. Close existing Fine Taskmanager window.")
+            self.outputbox("Error starting the process. Check FineTaskmanager window.")
             return
 
         self.outputbox("Starting computation ..")
         start_time = datetime.datetime.now()
         q = queue.Queue()
-        t2 = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q, self.kill))
-        t2.start()
+        if self.first_run == True:
+            t2 = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q, self.pause_loop))
+            t2.start()
+            self.first_run = False
+        else:
+            # reset and clear queue and dicts
+            q.queue.clear()
+            ds_res = {}
+
         niter = self.opt_param["niter"]
-        while (self.kill == False):
+        while (True):
             try:
                 # get new data from queue
-                val = q.get()
-                idx = int(val[0])
-                ds_res[idx] = val
-                print(val)
-                self.optifig.animate(ds_res)
-
-                if (idx == (niter + 100)):
-                    self.outputbox("Cleaning up.")
+                if (self.pause_loop == True):
+                    idx = 0
                     time.sleep(5)
-                    self.kill_loop()
-                    elapsed_time = datetime.datetime.now() - start_time
-                    min, sec = divmod(elapsed_time.seconds, 60)
-                    hour, min = divmod(min, 60)
-                    self.outputbox("Total time elapsed: " + str(hour) + ":" + str(min) + ":" + str(sec))
+                else:
+                    val = q.get()
+                    idx = int(val[0])
+                    ds_res[idx] = val
+                    print(val)
+                    self.optifig.animate(ds_res)
+
+                    if (idx == (niter + 100)):
+                        self.outputbox("Cleaning up.")
+                        time.sleep(5)
+                        self.kill_loop()
+                        # save values from XMF
+                        self.xmf_param = read_xmf(xmf_file, self.xmf_param)
+
+                        # display time elapsed
+                        elapsed_time = datetime.datetime.now() - start_time
+                        min, sec = divmod(elapsed_time.seconds, 60)
+                        hour, min = divmod(min, 60)
+                        self.outputbox("Total time elapsed: " + str(hour) + ":" + str(min) + ":" + str(sec))
             except TypeError as e:
                 print(e)
             time.sleep(.1)
@@ -296,7 +321,8 @@ class OptimHandler:
 
         :raise: AttributeError
         """
-        self.kill = True
+        # self.kill = True
+        self.pause_loop = True
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
         try:

@@ -1113,7 +1113,7 @@
         <item row="2" column="0">
          <widget class="QPushButton" name="btn_quota">
           <property name="text">
-           <string>generate Meshflie (.igg)</string>
+           <string>generate Meshfile (.igg)</string>
           </property>
          </widget>
         </item>

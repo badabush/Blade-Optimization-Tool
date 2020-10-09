@@ -1,5 +1,7 @@
 import pandas as pd
 from pathlib import Path
+import xmltodict
+import time
 
 def read_top_usage(top_usage):
     """
@@ -33,7 +35,7 @@ def read_by_token(fileobj):
         yield ds
 
 
-def parse_res(file, q, kill):
+def parse_res(file, q, pause):
     """
     Worker thread to read new lines from res. Only queues relevant lines. Breaks loop when kill==True
     """
@@ -45,9 +47,29 @@ def parse_res(file, q, kill):
                 q.put(token)
 
         # break loop when kill==True
-        if kill:
+        if pause:
+            try:
+                fp.close()
+            except FileNotFoundError:
+                pass
+            time.sleep(5)
             break
 
+def read_xmf(file, param):
+
+    with open(file) as f:
+        doc = xmltodict.parse(f.read())
+        doclist = list(doc.items())
+        param['abs_total_pressure'].append([
+            float(doclist[0][1]['Station'][1]['Condition'][1]['float'][0]['#text']),
+            float(doclist[0][1]['Station'][0]['Condition'][1]['float'][0]['#text'])
+        ])
+        param['static_pressure'].append([
+            float(doclist[0][1]['Station'][1]['Condition'][0]['float'][0]['#text']),
+            float(doclist[0][1]['Station'][0]['Condition'][0]['float'][0]['#text'])
+        ])
+        print(param['abs_total_pressure'])
+        return param
 
 def cleanpaths(paths):
     """
@@ -74,6 +96,12 @@ def cleanpaths(paths):
     paths['igg'] = path_list[2][-1]  # igg file
     paths['run'] = path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1]  # run file
     paths['res'] = paths['dir_raw'] + '/' + path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1][:-3] + 'res'  # res file
+    paths['xmf'] = paths['dir_raw'] + '/' + path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1][:-3] + 'xmf'  # xmf file
     paths['template'] = paths['dir_raw'] + '/BOT/template'
     paths['template_unix'] = paths['usr_folder'] + '/' + paths['proj_folder'] + '/BOT/template'
     return paths
+
+
+# if __name__ == "__main__":
+#     f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.xmf"
+#     read_xmf(f)
