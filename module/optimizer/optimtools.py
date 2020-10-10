@@ -93,7 +93,7 @@ def cleanpaths(paths):
     paths['usr_folder'] = paths['dir'][-2]
     paths['proj_folder'] = paths['dir'][-1]
     paths['iec'] = path_list[1][-2] + '/' + path_list[1][-1]  # iec file
-    paths['igg'] = path_list[2][-1]  # igg file
+    paths['igg'] = 'BOT/template/autogrid/' + path_list[2][-1]  # igg file
     paths['run'] = path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1]  # run file
     paths['res'] = paths['dir_raw'] + '/' + path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1][:-3] + 'res'  # res file
     paths['xmf'] = paths['dir_raw'] + '/' + path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1][:-3] + 'xmf'  # xmf file

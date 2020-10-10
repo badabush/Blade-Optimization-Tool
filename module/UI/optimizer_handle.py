@@ -169,6 +169,8 @@ class OptimHandler:
 
         # refresh paths
         self.grab_paths()
+        # clear plot
+        self.optifig.animate({})
 
         if self.box_pathtodir.text() == "":
             self.outputbox("Set Path to Project Directory first!")
@@ -335,6 +337,16 @@ class OptimHandler:
             else:
                 stdout = self.sshobj.send_cmd("kill " + str(stdout))
                 self.outputbox("Killed fine taskManager.")
+
+            self.outputbox("Attempting to kill process.")
+            stdout = self.sshobj.send_cmd(
+                'ps aux | grep -v grep | grep "/opt/numeca/fine131/LINUX/euranus/euranusTurbox86_64" | grep "[f]ine" | grep "' + self.box_DISPLAY.text() + '"' + " | awk '{print $2}'")
+            if stdout == "":
+                self.outputbox("No running processes found.")
+                return
+            else:
+                stdout = self.sshobj.send_cmd("kill " + str(stdout))
+                self.outputbox("Killed fine EuranusTurbo.")
 
         except AttributeError:
             self.outputbox("Error killing the process.")
