@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QSizePolicy
 from PyQt5 import QtWidgets, uic
 from module.optimizer.ssh_login.ssh_connect import SshUtil
 
+
 class SSHLoginUi(QtWidgets.QMainWindow):
 
     def __init__(self):
@@ -16,7 +17,6 @@ class SSHLoginUi(QtWidgets.QMainWindow):
         self.btn_cls.clicked.connect(self.close_window)
         # Connect Buttons to updating plot.
 
-
     def create_config(self):
         username = self.input_usr.text()
         password = self.input_pwd.text()
@@ -26,8 +26,6 @@ class SSHLoginUi(QtWidgets.QMainWindow):
 
         SshUtil.generate_config(username, password, 'node05')
         self.close()
-
-
 
     def close_window(self):
         """

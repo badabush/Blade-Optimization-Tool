@@ -17,6 +17,7 @@ class FileExplorer:
         Opens a File Explorer to select Project folder.
         :return: None
         """
+
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         input_dir = QFileDialog.getExistingDirectory(self, "Open a folder", expanduser("~"))
@@ -27,6 +28,7 @@ class FileExplorer:
         Opens a File Explorer to select iec file.
         :return: None
         """
+
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
         fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", self.box_pathtodir.text(),

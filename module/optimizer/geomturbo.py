@@ -202,7 +202,7 @@ class GeomTurboFile:
 
         # replace tabspace with 8 whitespaces TODO: check if it works without this cleanup
         f_str = f_str.replace("\t\t", "        ")
-        fsave = open(self.save_path / self.fname, "w")
+        fsave = open(self.save_path / self.fname, "x")
         fsave.write(f_str)
 
 
