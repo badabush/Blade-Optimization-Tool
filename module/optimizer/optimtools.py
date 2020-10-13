@@ -51,6 +51,7 @@ def parse_res(file, q, pause):
             try:
                 fp.close()
             except FileNotFoundError:
+                print('Could not close file.')
                 pass
             time.sleep(5)
             break

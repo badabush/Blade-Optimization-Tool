@@ -245,6 +245,7 @@ class OptimHandler:
             # reset and clear queue and dicts
             q.queue.clear()
             ds_res = {}
+            self.optifig.clear()
 
         niter = self.opt_param["niter"]
         while (True):
@@ -400,3 +401,6 @@ class OptimPlotCanvas(FigureCanvas):
         elif len(ds) == 100:
             self.ax.axvline(100, alpha=0.3)
         self.draw()
+
+    def clear(self):
+        self.ax.clear()
