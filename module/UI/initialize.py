@@ -80,11 +80,23 @@ class Initialize:
 
         self.slider['dist_blades'] = self.slider_dist_blades
         self.label['dist_blades'] = self.val_dist_blades
+
+        self.slider['PP'] = self.slider_PP
+        self.label['PP'] = self.val_PP
+
+        self.slider['AO'] = self.slider_AO
+        self.label['AO'] = self.val_AO
+
         for key in self.slider:
             retval = self.set_restraint(key)
             if retval == 1:
                 # set default values for floats
-                self.label[key].setSingleStep(0.0001)
+                if key == 'PP' or key == 'AO':
+                    self.label[key].setSingleStep(0.001)
+                elif key == 'dist_blades':
+                    self.label[key].setSingleStep(0.01)
+                else:
+                    self.label[key].setSingleStep(0.0001)
                 self.label[key].setValue(self.restraints[key][3])
 
         # connect labels->slider
@@ -101,8 +113,13 @@ class Initialize:
         self.label['th_le'].editingFinished.connect(self.update_box_thle)
         self.slider['th_te'].valueChanged[int].connect(self.update_thte)
         self.label['th_te'].editingFinished.connect(self.update_box_thte)
+
         self.slider['dist_blades'].valueChanged[int].connect(self.update_dist_blades)
         self.label['dist_blades'].editingFinished.connect(self.update_box_dist_blades)
+        self.slider['PP'].valueChanged[int].connect(self.update_PP)
+        self.label['PP'].editingFinished.connect(self.update_box_PP)
+        self.slider['AO'].valueChanged[int].connect(self.update_AO)
+        self.label['AO'].editingFinished.connect(self.update_box_AO)
 
     def set_restraint(self, key):
         """

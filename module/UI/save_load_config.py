@@ -1,8 +1,6 @@
 from PyQt5.QtWidgets import QSizePolicy, QFileDialog
 import numpy as np
 
-from module.blade.bladetools import ImportExport, normalize
-from module.UI.bladedesigner_handle import BDUpdateHandler
 from pathlib import Path
 import os
 import csv
@@ -44,7 +42,7 @@ class SaveLoadConfig:
                     # values to float
                     for key in row.keys():
                         try:
-                            if key == "pts":
+                            if key == "pts" or key == "pts_th":
                                 pts = []
                                 string = row[key]
                                 string = string.strip("[").strip("]").split("]\n [")
