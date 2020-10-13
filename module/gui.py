@@ -19,7 +19,8 @@ from module.UI.annulus_ui import AnnulusUi
 from module.UI.ssh_login_ui import SSHLoginUi
 from module.UI.save_load_config import SaveLoadConfig
 from module.UI.optimizer_handle import OptimHandler
-from module.UI.optimizer_loadblade import LoadBlade
+from module.optimizer.optimizer_loadblade import LoadBlade
+from module.UI.generate_mesh_ui import MeshGenUI
 
 
 class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig, LoadBlade):
@@ -27,7 +28,6 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
         restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
         Slider and Textboxes are linked, so change one will modify the other (and vice versa).
-        Plot will save zoom state even on updating plot.
     """
 
     def __init__(self):
@@ -74,9 +74,6 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         self.actionsave_as_txt.triggered.connect(self.saveFileDialog)
         self.actionCredential.triggered.connect(self.ssh_config_window)
 
-        # optimizer inits
-        self.optim_handler_init()
-
         #save/load blade config
         self.actionSave_config.triggered.connect(self.save_config)
         self.actionLoad_config.triggered.connect(self.load_config)
@@ -104,6 +101,10 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         self.btn_in_down.clicked.connect(self.update_in_down)
         self.btn_in_left.clicked.connect(self.update_in_left)
         self.btn_in_right.clicked.connect(self.update_in_right)
+
+        """ Optimizer links """
+        # optimizer inits
+        self.optim_handler_init()
 
 
         # run once on startup

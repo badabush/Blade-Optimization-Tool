@@ -1,9 +1,9 @@
-from pathlib import Path
 import paramiko
 import time, datetime
 import threading
 import os, glob
 import queue
+from pathlib import Path
 
 from PyQt5.QtWidgets import QSizePolicy
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -14,9 +14,10 @@ from pyface.qt import QtGui
 from PyQt5.QtWidgets import QTableView
 
 from module.optimizer.ssh_login import ssh_connect
-from module.optimizer.optimtools import read_top_usage, parse_res, cleanpaths
-from module.UI.pandasviewer import pandasModel
+from module.optimizer.optimtools import read_top_usage, parse_res, cleanpaths, read_xmf
 from module.optimizer.generate_script import gen_script
+from module.optimizer.pandasviewer import pandasModel
+from module.UI.generate_mesh_ui import MeshGenUI
 
 
 class OptimHandler:
@@ -31,7 +32,7 @@ class OptimHandler:
 
         self.btn_testconnect.clicked.connect(self.ssh_connect)
         self.btn_topcmd.clicked.connect(self.display_top)
-        self.btn_quota.clicked.connect(self.create_meshfile)
+        self.btn_gen_mesh.clicked.connect(self.create_meshfile)
         self.btn_close_connection.clicked.connect(self.close_connection)
         self.btn_projectpath.clicked.connect(self.project_explorer_dir)
         self.btn_projectiec.clicked.connect(self.project_explorer_iec)
@@ -57,15 +58,22 @@ class OptimHandler:
         # set default paths for lazy development
         self.box_pathtodir.setText("//130.149.110.81/liang/Tandem_Opti")
         self.box_pathtoiec.setText("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3.iec")
-        self.box_pathtoigg.setText("//130.149.110.81/liang/Tandem_Opti/Erstes_Netz_Tandem.igg")
+        self.box_pathtoigg.setText("//130.149.110.81/liang/Tandem_Opti/BOT/template/autogrid/test_template.igg")
         self.box_pathtorun.setText(
             "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.run")
-        self.box_pathtogeomturbo.setText("//130.149.110.81/liang/Tandem_Opti/BOT/geomturbo_files/testgeom.geomTurbo")
+        # self.box_pathtogeomturbo.setText("//130.149.110.81/liang/Tandem_Opti/BOT/geomturbo_files/testgeom.geomTurbo")
 
         # grab paths
 
         self.paths = {}
         self.grab_paths
+
+        # init XMF dict
+        self.xmf_param = {}  # [['Inlet', Outlet'], ...]
+        self.xmf_param['abs_total_pressure'] = []
+        self.xmf_param['static_pressure'] = []
+
+        self.first_run = True
 
     def toggle_leds(self, led, state):
         if state == 0:
@@ -78,9 +86,14 @@ class OptimHandler:
     def grab_paths(self):
         self.paths['dir'] = self.box_pathtodir.text()
         self.paths['iec'] = self.box_pathtoiec.text()
-        self.paths['igg'] = self.box_pathtoigg.text()
         self.paths['run'] = self.box_pathtorun.text()
-        self.paths['geomturbo'] = self.box_pathtogeomturbo.text()
+        self.paths['igg'] = self.box_pathtoigg.text()
+        # try:
+        # self.paths['geomturbo'] = self.meshgen.geomturbopath
+        # except AttributeError as e:
+        #     print(e)
+        # self.paths['igg'] = ""
+        # self.paths['geomturbo'] = ""
         self.paths = cleanpaths(self.paths)
 
     def ssh_connect(self):
@@ -127,20 +140,6 @@ class OptimHandler:
         except ValueError:
             self.outputbox("Error displaying pdTable.")
 
-    def create_meshfile(self):
-        """
-        Send command quota, displays stdout.
-        """
-        # check for existing connection
-        if not hasattr(self, 'sshobj'):
-            self.ssh_connect()
-        try:
-            t = threading.Thread(name = "create_meshfile", target=self.run_igg)
-            t.start()
-            # self.run_igg()
-        except AttributeError:
-            self.outputbox("Connecting...")
-
     def close_connection(self):
         """
         Closes the active ssh session.
@@ -163,6 +162,8 @@ class OptimHandler:
 
         # refresh paths
         self.grab_paths()
+        # clear plot
+        self.optifig.animate({})
 
         if self.box_pathtodir.text() == "":
             self.outputbox("Set Path to Project Directory first!")
@@ -189,9 +190,10 @@ class OptimHandler:
                 self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
             self.outputbox(stdout)
 
-            # start thread to read res file
-            t = threading.Thread(name='res_reader', target=self.read_res)
-            t.start()
+            if self.first_run == True:
+                # start thread to read res file
+                t = threading.Thread(name='res_reader', target=self.read_res)
+                t.start()
 
         except (paramiko.ssh_exception.NoValidConnectionsError) as e:
             self.outputbox(e)
@@ -204,83 +206,121 @@ class OptimHandler:
 
         self.outputbox("starting thread for reading .res-file.")
         self.kill = False
+        self.pause_loop = False
         ds_res = {}
 
         res_file = self.paths['res']
+        xmf_file = self.paths['xmf']
         # delete old .res file
         try:
             os.remove(res_file)
-        except FileNotFoundError:
-            pass
+        except (FileNotFoundError, PermissionError):
+            print("No .res file removed.")
         timeout = 0
         # wait for fineTurbo to start calculation by checking for the existance of .res-file
         # timeout at 30s
-        while timeout <= 30:
+        while timeout <= 300 :
             if os.path.exists(res_file):
                 break
-            elif self.kill:
+            elif self.pause_loop:
                 return
-            self.outputbox("Waiting for Process, timeout (" + str(timeout) + "/30)")
+            if timeout % 10 == 0:
+                self.outputbox("Waiting for Process, timeout (" + str(timeout) + "/300)")
             timeout += 1
             time.sleep(1)
 
         # start thread for .res reader generator
-        if (timeout >= 30):
-            self.outputbox("Error starting the process. Close existing Fine Taskmanager window.")
+        if (timeout >= 300):
+            self.outputbox("Error starting the process. Check FineTaskmanager window.")
             return
 
         self.outputbox("Starting computation ..")
         start_time = datetime.datetime.now()
         q = queue.Queue()
-        t2 = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q, self.kill))
-        t2.start()
+        if self.first_run == True:
+            t2 = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q, self.pause_loop))
+            t2.start()
+            self.first_run = False
+        else:
+            # reset and clear queue and dicts
+            q.queue.clear()
+            ds_res = {}
+            self.optifig.clear()
+
         niter = self.opt_param["niter"]
-        while (self.kill == False):
+        while (True):
             try:
                 # get new data from queue
-                val = q.get()
-                idx = int(val[0])
-                ds_res[idx] = val
-                print(val)
-                self.optifig.animate(ds_res)
-
-                if (idx == (niter + 100)):
-                    self.outputbox("Cleaning up.")
+                if (self.pause_loop == True):
+                    idx = 0
                     time.sleep(5)
-                    self.kill_loop()
-                    elapsed_time = datetime.datetime.now() - start_time
-                    min, sec = divmod(elapsed_time.seconds, 60)
-                    hour, min = divmod(min, 60)
-                    self.outputbox("Total time elapsed: " + str(hour) + ":" + str(min) + ":" + str(sec))
+                else:
+                    val = q.get()
+                    idx = int(val[0])
+                    ds_res[idx] = val
+                    print(val)
+                    self.optifig.animate(ds_res)
+
+                    if (idx == (niter + 100)):
+                        self.outputbox("Cleaning up.")
+                        time.sleep(5)
+                        self.kill_loop()
+                        # save values from XMF
+                        self.xmf_param = read_xmf(xmf_file, self.xmf_param)
+
+                        # display time elapsed
+                        elapsed_time = datetime.datetime.now() - start_time
+                        min, sec = divmod(elapsed_time.seconds, 60)
+                        hour, min = divmod(min, 60)
+                        self.outputbox("Total time elapsed: " + str(hour) + ":" + str(min) + ":" + str(sec))
             except TypeError as e:
                 print(e)
             time.sleep(.1)
 
-    def run_igg(self):
-        # delete existing stuff in folder
-        # todo: replace hardcoded path
+    def create_meshfile(self):
+        """
+        Opens the Mesh Generation Window.
+        """
+        self.meshgen = MeshGenUI()
+        # self.meshgen.show()
+        self.meshgen.exec_()
+        # check for existing connection
+        if not hasattr(self, 'sshobj'):
+            self.ssh_connect()
+        try:
+            t = threading.Thread(name="create_meshfile", target=self.run_igg)
+            t.start()
+        except AttributeError:
+            self.outputbox("Connecting...")
 
-        # refresh paths
+    def run_igg(self):
+        # get path from dialog window
         self.grab_paths()
-        path = self.paths['template']
+        geomturbopath = self.meshgen.geomturbopath
+        geomturboname = Path(geomturbopath).parts[-1].split('.')[0]
+        path = self.meshgen.iggfolder
+        iggname = self.meshgen.iggname.split('.')[0]
+        unix_projpath = "/home/HLR/" + self.paths['usr_folder'] + '/' + self.paths['proj_folder']
+        path_unix = path.replace(self.paths['dir_raw'], unix_projpath)
+        gT_unix = geomturbopath.replace(self.paths['dir_raw'], unix_projpath)
+
         # delete existing files in /autogrid/
         try:
-            files = glob.glob(path + '/autogrid/*')
+            files = glob.glob(path + '/*')
             for f in files:
                 os.remove(f)
         except OSError:
             pass
-        # create .geomTurbo and .trb in /autogrid/
-        fname = "test_template"
-        self.create_geomturbo(fname)
-        self.create_trb(fname)
+        # create .geomTurbo and .trb in folder
+        self.create_geomturbo(geomturboname, path)
+        self.create_trb(iggname, path)
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
         self.outputbox("Generating Mesh. This might take a while.")
         stdout = self.sshobj.send_cmd(
             self.display + "/opt/numeca/bin/igg131 -batch -print -autogrid5 " +
-            "-trb /home/HLR/" + self.paths["template_unix"] + "/autogrid/" + fname + ".trb " +
-            " -geomTurbo /home/HLR/" + self.paths["template_unix"] + "/autogrid/" + fname + ".geomTurbo " +
-            " -mesh /home/HLR/" + self.paths["template_unix"] + "/autogrid/" + fname + ".igg " +
+            "-trb " + path_unix + iggname + ".trb " +
+            " -geomTurbo " + gT_unix + " " +
+            " -mesh " + path_unix + iggname + ".igg " +
             "-niversion 131"
         )
         # self.outputbox(stdout)
@@ -296,7 +336,8 @@ class OptimHandler:
 
         :raise: AttributeError
         """
-        self.kill = True
+        # self.kill = True
+        self.pause_loop = True
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
         try:
@@ -309,6 +350,16 @@ class OptimHandler:
             else:
                 stdout = self.sshobj.send_cmd("kill " + str(stdout))
                 self.outputbox("Killed fine taskManager.")
+
+            self.outputbox("Attempting to kill process.")
+            stdout = self.sshobj.send_cmd(
+                'ps aux | grep -v grep | grep "/opt/numeca/fine131/LINUX/euranus/euranusTurbox86_64" | grep "[f]ine" | grep "' + self.box_DISPLAY.text() + '"' + " | awk '{print $2}'")
+            if stdout == "":
+                self.outputbox("No running processes found.")
+                return
+            else:
+                stdout = self.sshobj.send_cmd("kill " + str(stdout))
+                self.outputbox("Killed fine EuranusTurbo.")
 
         except AttributeError:
             self.outputbox("Error killing the process.")
@@ -350,3 +401,6 @@ class OptimPlotCanvas(FigureCanvas):
         elif len(ds) == 100:
             self.ax.axvline(100, alpha=0.3)
         self.draw()
+
+    def clear(self):
+        self.ax.clear()

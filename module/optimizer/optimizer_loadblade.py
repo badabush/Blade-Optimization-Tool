@@ -8,7 +8,7 @@ from module.optimizer.geomturbo import GeomTurboFile
 
 
 class LoadBlade:
-    def create_geomturbo(self, fname):
+    def create_geomturbo(self, fname, path):
         blade = []
         # generate blades from parameter
         ds = self.ds
@@ -47,7 +47,7 @@ class LoadBlade:
                 blade_flip[:, 0] = blade_data[:, 1]
                 blade_flip[:, 1] = blade_data[:, 0]
                 blade.append(np.array([z, blade_flip[:, 0], blade_flip[:, 1]]).T)
-        path = self.paths["template"] + "/autogrid/"
+
         rh = 0.5 * 0.172
         r = 0.043 * 0.01 + rh
         c_t = 0.043
@@ -61,9 +61,9 @@ class LoadBlade:
         except:
             print("error creating geomTurbo file.")
 
-    def create_trb(self, fname):
+    def create_trb(self, fname, path):
         temp_path = Path(os.getcwd() + "/optimizer/template/")
-        save_path = Path(self.paths["template"] + "/autogrid/")
+        save_path = Path(path)
         try:
             f = open(temp_path / "trb_template.trb", "r")
             fsave = open(save_path / (fname + ".trb"), "w")

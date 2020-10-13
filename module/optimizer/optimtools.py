@@ -1,5 +1,7 @@
 import pandas as pd
 from pathlib import Path
+import xmltodict
+import time
 
 def read_top_usage(top_usage):
     """
@@ -33,7 +35,7 @@ def read_by_token(fileobj):
         yield ds
 
 
-def parse_res(file, q, kill):
+def parse_res(file, q, pause):
     """
     Worker thread to read new lines from res. Only queues relevant lines. Breaks loop when kill==True
     """
@@ -45,35 +47,55 @@ def parse_res(file, q, kill):
                 q.put(token)
 
         # break loop when kill==True
-        if kill:
+        if pause:
+            try:
+                fp.close()
+            except FileNotFoundError:
+                print('Could not close file.')
+                pass
+            time.sleep(5)
             break
 
+def read_xmf(file, param):
 
-def cleanpaths(paths):
+    with open(file) as f:
+        doc = xmltodict.parse(f.read())
+        doclist = list(doc.items())
+        param['abs_total_pressure'].append([
+            float(doclist[0][1]['Station'][1]['Condition'][1]['float'][0]['#text']),
+            float(doclist[0][1]['Station'][0]['Condition'][1]['float'][0]['#text'])
+        ])
+        param['static_pressure'].append([
+            float(doclist[0][1]['Station'][1]['Condition'][0]['float'][0]['#text']),
+            float(doclist[0][1]['Station'][0]['Condition'][0]['float'][0]['#text'])
+        ])
+        print(param['abs_total_pressure'])
+        return param
+
+def cleanpaths(path_dict):
     """
     Cleans up input paths for usage in generate_script and optimhandle.
     """
 
-    path_list = []
-    for key, path in paths.items():
-        if path[0] == "/" and path[1] == "/":
-            path = path[1:]
-        path = Path(path)
-        path_list.append(path.parts)
-
-    # dict entry for every file/folder path.
-    paths['dir_raw'] = paths['dir']
-    if paths['dir'][0] == "/" and paths['dir'][1] == "/":
-        paths['dir'] = paths['dir'][1:]
-    paths['dir'] = Path(paths['dir'])
-    paths['dir'] = paths['dir'].parts
-
+    paths = {}
+    paths['dir_raw'] = path_dict['dir']
+    if path_dict['dir'][0] == "/" and path_dict['dir'][1] == "/":
+        paths['dir'] = Path(path_dict['dir'][1:]).parts
     paths['usr_folder'] = paths['dir'][-2]
     paths['proj_folder'] = paths['dir'][-1]
-    paths['iec'] = path_list[1][-2] + '/' + path_list[1][-1]  # iec file
-    paths['igg'] = path_list[2][-1]  # igg file
-    paths['run'] = path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1]  # run file
-    paths['res'] = paths['dir_raw'] + '/' + path_list[3][-3] + '/' + path_list[3][-2] + '/' + path_list[3][-1][:-3] + 'res'  # res file
-    paths['template'] = paths['dir_raw'] + '/BOT/template'
-    paths['template_unix'] = paths['usr_folder'] + '/' + paths['proj_folder'] + '/BOT/template'
+    unix_projpath = "/home/HLR/" + paths['usr_folder'] + '/' + paths['proj_folder']
+    paths['iec'] = path_dict['iec'].replace(paths['dir_raw'], unix_projpath)
+    paths['igg'] = path_dict['igg'].replace(paths['dir_raw'], unix_projpath)
+    paths['run'] = path_dict['run'].replace(paths['dir_raw'], unix_projpath)
+
+    # res and xmf are in run folder
+
+    paths['res'] = path_dict['run'].replace(Path(paths['run']).parts[-1], Path(paths['run']).parts[-1].replace('run', 'res'))
+    paths['xmf'] = path_dict['run'].replace(Path(paths['run']).parts[-1], Path(paths['run']).parts[-1].replace('run', 'xmf'))
+
     return paths
+
+
+# if __name__ == "__main__":
+#     f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.xmf"
+#     read_xmf(f)

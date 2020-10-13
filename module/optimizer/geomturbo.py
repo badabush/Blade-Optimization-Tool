@@ -26,7 +26,7 @@ class GeomTurboFile:
 
         self.npts = 100
         self.scale = 25
-        self.spacing = [0.0005, 0.02]
+        self.spacing = [0.0002, 0.018]
         self.zhub = np.linspace(0 - l / 3, 0 + 2 * l / 3, self.npts)
         self.fname = fname + ".geomTurbo"
         if self.type == "single":
@@ -202,7 +202,7 @@ class GeomTurboFile:
 
         # replace tabspace with 8 whitespaces TODO: check if it works without this cleanup
         f_str = f_str.replace("\t\t", "        ")
-        fsave = open(self.save_path / self.fname, "w")
+        fsave = open(self.save_path / self.fname, "x")
         fsave.write(f_str)
 
 
