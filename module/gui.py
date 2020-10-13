@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QSizePolicy
 from PyQt5 import QtWidgets, uic
 from pyface.qt import QtGui
-import sys
+import sys, os
+from pathlib import Path
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -20,7 +21,6 @@ from module.UI.ssh_login_ui import SSHLoginUi
 from module.UI.save_load_config import SaveLoadConfig
 from module.UI.optimizer_handle import OptimHandler
 from module.optimizer.optimizer_loadblade import LoadBlade
-from module.UI.generate_mesh_ui import MeshGenUI
 
 
 class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig, LoadBlade):
@@ -92,10 +92,6 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         self.returned_values_th.textChanged.connect(self.get_spline_th_pts)
 
         self.update_in_control_vis(0)
-        # self.btn_b2_up.clicked.connect(self.update_tandem_gap)
-        # self.btn_b2_down.clicked.connect(self.update_B2_down)
-        # self.btn_b2_left.clicked.connect(self.update_B2_left)
-        # self.btn_b2_right.clicked.connect(self.update_B2_right)
         self.btn_in_up.clicked.connect(self.update_in_up)
         self.btn_in_down.clicked.connect(self.update_in_down)
         self.btn_in_left.clicked.connect(self.update_in_left)
@@ -106,12 +102,13 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         self.optim_handler_init()
 
         # run once on startup
-
+        # load default blades
         self.update_all()
+        self.load_config(Path(os.getcwd() + '/UI/config/default_blade.csv'))
         self.update_select()
         self.select_blade = 2
         self.update_select()
-        self.select_blade = 1
+        # self.select_blade = 1
         self.show()
 
     def get_spline_pts(self, value):

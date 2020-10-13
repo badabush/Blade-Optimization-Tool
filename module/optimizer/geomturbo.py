@@ -5,7 +5,7 @@ import os
 
 class GeomTurboFile:
 
-    def __init__(self, fname, path, type, blade, r, l, N):
+    def __init__(self, fname, path, type, blade, r, l, N, spacing):
         """
         :param type: single or tandem
         :type type: str
@@ -26,7 +26,9 @@ class GeomTurboFile:
 
         self.npts = 100
         self.scale = 25
-        self.spacing = [0.0002, 0.018]
+        # self.spacing = [0.0002, 0.018]
+        self.spacing = spacing
+        # self.spacing[0] = self.spacing[0]/4
         self.zhub = np.linspace(0 - l / 3, 0 + 2 * l / 3, self.npts)
         self.fname = fname + ".geomTurbo"
         if self.type == "single":
