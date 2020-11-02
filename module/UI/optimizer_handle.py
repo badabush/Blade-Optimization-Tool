@@ -73,7 +73,6 @@ class OptimHandler:
         self.xmf_param['abs_total_pressure'] = []
         self.xmf_param['static_pressure'] = []
 
-        self.first_run = True
 
     def toggle_leds(self, led, state):
         if state == 0:
@@ -190,10 +189,10 @@ class OptimHandler:
                 self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
             self.outputbox(stdout)
 
-            if self.first_run == True:
-                # start thread to read res file
-                t = threading.Thread(name='res_reader', target=self.read_res)
-                t.start()
+            # if self.first_run == True:
+            # start thread to read res file
+            t = threading.Thread(name='res_reader', target=self.read_res)
+            t.start()
 
         except (paramiko.ssh_exception.NoValidConnectionsError) as e:
             self.outputbox(e)
@@ -202,10 +201,12 @@ class OptimHandler:
         """
         Waiting for FineTurbo to create the .res file, then read it periodically in one thread and plot it in another
         thread. New data is handled by queueing.
+        General idea is emptying the queue in chunks, meaning every iteration, everything will be read from the queue to
+        minimize workload on CPU.
         """
 
         self.outputbox("starting thread for reading .res-file.")
-        self.kill = False
+
         self.pause_loop = False
         ds_res = {}
 
@@ -217,7 +218,7 @@ class OptimHandler:
         except (FileNotFoundError, PermissionError):
             print("No .res file removed.")
         timeout = 0
-        # wait for fineTurbo to start calculation by checking for the existance of .res-file
+        # wait for fineTurbo to start calculation by checking for the existence of .res-file
         # timeout at 30s
         while timeout <= 300 :
             if os.path.exists(res_file):
@@ -237,33 +238,36 @@ class OptimHandler:
         self.outputbox("Starting computation ..")
         start_time = datetime.datetime.now()
         q = queue.Queue()
-        if self.first_run == True:
-            t2 = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q, self.pause_loop))
-            t2.start()
-            self.first_run = False
-        else:
-            # reset and clear queue and dicts
-            q.queue.clear()
-            ds_res = {}
-            self.optifig.clear()
+        self.event = threading.Event()
+        t2 = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q, self.event))
+        t2.start()
+
+        # reset and clear queue and plot
+        self.optifig.clear()
+        q.queue.clear()
+        idx = 0
 
         niter = self.opt_param["niter"]
-        while (True):
+        while not self.event.is_set():
             try:
                 # get new data from queue
                 if (self.pause_loop == True):
-                    idx = 0
                     time.sleep(5)
                 else:
-                    val = q.get()
-                    idx = int(val[0])
-                    ds_res[idx] = val
-                    print(val)
+                    # empty queue in chunks to minimize processor workload
+                    while not q.empty():
+                        val = q.get()
+                        idx = int(val[0])
+                        ds_res[idx] = val
+                        print(val)
+                        print(q.qsize())
                     self.optifig.animate(ds_res)
 
+                    # TODO: implement another way of recognizing end of iterations e.g. timeout
                     if (idx == (niter + 100)):
                         self.outputbox("Cleaning up.")
                         time.sleep(5)
+                        # set events, end taskmanager, end parseres, kill while loops
                         self.kill_loop()
                         # save values from XMF
                         self.xmf_param = read_xmf(xmf_file, self.xmf_param)
@@ -273,9 +277,11 @@ class OptimHandler:
                         min, sec = divmod(elapsed_time.seconds, 60)
                         hour, min = divmod(min, 60)
                         self.outputbox("Total time elapsed: " + str(hour) + ":" + str(min) + ":" + str(sec))
+
             except TypeError as e:
                 print(e)
-            time.sleep(.1)
+
+            time.sleep(1)
 
     def create_meshfile(self):
         """
@@ -323,7 +329,6 @@ class OptimHandler:
             " -mesh " + path_unix + iggname + ".igg " +
             "-niversion 131"
         )
-        # self.outputbox(stdout)
         if ("Writing Configuration File... Done" in stdout) and ("Exit IGG Background Session" in stdout):
             self.outputbox("Successfully created Meshfile in Autogrid.")
             self.toggle_leds(self.led_mesh, 1)
@@ -338,6 +343,7 @@ class OptimHandler:
         """
         # self.kill = True
         self.pause_loop = True
+        self.event.set()
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
         try:
@@ -404,3 +410,4 @@ class OptimPlotCanvas(FigureCanvas):
 
     def clear(self):
         self.ax.clear()
+        self.ax.grid()
