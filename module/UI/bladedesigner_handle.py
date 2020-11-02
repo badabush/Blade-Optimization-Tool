@@ -143,6 +143,36 @@ class BDUpdateHandler:
         value = self.label['dist_blades'].value() * self.scale
         self.slider['dist_blades'].setSliderPosition(value)
 
+    def update_PP(self, value):
+        """
+        TODO:FILL
+        :param value: input value
+        :type value: float
+        """
+        self.label['PP'].setValue(float(value) / self.scale)
+
+    def update_box_PP(self):
+        """
+        Scale Value from Label, set Slider Position of thickness (th).
+        """
+        value = self.label['PP'].value() * self.scale
+        self.slider['PP'].setSliderPosition(value)
+
+    def update_AO(self, value):
+        """
+        TODO:FILL
+        :param value: input value
+        :type value: float
+        """
+        self.label['AO'].setValue(float(value) / self.scale)
+
+    def update_box_AO(self):
+        """
+        Scale Value from Label, set Slider Position of thickness (th).
+        """
+        value = self.label['AO'].value() * self.scale
+        self.slider['AO'].setSliderPosition(value)
+
     def update_radio_blades(self):
         """
         Radio Buttons for Tandem Blades (switch between blade 1 and 2). Make xy position control for 2nd blade visible
@@ -150,16 +180,17 @@ class BDUpdateHandler:
         """
         # get radio state
         if self.radio_blade1.isChecked():
-            self.update_b2_control_vis(0)
             self.select_blade = 1
             self.ds_blade2 = self.get_labelval()
             self.set_labelval(self.ds_blade1)
 
         elif self.radio_blade2.isChecked():
-            self.update_b2_control_vis(1)
             self.select_blade = 2
             self.ds_blade1 = self.get_labelval()
-            self.set_labelval(self.ds_blade2)
+            try:
+                self.set_labelval(self.ds_blade2)
+            except AttributeError:
+                self.set_labelval(self.ds_blade1)
         print(self.select_blade)
 
     def get_labelval(self):
@@ -244,7 +275,8 @@ class BDUpdateHandler:
         try:
             if self.imported_blade_vis == 1:
                 self.ds_import = pd.DataFrame(
-                    {'x': self.imported_blade.x, 'y': self.imported_blade.y, 'x_offset': 0, 'y_offset': 0})
+                    {'x1': self.imported_blade1.x, 'y1': self.imported_blade1.y,
+                     'x2': self.imported_blade2.x, 'y2': self.imported_blade2.y, 'x_offset': 0, 'y_offset': 0})
             else:
                 self.ds_import = 0
         except AttributeError as e:
@@ -263,7 +295,13 @@ class BDUpdateHandler:
             ds1['pts_th'] = self.thdist_spline_pts
             ds1['npts'] = self.number_of_points
             ds1['l_chord'] = self.length_chord
+            ds1['x_offset'] = ds1['AO'] * ds1['dist_blades']# AO
+            ds1['y_offset'] = (1 - ds1['PP']) * ds1['dist_blades']# PP
+
+            self.ds2['x_offset'] = ds1['AO'] * ds1['dist_blades']# AO
+            self.ds2['y_offset'] = (1 - ds1['PP']) * ds1['dist_blades']# PP
             self.ds1 = ds1
+
             self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
         elif self.select_blade == 2:
@@ -279,8 +317,12 @@ class BDUpdateHandler:
             ds2['pts_th'] = self.thdist_spline_pts
             ds2['npts'] = self.number_of_points
             ds2['l_chord'] = self.length_chord
-            ds2['x_offset'] = self.blade2_offset[0]
-            ds2['y_offset'] = self.blade2_offset[1]
+            # same xy offset as in ds1, but required here to update div,PP,AO when blade 2 is selected
+            ds2['x_offset'] = ds2['AO'] * ds2['dist_blades']# AO
+            ds2['y_offset'] = (1 - ds2['PP']) * ds2['dist_blades']# PP
+
+            self.ds1['x_offset'] = ds2['AO'] * ds2['dist_blades']# AO
+            self.ds1['y_offset'] = (1 - ds2['PP']) * ds2['dist_blades']# PP
             self.ds2 = ds2
             self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
@@ -320,8 +362,8 @@ class BDUpdateHandler:
         self.nblades = 'single'
         self.radio_blade1.setHidden(True)
         self.radio_blade2.setHidden(True)
-        self.btn_update_sel.setHidden(True)
-        self.update_b2_control_vis(0)
+        self.btn_update_sel.setEnabled(False)
+        self.btn_update_all.setEnabled(True)
 
     def update_nblades_tandem(self):
         """
@@ -335,40 +377,48 @@ class BDUpdateHandler:
         self.radio_blade2.setVisible(True)
         self.radio_blade1.setChecked(True)
 
-        self.btn_update_sel.setVisible(True)
-        # self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+        self.btn_update_sel.setEnabled(True)
+        self.btn_update_all.setEnabled(False)
+        self.update_all()
+        self.update_select()
+        self.select_blade = 2
+        self.update_select()
+        self.select_blade = 1
 
-    def update_B2_up(self):
-        """
-        Blade 2 position control, button [up].
-        """
-        self.blade2_offset[1] += 0.01
-        self.ds2['y_offset'] = self.blade2_offset[1]
-        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
-
-    def update_B2_down(self):
-        """
-        Blade 2 position control, button [down].
-        """
-        self.blade2_offset[1] -= 0.01
-        self.ds2['y_offset'] = self.blade2_offset[1]
-        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
-
-    def update_B2_left(self):
-        """
-        Blade 2 position control, button [left].
-        """
-        self.blade2_offset[0] -= 0.01
-        self.ds2['x_offset'] = self.blade2_offset[0]
-        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
-
-    def update_B2_right(self):
-        """
-        Blade 2 position control, button [right].
-        """
-        self.blade2_offset[0] += 0.01
-        self.ds2['x_offset'] = self.blade2_offset[0]
-        self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+    # def update_tandem_gap(self):
+    #     """
+    #     Blade 2 position control, button [up].
+    #     """
+    #     PP = self.ds2['PP']
+    #     AO = self.ds2['AO']
+    #
+    #     self.ds2['x_offset'] = self.blade2_offset[1]
+    #     self.ds2['y_offset'] = self.blade2_offset[1]
+    #     self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+    #
+    # def update_B2_down(self):
+    #     """
+    #     Blade 2 position control, button [down].
+    #     """
+    #     self.blade2_offset[1] -= 0.01
+    #     self.ds2['y_offset'] = self.blade2_offset[1]
+    #     self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+    #
+    # def update_B2_left(self):
+    #     """
+    #     Blade 2 position control, button [left].
+    #     """
+    #     self.blade2_offset[0] -= 0.01
+    #     self.ds2['x_offset'] = self.blade2_offset[0]
+    #     self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
+    #
+    # def update_B2_right(self):
+    #     """
+    #     Blade 2 position control, button [right].
+    #     """
+    #     self.blade2_offset[0] += 0.01
+    #     self.ds2['x_offset'] = self.blade2_offset[0]
+    #     self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
 
     def update_in_up(self):
         """
@@ -409,23 +459,6 @@ class BDUpdateHandler:
             self.update_in_control_vis(1)
             self.imported_blade_vis = 1
 
-    def update_b2_control_vis(self, visible=0):
-        """
-        Control for 2nd blade position. Hide at GUI start.
-        """
-
-        if visible == 0:
-            self.label_pos_b2.setHidden(True)
-            self.btn_b2_up.setHidden(True)
-            self.btn_b2_down.setHidden(True)
-            self.btn_b2_left.setHidden(True)
-            self.btn_b2_right.setHidden(True)
-        else:
-            self.label_pos_b2.setVisible(True)
-            self.btn_b2_up.setVisible(True)
-            self.btn_b2_down.setVisible(True)
-            self.btn_b2_left.setVisible(True)
-            self.btn_b2_right.setVisible(True)
 
     def update_in_control_vis(self, visible=0):
         """

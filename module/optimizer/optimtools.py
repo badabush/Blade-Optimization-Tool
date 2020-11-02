@@ -26,35 +26,37 @@ def read_top_usage(top_usage):
 
 def read_by_token(fileobj):
     """
-    Reads lines, drops everything except tokens (str, values, etc.) and appends to a list. Yields list.
+    A generator. Reads lines, drops everything except tokens (str, values, etc.) and appends to a list. Yields list.
     """
     for line in fileobj:
         ds = []
+        if not line:
+            time.sleep(.1)
+            continue
         for token in line.split():
             ds.append(token)
         yield ds
 
-
-def parse_res(file, q, pause):
+def parse_res(file, q, event):
     """
     Worker thread to read new lines from res. Only queues relevant lines. Breaks loop when kill==True
     """
-    fp = open(file, 'r')
-    while True:
-        tokenized = read_by_token(fp)
-        for token in tokenized:
-            if token[0].isdigit() and len(token) > 1:
-                q.put(token)
 
-        # break loop when kill==True
-        if pause:
-            try:
-                fp.close()
-            except FileNotFoundError:
-                print('Could not close file.')
-                pass
-            time.sleep(5)
-            break
+    with open(file, 'r') as fp:
+        while not event.is_set():
+            tokenized = read_by_token(fp)
+            for token in tokenized:
+                if token[0].isdigit() and len(token) > 1:
+                    q.put(token)
+            time.sleep(.1)
+
+        try:
+            fp.close()
+        except FileNotFoundError:
+            print('Could not close file.')
+            pass
+        time.sleep(5)
+        # break
 
 def read_xmf(file, param):
 

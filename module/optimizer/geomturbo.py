@@ -5,7 +5,7 @@ import os
 
 class GeomTurboFile:
 
-    def __init__(self, fname, path, type, blade, r, l, N):
+    def __init__(self, fname, path, type, blade, r, l, N, spacing):
         """
         :param type: single or tandem
         :type type: str
@@ -19,14 +19,20 @@ class GeomTurboFile:
         self.temp_path = Path(os.getcwd() + "/optimizer/template/")
         self.save_path = Path(path)
         self.r = r
-        self.l = l
+        # self.l = l
+        self.l = 0.043  # set to 43mm
         self.N = str(N)
         self.periodicity = str(0.024)
         self.type = type
 
         self.npts = 100
         self.scale = 25
-        self.spacing = [0.0002, 0.018]
+# <<<<<<< Updated upstream
+#         self.spacing = [0.0002, 0.018]
+# =======
+        # self.spacing = [0.0002, 0.018]
+        self.spacing = np.array(spacing) * self.l
+# >>>>>>> Stashed changes
         self.zhub = np.linspace(0 - l / 3, 0 + 2 * l / 3, self.npts)
         self.fname = fname + ".geomTurbo"
         if self.type == "single":
@@ -67,14 +73,17 @@ class GeomTurboFile:
         :param blade_av: tandem blade 2 (optional)
         :type blade_av: np.array
         """
-        # # flip blade
 
-        # blade[:,1] = blade[:,1] * -1
-        # blade[:,2] = blade[:,2] * -1
-        #
-        # blade_av[:,1] = blade_av[:,1] * -1
-        # blade_av[:,2] = blade_av[:,2] * -1
+        # scale blade
+        blade[:, 1] = blade[:, 1] * self.l
+        blade[:, 2] = blade[:, 2] * self.l
+        blade_av[:, 1] = blade_av[:, 1] * self.l
+        blade_av[:, 2] = blade_av[:, 2] * self.l
 
+        # get position of 2nd blade
+
+        blade_av[:, 1] = blade_av[:, 1] + blade[0, 1] - self.spacing[1]
+        blade_av[:, 2] = blade_av[:, 2] + blade[0, 2] + self.spacing[0]
         len_blade = int(np.ceil(blade.shape[0] / 2) + 1)
         if self.type == "single":
             f = open(self.temp_path / "single_template.geomTurbo", "r")
@@ -98,8 +107,8 @@ class GeomTurboFile:
 
         # upper (Saugseite)
         upper = np.zeros((len_blade, 3))
-        upper[:, 1] = blade[len_blade - 2:, 1] / self.scale
-        upper[:, 2] = blade[len_blade - 2:, 2] / self.scale
+        upper[:, 1] = blade[len_blade - 2:, 1]
+        upper[:, 2] = blade[len_blade - 2:, 2]
         # upper = upper[::-1]
 
         # upper section 1
@@ -122,8 +131,8 @@ class GeomTurboFile:
 
         # lower (Druckseite)
         lower = np.zeros((len_blade - 1, 3))
-        lower[:, 1] = blade[:len_blade - 1, 1] / self.scale
-        lower[:, 2] = blade[:len_blade - 1, 2] / self.scale
+        lower[:, 1] = blade[:len_blade - 1, 1]
+        lower[:, 2] = blade[:len_blade - 1, 2]
         lower = lower[::-1]
 
         # lower section 1
@@ -152,8 +161,8 @@ class GeomTurboFile:
         if self.type == "tandem":
             # upper (Saugseite)
             upper = np.zeros((len_blade, 3))
-            upper[:, 1] = blade_av[len_blade - 2:, 1] / self.scale + self.spacing[0]
-            upper[:, 2] = blade_av[len_blade - 2:, 2] / self.scale + self.spacing[1]
+            upper[:, 1] = blade_av[len_blade - 2:, 1]
+            upper[:, 2] = blade_av[len_blade - 2:, 2]
             # upper = upper[::-1]
             # upper section 1
             upper[:, 0] = self.rh
@@ -175,8 +184,8 @@ class GeomTurboFile:
 
             # lower (Druckseite)
             lower = np.zeros((len_blade - 1, 3))
-            lower[:, 1] = blade_av[:len_blade-1, 1] / self.scale + self.spacing[0]
-            lower[:, 2] = blade_av[:len_blade-1, 2] / self.scale + self.spacing[1]
+            lower[:, 1] = blade_av[:len_blade - 1, 1]
+            lower[:, 2] = blade_av[:len_blade - 1, 2]
             lower = lower[::-1]
 
             # lower section 1

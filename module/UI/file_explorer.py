@@ -2,6 +2,7 @@ from PyQt5.QtWidgets import QSizePolicy, QFileDialog
 from PyQt5 import QtGui
 import pandas as pd
 from os.path import expanduser
+from pathlib import Path
 
 from module.blade.bladetools import ImportExport, normalize
 from module.blade.bladegen import BladeGen
@@ -79,8 +80,21 @@ class FileExplorer:
                                                   "All Files (*);;Text Files (*.txt)", options=options)
         if fileName:
             ie = ImportExport()
-            blade = ie._import(fileName)
-            self.imported_blade = normalize(blade)
+            if self.nblades == 'single':
+                blade = ie._import(fileName)
+                self.imported_blade = normalize(blade)
+            else:
+                fname1 = Path(fileName).parts[-1]
+                if '_FV' in fname1:
+                    fname2 = fname1.replace('FV', 'AV')
+                    blade1 = ie._import(fileName)
+                    blade2 = ie._import(fileName.replace(fname1, fname2))
+                elif '_AV' in fname1:
+                    fname2 = fname1.replace('AV', 'FV')
+                    blade2 = ie._import(fileName)
+                    blade1 = ie._import(fileName.replace(fname1, fname2))
+                self.imported_blade1 = normalize(blade1)/2
+                self.imported_blade2 = normalize(blade2)/2
             self.update_in_control_vis(1)
             self.imported_blade_vis = 1
 

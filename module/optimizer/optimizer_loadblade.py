@@ -55,9 +55,9 @@ class LoadBlade:
         s_t = sc_t + c_t
         l = 0.12
         N_t = np.round((2 * np.pi * rh) / s_t, 2)
-
+        spacing = [self.ds2['x_offset'], self.ds2['y_offset']]
         try:
-            GeomTurboFile(fname, path, ds['nblades'], blade, r, l, 2 * np.pi * rh / N_t)
+            GeomTurboFile(fname, path, ds['nblades'], blade, r, l, 2 * np.pi * rh / N_t, spacing)
         except:
             print("error creating geomTurbo file.")
 

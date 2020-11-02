@@ -1,8 +1,6 @@
 from PyQt5.QtWidgets import QSizePolicy, QFileDialog
 import numpy as np
 
-from module.blade.bladetools import ImportExport, normalize
-from module.UI.bladedesigner_handle import BDUpdateHandler
 from pathlib import Path
 import os
 import csv
@@ -29,12 +27,13 @@ class SaveLoadConfig:
             print("I/O error")
         pass
 
-    def load_config(self):
-        path = Path(os.getcwd() + "../../geo_output/blade_config/")
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontUseNativeDialog
-        fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", str(path),
-                                                  "CSV Files (*.csv)", options=options)
+    def load_config(self, fileName):
+        if fileName == "":
+            path = Path(os.getcwd() + "../../geo_output/blade_config/")
+            options = QFileDialog.Options()
+            options |= QFileDialog.DontUseNativeDialog
+            fileName, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", str(path),
+                                                      "CSV Files (*.csv)", options=options)
 
         try:
             with open(fileName, 'r') as data:
@@ -44,7 +43,7 @@ class SaveLoadConfig:
                     # values to float
                     for key in row.keys():
                         try:
-                            if key == "pts":
+                            if key == "pts" or key == "pts_th":
                                 pts = []
                                 string = row[key]
                                 string = string.strip("[").strip("]").split("]\n [")

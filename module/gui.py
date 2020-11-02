@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import QSizePolicy
 from PyQt5 import QtWidgets, uic
 from pyface.qt import QtGui
-import sys
+import sys, os
+from pathlib import Path
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
@@ -20,7 +21,6 @@ from module.UI.ssh_login_ui import SSHLoginUi
 from module.UI.save_load_config import SaveLoadConfig
 from module.UI.optimizer_handle import OptimHandler
 from module.optimizer.optimizer_loadblade import LoadBlade
-from module.UI.generate_mesh_ui import MeshGenUI
 
 
 class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig, LoadBlade):
@@ -35,7 +35,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         uic.loadUi('UI/qtdesigner/mainwindow.ui', self)
         # declaring param keys, load restraints for slider
         self.param_keys = ['alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'th_le',
-                           'th_te', 'dist_blades']
+                           'th_te', 'dist_blades', 'PP', 'AO']
         self.restraints = load_config_file('UI/config/restraints.txt')
         self.menu_default()  # set menu defaults
         self.init_variables()  # initialize some variables at GUI start
@@ -44,7 +44,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         # tabs
         self.tabWidget.setTabText(0, "BladeDesigner")
         self.tabWidget.setTabText(1, "Optimizer")
-        self.tabWidget.setCurrentIndex(0) #set default tab
+        self.tabWidget.setCurrentIndex(0)  # set default tab
 
         # init plot
         self.m = PlotCanvas(self, width=8, height=10)
@@ -74,7 +74,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         self.actionsave_as_txt.triggered.connect(self.saveFileDialog)
         self.actionCredential.triggered.connect(self.ssh_config_window)
 
-        #save/load blade config
+        # save/load blade config
         self.actionSave_config.triggered.connect(self.save_config)
         self.actionLoad_config.triggered.connect(self.load_config)
 
@@ -91,12 +91,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         # get camber spline values from window
         self.returned_values_th.textChanged.connect(self.get_spline_th_pts)
 
-        self.update_b2_control_vis(0)
         self.update_in_control_vis(0)
-        self.btn_b2_up.clicked.connect(self.update_B2_up)
-        self.btn_b2_down.clicked.connect(self.update_B2_down)
-        self.btn_b2_left.clicked.connect(self.update_B2_left)
-        self.btn_b2_right.clicked.connect(self.update_B2_right)
         self.btn_in_up.clicked.connect(self.update_in_up)
         self.btn_in_down.clicked.connect(self.update_in_down)
         self.btn_in_left.clicked.connect(self.update_in_left)
@@ -106,10 +101,14 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         # optimizer inits
         self.optim_handler_init()
 
-
         # run once on startup
-
+        # load default blades
         self.update_all()
+        self.load_config(Path(os.getcwd() + '/UI/config/default_blade.csv'))
+        self.update_select()
+        self.select_blade = 2
+        self.update_select()
+        # self.select_blade = 1
         self.show()
 
     def get_spline_pts(self, value):
@@ -180,17 +179,20 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         """
         try:
             blades_from_plot = self.m._return_blades()
-            self.annulus_ui = AnnulusUi(blades_from_plot, [self.ds2['x_offset'], self.ds2['y_offset']])
+            self.annulus_ui = AnnulusUi(blades_from_plot, [self.ds1['x_offset'], self.ds1['y_offset']])
             self.annulus_ui.show()
         except AttributeError:
             print("Plot first.")
 
     def menu_default(self):
         self.thdist_ver = 1
-        self.nblades = 'single'
-        self.radio_blade1.setHidden(True)
-        self.radio_blade2.setHidden(True)
-        self.btn_update_sel.setHidden(True)
+        self.nblades = 'tandem'
+        self.radio_blade1.setHidden(False)
+        self.radio_blade1.setChecked(True)
+        self.select_blade = 1
+        self.radio_blade2.setHidden(False)
+        self.btn_update_sel.setHidden(False)
+        self.btn_update_all.setEnabled(False)
 
     def outputbox(self, msg):
         """
@@ -270,6 +272,7 @@ class PlotCanvas(FigureCanvas):
             self.ax.plot(camber_data[::15, 0], camber_data[::15, 1] + division, linestyle='--', dashes=(5, 5),
                          color='darkblue', alpha=.7)
             self.plt_df = {'type': 'single', 'blade': blade_data, 'camber': camber_data}
+
         elif ds['nblades'] == 'tandem':
             """Tandem blades"""
             df_blades = {}
@@ -291,14 +294,8 @@ class PlotCanvas(FigureCanvas):
                 blade2 = np.copy(blade1)
                 camber1 = camber_data
                 camber2 = np.copy(camber_data)
-                blade2[:, 0] = blade2[:, 0] + np.max(blade1[:, 0]) + .03 * (np.min(blade1[:, 0] + np.max(blade2[:, 0])))
-                # blade2[:, 1] = blade2[:, 1] + (np.max(camber_data[:, 1]) - camber_data[0, 1]) - (
-                #         1 - 0.915) * division / 10
-                blade2[:, 1] = blade2[:, 1]
-                camber2[:, 0] = camber2[:, 0] + np.max(camber1[:, 0]) + .03 * (
-                    np.min(camber1[:, 0] + np.max(camber2[:, 0])))
-                # camber2[:, 1] = camber2[:, 1] + (np.max(camber_data[:, 1]) - camber_data[0, 1]) - (
-                #         1 - 0.915) * division / 10
+
+                # save blades with _index for selective updating plot
                 df_blades['blade1_%i' % (i + 1)] = blade1
                 df_blades['blade2_%i' % (i + 1)] = blade2
                 df_blades['camber1_%i' % (i + 1)] = camber1
@@ -306,37 +303,53 @@ class PlotCanvas(FigureCanvas):
 
             if ds['selected_blade'] == 0:
                 """Update both blades at once"""
+                blade2[:, 0] = blade2[:, 0] + blade1[0, 0]
+                blade2[:, 1] = blade2[:, 1] + blade1[0, 1]
+                camber2[:, 0] = camber2[:, 0] + blade1[0, 0]
+                camber2[:, 1] = camber2[:, 1] + blade1[0, 1]
+                # tandem blade 1 (lower)
                 self.ax.plot(blade1[:, 0], blade1[:, 1], color='royalblue')
                 self.ax.fill(blade1[:, 0], blade1[:, 1], color='cornflowerblue', alpha=.5)
                 self.ax.plot(camber1[::15, 0], camber1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue',
                              alpha=.7)
-
-                self.ax.plot(blade2[:, 0] + ds2['x_offset'], blade2[:, 1]  + ds2['y_offset'], color='indianred')
-                self.ax.fill(blade2[:, 0] + ds2['x_offset'], blade2[:, 1] + ds2['y_offset'], color='lightcoral', alpha=.5)
-                self.ax.plot(camber2[::15, 0] + ds2['x_offset'], camber2[::15, 1] + ds2['y_offset'], linestyle='--', dashes=(5, 5), color='darkred',
+                # tandem blade 2 (lower)
+                self.ax.plot(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + ds1['y_offset'], color='indianred')
+                self.ax.fill(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + ds1['y_offset'], color='lightcoral',
+                             alpha=.5)
+                self.ax.plot(camber2[::15, 0] + ds1['x_offset'], camber2[::15, 1] + ds1['y_offset'], linestyle='--',
+                             dashes=(5, 5), color='darkred',
                              alpha=.7)
-
+                # tandem blade 1 (upper)
                 self.ax.plot(blade1[:, 0], blade1[:, 1] + division, color='royalblue')
                 self.ax.fill(blade1[:, 0], blade1[:, 1] + division, color='cornflowerblue', alpha=.5)
                 self.ax.plot(camber1[::15, 0], camber1[::15, 1] + division, linestyle='--', dashes=(5, 5),
                              color='darkblue', alpha=.7)
-                self.ax.plot(blade2[:, 0] + ds2['x_offset'], blade2[:, 1] + division + ds2['y_offset'], color='indianred')
-                self.ax.fill(blade2[:, 0] + ds2['x_offset'], blade2[:, 1] + division + ds2['y_offset'], color='lightcoral', alpha=.5)
-                self.ax.plot(camber2[::15, 0] + ds2['x_offset'], camber2[::15, 1] + division + ds2['y_offset'], linestyle='--', dashes=(5, 5),
+                # tandem blade 2 (upper)
+                self.ax.plot(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + division + ds1['y_offset'],
+                             color='indianred')
+                self.ax.fill(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + division + ds1['y_offset'],
+                             color='lightcoral', alpha=.5)
+                self.ax.plot(camber2[::15, 0] + ds1['x_offset'], camber2[::15, 1] + division + ds1['y_offset'],
+                             linestyle='--', dashes=(5, 5),
                              color='darkred', alpha=.7)
 
             else:
                 """ Update blades seperately """
+                # # calculate where nose of tandem 2 starts
+                df_blades['blade2_2'][:, 0] = df_blades['blade2_2'][:, 0] + df_blades['blade1_1'][0, 0]
+                df_blades['blade2_2'][:, 1] = df_blades['blade2_2'][:, 1] + df_blades['blade1_1'][0, 1]
+                df_blades['camber2_2'][:, 0] = df_blades['camber2_2'][:, 0] + df_blades['blade1_1'][0, 0]
+                df_blades['camber2_2'][:, 1] = df_blades['camber2_2'][:, 1] + df_blades['blade1_1'][0, 1]
                 self.ax.plot(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1], color='royalblue')
                 self.ax.fill(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1], color='cornflowerblue', alpha=.5)
                 self.ax.plot(df_blades['camber1_1'][::15, 0], df_blades['camber1_1'][::15, 1], linestyle='--',
                              dashes=(5, 5), color='darkblue', alpha=.7)
                 self.ax.plot(df_blades['blade2_2'][:, 0] + ds2['x_offset'],
-                             df_blades['blade2_2'][:, 1] + ds2['y_offset'], color='indianred')
+                             df_blades['blade2_2'][:, 1] - ds2['y_offset'], color='indianred')
                 self.ax.fill(df_blades['blade2_2'][:, 0] + ds2['x_offset'],
-                             df_blades['blade2_2'][:, 1] + ds2['y_offset'], color='lightcoral', alpha=.5)
+                             df_blades['blade2_2'][:, 1] - ds2['y_offset'], color='lightcoral', alpha=.5)
                 self.ax.plot(df_blades['camber2_2'][::15, 0] + ds2['x_offset'],
-                             df_blades['camber2_2'][::15, 1] + ds2['y_offset'], linestyle='--',
+                             df_blades['camber2_2'][::15, 1] - ds2['y_offset'], linestyle='--',
                              dashes=(5, 5), color='darkred', alpha=.7)
 
                 self.ax.plot(df_blades['blade1_1'][:, 0], df_blades['blade1_1'][:, 1] + division, color='royalblue')
@@ -345,12 +358,12 @@ class PlotCanvas(FigureCanvas):
                 self.ax.plot(df_blades['camber1_1'][::15, 0], df_blades['camber1_1'][::15, 1] + division,
                              linestyle='--', dashes=(5, 5), color='darkblue', alpha=.7)
                 self.ax.plot(df_blades['blade2_2'][:, 0] + ds2['x_offset'],
-                             df_blades['blade2_2'][:, 1] + division + ds2['y_offset'], color='indianred')
+                             df_blades['blade2_2'][:, 1] + division - ds2['y_offset'], color='indianred')
                 self.ax.fill(df_blades['blade2_2'][:, 0] + ds2['x_offset'],
-                             df_blades['blade2_2'][:, 1] + division + ds2['y_offset'], color='lightcoral',
+                             df_blades['blade2_2'][:, 1] + division - ds2['y_offset'], color='lightcoral',
                              alpha=.5)
                 self.ax.plot(df_blades['camber2_2'][::15, 0] + ds2['x_offset'],
-                             df_blades['camber2_2'][::15, 1] + division + ds2['y_offset'],
+                             df_blades['camber2_2'][::15, 1] + division - ds2['y_offset'],
                              linestyle='--', dashes=(5, 5), color='darkred', alpha=.7)
 
                 df_blades['type'] = 'tandem'
@@ -358,9 +371,23 @@ class PlotCanvas(FigureCanvas):
 
         """ Plot imported blade if exists """
         try:
-            self.ax.plot(ds_import.x + ds_import.x_offset, ds_import.y + ds_import.y_offset, 'r')
+            if ds['nblades'] == 'single':
+                self.ax.plot(ds_import.x + ds_import.x_offset, ds_import.y + ds_import.y_offset, 'r')
+            else:
+                # get position of second blade
+                blade_import1 = np.array([ds_import.x1, ds_import.y1]).T
+                blade_import2 = np.array([ds_import.x2, ds_import.y2]).T
+
+                blade_import2[:, 0] = blade_import2[:, 0] + blade_import1[0, 0]
+                blade_import2[:, 1] = blade_import2[:, 1] + blade_import1[0, 1]
+
+                self.ax.plot(blade_import1[:, 0] + ds_import.x_offset,
+                             blade_import1[:, 1] + ds_import.y_offset, 'r')
+                self.ax.plot(blade_import2[:, 0] + ds_import.x_offset + ds2['x_offset'],
+                             blade_import2[:, 1] + ds_import.y_offset - ds2['y_offset'], 'r')
         except AttributeError:
-            print("Error plotting imported blade.")
+            # print("Error plotting imported blade.")
+            pass
         self.ax.axis('equal')
         self.ax.set_xlim(self.xlim)
         self.ax.set_ylim(self.ylim)
