@@ -72,7 +72,8 @@ def read_xmf(file, param):
             float(doclist[0][1]['Station'][0]['Condition'][0]['float'][0]['#text'])
         ])
         print(param['abs_total_pressure'])
-        return param
+        # file.close()
+    return param
 
 def cleanpaths(path_dict):
     """

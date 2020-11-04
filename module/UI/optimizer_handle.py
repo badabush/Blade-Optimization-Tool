@@ -12,6 +12,7 @@ from matplotlib.figure import Figure
 import matplotlib.animation as animation
 from pyface.qt import QtGui
 from PyQt5.QtWidgets import QTableView
+import configparser
 
 from module.optimizer.ssh_login import ssh_connect
 from module.optimizer.optimtools import read_top_usage, parse_res, cleanpaths, read_xmf
@@ -48,12 +49,19 @@ class OptimHandler:
         self.toggle_leds(self.led_mesh, 0)
 
         # init plot
-        self.optifig = OptimPlotCanvas(self, width=8, height=10)
-        toolbar = NavigationToolbar(self.optifig, self)
+        self.optifig_massflow = OptimPlotMassflow(self, width=8, height=10)
+        toolbar = NavigationToolbar(self.optifig_massflow, self)
         centralwidget = self.optimfig_widget
         vbl = QtGui.QVBoxLayout(centralwidget)
         vbl.addWidget(toolbar)
-        vbl.addWidget(self.optifig)
+        vbl.addWidget(self.optifig_massflow)
+
+        self.optifig_xmf = OptimPlotXMF(self, width=8, height=10)
+        toolbar = NavigationToolbar(self.optifig_xmf, self)
+        centralwidget2 = self.optimfig_widget_2
+        vbl = QtGui.QVBoxLayout(centralwidget2)
+        vbl.addWidget(toolbar)
+        vbl.addWidget(self.optifig_xmf)
 
         # set default paths for lazy development
         self.box_pathtodir.setText("//130.149.110.81/liang/Tandem_Opti")
@@ -113,7 +121,13 @@ class OptimHandler:
             self.toggle_leds(self.led_connection, 1)
 
     def update_param(self):
+        """ Get parameters from Control. """
         self.opt_param["niter"] = int(self.opt_input_iteration.value())
+        self.opt_param["cores"] = int(self.opt_input_cores.value())
+        config = configparser.ConfigParser()
+        config.read(os.getcwd() + '/optimizer/ssh_login/ssh_config.ini')
+        self.opt_param["node"] = config['ssh']['node']
+        self.opt_param["convergence"] = int(self.opt_input_convergence.value())
 
     def display_top(self):
         """
@@ -158,11 +172,12 @@ class OptimHandler:
         """
         Open file explorer to set project path.
         """
-
+        # update params from control
+        self.update_param()
         # refresh paths
         self.grab_paths()
         # clear plot
-        self.optifig.animate({})
+        self.optifig_massflow.animate_massflow({})
 
         if self.box_pathtodir.text() == "":
             self.outputbox("Set Path to Project Directory first!")
@@ -170,10 +185,8 @@ class OptimHandler:
         # get display address
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
 
-        if self.checkbox_load_blade:
-            self.scriptfile = gen_script(self.paths, self.opt_param, load_blade=1)
-        else:
-            self.scriptfile = gen_script(self.paths, self.opt_param, load_blade=0)
+        # get node_id, number of cores, writing frequency here
+        self.scriptfile = gen_script(self.paths, self.opt_param)
 
         # run fine131 with script
         if not hasattr(self, 'sshobj'):
@@ -209,6 +222,7 @@ class OptimHandler:
 
         self.pause_loop = False
         ds_res = {}
+        ds_xmf = {}
 
         res_file = self.paths['res']
         xmf_file = self.paths['xmf']
@@ -237,14 +251,16 @@ class OptimHandler:
 
         self.outputbox("Starting computation ..")
         start_time = datetime.datetime.now()
-        q = queue.Queue()
+        q_res = queue.Queue()
+        # q_xmf = queue.Queue()
         self.event = threading.Event()
-        t2 = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q, self.event))
-        t2.start()
+        t_res = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q_res, self.event))
+        t_res.start()
 
         # reset and clear queue and plot
-        self.optifig.clear()
-        q.queue.clear()
+        self.optifig_massflow.clear()
+        q_res.queue.clear()
+        # q_xmf.queue.clear()
         idx = 0
 
         niter = self.opt_param["niter"]
@@ -255,13 +271,15 @@ class OptimHandler:
                     time.sleep(5)
                 else:
                     # empty queue in chunks to minimize processor workload
-                    while not q.empty():
-                        val = q.get()
+                    while not q_res.empty():
+                        val = q_res.get()
                         idx = int(val[0])
                         ds_res[idx] = val
-                        print(val)
-                        print(q.qsize())
-                    self.optifig.animate(ds_res)
+                        # plot2 every 50 steps (writing frequency)
+                        if idx % 50 == 0:
+                            self.xmf_param = read_xmf(xmf_file, self.xmf_param)
+                            self.optifig_xmf.animate_xmf(self.xmf_param)
+                    self.optifig_massflow.animate_massflow(ds_res)
 
                     # TODO: implement another way of recognizing end of iterations e.g. timeout
                     if (idx == (niter + 100)):
@@ -343,7 +361,12 @@ class OptimHandler:
         """
         # self.kill = True
         self.pause_loop = True
-        self.event.set()
+
+        # case for event not set, e.g. kill is pressed before first run
+        try:
+            self.event.set()
+        except AttributeError as e:
+            print(e)
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
         try:
@@ -364,14 +387,18 @@ class OptimHandler:
                 self.outputbox("No running processes found.")
                 return
             else:
-                stdout = self.sshobj.send_cmd("kill " + str(stdout))
-                self.outputbox("Killed fine EuranusTurbo.")
+                process_list = stdout.split('\n')
+                # kill all euranusTurbo processes (multicore)
+                for i in process_list:
+                    if i != '':
+                        stdout = self.sshobj.send_cmd("kill " + str(i))
+                        self.outputbox("Killed fine EuranusTurbo (" + str(i) + ").")
 
         except AttributeError:
             self.outputbox("Error killing the process.")
 
 
-class OptimPlotCanvas(FigureCanvas):
+class OptimPlotMassflow(FigureCanvas):
     """
     Real-Time plot of data from .res file.
     """
@@ -389,9 +416,50 @@ class OptimPlotCanvas(FigureCanvas):
         self.ax.grid()
         self.xlim = (0, 0)
         self.ylim = (0, 0)
-        ani = animation.FuncAnimation(fig, self.animate, interval=1000)
+        ani = animation.FuncAnimation(fig, self.animate_massflow, interval=1000)
 
-    def animate(self, ds):
+    def animate_massflow(self, ds):
+        xs = []
+        inlet = []
+        outlet = []
+        for key, val in ds.items():
+            xs.append(int(key))
+            inlet.append(float(val[8]))
+            outlet.append(float(val[9]))
+
+        self.ax.plot(xs, inlet, color='royalblue', label="Inlet")
+        self.ax.plot(xs, outlet, color='indianred', label="Outlet")
+        if len(ds) == 1:
+            self.ax.legend()
+        elif len(ds) == 100:
+            self.ax.axvline(100, alpha=0.3)
+        self.draw()
+
+    def clear(self):
+        self.ax.clear()
+        self.ax.grid()
+
+class OptimPlotXMF(FigureCanvas):
+    """
+    Real-Time plot of data from xmf file.
+    """
+
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        FigureCanvas.__init__(self, fig)
+        self.setParent(parent)
+        FigureCanvas.setSizePolicy(self,
+                                   QSizePolicy.Expanding,
+                                   QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+        self.ax = self.figure.add_subplot(111)
+        self.ax.legend()
+        self.ax.grid()
+        self.xlim = (0, 0)
+        self.ylim = (0, 0)
+        ani = animation.FuncAnimation(fig, self.animate_xmf, interval=1000)
+
+    def animate_xmf(self, ds):
         xs = []
         inlet = []
         outlet = []

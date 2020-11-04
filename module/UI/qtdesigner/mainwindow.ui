@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_bladedesign">
      <attribute name="title">
@@ -1405,9 +1405,9 @@ inside VNC enter: echo $DISPLAY</string>
      <widget class="QWidget" name="optimfig_widget" native="true">
       <property name="geometry">
        <rect>
-        <x>270</x>
+        <x>210</x>
         <y>230</y>
-        <width>511</width>
+        <width>441</width>
         <height>461</height>
        </rect>
       </property>
@@ -1430,17 +1430,10 @@ inside VNC enter: echo $DISPLAY</string>
          <x>10</x>
          <y>20</y>
          <width>169</width>
-         <height>321</height>
+         <height>271</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_5">
-        <item row="0" column="0">
-         <widget class="QLabel" name="opt_label_iteration">
-          <property name="text">
-           <string>#Iteration: 100 +</string>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="1">
          <widget class="QDoubleSpinBox" name="opt_input_iteration">
           <property name="enabled">
@@ -1463,24 +1456,133 @@ inside VNC enter: echo $DISPLAY</string>
           </property>
          </widget>
         </item>
-        <item row="1" column="1">
-         <widget class="QToolButton" name="opt_btn_update_param">
+        <item row="0" column="0">
+         <widget class="QLabel" name="opt_label_iteration">
           <property name="text">
-           <string>Update</string>
+           <string>#Iteration: 100 +</string>
           </property>
-          <property name="popupMode">
-           <enum>QToolButton::DelayedPopup</enum>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="opt_label_iteration_2">
+          <property name="text">
+           <string>#cores [1, max-1]</string>
           </property>
-          <property name="toolButtonStyle">
-           <enum>Qt::ToolButtonTextBesideIcon</enum>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QDoubleSpinBox" name="opt_input_cores">
+          <property name="enabled">
+           <bool>true</bool>
           </property>
-          <property name="arrowType">
-           <enum>Qt::NoArrow</enum>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="minimum">
+           <double>1.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>20.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>1.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>7.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QDoubleSpinBox" name="opt_input_convergence">
+          <property name="enabled">
+           <bool>true</bool>
+          </property>
+          <property name="decimals">
+           <number>0</number>
+          </property>
+          <property name="minimum">
+           <double>-8.000000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>-1.000000000000000</double>
+          </property>
+          <property name="singleStep">
+           <double>1.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>-6.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="opt_label_iteration_3">
+          <property name="text">
+           <string>convergence criteria</string>
           </property>
          </widget>
         </item>
        </layout>
       </widget>
+      <widget class="QToolButton" name="opt_btn_update_param">
+       <property name="geometry">
+        <rect>
+         <x>110</x>
+         <y>300</y>
+         <width>71</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Update</string>
+       </property>
+       <property name="popupMode">
+        <enum>QToolButton::DelayedPopup</enum>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::NoArrow</enum>
+       </property>
+      </widget>
+      <widget class="QDoubleSpinBox" name="opt_input_cores_2">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>224</x>
+         <y>200</y>
+         <width>73</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="decimals">
+        <number>0</number>
+       </property>
+       <property name="minimum">
+        <double>1.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>20.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>1.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>7.000000000000000</double>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="optimfig_widget_2" native="true">
+      <property name="geometry">
+       <rect>
+        <x>660</x>
+        <y>230</y>
+        <width>441</width>
+        <height>461</height>
+       </rect>
+      </property>
      </widget>
     </widget>
    </widget>
