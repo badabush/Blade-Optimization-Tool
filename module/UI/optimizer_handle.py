@@ -4,6 +4,7 @@ import threading
 import os, glob
 import queue
 from pathlib import Path
+import numpy as np
 
 from PyQt5.QtWidgets import QSizePolicy
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
@@ -80,7 +81,9 @@ class OptimHandler:
         self.xmf_param = {}  # [['Inlet', Outlet'], ...]
         self.xmf_param['abs_total_pressure'] = []
         self.xmf_param['static_pressure'] = []
-
+        self.xmf_param['y_velocity'] = []
+        self.xmf_param['z_velocity'] = []
+        self.xmf_param['i'] = []
 
     def toggle_leds(self, led, state):
         if state == 0:
@@ -234,7 +237,7 @@ class OptimHandler:
         timeout = 0
         # wait for fineTurbo to start calculation by checking for the existence of .res-file
         # timeout at 30s
-        while timeout <= 300 :
+        while timeout <= 300:
             if os.path.exists(res_file):
                 break
             elif self.pause_loop:
@@ -259,6 +262,7 @@ class OptimHandler:
 
         # reset and clear queue and plot
         self.optifig_massflow.clear()
+        self.optifig_xmf.clear()
         q_res.queue.clear()
         # q_xmf.queue.clear()
         idx = 0
@@ -275,8 +279,9 @@ class OptimHandler:
                         val = q_res.get()
                         idx = int(val[0])
                         ds_res[idx] = val
-                        # plot2 every 50 steps (writing frequency)
-                        if idx % 50 == 0:
+                        # plot2 every 500 steps (writing frequency)
+                        if (idx - 100) % 500 == 0:
+                            self.xmf_param['i'].append(idx)
                             self.xmf_param = read_xmf(xmf_file, self.xmf_param)
                             self.optifig_xmf.animate_xmf(self.xmf_param)
                     self.optifig_massflow.animate_massflow(ds_res)
@@ -412,6 +417,7 @@ class OptimPlotMassflow(FigureCanvas):
                                    QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
         self.ax = self.figure.add_subplot(111)
+        self.ax.set_title('Massflow Inlet/Outlet')
         self.ax.legend()
         self.ax.grid()
         self.xlim = (0, 0)
@@ -438,6 +444,8 @@ class OptimPlotMassflow(FigureCanvas):
     def clear(self):
         self.ax.clear()
         self.ax.grid()
+        self.ax.legend()
+
 
 class OptimPlotXMF(FigureCanvas):
     """
@@ -453,6 +461,7 @@ class OptimPlotXMF(FigureCanvas):
                                    QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
         self.ax = self.figure.add_subplot(111)
+        self.ax.set_title('Beta/cp/omega')
         self.ax.legend()
         self.ax.grid()
         self.xlim = (0, 0)
@@ -460,16 +469,28 @@ class OptimPlotXMF(FigureCanvas):
         ani = animation.FuncAnimation(fig, self.animate_xmf, interval=1000)
 
     def animate_xmf(self, ds):
-        xs = []
-        inlet = []
-        outlet = []
-        for key, val in ds.items():
-            xs.append(int(key))
-            inlet.append(float(val[8]))
-            outlet.append(float(val[9]))
+        xs = np.array(ds['i'])
+        # velocities
+        y_vel = np.array(ds['y_velocity'])
+        z_vel = np.array(ds['z_velocity'])
+        p_stat = np.array(ds['static_pressure'])
+        p_atot = np.array(ds['abs_total_pressure'])
 
-        self.ax.plot(xs, inlet, color='royalblue', label="Inlet")
-        self.ax.plot(xs, outlet, color='indianred', label="Outlet")
+        # beta = np.arcsin(y_vel/z_vel)
+        beta = np.array(
+            list(map(lambda y, z: np.arcsin(y[1] / z[1]) if (z[1] > 1) and (y[1] > 1) else 0, y_vel, z_vel)))
+        cp = np.array(
+            list(map(lambda ps, pt: (ps[1] - ps[0]) / (pt[0] - ps[0]) if np.abs(
+                (ps[1] - ps[0]) / (pt[0] - ps[0])) < 1 else 0,
+                     p_stat, p_atot)))
+        omega = np.array(
+            list(map(lambda ps, pt: (pt[0] - pt[1]) / (pt[0] - ps[0]) if np.abs(
+                (pt[0] - pt[1]) / (pt[0] - ps[0])) < 1 else 0,
+                     p_stat, p_atot)))
+        self.ax.plot(xs, beta, color='royalblue', label='beta')
+        self.ax.plot(xs, cp, color='indianred', label='cp')
+        self.ax.plot(xs, omega, color='darkred', label='omega')
+        # self.ax.plot(xs, outlet, color='indianred', label="Outlet")
         if len(ds) == 1:
             self.ax.legend()
         elif len(ds) == 100:
@@ -479,3 +500,4 @@ class OptimPlotXMF(FigureCanvas):
     def clear(self):
         self.ax.clear()
         self.ax.grid()
+        self.ax.legend()

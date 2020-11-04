@@ -64,15 +64,21 @@ def read_xmf(file, param):
         doc = xmltodict.parse(f.read())
         doclist = list(doc.items())
         param['abs_total_pressure'].append([
-            float(doclist[0][1]['Station'][1]['Condition'][1]['float'][0]['#text']),
-            float(doclist[0][1]['Station'][0]['Condition'][1]['float'][0]['#text'])
+            float(doclist[0][1]['Station'][0]['Condition'][1]['float'][0]['#text']),
+            float(doclist[0][1]['Station'][1]['Condition'][1]['float'][0]['#text'])
         ])
         param['static_pressure'].append([
-            float(doclist[0][1]['Station'][1]['Condition'][0]['float'][0]['#text']),
-            float(doclist[0][1]['Station'][0]['Condition'][0]['float'][0]['#text'])
+            float(doclist[0][1]['Station'][0]['Condition'][0]['float'][0]['#text']),
+            float(doclist[0][1]['Station'][1]['Condition'][0]['float'][0]['#text'])
         ])
-        print(param['abs_total_pressure'])
-        # file.close()
+        param['y_velocity'].append([
+            float(doclist[0][1]['Station'][0]['Velocity']['float'][1]['#text']),
+            float(doclist[0][1]['Station'][1]['Velocity']['float'][1]['#text'])
+        ])
+        param['z_velocity'].append([
+            float(doclist[0][1]['Station'][0]['Velocity']['float'][2]['#text']),
+            float(doclist[0][1]['Station'][1]['Velocity']['float'][2]['#text'])
+        ])
     return param
 
 def cleanpaths(path_dict):
@@ -99,6 +105,13 @@ def cleanpaths(path_dict):
     return paths
 
 
-# if __name__ == "__main__":
-#     f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.xmf"
-#     read_xmf(f)
+if __name__ == "__main__":
+    f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.xmf"
+    # init XMF dict
+    xmf_param = {}  # [['Inlet', Outlet'], ...]
+    xmf_param['abs_total_pressure'] = []
+    xmf_param['static_pressure'] = []
+    xmf_param['y_velocity'] = []
+    xmf_param['z_velocity'] = []
+
+    read_xmf(f, xmf_param)

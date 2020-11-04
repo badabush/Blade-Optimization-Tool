@@ -11,7 +11,7 @@ def gen_script(paths, param):
 
     task_idx = str(0)
     no_iter = str(param["niter"])
-    writing_frequency = str(50)
+    writing_frequency = str(500)
     convergence_crit = str(param["convergence"])
     number_of_cores = str(param["cores"])
     node_id = str(param["node"])
