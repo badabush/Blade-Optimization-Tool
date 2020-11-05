@@ -11,6 +11,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 import matplotlib.animation as animation
+import matplotlib.pyplot as plt
 from pyface.qt import QtGui
 from PyQt5.QtWidgets import QTableView
 import configparser
@@ -408,7 +409,7 @@ class OptimPlotMassflow(FigureCanvas):
     Real-Time plot of data from .res file.
     """
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
+    def __init__(self, parent=None, width=4, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
@@ -417,11 +418,15 @@ class OptimPlotMassflow(FigureCanvas):
                                    QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
         self.ax = self.figure.add_subplot(111)
-        self.ax.set_title('Massflow Inlet/Outlet')
-        self.ax.legend()
+        self.ax.set_title("Massflow Inlet/Outlet")
+        self.ax.set_xlabel("iteration")
+        self.ax.set_ylabel("Massflow [kg/s]")
+        # self.ax.legend()
         self.ax.grid()
         self.xlim = (0, 0)
         self.ylim = (0, 0)
+
+        fig.set_tight_layout(True) # prevents clipping of ylabel
         ani = animation.FuncAnimation(fig, self.animate_massflow, interval=1000)
 
     def animate_massflow(self, ds):
@@ -433,11 +438,16 @@ class OptimPlotMassflow(FigureCanvas):
             inlet.append(float(val[8]))
             outlet.append(float(val[9]))
 
-        self.ax.plot(xs, inlet, color='royalblue', label="Inlet")
-        self.ax.plot(xs, outlet, color='indianred', label="Outlet")
-        if len(ds) == 1:
-            self.ax.legend()
-        elif len(ds) == 100:
+        self.ax.plot(xs, inlet, label="Inlet", color='royalblue')
+        self.ax.plot(xs, outlet, label="Outlet", color='indianred')
+        self.ax.legend(["Inlet", "Outlet"])
+        self.ax.set_title("Massflow Inlet/Outlet")
+        self.ax.set_xlabel("iteration")
+        self.ax.set_ylabel("Massflow [kg/s]")
+        self.ax.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
+
+        # draw a vertical line @ 100 iterations to mark initialization
+        if len(ds) == 100:
             self.ax.axvline(100, alpha=0.3)
         self.draw()
 
@@ -452,7 +462,7 @@ class OptimPlotXMF(FigureCanvas):
     Real-Time plot of data from xmf file.
     """
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
+    def __init__(self, parent=None, width=5, height=5, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
@@ -461,11 +471,18 @@ class OptimPlotXMF(FigureCanvas):
                                    QSizePolicy.Expanding)
         FigureCanvas.updateGeometry(self)
         self.ax = self.figure.add_subplot(111)
-        self.ax.set_title('Beta/cp/omega')
-        self.ax.legend()
+        self.ax.set_title(r'$c_p, \omega, \beta$')
+        self.ax.set_xlabel("iteration")
+        self.ax.set_ylabel(r"$c_p, \omega$")
+        # self.ax.legend()
         self.ax.grid()
         self.xlim = (0, 0)
         self.ylim = (0, 0)
+
+        self.ax2 = self.ax.twinx()
+        self.ax2.set_ylabel(r"$\beta$", color='royalblue')
+
+        fig.set_tight_layout(True) # prevents clipping of ylabel
         ani = animation.FuncAnimation(fig, self.animate_xmf, interval=1000)
 
     def animate_xmf(self, ds):
@@ -487,14 +504,21 @@ class OptimPlotXMF(FigureCanvas):
             list(map(lambda ps, pt: (pt[0] - pt[1]) / (pt[0] - ps[0]) if np.abs(
                 (pt[0] - pt[1]) / (pt[0] - ps[0])) < 1 else 0,
                      p_stat, p_atot)))
-        self.ax.plot(xs, beta, color='royalblue', label='beta')
+        # self.ax.plot(xs, beta, color='royalblue', label='beta')
         self.ax.plot(xs, cp, color='indianred', label='cp')
         self.ax.plot(xs, omega, color='darkred', label='omega')
-        # self.ax.plot(xs, outlet, color='indianred', label="Outlet")
-        if len(ds) == 1:
-            self.ax.legend()
-        elif len(ds) == 100:
-            self.ax.axvline(100, alpha=0.3)
+        self.ax.set_title(r'$c_p, \omega, \beta$')
+
+        self.ax.set_xlabel("iteration")
+        self.ax.set_ylabel(r"$c_p, \omega$")
+        self.ax.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
+
+        # ax2 = self.ax.twinx()
+        self.ax2.set_ylabel(r"$\beta$", color='royalblue')
+        self.ax2.plot(xs, np.rad2deg(beta), color='royalblue', label='beta')
+        self.ax2.tick_params(axis='y', labelcolor='royalblue')
+        self.ax.legend([r"$c_p$", r"$\omega$", r"$\beta$"])
+
         self.draw()
 
     def clear(self):

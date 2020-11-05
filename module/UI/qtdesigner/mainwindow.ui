@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1101</width>
+    <width>1125</width>
     <height>1033</height>
    </rect>
   </property>
@@ -19,7 +19,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>1101</width>
+      <width>1121</width>
       <height>741</height>
      </rect>
     </property>
@@ -1407,8 +1407,8 @@ inside VNC enter: echo $DISPLAY</string>
        <rect>
         <x>210</x>
         <y>230</y>
-        <width>441</width>
-        <height>461</height>
+        <width>431</width>
+        <height>481</height>
        </rect>
       </property>
      </widget>
@@ -1577,10 +1577,10 @@ inside VNC enter: echo $DISPLAY</string>
      <widget class="QWidget" name="optimfig_widget_2" native="true">
       <property name="geometry">
        <rect>
-        <x>660</x>
+        <x>630</x>
         <y>230</y>
-        <width>441</width>
-        <height>461</height>
+        <width>471</width>
+        <height>481</height>
        </rect>
       </property>
      </widget>
@@ -1591,7 +1591,7 @@ inside VNC enter: echo $DISPLAY</string>
      <rect>
       <x>10</x>
       <y>750</y>
-      <width>1071</width>
+      <width>1111</width>
       <height>171</height>
      </rect>
     </property>
@@ -1603,7 +1603,7 @@ inside VNC enter: echo $DISPLAY</string>
       <rect>
        <x>0</x>
        <y>20</y>
-       <width>1071</width>
+       <width>1101</width>
        <height>141</height>
       </rect>
      </property>
@@ -1615,7 +1615,7 @@ inside VNC enter: echo $DISPLAY</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1101</width>
+     <width>1125</width>
      <height>21</height>
     </rect>
    </property>
