@@ -426,7 +426,7 @@ class OptimPlotMassflow(FigureCanvas):
         self.xlim = (0, 0)
         self.ylim = (0, 0)
 
-        fig.set_tight_layout(True) # prevents clipping of ylabel
+        fig.set_tight_layout(True)  # prevents clipping of ylabel
         ani = animation.FuncAnimation(fig, self.animate_massflow, interval=1000)
 
     def animate_massflow(self, ds):
@@ -444,7 +444,7 @@ class OptimPlotMassflow(FigureCanvas):
         self.ax.set_title("Massflow Inlet/Outlet")
         self.ax.set_xlabel("iteration")
         self.ax.set_ylabel("Massflow [kg/s]")
-        self.ax.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
+        self.ax.ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
 
         # draw a vertical line @ 100 iterations to mark initialization
         if len(ds) == 100:
@@ -482,7 +482,7 @@ class OptimPlotXMF(FigureCanvas):
         self.ax2 = self.ax.twinx()
         self.ax2.set_ylabel(r"$\beta$", color='royalblue')
 
-        fig.set_tight_layout(True) # prevents clipping of ylabel
+        fig.set_tight_layout(True)  # prevents clipping of ylabel
         ani = animation.FuncAnimation(fig, self.animate_xmf, interval=1000)
 
     def animate_xmf(self, ds):
@@ -504,20 +504,25 @@ class OptimPlotXMF(FigureCanvas):
             list(map(lambda ps, pt: (pt[0] - pt[1]) / (pt[0] - ps[0]) if np.abs(
                 (pt[0] - pt[1]) / (pt[0] - ps[0])) < 1 else 0,
                      p_stat, p_atot)))
-        # self.ax.plot(xs, beta, color='royalblue', label='beta')
-        self.ax.plot(xs, cp, color='indianred', label='cp')
-        self.ax.plot(xs, omega, color='darkred', label='omega')
+
+        line1 = self.ax.plot(xs, cp, color='indianred', label=r'$cp$')
+        line2 = self.ax.plot(xs, omega, color='darkred', label=r'$\omega$')
+        line3 = self.ax2.plot(xs, np.rad2deg(beta), color='royalblue', label=r'$beta$')
         self.ax.set_title(r'$c_p, \omega, \beta$')
 
         self.ax.set_xlabel("iteration")
         self.ax.set_ylabel(r"$c_p, \omega$")
-        self.ax.ticklabel_format(axis='y', style='sci', scilimits=(0,0))
+        self.ax.ticklabel_format(axis='y', style='sci', scilimits=(0, 0))
+        self.ax.tick_params(axis='y', labelcolor='darkred')
 
-        # ax2 = self.ax.twinx()
         self.ax2.set_ylabel(r"$\beta$", color='royalblue')
-        self.ax2.plot(xs, np.rad2deg(beta), color='royalblue', label='beta')
         self.ax2.tick_params(axis='y', labelcolor='royalblue')
-        self.ax.legend([r"$c_p$", r"$\omega$", r"$\beta$"])
+
+        # combine legends
+        lines = line1+line2+line3
+        labels = [l.get_label() for l in lines]
+        # self.ax.legend([r"$c_p$", r"$\omega$", r"$\beta$"])
+        self.ax.legend(lines, labels)
 
         self.draw()
 
