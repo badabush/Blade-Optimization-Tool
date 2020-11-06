@@ -14,8 +14,8 @@ from module.optimizer.ssh_login import ssh_connect
 from module.optimizer.optimtools import read_top_usage, parse_res, cleanpaths, read_xmf
 from module.optimizer.generate_script import gen_script
 from module.optimizer.pandasviewer import pandasModel
-from module.UI.generate_mesh_ui import MeshGenUI
-from module.UI.optimizer_plots import *
+from module.UI.optimizer.generate_mesh_ui import MeshGenUI
+from module.UI.optimizer.optimizer_plots import *
 
 
 class OptimHandler:

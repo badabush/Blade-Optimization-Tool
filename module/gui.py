@@ -12,14 +12,14 @@ from datetime import datetime
 from module.blade.bladetools import load_config_file
 from module.blade.bladegen import BladeGen
 from module.UI.initialize import Initialize
-from module.UI.bladedesigner_handle import BDUpdateHandler
+from module.UI.blade.bladedesigner_handle import BDUpdateHandler
 from module.UI.file_explorer import FileExplorer
-from module.UI.camber_spline_ui import CamberSplineUi
+from module.UI.blade.camber_spline_ui import CamberSplineUi
 from module.UI.thdist_spline_ui import ThdistSplineUi
 from module.UI.annulus_ui import AnnulusUi
 from module.UI.ssh_login_ui import SSHLoginUi
 from module.UI.save_load_config import SaveLoadConfig
-from module.UI.optimizer_handle import OptimHandler
+from module.UI.optimizer.optimizer_handle import OptimHandler
 from module.optimizer.optimizer_loadblade import LoadBlade
 
 
