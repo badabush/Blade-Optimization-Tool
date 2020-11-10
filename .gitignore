@@ -3,6 +3,11 @@ docs/output/
 docs/_build/
 module/optimizer/ssh_login/ssh_config.ini
 module/optimizer/numeca_api
+module/dist
+module/build
+module/BOT.exe
+
+
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,pycharm,git
