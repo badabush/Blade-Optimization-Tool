@@ -402,12 +402,6 @@ class BladeGen:
 
     def debug_plot(self, xy_camber, xy_blade):
         plt.figure(figsize=(12, 4))
-        # plt.subplot(131)
-        # plt.plot(self.x, xy_th[:, 1])
-        # plt.subplot(132)
-        # plt.subplot(133)
-        # if (np.all(self.xy_in) != None):
-        #     plt.plot(self.xy_in.x, self.xy_in.y)
         plt.plot(xy_blade.x, xy_blade.y)
         plt.plot(self.x, xy_camber[:, 1])
         plt.axis('equal')
