@@ -1,24 +1,4 @@
-#    This file is part of DEAP.
-#
-#    DEAP is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Lesser General Public License as
-#    published by the Free Software Foundation, either version 3 of
-#    the License, or (at your option) any later version.
-#
-#    DEAP is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-#    GNU Lesser General Public License for more details.
-#
-#    You should have received a copy of the GNU Lesser General Public
-#    License along with DEAP. If not, see <http://www.gnu.org/licenses/>.
-
-
-#    example which maximizes the sum of a list of integers
-#    each of which can be 0 or 1
-
 import random
-
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -94,7 +74,7 @@ class TestGA:
             for i, gene in enumerate(genes):
                 individual[i] = random.uniform(float(gene[0]), float(gene[1]))
         return individual,
-    
+
 
     def populate(self):
         pop = self.toolbox.population(n=POP_SIZE)

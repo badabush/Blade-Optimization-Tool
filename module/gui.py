@@ -21,9 +21,11 @@ from module.UI.ssh_login_ui import SSHLoginUi
 from module.UI.save_load_config import SaveLoadConfig
 from module.UI.optimizer.optimizer_handle import OptimHandler
 from module.optimizer.optimizer_loadblade import LoadBlade
+from module.UI.optimizer.deap_config_ui import DeapConfigUi
+from module.UI.optimizer.run_handle import RunHandler
 
 
-class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig, LoadBlade):
+class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig, LoadBlade, RunHandler):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
         restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
@@ -153,6 +155,13 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         """
         self.login_ui = SSHLoginUi()
         self.login_ui.show()
+
+    def deap_config_window(self):
+        """
+        Opens Popup for DEAP config.
+        """
+        self.deap_ui = DeapConfigUi()
+        self.deap_ui.show()
 
     def camber_spline_window(self):
         """
