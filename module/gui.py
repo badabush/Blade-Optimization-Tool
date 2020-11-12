@@ -23,9 +23,11 @@ from module.UI.optimizer.optimizer_handle import OptimHandler
 from module.optimizer.optimizer_loadblade import LoadBlade
 from module.UI.optimizer.deap_config_ui import DeapConfigUi
 from module.UI.optimizer.run_handle import RunHandler
+from module.UI.optimizer.deap_run_handle import DeapRunHandler
 
 
-class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig, LoadBlade, RunHandler):
+class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig, LoadBlade,
+         RunHandler, DeapRunHandler):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
         restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.

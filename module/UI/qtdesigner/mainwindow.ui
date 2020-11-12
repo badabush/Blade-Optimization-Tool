@@ -1475,20 +1475,6 @@ inside VNC enter: echo $DISPLAY</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="opt_label_iteration">
-          <property name="text">
-           <string>#Iteration: 100 +</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="opt_label_iteration_2">
-          <property name="text">
-           <string>#cores [2, max-1]</string>
-          </property>
-         </widget>
-        </item>
         <item row="1" column="1">
          <widget class="QDoubleSpinBox" name="opt_input_cores">
           <property name="enabled">
@@ -1511,6 +1497,13 @@ inside VNC enter: echo $DISPLAY</string>
           </property>
          </widget>
         </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="opt_label_iteration_2">
+          <property name="text">
+           <string>#cores [2, max-1]</string>
+          </property>
+         </widget>
+        </item>
         <item row="2" column="1">
          <widget class="QDoubleSpinBox" name="opt_input_convergence">
           <property name="enabled">
@@ -1530,6 +1523,13 @@ inside VNC enter: echo $DISPLAY</string>
           </property>
           <property name="value">
            <double>-6.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="opt_label_iteration">
+          <property name="text">
+           <string>#Iteration: 100 +</string>
           </property>
          </widget>
         </item>
@@ -1590,6 +1590,28 @@ inside VNC enter: echo $DISPLAY</string>
        </property>
        <property name="value">
         <double>7.000000000000000</double>
+       </property>
+      </widget>
+      <widget class="QToolButton" name="btn_deapsettings">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>300</y>
+         <width>71</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>DEAP settings</string>
+       </property>
+       <property name="popupMode">
+        <enum>QToolButton::DelayedPopup</enum>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::NoArrow</enum>
        </property>
       </widget>
      </widget>

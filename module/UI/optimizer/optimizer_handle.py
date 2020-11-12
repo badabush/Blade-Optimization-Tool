@@ -42,7 +42,8 @@ class OptimHandler:
         self.opt_btn_update_param.clicked.connect(self.update_param)
 
         # open DEAP config
-        self.btn_deaprun.clicked.connect(self.deap_config_window)
+        self.btn_deapsettings.clicked.connect(self.deap_config_window)
+        self.btn_deaprun.clicked.connect(self.ga_run)
 
         # init LEDs
         self.toggle_leds(self.led_connection, 0)
@@ -62,6 +63,10 @@ class OptimHandler:
         vbl = QtGui.QVBoxLayout(centralwidget2)
         vbl.addWidget(toolbar)
         vbl.addWidget(self.optifig_xmf)
+
+        # define thread events (for waiting)
+        self.igg_event = threading.Event()
+        self.res_event = threading.Event()
 
         # set default paths for lazy development
         self.box_pathtodir.setText("//130.149.110.81/liang/Tandem_Opti")
@@ -84,6 +89,8 @@ class OptimHandler:
         self.xmf_param['z_velocity'] = []
         self.xmf_param['i'] = []
 
+
+
     def toggle_leds(self, led, state):
         if state == 0:
             pixmap = QtGui.QPixmap(os.getcwd() + "/UI/icons/red-led-on.png")
@@ -97,12 +104,7 @@ class OptimHandler:
         self.paths['iec'] = self.box_pathtoiec.text()
         self.paths['run'] = self.box_pathtorun.text()
         self.paths['igg'] = self.box_pathtoigg.text()
-        # try:
-        # self.paths['geomturbo'] = self.meshgen.geomturbopath
-        # except AttributeError as e:
-        #     print(e)
-        # self.paths['igg'] = ""
-        # self.paths['geomturbo'] = ""
+
         self.paths = cleanpaths(self.paths)
 
     def ssh_connect(self):
@@ -214,19 +216,17 @@ class OptimHandler:
         start_time = datetime.datetime.now()
         q_res = queue.Queue()
         # q_xmf = queue.Queue()
-        self.event = threading.Event()
-        t_res = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q_res, self.event))
+        t_res = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q_res, self.res_event))
         t_res.start()
 
         # reset and clear queue and plot
         self.optifig_massflow.clear()
         self.optifig_xmf.clear()
         q_res.queue.clear()
-        # q_xmf.queue.clear()
         idx = 0
 
         niter = self.opt_param["niter"]
-        while not self.event.is_set():
+        while not self.res_event.is_set():
             try:
                 # get new data from queue
                 if (self.pause_loop == True):
@@ -290,7 +290,7 @@ class OptimHandler:
         unix_projpath = "/home/HLR/" + self.paths['usr_folder'] + '/' + self.paths['proj_folder']
         path_unix = path.replace(self.paths['dir_raw'], unix_projpath)
         gT_unix = geomturbopath.replace(self.paths['dir_raw'], unix_projpath)
-
+        self.igg_event.clear()
         # delete existing files in /autogrid/
         try:
             files = glob.glob(path + '/*')
@@ -316,6 +316,9 @@ class OptimHandler:
         else:
             self.outputbox("Error creating Meshfile with Autogrid.")
 
+        # set event so other processes know this has ended
+        self.igg_event.set()
+
     def kill_loop(self):
         """
         Kills the loop and the process of the TaskManager.
@@ -327,7 +330,7 @@ class OptimHandler:
 
         # case for event not set, e.g. kill is pressed before first run
         try:
-            self.event.set()
+            self.res_event.set()
         except AttributeError as e:
             print(e)
         if not hasattr(self, 'sshobj'):

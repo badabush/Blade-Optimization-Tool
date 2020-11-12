@@ -6,6 +6,8 @@ from matplotlib.figure import Figure
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 
+from module.optimizer.optimtools import calc_xmf
+
 class OptimPlotMassflow(FigureCanvas):
     """
     Real-Time plot of data from .res file.
@@ -90,22 +92,7 @@ class OptimPlotXMF(FigureCanvas):
     def animate_xmf(self, ds):
         xs = np.array(ds['i'])
         # velocities
-        y_vel = np.array(ds['y_velocity'])
-        z_vel = np.array(ds['z_velocity'])
-        p_stat = np.array(ds['static_pressure'])
-        p_atot = np.array(ds['abs_total_pressure'])
-
-        # beta = np.arcsin(y_vel/z_vel)
-        beta = np.array(
-            list(map(lambda y, z: np.arcsin(y[1] / z[1]) if (z[1] > 1) and (y[1] > 1) else 0, y_vel, z_vel)))
-        cp = np.array(
-            list(map(lambda ps, pt: (ps[1] - ps[0]) / (pt[0] - ps[0]) if np.abs(
-                (ps[1] - ps[0]) / (pt[0] - ps[0])) < 1 else 0,
-                     p_stat, p_atot)))
-        omega = np.array(
-            list(map(lambda ps, pt: (pt[0] - pt[1]) / (pt[0] - ps[0]) if np.abs(
-                (pt[0] - pt[1]) / (pt[0] - ps[0])) < 1 else 0,
-                     p_stat, p_atot)))
+        beta, cp, omega = calc_xmf(ds)
 
         line1 = self.ax.plot(xs, cp, color='indianred', label=r'$cp$')
         line2 = self.ax.plot(xs, omega, color='darkred', label=r'$\omega$')
@@ -123,10 +110,10 @@ class OptimPlotXMF(FigureCanvas):
         # combine legends
         lines = line1+line2+line3
         labels = [l.get_label() for l in lines]
-        # self.ax.legend([r"$c_p$", r"$\omega$", r"$\beta$"])
         self.ax.legend(lines, labels)
 
         self.draw()
+
 
     def clear(self):
         self.ax.clear()

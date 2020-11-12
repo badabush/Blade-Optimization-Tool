@@ -3,6 +3,8 @@ from pathlib import Path
 import xmltodict
 import time
 
+import numpy as np
+
 def read_top_usage(top_usage):
     """
     Cleans up the stdout from the command top. Does the formatting into lines, dropping header,
@@ -103,6 +105,30 @@ def cleanpaths(path_dict):
     paths['xmf'] = path_dict['run'].replace(Path(paths['run']).parts[-1], Path(paths['run']).parts[-1].replace('run', 'xmf'))
 
     return paths
+
+
+
+def calc_xmf(ds):
+    """
+    ds is a nested dict with lists where entries y_velocity, z_velocity, static_pressure and abs_total_pressure must exist.
+    TODO:
+    """
+    y_vel = np.array(ds['y_velocity'])
+    z_vel = np.array(ds['z_velocity'])
+    p_stat = np.array(ds['static_pressure'])
+    p_atot = np.array(ds['abs_total_pressure'])
+    # beta = np.arcsin(y_vel/z_vel)
+    beta = np.array(
+        list(map(lambda y, z: np.arcsin(y[1] / z[1]) if (z[1] > 1) and (y[1] > 1) else 0, y_vel, z_vel)))
+    cp = np.array(
+        list(map(lambda ps, pt: (ps[1] - ps[0]) / (pt[0] - ps[0]) if np.abs(
+            (ps[1] - ps[0]) / (pt[0] - ps[0])) < 1 else 0,
+                 p_stat, p_atot)))
+    omega = np.array(
+        list(map(lambda ps, pt: (pt[0] - pt[1]) / (pt[0] - ps[0]) if np.abs(
+            (pt[0] - pt[1]) / (pt[0] - ps[0])) < 1 else 0,
+                 p_stat, p_atot)))
+    return beta, cp, omega
 
 
 if __name__ == "__main__":
