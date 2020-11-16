@@ -2,7 +2,6 @@ import threading
 import paramiko
 
 from module.optimizer.generate_script import gen_script
-from module.optimizer.genetic_algorithm.GA import TestGA
 
 class RunHandler:
 
@@ -40,8 +39,6 @@ class RunHandler:
                 self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
             self.outputbox(stdout)
 
-            # if self.first_run == True:
-            # start thread to read res file
             t = threading.Thread(name='res_reader', target=self.read_res)
             t.start()
 

@@ -12,7 +12,6 @@ import configparser
 
 from module.optimizer.ssh_login import ssh_connect
 from module.optimizer.optimtools import read_top_usage, parse_res, cleanpaths, read_xmf
-from module.optimizer.generate_script import gen_script
 from module.optimizer.pandasviewer import pandasModel
 from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.UI.optimizer.optimizer_plots import *
@@ -74,10 +73,8 @@ class OptimHandler:
         self.box_pathtoigg.setText("//130.149.110.81/liang/Tandem_Opti/BOT/template/autogrid/test_template.igg")
         self.box_pathtorun.setText(
             "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.run")
-        # self.box_pathtogeomturbo.setText("//130.149.110.81/liang/Tandem_Opti/BOT/geomturbo_files/testgeom.geomTurbo")
 
         # grab paths
-
         self.paths = {}
         self.grab_paths
 
@@ -88,8 +85,6 @@ class OptimHandler:
         self.xmf_param['y_velocity'] = []
         self.xmf_param['z_velocity'] = []
         self.xmf_param['i'] = []
-
-
 
     def toggle_leds(self, led, state):
         if state == 0:
@@ -171,7 +166,6 @@ class OptimHandler:
                 self.outputbox("No active Session.")
         except paramiko.ssh_exception.NoValidConnectionsError:
             self.outputbox("Error closing Session.")
-
 
     def read_res(self):
         """
