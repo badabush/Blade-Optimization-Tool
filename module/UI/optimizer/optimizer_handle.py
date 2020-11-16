@@ -216,9 +216,10 @@ class OptimHandler:
         # reset and clear queue and plot
         self.optifig_massflow.clear()
         self.optifig_xmf.clear()
-        q_res.queue.clear()
+        with q_res.mutex:
+            q_res.queue.clear()
         idx = 0
-
+        first_run = True
         niter = self.opt_param["niter"]
         while not self.res_event.is_set():
             try:
@@ -228,18 +229,26 @@ class OptimHandler:
                 else:
                     # empty queue in chunks to minimize processor workload
                     while not q_res.empty():
-                        val = q_res.get()
-                        idx = int(val[0])
-                        ds_res[idx] = val
+                        if first_run:
+                            time.sleep(3)
+                            first_run = False
+                        else:
+                            val = q_res.get()
+                            idx = int(val[0])
+                            ds_res[idx] = val
                         # plot2 every 500 steps (writing frequency)
                         if (idx - 100) % 500 == 0:
                             self.xmf_param['i'].append(idx)
                             self.xmf_param = read_xmf(xmf_file, self.xmf_param)
                             self.optifig_xmf.animate_xmf(self.xmf_param)
-                    self.optifig_massflow.animate_massflow(ds_res)
+
+                    if not first_run:
+                        self.optifig_massflow.animate_massflow(ds_res)
 
                     # TODO: implement another way of recognizing end of iterations e.g. timeout
-                    if (idx == (niter + 100)):
+                    if (idx == (niter + 100)) and not first_run:
+                        # idx = 0
+                        # val = []
                         self.outputbox("Cleaning up.")
                         time.sleep(5)
                         # set events, end taskmanager, end parseres, kill while loops
@@ -252,6 +261,7 @@ class OptimHandler:
                         min, sec = divmod(elapsed_time.seconds, 60)
                         hour, min = divmod(min, 60)
                         self.outputbox("Total time elapsed: " + str(hour) + ":" + str(min) + ":" + str(sec))
+                        return
 
             except TypeError as e:
                 print(e)

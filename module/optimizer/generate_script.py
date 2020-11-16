@@ -32,7 +32,7 @@ def gen_script(paths, param):
                'FT.new_task()\n' +
                'FT.task(' + task_idx + ').new_subtask()\n' +
                'FT.task(' + task_idx + ').subtask(0).set_run_file("' + paths['run'] + '")\n' +
-               'FT.task(' + task_idx + ').subtask(0).set_compiler(3)\n' +
+               'FT.task(' + task_idx + ').subtask(0).set_compiler(1)\n' + # Portland OMPI (PGI6) [0]| Portland OMPI(PGI17) [3]| PORTLAND IMPI (PGI17) [4]| Intel IMPI (ICC15) [1]
                'FT.task(' + task_idx + ').subtask(0).set_parallel_mode(2)\n' +
                str_add_cores +
                'FT.task(' + task_idx + ').start()'

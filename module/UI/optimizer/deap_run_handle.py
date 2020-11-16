@@ -2,6 +2,7 @@ import numpy as np
 import random
 import threading
 import paramiko
+import time
 
 from deap import creator
 from deap import tools
@@ -60,7 +61,12 @@ class DeapRunHandler:
         # self.toolbox.register("mutate", tools.mutFlipBit, indpb=.05)
         self.toolbox.register("select", tools.selTournament, tournsize=3)
 
-        self.populate()
+        # start thread for DEAP loop
+
+        t = threading.Thread(name="deap_populate", target=self.populate)
+        t.start()
+
+        # self.populate()
 
     def evalEngine(self, individual):
         """
@@ -88,25 +94,42 @@ class DeapRunHandler:
         # check for existing connection
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
+        # try:
+        #     t = threading.Thread(name="create_meshfile", target=self.run_igg)
+        #     t.start()
+        # except AttributeError:
+        #     self.outputbox("Connecting...")
+
+        # self.outputbox("[DEAP] Waiting for igg to finish ...")
+        # self.igg_event.wait()
+        # self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
+        time.sleep(2)
+
         try:
-            t = threading.Thread(name="create_meshfile", target=self.run_igg)
-            t.start()
+            self.deap_script()
         except AttributeError:
-            self.outputbox("Connecting...")
+            print("deap script crashed.")
 
-        self.outputbox("Waiting for igg to finish ...")
-        self.igg_event.wait()
-        self.outputbox("IGG has finished. Starting FineTurbo.")
-
-        self.deap_script()
-        self.outputbox("Waiting for FineTurbo to finish ...")
+        self.outputbox("[DEAP] Waiting for FineTurbo to finish ...")
         self.res_event.wait()
-
+        time.sleep(2)
         # try:
         # except:
         beta, cp, omega = calc_xmf(self.xmf_param)
         print("Omega: " + str(omega))
-        return omega
+
+        # clear events
+        self.igg_event.clear()
+        self.res_event.clear()
+        print("igg event set: " + str(self.igg_event.is_set()))
+        print("res event set: " + str(self.res_event.is_set()))
+        try:
+            foo = omega[-1]
+        except IndexError as e:
+            print(e)
+            foo = 0
+        return foo
+
         # return sum(individual) / sum([float(i[0]) for i in self.dp_genes]),
 
     def deap_script(self):
@@ -119,6 +142,8 @@ class DeapRunHandler:
         self.grab_paths()
         # clear plot
         self.optifig_massflow.animate_massflow({})
+        # self.optifig_xmf.animate_xmf({})
+        self.optifig_xmf.clear()
 
         if self.box_pathtodir.text() == "":
             self.outputbox("Set Path to Project Directory first!")
@@ -143,7 +168,6 @@ class DeapRunHandler:
                 self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
             self.outputbox(stdout)
 
-            # if self.first_run == True:
             # start thread to read res file
             t = threading.Thread(name='res_reader', target=self.read_res)
             t.start()

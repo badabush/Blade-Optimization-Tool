@@ -90,9 +90,14 @@ class OptimPlotXMF(FigureCanvas):
         ani = animation.FuncAnimation(fig, self.animate_xmf, interval=1000)
 
     def animate_xmf(self, ds):
-        xs = np.array(ds['i'])
+
         # velocities
         beta, cp, omega = calc_xmf(ds)
+
+        try:
+            xs = np.array(ds['i'])
+        except KeyError:
+            xs = np.arange(cp.shape[0])
 
         line1 = self.ax.plot(xs, cp, color='indianred', label=r'$cp$')
         line2 = self.ax.plot(xs, omega, color='darkred', label=r'$\omega$')

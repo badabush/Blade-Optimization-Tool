@@ -118,8 +118,8 @@ def calc_xmf(ds):
     p_stat = np.array(ds['static_pressure'])
     p_atot = np.array(ds['abs_total_pressure'])
     # beta = np.arcsin(y_vel/z_vel)
-    print(y_vel)
-    print(z_vel)
+    # print(y_vel)
+    # print(z_vel)
     beta = np.array(
         list(map(lambda y, z: np.arcsin(y[1] / z[1]) if (z[1] > 1) and (y[1] > 1) else 0, y_vel, z_vel)))
     cp = np.array(
