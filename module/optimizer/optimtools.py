@@ -41,7 +41,7 @@ def read_by_token(fileobj):
 
 def parse_res(file, q, event):
     """
-    Worker thread to read new lines from res. Only queues relevant lines. Breaks loop when kill==True
+    Worker thread to read new lines from res. Only queues relevant lines.
     """
 
     with open(file, 'r') as fp:
@@ -58,7 +58,6 @@ def parse_res(file, q, event):
             print('Could not close file.')
             pass
         time.sleep(5)
-        # break
 
 def read_xmf(file, param):
 
@@ -132,14 +131,35 @@ def calc_xmf(ds):
                  p_stat, p_atot)))
     return beta, cp, omega
 
+def status_convergence(file):
+    """
+    Reads the last line of the logfile and checks, if the convergence criterion has been satisfied. Returns the status
+    """
+    with open(file) as f:
+        for line in (f.readlines() [-1:]):
+            # print(line, end='')
+            if "CONVERGENCE CRITERIA SATISFIED" in line:
+                f.close()
+                return True
+            else:
+                f.close()
+                return False
+
+
 
 if __name__ == "__main__":
-    f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.xmf"
-    # init XMF dict
-    xmf_param = {}  # [['Inlet', Outlet'], ...]
-    xmf_param['abs_total_pressure'] = []
-    xmf_param['static_pressure'] = []
-    xmf_param['y_velocity'] = []
-    xmf_param['z_velocity'] = []
+    f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.log"
 
-    read_xmf(f, xmf_param)
+    status_convergence(f)
+    # # init XMF dict
+    # xmf_param = {}  # [['Inlet', Outlet'], ...]
+    # xmf_param['abs_total_pressure'] = []
+    # xmf_param['static_pressure'] = []
+    # xmf_param['y_velocity'] = []
+    # xmf_param['z_velocity'] = []
+    #
+    # read_xmf(f, xmf_param)
+
+
+
+

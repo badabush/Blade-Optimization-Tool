@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QTableView
 import configparser
 
 from module.optimizer.ssh_login import ssh_connect
-from module.optimizer.optimtools import read_top_usage, parse_res, cleanpaths, read_xmf
+from module.optimizer.optimtools import *
 from module.optimizer.pandasviewer import pandasModel
 from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.UI.optimizer.optimizer_plots import *
@@ -221,12 +221,24 @@ class OptimHandler:
         idx = 0
         first_run = True
         niter = self.opt_param["niter"]
+        timeout = 0
+        convergence = False
         while not self.res_event.is_set():
             try:
                 # get new data from queue
                 if (self.pause_loop == True):
                     time.sleep(5)
                 else:
+                    # check if convergence criterion has been satisfied
+                    if q_res.empty() and not first_run:
+                        timeout += 1
+                        if timeout > 15:
+                            # print("Queue empty for 15 seconds, checking if process has finished.")
+                            if status_convergence(res_file.replace("res", "log")):
+                                self.outputbox("Convergence reached.")
+                                convergence = True
+                    else:
+                        timeout = 0
                     # empty queue in chunks to minimize processor workload
                     while not q_res.empty():
                         if first_run:
@@ -240,13 +252,13 @@ class OptimHandler:
                         if (idx - 100) % 500 == 0:
                             self.xmf_param['i'].append(idx)
                             self.xmf_param = read_xmf(xmf_file, self.xmf_param)
-                            self.optifig_xmf.animate_xmf(self.xmf_param)
+
+                            # self.optifig_xmf.animate_xmf(self.xmf_param)
 
                     if not first_run:
                         self.optifig_massflow.animate_massflow(ds_res)
 
-                    # TODO: implement another way of recognizing end of iterations e.g. timeout
-                    if (idx == (niter + 100)) and not first_run:
+                    if ((idx == (niter + 100)) and not first_run) or convergence:
                         # idx = 0
                         # val = []
                         self.outputbox("Cleaning up.")

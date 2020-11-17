@@ -94,15 +94,15 @@ class DeapRunHandler:
         # check for existing connection
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
-        # try:
-        #     t = threading.Thread(name="create_meshfile", target=self.run_igg)
-        #     t.start()
-        # except AttributeError:
-        #     self.outputbox("Connecting...")
+        try:
+            t = threading.Thread(name="create_meshfile", target=self.run_igg)
+            t.start()
+        except AttributeError:
+            self.outputbox("Connecting...")
 
-        # self.outputbox("[DEAP] Waiting for igg to finish ...")
-        # self.igg_event.wait()
-        # self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
+        self.outputbox("[DEAP] Waiting for igg to finish ...")
+        self.igg_event.wait()
+        self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
         time.sleep(2)
 
         try:
