@@ -1471,7 +1471,7 @@ inside VNC enter: echo $DISPLAY</string>
            <double>100.000000000000000</double>
           </property>
           <property name="value">
-           <double>1000.000000000000000</double>
+           <double>2000.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -1649,6 +1649,19 @@ inside VNC enter: echo $DISPLAY</string>
       </rect>
      </property>
     </widget>
+   </widget>
+   <widget class="QLabel" name="label_deap_status">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>930</y>
+      <width>221</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">

@@ -56,12 +56,12 @@ class OptimHandler:
         vbl.addWidget(toolbar)
         vbl.addWidget(self.optifig_massflow)
 
-        self.optifig_xmf = OptimPlotXMF(self, width=8, height=10)
-        toolbar = NavigationToolbar(self.optifig_xmf, self)
-        centralwidget2 = self.optimfig_widget_2
-        vbl = QtGui.QVBoxLayout(centralwidget2)
-        vbl.addWidget(toolbar)
-        vbl.addWidget(self.optifig_xmf)
+        # self.optifig_xmf = OptimPlotXMF(self, width=8, height=10)
+        # toolbar = NavigationToolbar(self.optifig_xmf, self)
+        # centralwidget2 = self.optimfig_widget_2
+        # vbl = QtGui.QVBoxLayout(centralwidget2)
+        # vbl.addWidget(toolbar)
+        # vbl.addWidget(self.optifig_xmf)
 
         # define thread events (for waiting)
         self.igg_event = threading.Event()
@@ -215,7 +215,7 @@ class OptimHandler:
 
         # reset and clear queue and plot
         self.optifig_massflow.clear()
-        self.optifig_xmf.clear()
+        # self.optifig_xmf.clear()
         with q_res.mutex:
             q_res.queue.clear()
         idx = 0
@@ -374,8 +374,8 @@ class OptimHandler:
                 for i in process_list:
                     if i != '':
                         stdout = self.sshobj.send_cmd("kill " + str(i))
-                        self.outputbox("Killed fine EuranusTurbo (" + str(i) + ").")
-
+                        # self.outputbox("Killed fine EuranusTurbo (" + str(i) + ").")
+                self.outputbox("Killed multiple processes.")
         except AttributeError:
             self.outputbox("Error killing the process.")
 

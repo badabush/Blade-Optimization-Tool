@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 
 from module.optimizer.optimtools import calc_xmf
 
+
 class OptimPlotMassflow(FigureCanvas):
     """
     Real-Time plot of data from .res file.
@@ -113,12 +114,50 @@ class OptimPlotXMF(FigureCanvas):
         self.ax2.tick_params(axis='y', labelcolor='royalblue')
 
         # combine legends
-        lines = line1+line2+line3
+        lines = line1 + line2 + line3
         labels = [l.get_label() for l in lines]
         self.ax.legend(lines, labels)
 
         self.draw()
 
+    def clear(self):
+        self.ax.clear()
+        self.ax.grid()
+        self.ax.legend()
+
+
+class OptimPlotDEAP(FigureCanvas):
+    """
+    Real-Time plot of data from xmf file.
+    """
+
+    def __init__(self, parent=None, width=5, height=5, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        FigureCanvas.__init__(self, fig)
+        self.setParent(parent)
+        FigureCanvas.setSizePolicy(self,
+                                   QSizePolicy.Expanding,
+                                   QSizePolicy.Expanding)
+        FigureCanvas.updateGeometry(self)
+        self.ax = self.figure.add_subplot(111)
+        self.ax.set_title(r'DEAP Generation/Min')
+        self.ax.set_xlabel("generation")
+        self.ax.set_ylabel(r"$\omega$")
+        # self.ax.legend()
+        self.ax.grid()
+        self.xlim = (0, 0)
+        self.ylim = (0, 0)
+
+        fig.set_tight_layout(True)  # prevents clipping of ylabel
+        ani = animation.FuncAnimation(fig, self.animate_deap, interval=1000)
+
+    def animate_deap(self, ds):
+        # gen = ds
+        # fitmin = []
+        #
+        self.ax.plot(np.arange(len(ds)), ds, color="indianred", label=r"\omega")
+
+        self.draw()
 
     def clear(self):
         self.ax.clear()

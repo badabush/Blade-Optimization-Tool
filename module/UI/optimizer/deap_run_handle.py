@@ -3,6 +3,11 @@ import random
 import threading
 import paramiko
 import time
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+
+from pyface.qt import QtGui
+from PyQt5.QtWidgets import QTableView
+import configparser
 
 from deap import creator
 from deap import tools
@@ -11,14 +16,15 @@ from deap import base
 from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.optimizer.generate_script import gen_script
 from module.optimizer.optimtools import calc_xmf
+from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
 
 
 class DeapRunHandler:
     def ga_run(self):
         # min / max, fixed(bool)
         self.dp_genes = np.array([
-            [0.85, 0.95, 0, "pp"],  # PP
-            [-0.1, 0.1, 0, "ao"],  # AO
+            [0.85, 0.925, 0, "pp"],  # PP
+            [0.0, 0.1, 0, "ao"],  # AO
             [0.43, 0.43, 1, "div"],  # division
             [18., 18., 1, "alph1"],  # alpha1
             [23., 23., 1, "alph2"],  # alpha2
@@ -30,9 +36,17 @@ class DeapRunHandler:
             [0.01, 0.01, 1, "teth"]  # TE thickness
         ])
 
+        # init plot
+        self.optifig_deap = OptimPlotDEAP(self, width=8, height=10)
+        toolbar = NavigationToolbar(self.optifig_deap, self)
+        centralwidget2 = self.optimfig_widget_2
+        vbl = QtGui.QVBoxLayout(centralwidget2)
+        vbl.addWidget(toolbar)
+        vbl.addWidget(self.optifig_deap)
+
         # IND_SIZE = genes[np.where(genes[:, 2] == 0)].size  # number of non-fixed genes
         self.dp_IND_SIZE = self.dp_genes.shape[0]
-        self.dp_POP_SIZE = 100
+        self.dp_POP_SIZE = 20
         self.dp_CXPB, self.dp_MUTPB = .5, .2  # crossover probability, mutation probability
 
         # Creator
@@ -63,6 +77,7 @@ class DeapRunHandler:
 
         # start thread for DEAP loop
 
+        self.label_deap_status.setText("Populating.")
         t = threading.Thread(name="deap_populate", target=self.populate)
         t.start()
 
@@ -77,9 +92,16 @@ class DeapRunHandler:
         """
         self.outputbox("Beginning DEAP algorithm")
 
-        # update blade parameters from DEAP generation
-        self.ds["PP"] = individual[0]
-        self.ds["AO"] = individual[1]
+        # update tandem blade parameters from DEAP generation
+        # self.ds1["PP"] = individual[0]
+        # self.ds1["AO"] = individual[1]
+        # self.ds2["PP"] = individual[0]
+        # self.ds2["AO"] = individual[1]
+
+        # update tandem blades
+        # xoffset and yoffset need to be calculated from PP and AO
+        self.ds2['x_offset'] = individual[1] * self.ds1['dist_blades']  # AO
+        self.ds2['y_offset'] = (1 - individual[0]) * self.ds1['dist_blades']  # PP
         print("PP: " + str(individual[0]))
         print("AO: " + str(individual[1]))
 
@@ -121,16 +143,12 @@ class DeapRunHandler:
         # clear events
         self.igg_event.clear()
         self.res_event.clear()
-        print("igg event set: " + str(self.igg_event.is_set()))
-        print("res event set: " + str(self.res_event.is_set()))
         try:
             foo = omega[-1]
         except IndexError as e:
             print(e)
             foo = 0
-        return foo
-
-        # return sum(individual) / sum([float(i[0]) for i in self.dp_genes]),
+        return foo,
 
     def deap_script(self):
         """
@@ -143,7 +161,7 @@ class DeapRunHandler:
         # clear plot
         self.optifig_massflow.animate_massflow({})
         # self.optifig_xmf.animate_xmf({})
-        self.optifig_xmf.clear()
+        # self.optifig_xmf.clear()
 
         if self.box_pathtodir.text() == "":
             self.outputbox("Set Path to Project Directory first!")
@@ -184,6 +202,7 @@ class DeapRunHandler:
                 individual[i] = random.uniform(float(gene[0]), float(gene[1]))
         return individual,
 
+
     def populate(self):
         pop = self.toolbox.population(n=self.dp_POP_SIZE)
         # evaluate population
@@ -196,13 +215,13 @@ class DeapRunHandler:
 
         # number of generations
         g = 0
-        # minlist = []
-
-        while min(fits) > 0 and g < 1000:
+        minlist = []
+        # genlist = []
+        while min(fits) > 0 and g < 100:
             # new generation
             g += 1
             print("-- Generation %i --" % g)
-
+            self.label_deap_status.setText("Generation " + str(g))
             # select next generation individuals
             offspring = self.toolbox.select(pop, len(pop))
             # clone selected individual
@@ -240,7 +259,11 @@ class DeapRunHandler:
             print("  Max %s" % max(fits))
             print("  Avg %s" % mean)
             print("  Std %s" % std)
-            # minlist.append(min(fits))
+
+            # plot
+            minlist.append(min(fits))
+            # genlist.append()
+            self.optifig_deap.animate_deap(minlist)
 
         print("-- End of (successful) evolution --")
 

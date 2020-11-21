@@ -112,6 +112,7 @@ def calc_xmf(ds):
     ds is a nested dict with lists where entries y_velocity, z_velocity, static_pressure and abs_total_pressure must exist.
     TODO:
     """
+    #TODO: modified for DEAP run
     y_vel = np.array(ds['y_velocity'])
     z_vel = np.array(ds['z_velocity'])
     p_stat = np.array(ds['static_pressure'])
@@ -150,15 +151,15 @@ def status_convergence(file):
 if __name__ == "__main__":
     f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.log"
 
-    status_convergence(f)
-    # # init XMF dict
-    # xmf_param = {}  # [['Inlet', Outlet'], ...]
-    # xmf_param['abs_total_pressure'] = []
-    # xmf_param['static_pressure'] = []
-    # xmf_param['y_velocity'] = []
-    # xmf_param['z_velocity'] = []
-    #
-    # read_xmf(f, xmf_param)
+    # status_convergence(f)
+    # init XMF dict
+    xmf_param = {}  # [['Inlet', Outlet'], ...]
+    xmf_param['abs_total_pressure'] = [[123, 345], [2323, 541515]]
+    xmf_param['static_pressure'] = [[123, 345], [2323, 541515]]
+    xmf_param['y_velocity'] = [[123, 345], [2323, 541515]]
+    xmf_param['z_velocity'] = [[123, 345], [2323, 541515]]
+
+    calc_xmf(xmf_param)
 
 
 
