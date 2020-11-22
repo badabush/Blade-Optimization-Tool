@@ -1,5 +1,6 @@
-import numpy as np
 import random
+import logging
+import numpy as np
 import threading
 import paramiko
 import time
@@ -15,7 +16,7 @@ from deap import base
 
 from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.optimizer.generate_script import gen_script
-from module.optimizer.optimtools import calc_xmf
+from module.optimizer.optimtools import calc_xmf, _random
 from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
 
 
@@ -35,6 +36,18 @@ class DeapRunHandler:
             [0.01, 0.01, 1, "leth"],  # LE thickness
             [0.01, 0.01, 1, "teth"]  # TE thickness
         ])
+
+        # init logs
+        log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
+        logging.basicConfig(
+            level=logging.INFO,
+            format=log_format,
+            datefmt='%d-%b-%y %H:%M:%S',
+            filename=('debug.log'),
+        )
+        # Define logger name
+        self.logger = logging.getLogger("DEAP_info")
+        self.logger.info('---DEAP START---')
 
         # init plot
         self.optifig_deap = OptimPlotDEAP(self, width=8, height=10)
@@ -57,7 +70,7 @@ class DeapRunHandler:
         self.toolbox = base.Toolbox()
 
         # Attribute generator
-        list(self.toolbox.register("attr_%s" % i[3], random.uniform, float(i[0]), float(i[1])) for i in self.dp_genes)
+        list(self.toolbox.register("attr_%s" % i[3], _random, float(i[0]), float(i[1]), 4) for i in self.dp_genes)
 
         # self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_item, n=IND_SIZE)
         self.toolbox.register("individual", tools.initCycle, creator.Individual,
@@ -80,8 +93,10 @@ class DeapRunHandler:
         self.label_deap_status.setText("Populating.")
         t = threading.Thread(name="deap_populate", target=self.populate)
         t.start()
-
+        self.logger.info("begin population")
         # self.populate()
+
+
 
     def evalEngine(self, individual):
         """
@@ -125,6 +140,7 @@ class DeapRunHandler:
         self.outputbox("[DEAP] Waiting for igg to finish ...")
         self.igg_event.wait()
         self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
+        self.logger.info("Mesh created successfully.")
         time.sleep(2)
 
         try:
@@ -138,11 +154,15 @@ class DeapRunHandler:
         # try:
         # except:
         beta, cp, omega = calc_xmf(self.xmf_param)
-        print("Omega: " + str(omega))
+        # print("Omega: " + str(omega))
 
         # clear events
         self.igg_event.clear()
         self.res_event.clear()
+        foolist = []
+        foolist.append(omega[-1])
+        print("Omega: " + str(foolist))
+        self.logger.info("PP: {0} , AO:{1} , Omega:{2}".format(individual[0], individual[1], omega[-1]))
         try:
             foo = omega[-1]
         except IndexError as e:
@@ -220,6 +240,7 @@ class DeapRunHandler:
         while min(fits) > 0 and g < 100:
             # new generation
             g += 1
+            self.logger.info("** Generation {0} **".format(g))
             print("-- Generation %i --" % g)
             self.label_deap_status.setText("Generation " + str(g))
             # select next generation individuals

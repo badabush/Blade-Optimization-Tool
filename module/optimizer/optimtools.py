@@ -2,6 +2,7 @@ import pandas as pd
 from pathlib import Path
 import xmltodict
 import time
+import random
 
 import numpy as np
 
@@ -117,9 +118,6 @@ def calc_xmf(ds):
     z_vel = np.array(ds['z_velocity'])
     p_stat = np.array(ds['static_pressure'])
     p_atot = np.array(ds['abs_total_pressure'])
-    # beta = np.arcsin(y_vel/z_vel)
-    # print(y_vel)
-    # print(z_vel)
     beta = np.array(
         list(map(lambda y, z: np.arcsin(y[1] / z[1]) if (z[1] > 1) and (y[1] > 1) else 0, y_vel, z_vel)))
     cp = np.array(
@@ -146,6 +144,12 @@ def status_convergence(file):
                 f.close()
                 return False
 
+def _random(min, max, digits):
+    """
+    Random float between min and max, rounded to input digits.
+    """
+
+    return np.round(random.uniform(min, max), digits)
 
 
 if __name__ == "__main__":
