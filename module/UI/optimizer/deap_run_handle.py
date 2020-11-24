@@ -7,17 +7,17 @@ import time
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from pyface.qt import QtGui
-from PyQt5.QtWidgets import QTableView
-import configparser
+import pandas as pd
 
 from deap import creator
 from deap import tools
 from deap import base
 
 from module.UI.optimizer.generate_mesh_ui import MeshGenUI
-from module.optimizer.generate_script import gen_script
-from module.optimizer.optimtools import calc_xmf, _random
 from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
+from module.optimizer.generate_script import gen_script
+from module.optimizer.optimtools import calc_xmf
+from module.optimizer.genetic_algorithm.deaptools import _random, mutRestricted
 
 
 class DeapRunHandler:
@@ -36,7 +36,7 @@ class DeapRunHandler:
             [0.01, 0.01, 1, "leth"],  # LE thickness
             [0.01, 0.01, 1, "teth"]  # TE thickness
         ])
-
+        self.beta = [np.deg2rad(16)]
         # init logs
         log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
         logging.basicConfig(
@@ -82,9 +82,10 @@ class DeapRunHandler:
         self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
         self.toolbox.register("evaluate", self.evalEngine)
+        self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
         # self.toolbox.register("evaluate", benchmarks.ackley)
         self.toolbox.register("mate", tools.cxTwoPoint)
-        self.toolbox.register("mutate", self.mutRestricted, indpb=.3)
+        self.toolbox.register("mutate", mutRestricted, self.dp_genes, indpb=.3)
         # self.toolbox.register("mutate", tools.mutFlipBit, indpb=.05)
 
         # pick 3 random individuals, fitness evaluation and selection
@@ -150,22 +151,22 @@ class DeapRunHandler:
         time.sleep(2)
         # try:
         # except:
-        beta, cp, omega = calc_xmf(self.xmf_param)
+        self.beta, self.cp, self.omega = calc_xmf(self.xmf_param)
         # print("Omega: " + str(omega))
 
         # clear events
         self.igg_event.clear()
         self.res_event.clear()
         foolist = []
-        foolist.append(omega[-1])
+        foolist.append(self.omega[-1])
         print("Omega: " + str(foolist))
-        self.logger.info("PP: {0} , AO:{1} , Omega:{2}".format(individual[0], individual[1], omega[-1]))
+        self.logger.info("PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}".format(individual[0], individual[1], self.omega[-1], np.rad2deg(self.beta[-1]), self.cp[-1]))
         try:
-            foo = omega[-1]
+            omega = self.omega[-1]
         except IndexError as e:
             print(e)
-            foo = 0
-        return foo,
+            omega = 0
+        return omega,
 
     def deap_script(self):
         """
@@ -210,14 +211,16 @@ class DeapRunHandler:
         except (paramiko.ssh_exception.NoValidConnectionsError) as e:
             self.outputbox(e)
 
-    def mutRestricted(self, individual, indpb):
-        """
-        Custom Mutation rule for keeping the genes in range.
-        """
-        if random.random() < indpb:
-            for i, gene in enumerate(self.dp_genes):
-                individual[i] = _random(float(gene[0]), float(gene[1]), 4)
-        return individual,
+    def feasible(self, _):
+        """Feasibility function for beta. Returns True if feasible, False otherwise."""
+        if 15 < np.rad2deg(self.beta[-1]) < 20:
+            return True
+        self.logger.info("Beta not feasible.")
+        return False
+
+    def distance(self, _):
+        """Quadratic Distance function to the feasibility region."""
+        return (np.rad2deg(self.beta[-1])-16)**2
 
     def populate(self):
         pop = self.toolbox.population(n=self.dp_POP_SIZE)
@@ -276,6 +279,14 @@ class DeapRunHandler:
             print("  Max %s" % max(fits))
             print("  Avg %s" % mean)
             print("  Std %s" % std)
+
+
+            # stats
+            stats = tools.Statistics(lambda ind: ind.fitness.values)
+            stats.register("avg", np.mean, axis=0)
+            stats.register("std", np.std, axis=0)
+            stats.register("min", np.min, axis=0)
+            stats.register("max", np.max, axis=0)
 
             # plot
             minlist.append(min(fits))

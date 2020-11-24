@@ -144,13 +144,6 @@ def status_convergence(file):
                 f.close()
                 return False
 
-def _random(min, max, digits):
-    """
-    Random float between min and max, rounded to input digits.
-    """
-
-    return np.round(random.uniform(min, max), digits)
-
 
 if __name__ == "__main__":
     f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.log"
