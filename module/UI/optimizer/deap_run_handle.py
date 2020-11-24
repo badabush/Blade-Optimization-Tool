@@ -86,6 +86,8 @@ class DeapRunHandler:
         self.toolbox.register("mate", tools.cxTwoPoint)
         self.toolbox.register("mutate", self.mutRestricted, indpb=.3)
         # self.toolbox.register("mutate", tools.mutFlipBit, indpb=.05)
+
+        # pick 3 random individuals, fitness evaluation and selection
         self.toolbox.register("select", tools.selTournament, tournsize=3)
 
         # start thread for DEAP loop
@@ -93,10 +95,11 @@ class DeapRunHandler:
         self.label_deap_status.setText("Populating.")
         t = threading.Thread(name="deap_populate", target=self.populate)
         t.start()
+
+        self.logger.info(
+            '--- POP_SIZE: {0}, CXPB: {1}, MUTPB: {2}---'.format(self.dp_POP_SIZE, self.dp_CXPB, self.dp_MUTPB))
         self.logger.info("begin population")
         # self.populate()
-
-
 
     def evalEngine(self, individual):
         """
@@ -106,12 +109,6 @@ class DeapRunHandler:
         calculate beta
         """
         self.outputbox("Beginning DEAP algorithm")
-
-        # update tandem blade parameters from DEAP generation
-        # self.ds1["PP"] = individual[0]
-        # self.ds1["AO"] = individual[1]
-        # self.ds2["PP"] = individual[0]
-        # self.ds2["AO"] = individual[1]
 
         # update tandem blades
         # xoffset and yoffset need to be calculated from PP and AO
@@ -219,9 +216,8 @@ class DeapRunHandler:
         """
         if random.random() < indpb:
             for i, gene in enumerate(self.dp_genes):
-                individual[i] = random.uniform(float(gene[0]), float(gene[1]))
+                individual[i] = _random(float(gene[0]), float(gene[1]), 4)
         return individual,
-
 
     def populate(self):
         pop = self.toolbox.population(n=self.dp_POP_SIZE)
@@ -286,10 +282,17 @@ class DeapRunHandler:
             # genlist.append()
             self.optifig_deap.animate_deap(minlist)
 
+            # break loop when omega of last 5 generations didn't change
+            if (g>5):
+                if np.sum(np.gradient(np.array([np.round(minlist[i], 8) for i in range(g-5, g)]))):
+                    self.logger.info("Omega didn't change for 5 Generations, breaking loop.")
+                    break
+
         print("-- End of (successful) evolution --")
 
         best_ind = tools.selBest(pop, 1)[0]
         print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+        self.logger.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
         # plt.plot(minlist)
         # plt.show()

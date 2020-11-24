@@ -59,7 +59,7 @@ class OptimPlotMassflow(FigureCanvas):
     def clear(self):
         self.ax.clear()
         self.ax.grid()
-        self.ax.legend()
+        # self.ax.legend()
 
 
 class OptimPlotXMF(FigureCanvas):
@@ -123,7 +123,7 @@ class OptimPlotXMF(FigureCanvas):
     def clear(self):
         self.ax.clear()
         self.ax.grid()
-        self.ax.legend()
+        # self.ax.legend()
 
 
 class OptimPlotDEAP(FigureCanvas):
