@@ -38,11 +38,14 @@ class OptimPlotMassflow(FigureCanvas):
         xs = []
         inlet = []
         outlet = []
-        for key, val in ds.items():
-            xs.append(int(key))
-            inlet.append(float(val[8]))
-            outlet.append(float(val[9]))
-
+        try:
+            for key, val in ds.items():
+                xs.append(int(key))
+                inlet.append(float(val[8]))
+                outlet.append(float(val[9]))
+        except IndexError as e:
+            print(e)
+            return
         self.ax.plot(xs, inlet, label="Inlet", color='royalblue')
         self.ax.plot(xs, outlet, label="Outlet", color='indianred')
         self.ax.legend(["Inlet", "Outlet"])

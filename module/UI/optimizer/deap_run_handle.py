@@ -17,7 +17,7 @@ from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
 from module.optimizer.generate_script import gen_script
 from module.optimizer.optimtools import calc_xmf
-from module.optimizer.genetic_algorithm.deaptools import _random, mutRestricted
+from module.optimizer.genetic_algorithm.deaptools import _random, deapCleanupHandle
 
 
 class DeapRunHandler:
@@ -49,6 +49,9 @@ class DeapRunHandler:
         self.logger = logging.getLogger("DEAP_info")
         self.logger.info('---DEAP START---')
 
+        # init dataframe for tracking each individuals
+        self.df = pd.DataFrame(columns=['PP', 'AO', 'beta', 'omega', 'cp', 'fitness', 'generation'])
+        self.pointer_df = 0
         # init plot
         self.optifig_deap = OptimPlotDEAP(self, width=8, height=10)
         toolbar = NavigationToolbar(self.optifig_deap, self)
@@ -59,7 +62,7 @@ class DeapRunHandler:
 
         # IND_SIZE = genes[np.where(genes[:, 2] == 0)].size  # number of non-fixed genes
         self.dp_IND_SIZE = self.dp_genes.shape[0]
-        self.dp_POP_SIZE = 20
+        self.dp_POP_SIZE = 5
         self.dp_CXPB, self.dp_MUTPB = .5, .2  # crossover probability, mutation probability
 
         # Creator
@@ -85,7 +88,7 @@ class DeapRunHandler:
         self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
         # self.toolbox.register("evaluate", benchmarks.ackley)
         self.toolbox.register("mate", tools.cxTwoPoint)
-        self.toolbox.register("mutate", mutRestricted, self.dp_genes, indpb=.3)
+        self.toolbox.register("mutate", self.mutRestricted, indpb=.3)
         # self.toolbox.register("mutate", tools.mutFlipBit, indpb=.05)
 
         # pick 3 random individuals, fitness evaluation and selection
@@ -118,8 +121,6 @@ class DeapRunHandler:
         print("PP: " + str(individual[0]))
         print("AO: " + str(individual[1]))
 
-        # self.create_meshfile(passthrough=True)
-
         # no dialog window if running DEAP
         self.meshgen = MeshGenUI()
         # TODO: grab paths from user somewhere
@@ -138,7 +139,7 @@ class DeapRunHandler:
         self.outputbox("[DEAP] Waiting for igg to finish ...")
         self.igg_event.wait()
         self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
-        self.logger.info("Mesh created successfully.")
+        # self.logger.info("Mesh created successfully.")
         time.sleep(2)
 
         try:
@@ -159,14 +160,29 @@ class DeapRunHandler:
         self.res_event.clear()
         foolist = []
         foolist.append(self.omega[-1])
+        new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
+                   'cp': self.cp[-1]}
+        self.df = self.df.append(new_row, ignore_index=True)
         print("Omega: " + str(foolist))
-        self.logger.info("PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}".format(individual[0], individual[1], self.omega[-1], np.rad2deg(self.beta[-1]), self.cp[-1]))
+        # self.logger.info(
+        #     "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}".format(individual[0], individual[1], self.omega[-1],
+        #                                                             np.rad2deg(self.beta[-1]), self.cp[-1]))
         try:
             omega = self.omega[-1]
         except IndexError as e:
             print(e)
             omega = 0
         return omega,
+
+    def mutRestricted(self, individual, indpb):
+        """
+        Custom Mutation rule for keeping the genes in range.
+        """
+
+        for i, gene in enumerate(self.dp_genes):
+            if random.random() < indpb:
+                individual[i] = _random(float(gene[0]), float(gene[1]), 4)
+        return individual,
 
     def deap_script(self):
         """
@@ -220,20 +236,32 @@ class DeapRunHandler:
 
     def distance(self, _):
         """Quadratic Distance function to the feasibility region."""
-        return (np.rad2deg(self.beta[-1])-16)**2
+        return (np.rad2deg(self.beta[-1]) - 16) ** 2
 
     def populate(self):
+        # number of generations
+        g = 0
         pop = self.toolbox.population(n=self.dp_POP_SIZE)
         # evaluate population
         fitnesses = list(map(self.toolbox.evaluate, pop))
-        for ind, fit in zip(pop, fitnesses):
+        for idx, (ind, fit) in enumerate(zip(pop, fitnesses)):
             ind.fitness.values = fit
+            self.df.iloc[idx + self.pointer_df].fitness = fit[0]
+            self.df.iloc[idx + self.pointer_df].generation = g
+            self.logger.info(
+                "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                    self.df.iloc[idx + self.pointer_df].PP,
+                    self.df.iloc[idx + self.pointer_df].AO,
+                    self.df.iloc[idx + self.pointer_df].omega,
+                    self.df.iloc[idx + self.pointer_df].beta,
+                    self.df.iloc[idx + self.pointer_df].cp,
+                    self.df.iloc[idx + self.pointer_df].fitness
+                ))
 
+        self.pointer_df += idx + 1
         # extract fitnesses
         fits = [ind.fitness.values[0] for ind in pop]
 
-        # number of generations
-        g = 0
         minlist = []
         # genlist = []
         while min(fits) > 0 and g < 100:
@@ -247,23 +275,55 @@ class DeapRunHandler:
             # clone selected individual
             offspring = list(map(self.toolbox.clone, offspring))
 
+            # put every winner of tournament into log
+            for child in offspring:
+                try:
+                    match_idx = np.where((self.df.PP == child[0]) & (self.df.AO == child[1]))
+                    match = self.df.loc[match_idx]
+                    print("winners: \n")
+                    print(match)
+                    self.logger.info(
+                        "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                            match.PP[0], match.AO[0], match.omega[0], match.beta[0], match.cp[0], match.fitness[0]
+                        ))
+                except (IndexError, KeyError) as e:
+                    print(e)
             # crossover and mutations
             for child1, child2 in zip(offspring[::2], offspring[1::2]):
                 if random.random() < self.dp_CXPB:
                     self.toolbox.mate(child1, child2)
+                    self.logger.info("Crossover.")
                     del child1.fitness.values
                     del child2.fitness.values
 
             for mutant in offspring:
                 if random.random() < self.dp_MUTPB:
                     self.toolbox.mutate(mutant)
+                    self.logger.info("Mutation.")
                     del mutant.fitness.values
 
             # evaluate individuals with invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
+
             fitnesses = map(self.toolbox.evaluate, invalid_ind)
-            for ind, fit in zip(invalid_ind, fitnesses):
+            # TODO: log selTournament winners
+            # TODO: put fitness in logger
+            for idx, (ind, fit) in enumerate(zip(invalid_ind, fitnesses)):
+                # new fitness values evaluation begins
                 ind.fitness.values = fit
+                print("inloop fitness:{0}".format(fit[0]))
+                self.df.iloc[idx + self.pointer_df].fitness = fit[0]
+                self.df.iloc[idx + self.pointer_df].generation = g
+                self.logger.info(
+                    "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                        self.df.iloc[idx + self.pointer_df].PP,
+                        self.df.iloc[idx + self.pointer_df].AO,
+                        self.df.iloc[idx + self.pointer_df].omega,
+                        self.df.iloc[idx + self.pointer_df].beta,
+                        self.df.iloc[idx + self.pointer_df].cp,
+                        self.df.iloc[idx + self.pointer_df].fitness
+                    ))
+            self.pointer_df += idx + 1
             # replace entire existing population with offspring
             pop[:] = offspring
 
@@ -275,18 +335,11 @@ class DeapRunHandler:
             sum2 = sum(x * x for x in fits)
             std = abs(sum2 / length - mean ** 2) ** 0.5
 
+            self.logger.info("Population size: {0}".format(length))
             print("  Min %s" % min(fits))
             print("  Max %s" % max(fits))
             print("  Avg %s" % mean)
             print("  Std %s" % std)
-
-
-            # stats
-            stats = tools.Statistics(lambda ind: ind.fitness.values)
-            stats.register("avg", np.mean, axis=0)
-            stats.register("std", np.std, axis=0)
-            stats.register("min", np.min, axis=0)
-            stats.register("max", np.max, axis=0)
 
             # plot
             minlist.append(min(fits))
@@ -294,8 +347,8 @@ class DeapRunHandler:
             self.optifig_deap.animate_deap(minlist)
 
             # break loop when omega of last 5 generations didn't change
-            if (g>5):
-                if np.sum(np.gradient(np.array([np.round(minlist[i], 8) for i in range(g-5, g)]))):
+            if (g > 5):
+                if np.sum(np.gradient(np.array([np.round(minlist[i], 8) for i in range(g - 5, g)]))):
                     self.logger.info("Omega didn't change for 5 Generations, breaking loop.")
                     break
 
@@ -304,6 +357,9 @@ class DeapRunHandler:
         best_ind = tools.selBest(pop, 1)[0]
         print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
         self.logger.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+
+        # create dir and save plots of results to it. Move debug.log to folder and delete original.
+        deapCleanupHandle()
 
         # plt.plot(minlist)
         # plt.show()
