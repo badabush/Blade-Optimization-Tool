@@ -40,8 +40,8 @@ def readLog(file):
                 res.append(lst)
             # print(line)
         ds = pd.DataFrame(res, columns=["pp", "ao", "omega", "beta", "cp", "fitness"])
-        f.close()
-        return ds
+    f.close()
+    return ds
 
 
 def plotDeapResult(file, logdir):
@@ -125,7 +125,7 @@ def deapCleanupHandle():
     copy(logfile, os.path.join(Path.cwd() / "log", dtime))
     # delete original log file
     plotDeapResult(logfile, os.path.join(Path.cwd() / "log", dtime))
-    os.remove(logfile)
+    # os.remove(logfile)
 
 if __name__ == '__main__':
     deapCleanupHandle()

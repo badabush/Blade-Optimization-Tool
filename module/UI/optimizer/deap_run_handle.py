@@ -62,7 +62,7 @@ class DeapRunHandler:
 
         # IND_SIZE = genes[np.where(genes[:, 2] == 0)].size  # number of non-fixed genes
         self.dp_IND_SIZE = self.dp_genes.shape[0]
-        self.dp_POP_SIZE = 5
+        self.dp_POP_SIZE = 2
         self.dp_CXPB, self.dp_MUTPB = .5, .2  # crossover probability, mutation probability
 
         # Creator
@@ -258,7 +258,7 @@ class DeapRunHandler:
                     self.df.iloc[idx + self.pointer_df].fitness
                 ))
 
-        self.pointer_df += idx + 1
+        # self.pointer_df += idx + 1
         # extract fitnesses
         fits = [ind.fitness.values[0] for ind in pop]
 
@@ -279,12 +279,14 @@ class DeapRunHandler:
             for child in offspring:
                 try:
                     match_idx = np.where((self.df.PP == child[0]) & (self.df.AO == child[1]))
-                    match = self.df.loc[match_idx]
-                    print("winners: \n")
-                    print(match)
+                    # assures that match_idx is scalar
+                    match = self.df.loc[np.min(match_idx)]
+                    # print("winners: \n")
+                    # print(match.PP)
+                    # put winners in log (note: no extra entry in df)
                     self.logger.info(
                         "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                            match.PP[0], match.AO[0], match.omega[0], match.beta[0], match.cp[0], match.fitness[0]
+                            match.PP, match.AO, match.omega, match.beta, match.cp, match.fitness
                         ))
                 except (IndexError, KeyError) as e:
                     print(e)
@@ -302,12 +304,15 @@ class DeapRunHandler:
                     self.logger.info("Mutation.")
                     del mutant.fitness.values
 
+            # set df pointer to number of rows before calculation of CX/MUT
+            self.pointer_df = self.df.shape[0]
             # evaluate individuals with invalid fitness
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
 
             fitnesses = map(self.toolbox.evaluate, invalid_ind)
             # TODO: log selTournament winners
             # TODO: put fitness in logger
+            # idx needs to be reset in case no mutation or cx happened (for pointer_df +idx)
             for idx, (ind, fit) in enumerate(zip(invalid_ind, fitnesses)):
                 # new fitness values evaluation begins
                 ind.fitness.values = fit
@@ -323,7 +328,6 @@ class DeapRunHandler:
                         self.df.iloc[idx + self.pointer_df].cp,
                         self.df.iloc[idx + self.pointer_df].fitness
                     ))
-            self.pointer_df += idx + 1
             # replace entire existing population with offspring
             pop[:] = offspring
 
