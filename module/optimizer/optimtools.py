@@ -61,26 +61,29 @@ def parse_res(file, q, event):
         time.sleep(5)
 
 def read_xmf(file, param):
-
-    with open(file) as f:
-        doc = xmltodict.parse(f.read())
-        doclist = list(doc.items())
-        param['abs_total_pressure'].append([
-            float(doclist[0][1]['Station'][0]['Condition'][1]['float'][0]['#text']),
-            float(doclist[0][1]['Station'][1]['Condition'][1]['float'][0]['#text'])
-        ])
-        param['static_pressure'].append([
-            float(doclist[0][1]['Station'][0]['Condition'][0]['float'][0]['#text']),
-            float(doclist[0][1]['Station'][1]['Condition'][0]['float'][0]['#text'])
-        ])
-        param['y_velocity'].append([
-            float(doclist[0][1]['Station'][0]['Velocity']['float'][1]['#text']),
-            float(doclist[0][1]['Station'][1]['Velocity']['float'][1]['#text'])
-        ])
-        param['z_velocity'].append([
-            float(doclist[0][1]['Station'][0]['Velocity']['float'][2]['#text']),
-            float(doclist[0][1]['Station'][1]['Velocity']['float'][2]['#text'])
-        ])
+    try:
+        with open(file) as f:
+            doc = xmltodict.parse(f.read())
+            doclist = list(doc.items())
+            param['abs_total_pressure'].append([
+                float(doclist[0][1]['Station'][0]['Condition'][1]['float'][0]['#text']),
+                float(doclist[0][1]['Station'][1]['Condition'][1]['float'][0]['#text'])
+            ])
+            param['static_pressure'].append([
+                float(doclist[0][1]['Station'][0]['Condition'][0]['float'][0]['#text']),
+                float(doclist[0][1]['Station'][1]['Condition'][0]['float'][0]['#text'])
+            ])
+            param['y_velocity'].append([
+                float(doclist[0][1]['Station'][0]['Velocity']['float'][1]['#text']),
+                float(doclist[0][1]['Station'][1]['Velocity']['float'][1]['#text'])
+            ])
+            param['z_velocity'].append([
+                float(doclist[0][1]['Station'][0]['Velocity']['float'][2]['#text']),
+                float(doclist[0][1]['Station'][1]['Velocity']['float'][2]['#text'])
+            ])
+    except (KeyError, IndexError) as e:
+        print("Error reading xmf file.")
+        print(e)
     return param
 
 def cleanpaths(path_dict):

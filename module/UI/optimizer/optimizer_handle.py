@@ -204,7 +204,7 @@ class OptimHandler:
         # start thread for .res reader generator
         if (timeout >= 300):
             self.outputbox("Error starting the process. Check FineTaskmanager window.")
-            return
+            raise TimeoutError
 
         self.outputbox("Starting computation ..")
         start_time = datetime.datetime.now()

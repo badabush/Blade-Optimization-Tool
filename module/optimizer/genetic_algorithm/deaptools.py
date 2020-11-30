@@ -7,9 +7,10 @@ from matplotlib import tri
 from scipy.stats import gaussian_kde
 from shutil import copy
 import os
-import re
+import configparser
 import datetime
 
+from module.optimizer.mail.mail_script import deapMail
 
 def _random(min, max, digits):
     """
@@ -118,13 +119,21 @@ def plotDeapResult(file, logdir):
     pass
 
 def deapCleanupHandle():
+    # read config files
+    mail_configfile = Path.cwd() / "config/mailinglist.ini"
     dtime = datetime.datetime.now().strftime("%d-%m-%Y_%H.%M.%S")
     logfile = Path.cwd() / "debug.log"
     os.mkdir(os.path.join(Path.cwd() / "log/", dtime))
     # copy log file to newly created folder
     copy(logfile, os.path.join(Path.cwd() / "log", dtime))
-    # delete original log file
+
     plotDeapResult(logfile, os.path.join(Path.cwd() / "log", dtime))
+    # mail results to recipients
+    attachments = []
+    for item in os.listdir(Path.cwd() / "log" / dtime):
+        attachments.append(Path.cwd() / "log" / dtime / item)
+    deapMail(mail_configfile, attachments)
+    # delete original log file
     # os.remove(logfile)
 
 if __name__ == '__main__':

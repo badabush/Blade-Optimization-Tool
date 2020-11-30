@@ -62,7 +62,7 @@ class DeapRunHandler:
 
         # IND_SIZE = genes[np.where(genes[:, 2] == 0)].size  # number of non-fixed genes
         self.dp_IND_SIZE = self.dp_genes.shape[0]
-        self.dp_POP_SIZE = 2
+        self.dp_POP_SIZE = 20
         self.dp_CXPB, self.dp_MUTPB = .5, .2  # crossover probability, mutation probability
 
         # Creator
@@ -85,7 +85,7 @@ class DeapRunHandler:
         self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
         self.toolbox.register("evaluate", self.evalEngine)
-        self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
+        # self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
         # self.toolbox.register("evaluate", benchmarks.ackley)
         self.toolbox.register("mate", tools.cxTwoPoint)
         self.toolbox.register("mutate", self.mutRestricted, indpb=.3)
@@ -169,7 +169,7 @@ class DeapRunHandler:
         #                                                             np.rad2deg(self.beta[-1]), self.cp[-1]))
         try:
             omega = self.omega[-1]
-        except IndexError as e:
+        except (IndexError, KeyError, ValueError) as e:
             print(e)
             omega = 0
         return omega,
@@ -224,8 +224,23 @@ class DeapRunHandler:
             t = threading.Thread(name='res_reader', target=self.read_res)
             t.start()
 
-        except (paramiko.ssh_exception.NoValidConnectionsError) as e:
-            self.outputbox(e)
+        except (TimeoutError) as e:
+            # if timeout error, kill all tasks and try again
+            print(e)
+            self.outputbox("Fine didnt start properly. Killing tasks and retrying..")
+            self.kill_loop()
+            time.sleep(15)
+            self.outputbox("Retrying..")
+            # sending command with display | fine version location | script + location | batch | print
+            stdout = self.sshobj.send_cmd(
+                self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
+                self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
+            self.outputbox(stdout)
+
+            # start thread to read res file
+            t = threading.Thread(name='res_reader', target=self.read_res)
+            t.start()
+
 
     def feasible(self, _):
         """Feasibility function for beta. Returns True if feasible, False otherwise."""
@@ -246,19 +261,21 @@ class DeapRunHandler:
         fitnesses = list(map(self.toolbox.evaluate, pop))
         for idx, (ind, fit) in enumerate(zip(pop, fitnesses)):
             ind.fitness.values = fit
-            self.df.iloc[idx + self.pointer_df].fitness = fit[0]
-            self.df.iloc[idx + self.pointer_df].generation = g
-            self.logger.info(
-                "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                    self.df.iloc[idx + self.pointer_df].PP,
-                    self.df.iloc[idx + self.pointer_df].AO,
-                    self.df.iloc[idx + self.pointer_df].omega,
-                    self.df.iloc[idx + self.pointer_df].beta,
-                    self.df.iloc[idx + self.pointer_df].cp,
-                    self.df.iloc[idx + self.pointer_df].fitness
-                ))
-
-        # self.pointer_df += idx + 1
+            try:
+                self.df.iloc[idx + self.pointer_df].fitness = fit[0]
+                self.df.iloc[idx + self.pointer_df].generation = g
+                self.logger.info(
+                    "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                        self.df.iloc[idx + self.pointer_df].PP,
+                        self.df.iloc[idx + self.pointer_df].AO,
+                        self.df.iloc[idx + self.pointer_df].omega,
+                        self.df.iloc[idx + self.pointer_df].beta,
+                        self.df.iloc[idx + self.pointer_df].cp,
+                        self.df.iloc[idx + self.pointer_df].fitness
+                    ))
+            except IndexError as e:
+                print(e)
+                self.logger.info("Error writing individual data.")
         # extract fitnesses
         fits = [ind.fitness.values[0] for ind in pop]
 
@@ -281,15 +298,15 @@ class DeapRunHandler:
                     match_idx = np.where((self.df.PP == child[0]) & (self.df.AO == child[1]))
                     # assures that match_idx is scalar
                     match = self.df.loc[np.min(match_idx)]
-                    # print("winners: \n")
-                    # print(match.PP)
+
                     # put winners in log (note: no extra entry in df)
                     self.logger.info(
                         "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
                             match.PP, match.AO, match.omega, match.beta, match.cp, match.fitness
                         ))
-                except (IndexError, KeyError) as e:
+                except (IndexError, KeyError, ValueError) as e:
                     print(e)
+                    self.logger.info("Error writing individual data.")
             # crossover and mutations
             for child1, child2 in zip(offspring[::2], offspring[1::2]):
                 if random.random() < self.dp_CXPB:
@@ -316,18 +333,21 @@ class DeapRunHandler:
             for idx, (ind, fit) in enumerate(zip(invalid_ind, fitnesses)):
                 # new fitness values evaluation begins
                 ind.fitness.values = fit
-                print("inloop fitness:{0}".format(fit[0]))
-                self.df.iloc[idx + self.pointer_df].fitness = fit[0]
-                self.df.iloc[idx + self.pointer_df].generation = g
-                self.logger.info(
-                    "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                        self.df.iloc[idx + self.pointer_df].PP,
-                        self.df.iloc[idx + self.pointer_df].AO,
-                        self.df.iloc[idx + self.pointer_df].omega,
-                        self.df.iloc[idx + self.pointer_df].beta,
-                        self.df.iloc[idx + self.pointer_df].cp,
-                        self.df.iloc[idx + self.pointer_df].fitness
-                    ))
+                try:
+                    print("inloop fitness:{0}".format(fit[0]))
+                    self.df.iloc[idx + self.pointer_df].fitness = fit[0]
+                    self.df.iloc[idx + self.pointer_df].generation = g
+                    self.logger.info(
+                        "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                            self.df.iloc[idx + self.pointer_df].PP,
+                            self.df.iloc[idx + self.pointer_df].AO,
+                            self.df.iloc[idx + self.pointer_df].omega,
+                            self.df.iloc[idx + self.pointer_df].beta,
+                            self.df.iloc[idx + self.pointer_df].cp,
+                            self.df.iloc[idx + self.pointer_df].fitness
+                        ))
+                except (IndexError, KeyError, ValueError) as e:
+                    print(e)
             # replace entire existing population with offspring
             pop[:] = offspring
 
