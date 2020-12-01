@@ -2,7 +2,7 @@ import random
 import logging
 import numpy as np
 import threading
-import paramiko
+import datetime
 import time
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
@@ -39,11 +39,12 @@ class DeapRunHandler:
         self.beta = [np.deg2rad(16)]
         # init logs
         log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
+        self.logfile = datetime.datetime.now().strftime("%d-%m-%y_%H-%M_%S") + '.log'
         logging.basicConfig(
             level=logging.INFO,
             format=log_format,
             datefmt='%d-%b-%y %H:%M:%S',
-            filename=('debug.log'),
+            filename=(self.logfile),
         )
         # Define logger name
         self.logger = logging.getLogger("DEAP_info")
@@ -62,7 +63,7 @@ class DeapRunHandler:
 
         # IND_SIZE = genes[np.where(genes[:, 2] == 0)].size  # number of non-fixed genes
         self.dp_IND_SIZE = self.dp_genes.shape[0]
-        self.dp_POP_SIZE = 20
+        self.dp_POP_SIZE = 50
         self.dp_CXPB, self.dp_MUTPB = .5, .2  # crossover probability, mutation probability
 
         # Creator
@@ -85,7 +86,7 @@ class DeapRunHandler:
         self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
         self.toolbox.register("evaluate", self.evalEngine)
-        # self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
+        self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 5.0, self.distance))
         # self.toolbox.register("evaluate", benchmarks.ackley)
         self.toolbox.register("mate", tools.cxTwoPoint)
         self.toolbox.register("mutate", self.mutRestricted, indpb=.3)
@@ -241,12 +242,11 @@ class DeapRunHandler:
             t = threading.Thread(name='res_reader', target=self.read_res)
             t.start()
 
-
     def feasible(self, _):
         """Feasibility function for beta. Returns True if feasible, False otherwise."""
         if 15 < np.rad2deg(self.beta[-1]) < 20:
             return True
-        self.logger.info("Beta not feasible.")
+        self.logger.info("Beta {0} not feasible.".format(np.round(self.beta[-1], 3)))
         return False
 
     def distance(self, _):
@@ -327,8 +327,6 @@ class DeapRunHandler:
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
 
             fitnesses = map(self.toolbox.evaluate, invalid_ind)
-            # TODO: log selTournament winners
-            # TODO: put fitness in logger
             # idx needs to be reset in case no mutation or cx happened (for pointer_df +idx)
             for idx, (ind, fit) in enumerate(zip(invalid_ind, fitnesses)):
                 # new fitness values evaluation begins
@@ -359,7 +357,13 @@ class DeapRunHandler:
             sum2 = sum(x * x for x in fits)
             std = abs(sum2 / length - mean ** 2) ** 0.5
 
-            self.logger.info("Population size: {0}".format(length))
+            # get total length of individuals within a generation
+            try:
+                len = self.df.where(self.df.generation == g).shape[0]
+                self.logger.info("Population size: {0}".format(len))
+            except (IndexError, AttributeError) as e:
+                print(e)
+
             print("  Min %s" % min(fits))
             print("  Max %s" % max(fits))
             print("  Avg %s" % mean)
@@ -383,7 +387,7 @@ class DeapRunHandler:
         self.logger.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
 
         # create dir and save plots of results to it. Move debug.log to folder and delete original.
-        deapCleanupHandle()
+        deapCleanupHandle(self.logfile)
 
         # plt.plot(minlist)
         # plt.show()

@@ -12,7 +12,19 @@ from email.mime.text import MIMEText
 from mimetypes import guess_type
 from pathlib import Path
 
+
 def deapMail(configfile, attachments):
+    """
+    Function for mailing the Log and Plots to assigned recipients.Called in module/optimizer/genetic_algorithm/deaptools
+    after creating log folder and plotting has finished.
+
+    :param configfile: full path from cwd to config file
+    :type configfile: Path
+    :param attachments: list of attachments; has to start with log file
+    :type attachments: list
+
+    :return:
+    """
 
     config = configparser.ConfigParser()
     config.read(configfile)
@@ -38,15 +50,19 @@ def deapMail(configfile, attachments):
     POP_SIZE = 0
     CXPB = 0
     MUTPB = 0
-    for line in lines:
-        if "POP_SIZE" in line.__str__():
-            substr = line.__str__().split("---")
-            ssubstr = substr[1].split(", ")
-            POP_SIZE = ssubstr[0].split(": ")[1]
-            CXPB = ssubstr[1].split(": ")[1]
-            MUTPB = ssubstr[2].split(": ")[1]
-            rematch = re.search(r"\[([0-9]{2}-[A-Z][a-z]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2})", substr[0])
-            Date = rematch.group(1)
+    try:
+        for line in lines:
+            if "POP_SIZE" in line.__str__():
+                substr = line.__str__().split("---")
+                ssubstr = substr[1].split(", ")
+                POP_SIZE = ssubstr[0].split(": ")[1]
+                CXPB = ssubstr[1].split(": ")[1]
+                MUTPB = ssubstr[2].split(": ")[1]
+                rematch = re.search(r"\[([0-9]{2}-[A-Z][a-z]{2}-[0-9]{2}\s[0-9]{2}:[0-9]{2})", substr[0])
+                Date = rematch.group(1)
+    except IndexError as e:
+        print(e)
+
     body = """
         This is a generated E-Mail by the DeapBot. A new run has finished successfully.
         
@@ -68,7 +84,7 @@ def deapMail(configfile, attachments):
                 attachment.set_payload(fp.read())
             else:
                 mimetype, encoding = guess_type(os.path.basename(filename))
-                mimetype = mimetype.split('/',1)
+                mimetype = mimetype.split('/', 1)
                 fp = open(filename, 'rb')
                 attachment = MIMEBase(mimetype[0], mimetype[1])
                 attachment.set_payload(fp.read())
@@ -85,12 +101,13 @@ def deapMail(configfile, attachments):
         server.login(sender_email, password)
         server.sendmail(sender_email, receiver_email, text)
 
+
 if __name__ == "__main__":
     configfile = Path.cwd() / "config/mailinglist.ini"
     dir = "log/30-11-2020_12.22.45/"
-    attachments = [Path.cwd()/ dir/"debug.log",
-                   Path.cwd()/ dir/"gene_output_density.png",
-                   Path.cwd()/ dir/"pp_ao_omega_contour.png",
-                   Path.cwd()/ dir/"pp_ao_time.png"]
+    attachments = [Path.cwd() / dir / "debug.log",
+                   Path.cwd() / dir / "gene_output_density.png",
+                   Path.cwd() / dir / "pp_ao_omega_contour.png",
+                   Path.cwd() / dir / "pp_ao_time.png"]
 
     deapMail(configfile, attachments)

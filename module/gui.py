@@ -15,8 +15,8 @@ from module.UI.initialize import Initialize
 from module.UI.blade.bladedesigner_handle import BDUpdateHandler
 from module.UI.file_explorer import FileExplorer
 from module.UI.blade.camber_spline_ui import CamberSplineUi
-from module.UI.thdist_spline_ui import ThdistSplineUi
-from module.UI.annulus_ui import AnnulusUi
+from module.UI.blade.thdist_spline_ui import ThdistSplineUi
+from module.UI.blade.annulus_ui import AnnulusUi
 from module.UI.ssh_login_ui import SSHLoginUi
 from module.UI.save_load_config import SaveLoadConfig
 from module.UI.optimizer.optimizer_handle import OptimHandler

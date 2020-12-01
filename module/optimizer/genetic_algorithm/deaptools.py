@@ -19,10 +19,6 @@ def _random(min, max, digits):
 
     return np.round(random.uniform(min, max), digits)
 
-
-
-
-
 def readLog(file):
     res = []
     run = 0
@@ -118,11 +114,11 @@ def plotDeapResult(file, logdir):
     # plt.show()
     pass
 
-def deapCleanupHandle():
+def deapCleanupHandle(logname):
     # read config files
     mail_configfile = Path.cwd() / "config/mailinglist.ini"
     dtime = datetime.datetime.now().strftime("%d-%m-%Y_%H.%M.%S")
-    logfile = Path.cwd() / "debug.log"
+    logfile = Path.cwd() / logname
     os.mkdir(os.path.join(Path.cwd() / "log/", dtime))
     # copy log file to newly created folder
     copy(logfile, os.path.join(Path.cwd() / "log", dtime))

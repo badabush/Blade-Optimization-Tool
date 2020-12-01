@@ -27,7 +27,7 @@ Bladedesigner Handle
 
 Class that contains UI elements for Bladedesigner, inherits to main window.
 
-.. automodule:: module.UI.bladedesigner_handle
+.. automodule:: module.UI.blade.bladedesigner_handle
    :members:
    :undoc-members:
    :show-inheritance:
@@ -47,7 +47,7 @@ Camber Spline window
 
 Popup window Spline config.
 
-.. automodule:: module.UI.thdist_spline_ui
+.. automodule:: module.UI.blade.thdist_spline_ui
    :members:
    :undoc-members:
    :show-inheritance:
@@ -57,7 +57,7 @@ Thickness Spline window
 
 Popup window Spline config.
 
-.. automodule:: module.UI.camber_spline_ui
+.. automodule:: module.UI.blade.camber_spline_ui
    :members:
    :undoc-members:
    :show-inheritance:
@@ -67,7 +67,7 @@ Annulus window
 
 Popup window Annulus config.
 
-.. automodule:: module.UI.annulus_ui
+.. automodule:: module.UI.blade.annulus_ui
    :members:
    :undoc-members:
    :show-inheritance:
@@ -97,7 +97,7 @@ Pandasviewer
 
 Displays the pandas DataFrame of 'top usage' as a table, sorted by CPU.
 
-.. automodule:: module.UI.pandasviewer
+.. automodule:: module.optimizer.pandasviewer
     :members:
     :undoc-members:
     :show-inheritance:

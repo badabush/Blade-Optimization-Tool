@@ -3,6 +3,7 @@ from pathlib import Path
 import xmltodict
 import time
 import random
+import xml
 
 import numpy as np
 
@@ -81,7 +82,7 @@ def read_xmf(file, param):
                 float(doclist[0][1]['Station'][0]['Velocity']['float'][2]['#text']),
                 float(doclist[0][1]['Station'][1]['Velocity']['float'][2]['#text'])
             ])
-    except (KeyError, IndexError) as e:
+    except (KeyError, IndexError, xml.parsers.expat.ExpatError) as e:
         print("Error reading xmf file.")
         print(e)
     return param
