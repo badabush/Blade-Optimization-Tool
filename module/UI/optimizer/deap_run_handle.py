@@ -24,22 +24,23 @@ class DeapRunHandler:
     def ga_run(self):
         # min / max, fixed(bool)
         self.dp_genes = np.array([
-            [0.85, 0.925, 0, "pp"],  # PP
-            [0.0, 0.1, 0, "ao"],  # AO
+            [0.9177, 0.9177, 1, "pp"],  # PP
+            [0.0271, 0.0271, 1, "ao"],  # AO
             [0.43, 0.43, 1, "div"],  # division
             [18., 18., 1, "alph1"],  # alpha1
             [23., 23., 1, "alph2"],  # alpha2
             [23., 23., 1, "lambd"],  # lambd
             [0.0477, 0.0477, 1, "th"],  # thickness
             [0.4, 0.4, 1, "xmaxth"],  # xmaxth
-            [0.3742, 0.3742, 1, "xmaxch"],  # xmaxcamber
+            [0.35, 0.45, 0, "xmax_camber1"],  # xmaxcamber1
+            [0.35, 0.45, 0, "xmax_camber2"],  # xmaxcamber2
             [0.01, 0.01, 1, "leth"],  # LE thickness
             [0.01, 0.01, 1, "teth"]  # TE thickness
         ])
-        self.beta = [np.deg2rad(16)]
+        self.beta = [np.deg2rad(17)]
         # init logs
         log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
-        self.logfile = datetime.datetime.now().strftime("%d-%m-%y_%H-%M_%S") + '.log'
+        self.logfile = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
         logging.basicConfig(
             level=logging.INFO,
             format=log_format,
@@ -51,7 +52,8 @@ class DeapRunHandler:
         self.logger.info('---DEAP START---')
 
         # init dataframe for tracking each individuals
-        self.df = pd.DataFrame(columns=['PP', 'AO', 'beta', 'omega', 'cp', 'fitness', 'generation'])
+        #FIXME
+        self.df = pd.DataFrame(columns=['xmax_camb1', 'xmax_camb2', 'beta', 'omega', 'cp', 'fitness', 'generation'])
         self.pointer_df = 0
         # init plot
         self.optifig_deap = OptimPlotDEAP(self, width=8, height=10)
@@ -63,7 +65,7 @@ class DeapRunHandler:
 
         # IND_SIZE = genes[np.where(genes[:, 2] == 0)].size  # number of non-fixed genes
         self.dp_IND_SIZE = self.dp_genes.shape[0]
-        self.dp_POP_SIZE = 50
+        self.dp_POP_SIZE = 30
         self.dp_CXPB, self.dp_MUTPB = .5, .2  # crossover probability, mutation probability
 
         # Creator
@@ -80,14 +82,15 @@ class DeapRunHandler:
         self.toolbox.register("individual", tools.initCycle, creator.Individual,
                               (self.toolbox.attr_pp, self.toolbox.attr_ao, self.toolbox.attr_div,
                                self.toolbox.attr_alph1, self.toolbox.attr_alph2, self.toolbox.attr_lambd,
-                               self.toolbox.attr_th, self.toolbox.attr_xmaxth, self.toolbox.attr_xmaxch,
+                               self.toolbox.attr_th, self.toolbox.attr_xmaxth,
+                               self.toolbox.attr_xmax_camber1, self.toolbox.attr_xmax_camber2,
                                self.toolbox.attr_leth, self.toolbox.attr_teth), n=1)
 
         self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
         self.toolbox.register("evaluate", self.evalEngine)
-        self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 5.0, self.distance))
-        # self.toolbox.register("evaluate", benchmarks.ackley)
+        # self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
+
         self.toolbox.register("mate", tools.cxTwoPoint)
         self.toolbox.register("mutate", self.mutRestricted, indpb=.3)
         # self.toolbox.register("mutate", tools.mutFlipBit, indpb=.05)
@@ -119,8 +122,13 @@ class DeapRunHandler:
         # xoffset and yoffset need to be calculated from PP and AO
         self.ds2['x_offset'] = individual[1] * self.ds1['dist_blades']  # AO
         self.ds2['y_offset'] = (1 - individual[0]) * self.ds1['dist_blades']  # PP
-        print("PP: " + str(individual[0]))
-        print("AO: " + str(individual[1]))
+        # print("PP: " + str(individual[0]))
+        # print("AO: " + str(individual[1]))
+
+        self.ds1['xmax_camber'] = individual[8]
+        self.ds2['xmax_camber'] = individual[9]
+
+        print("xmaxcamb blade1: {0}, xmaxcamb blade2: {1}".format(individual[8], individual[9]))
 
         # no dialog window if running DEAP
         self.meshgen = MeshGenUI()
@@ -161,10 +169,13 @@ class DeapRunHandler:
         self.res_event.clear()
         foolist = []
         foolist.append(self.omega[-1])
-        new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
+        # new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
+        #            'cp': self.cp[-1]}
+        new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
                    'cp': self.cp[-1]}
         self.df = self.df.append(new_row, ignore_index=True)
         print("Omega: " + str(foolist))
+        # FIXME
         # self.logger.info(
         #     "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}".format(individual[0], individual[1], self.omega[-1],
         #                                                             np.rad2deg(self.beta[-1]), self.cp[-1]))
@@ -246,7 +257,7 @@ class DeapRunHandler:
         """Feasibility function for beta. Returns True if feasible, False otherwise."""
         if 15 < np.rad2deg(self.beta[-1]) < 20:
             return True
-        self.logger.info("Beta {0} not feasible.".format(np.round(self.beta[-1], 3)))
+        self.logger.info("Beta {0} not feasible.".format(np.round(np.rad2deg(self.beta[-1]), 3)))
         return False
 
     def distance(self, _):
@@ -254,7 +265,7 @@ class DeapRunHandler:
         return (np.rad2deg(self.beta[-1]) - 16) ** 2
 
     def populate(self):
-        # number of generations
+        # counter generations
         g = 0
         pop = self.toolbox.population(n=self.dp_POP_SIZE)
         # evaluate population
@@ -264,10 +275,13 @@ class DeapRunHandler:
             try:
                 self.df.iloc[idx + self.pointer_df].fitness = fit[0]
                 self.df.iloc[idx + self.pointer_df].generation = g
+                # FIXME
                 self.logger.info(
-                    "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                        self.df.iloc[idx + self.pointer_df].PP,
-                        self.df.iloc[idx + self.pointer_df].AO,
+                    "xmax_camb1:{0} ,xmax_camb2:{1} ,Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                        # self.df.iloc[idx + self.pointer_df].PP,
+                        # self.df.iloc[idx + self.pointer_df].AO,
+                        self.df.iloc[idx + self.pointer_df].xmax_camb1,
+                        self.df.iloc[idx + self.pointer_df].xmax_camb2,
                         self.df.iloc[idx + self.pointer_df].omega,
                         self.df.iloc[idx + self.pointer_df].beta,
                         self.df.iloc[idx + self.pointer_df].cp,
@@ -295,14 +309,19 @@ class DeapRunHandler:
             # put every winner of tournament into log
             for child in offspring:
                 try:
-                    match_idx = np.where((self.df.PP == child[0]) & (self.df.AO == child[1]))
+                    # match_idx = np.where((self.df.PP == child[0]) & (self.df.AO == child[1]))
+                    match_idx = np.where((self.df.xmax_camb1 == child[8]) & (self.df.xmax_camb2 == child[9]))
                     # assures that match_idx is scalar
                     match = self.df.loc[np.min(match_idx)]
-
+                    # FIXME
                     # put winners in log (note: no extra entry in df)
+                    # self.logger.info(
+                    #     "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                    #         match.PP, match.AO, match.omega, match.beta, match.cp, match.fitness
+                    #     ))
                     self.logger.info(
-                        "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                            match.PP, match.AO, match.omega, match.beta, match.cp, match.fitness
+                        "xmax_camb1: {0} , xmax_camb2:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                            match.xmax_camb1, match.xmax_camb2, match.omega, match.beta, match.cp, match.fitness
                         ))
                 except (IndexError, KeyError, ValueError) as e:
                     print(e)
@@ -335,10 +354,14 @@ class DeapRunHandler:
                     print("inloop fitness:{0}".format(fit[0]))
                     self.df.iloc[idx + self.pointer_df].fitness = fit[0]
                     self.df.iloc[idx + self.pointer_df].generation = g
+                    #FIXME
                     self.logger.info(
-                        "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                            self.df.iloc[idx + self.pointer_df].PP,
-                            self.df.iloc[idx + self.pointer_df].AO,
+                        # "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                        "xmax_camb1: {0} , xmax_camb2:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                            # self.df.iloc[idx + self.pointer_df].PP,
+                            # self.df.iloc[idx + self.pointer_df].AO,
+                            self.df.iloc[idx + self.pointer_df].xmax_camb1,
+                            self.df.iloc[idx + self.pointer_df].xmax_camb2,
                             self.df.iloc[idx + self.pointer_df].omega,
                             self.df.iloc[idx + self.pointer_df].beta,
                             self.df.iloc[idx + self.pointer_df].cp,
@@ -359,8 +382,8 @@ class DeapRunHandler:
 
             # get total length of individuals within a generation
             try:
-                len = self.df.where(self.df.generation == g).shape[0]
-                self.logger.info("Population size: {0}".format(len))
+                ds_len = self.df.where(self.df.generation == g).shape[0]
+                self.logger.info("Population size: {0}".format(ds_len))
             except (IndexError, AttributeError) as e:
                 print(e)
 
