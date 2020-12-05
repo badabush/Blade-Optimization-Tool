@@ -11,8 +11,7 @@ import re
 import datetime
 
 from module.optimizer.mail.mail_script import deapMail
-from module.blade.bladegen import BladeGen
-# from module.gui import PlotCanvas
+from module.UI.blade.blade_plots import bladePlot
 
 
 
@@ -26,7 +25,7 @@ def _random(min, max, digits):
 
 def readLog(file):
     res = []
-    blade_param = []
+    blades = []
     with open(file) as f:
         lines = f.readlines()
         for line in lines:
@@ -40,24 +39,47 @@ def readLog(file):
                 for item in param:
                     lst.append(float(item.split(":")[1]))
                 res.append(lst)
-            if "Best individual" in line:
-                string = line.split("DEAP_info   ")[1]
-                substr = re.search('\[.*?\]', string).group(0)
-                for elem in substr[1:-1].split(", "):
-                    blade_param.append(float(elem))
+            if ("[blade1] " in line) or ("[blade2] " in line):
+                #reconstruct blade datasets
+                blade_param = {}
+                try:
+                    string = line.split("[blade1] ")[1]
+                except IndexError:
+                    string = line.split("[blade2] ")[1]
+                for elem in string.split(", "):
+                    key, val = elem.split(":")
+                    if val != "":
+                        if key != "nblades":
+                            blade_param[key] = float(val)
+                        else:
+                            blade_param[key] = val
+                #FIXME
+                blade_param['npts'] = 1000
+                blade_param['pts'] = [9999]
+                blade_param['pts_th'] = [9999]
+                blade_param['l_chord'] = 1
+                blade_param['selected_blade'] = 2
+
+                blades.append(blade_param)
+
+            # bladegen = BladeGen(frontend='UI', nblade=df['nblades'], th_dist_option=df['thdist_ver'],
+            #                     npts=df['npts'],
+            #                     alpha1=df['alpha1'], alpha2=df['alpha2'],
+            #                     lambd=df['lambd'], th=df['th'], x_maxth=df['xmax_th'],
+            #                     x_maxcamber=df['xmax_camber'],
+            #                     l_chord=df['l_chord'], th_le=df['th_le'], th_te=df['th_te'], spline_pts=df['pts'],
+            #                     thdist_points=df['pts_th'])
 
         # FIXME
-        blade_ds = pd.DataFrame(blade_param, index=["pp", "ao", "division", "alpha1", "alpha2", "lambd", "thickness",
-                                                      "xmaxth", "xmax_camber1", "xmax_camber2", "leth", "teth"]).T
         ds = pd.DataFrame(res, columns=["xmax_camber1", "xmax_camber2", "omega", "beta", "cp", "fitness"])
 
 
     f.close()
-    return ds, blade_ds
+    return ds, blades
 
 
 def plotDeapResult(file, logdir):
-    ds, blade_ds = readLog(file)
+    ds, blades = readLog(file)
     # plots for PP and AO over time
     # filter omega > 0.1
     ds = ds[ds.omega < 0.1]
@@ -138,17 +160,9 @@ def plotDeapResult(file, logdir):
 
     # plot blade
     fig, ax = plt.subplots(figsize=(10, 8))
-    blade1 = BladeGen(frontend='UI', nblade='tandem', th=blade_ds.thickness,
-                        alpha1=blade_ds.alpha1, alpha2=blade_ds.alpha2,
-                        lambd=blade_ds.lambd, x_maxth=blade_ds.xmaxth,
-                        x_maxcamber=blade_ds.xmax_camber1, th_te=blade_ds.teth, th_le=blade_ds.leth
-                        )
+    bladePlot(ax, blades[0], ds1=blades[0], ds2=blades[1])
+    fig.savefig(Path(logdir + "/blades.png"))
 
-    # bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
-    #                     alpha1=ds['alpha1'], alpha2=ds['alpha2'],
-    #                     lambd=ds['lambd'], th=ds['th'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
-    #                     l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'], spline_pts=ds['pts'],
-    #                     thdist_points=ds['pts_th'])
 
 
 

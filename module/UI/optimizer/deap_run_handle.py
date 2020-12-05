@@ -52,7 +52,7 @@ class DeapRunHandler:
         self.logger.info('---DEAP START---')
 
         # init dataframe for tracking each individuals
-        #FIXME
+        # FIXME
         self.df = pd.DataFrame(columns=['xmax_camb1', 'xmax_camb2', 'beta', 'omega', 'cp', 'fitness', 'generation'])
         self.pointer_df = 0
         # init plot
@@ -171,7 +171,8 @@ class DeapRunHandler:
         foolist.append(self.omega[-1])
         # new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
         #            'cp': self.cp[-1]}
-        new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
+        new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]),
+                   'omega': self.omega[-1],
                    'cp': self.cp[-1]}
         self.df = self.df.append(new_row, ignore_index=True)
         print("Omega: " + str(foolist))
@@ -354,7 +355,7 @@ class DeapRunHandler:
                     print("inloop fitness:{0}".format(fit[0]))
                     self.df.iloc[idx + self.pointer_df].fitness = fit[0]
                     self.df.iloc[idx + self.pointer_df].generation = g
-                    #FIXME
+                    # FIXME
                     self.logger.info(
                         # "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
                         "xmax_camb1: {0} , xmax_camb2:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
@@ -408,7 +409,18 @@ class DeapRunHandler:
         best_ind = tools.selBest(pop, 1)[0]
         print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
         self.logger.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
-
+        blade1_str = ""
+        blade2_str = ""
+        for key, val in self.ds1.items():
+            # ignore pts and pts_th
+            if ("pts" not in key) and ("pts_th" not in key):
+                blade1_str += "{0}:{1}, ".format(key, val)
+        for key, val in self.ds2.items():
+            # ignore pts and pts_th
+            if ("pts" not in key) and ("pts_th" not in key):
+                blade2_str += "{0}:{1}, ".format(key, val)
+        self.logger.info("[blade1] " + blade1_str[:-2])  # log it, remove trailing ,
+        self.logger.info("[blade2] " + blade2_str[:-2])  # log it, remove trailing ,
         # create dir and save plots of results to it. Move debug.log to folder and delete original.
         deapCleanupHandle(self.logfile)
 
