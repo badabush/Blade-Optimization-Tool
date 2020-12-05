@@ -240,7 +240,7 @@ class PlotCanvas(FigureCanvas):
 
     def plot(self, ds, ds1=0, ds2=0, ds_import=0):
         if ds1 != 0:
-            if ds_import != 0:
+            if type(ds_import) != int:
                 bladePlot(self.ax, ds, ds1, ds2, ds_import)
             else:
                 bladePlot(self.ax, ds, ds1, ds2)

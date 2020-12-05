@@ -62,14 +62,6 @@ def readLog(file):
 
                 blades.append(blade_param)
 
-            # bladegen = BladeGen(frontend='UI', nblade=df['nblades'], th_dist_option=df['thdist_ver'],
-            #                     npts=df['npts'],
-            #                     alpha1=df['alpha1'], alpha2=df['alpha2'],
-            #                     lambd=df['lambd'], th=df['th'], x_maxth=df['xmax_th'],
-            #                     x_maxcamber=df['xmax_camber'],
-            #                     l_chord=df['l_chord'], th_le=df['th_le'], th_te=df['th_te'], spline_pts=df['pts'],
-            #                     thdist_points=df['pts_th'])
-
         # FIXME
         ds = pd.DataFrame(res, columns=["xmax_camber1", "xmax_camber2", "omega", "beta", "cp", "fitness"])
 
