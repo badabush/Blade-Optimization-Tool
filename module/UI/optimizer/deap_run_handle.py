@@ -27,13 +27,15 @@ class DeapRunHandler:
             [0.9177, 0.9177, 1, "pp"],  # PP
             [0.0271, 0.0271, 1, "ao"],  # AO
             [0.43, 0.43, 1, "div"],  # division
-            [18., 18., 1, "alph1"],  # alpha1
-            [23., 23., 1, "alph2"],  # alpha2
+            [15., 29., 0, "alph11"],  # alpha1 (default: 17)
+            [5., 9., 0, "alph12"],  # alpha2 (default: 7)
+            [16., 20., 0, "alph21"],  # alpha21 (default: 18)
+            [21., 25., 0, "alph22"],  # alpha22 (default: 23)
             [23., 23., 1, "lambd"],  # lambd
             [0.0477, 0.0477, 1, "th"],  # thickness
             [0.4, 0.4, 1, "xmaxth"],  # xmaxth
-            [0.35, 0.45, 0, "xmax_camber1"],  # xmaxcamber1
-            [0.35, 0.45, 0, "xmax_camber2"],  # xmaxcamber2
+            [0.3742, 0.3742, 1, "xmax_camber1"],  # xmaxcamber1
+            [0.3742, 0.3742, 1, "xmax_camber2"],  # xmaxcamber2
             [0.01, 0.01, 1, "leth"],  # LE thickness
             [0.01, 0.01, 1, "teth"]  # TE thickness
         ])
@@ -65,7 +67,7 @@ class DeapRunHandler:
 
         # IND_SIZE = genes[np.where(genes[:, 2] == 0)].size  # number of non-fixed genes
         self.dp_IND_SIZE = self.dp_genes.shape[0]
-        self.dp_POP_SIZE = 30
+        self.dp_POP_SIZE = 5
         self.dp_CXPB, self.dp_MUTPB = .5, .2  # crossover probability, mutation probability
 
         # Creator
@@ -81,7 +83,9 @@ class DeapRunHandler:
         # self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_item, n=IND_SIZE)
         self.toolbox.register("individual", tools.initCycle, creator.Individual,
                               (self.toolbox.attr_pp, self.toolbox.attr_ao, self.toolbox.attr_div,
-                               self.toolbox.attr_alph1, self.toolbox.attr_alph2, self.toolbox.attr_lambd,
+                               self.toolbox.attr_alph11, self.toolbox.attr_alph12, self.toolbox.attr_alph21,
+                               self.toolbox.attr_alph22,
+                               self.toolbox.attr_lambd,
                                self.toolbox.attr_th, self.toolbox.attr_xmaxth,
                                self.toolbox.attr_xmax_camber1, self.toolbox.attr_xmax_camber2,
                                self.toolbox.attr_leth, self.toolbox.attr_teth), n=1)
@@ -122,13 +126,15 @@ class DeapRunHandler:
         # xoffset and yoffset need to be calculated from PP and AO
         self.ds2['x_offset'] = individual[1] * self.ds1['dist_blades']  # AO
         self.ds2['y_offset'] = (1 - individual[0]) * self.ds1['dist_blades']  # PP
-        # print("PP: " + str(individual[0]))
-        # print("AO: " + str(individual[1]))
 
-        self.ds1['xmax_camber'] = individual[8]
-        self.ds2['xmax_camber'] = individual[9]
+        # set blade 1 and 2 alphas
+        self.ds1['alpha1'] = individual[3]
+        self.ds1['alpha2'] = individual[4]
+        self.ds2['alpha1'] = individual[5]
+        self.ds2['alpha2'] = individual[6]
 
-        print("xmaxcamb blade1: {0}, xmaxcamb blade2: {1}".format(individual[8], individual[9]))
+        print("alph1 blade1: {0}, alph2 blade1: {1}".format(individual[3], individual[4]))
+        print("alph1 blade2: {0}, alph2 blade2: {1}".format(individual[5], individual[6]))
 
         # no dialog window if running DEAP
         self.meshgen = MeshGenUI()
@@ -171,7 +177,11 @@ class DeapRunHandler:
         foolist.append(self.omega[-1])
         # new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
         #            'cp': self.cp[-1]}
-        new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]),
+        # new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]),
+        #            'omega': self.omega[-1],
+        #            'cp': self.cp[-1]}
+        new_row = {'alph11': individual[3], 'alph12': individual[4], 'alph21': individual[5], 'alph22': individual[6],
+                   'beta': np.rad2deg(self.beta[-1]),
                    'omega': self.omega[-1],
                    'cp': self.cp[-1]}
         self.df = self.df.append(new_row, ignore_index=True)
@@ -184,7 +194,7 @@ class DeapRunHandler:
             omega = self.omega[-1]
         except (IndexError, KeyError, ValueError) as e:
             print(e)
-            omega = 0
+            omega = 9999
         return omega,
 
     def mutRestricted(self, individual, indpb):
@@ -278,11 +288,13 @@ class DeapRunHandler:
                 self.df.iloc[idx + self.pointer_df].generation = g
                 # FIXME
                 self.logger.info(
-                    "xmax_camb1:{0} ,xmax_camb2:{1} ,Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                    "alph11:{0} ,alph12:{1} ,alph21:{2} ,alph22:{3} ,Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
                         # self.df.iloc[idx + self.pointer_df].PP,
                         # self.df.iloc[idx + self.pointer_df].AO,
-                        self.df.iloc[idx + self.pointer_df].xmax_camb1,
-                        self.df.iloc[idx + self.pointer_df].xmax_camb2,
+                        self.df.iloc[idx + self.pointer_df].alph11,
+                        self.df.iloc[idx + self.pointer_df].alph12,
+                        self.df.iloc[idx + self.pointer_df].alph21,
+                        self.df.iloc[idx + self.pointer_df].alph22,
                         self.df.iloc[idx + self.pointer_df].omega,
                         self.df.iloc[idx + self.pointer_df].beta,
                         self.df.iloc[idx + self.pointer_df].cp,
@@ -311,7 +323,10 @@ class DeapRunHandler:
             for child in offspring:
                 try:
                     # match_idx = np.where((self.df.PP == child[0]) & (self.df.AO == child[1]))
-                    match_idx = np.where((self.df.xmax_camb1 == child[8]) & (self.df.xmax_camb2 == child[9]))
+                    # match_idx = np.where((self.df.xmax_camb1 == child[8]) & (self.df.xmax_camb2 == child[9]))
+                    match_idx = np.where(
+                        (self.df.alph11 == child[3]) & (self.df.alph12 == child[4]) & (self.df.alph21 == child[5]) & (
+                                    self.df.alph22 == child[6]))
                     # assures that match_idx is scalar
                     match = self.df.loc[np.min(match_idx)]
                     # FIXME
@@ -321,8 +336,9 @@ class DeapRunHandler:
                     #         match.PP, match.AO, match.omega, match.beta, match.cp, match.fitness
                     #     ))
                     self.logger.info(
-                        "xmax_camb1: {0} , xmax_camb2:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                            match.xmax_camb1, match.xmax_camb2, match.omega, match.beta, match.cp, match.fitness
+                        "alph11: {0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+                            match.alph11, match.alph12, match.alph21, match.alph22, match.omega, match.beta, match.cp,
+                            match.fitness
                         ))
                 except (IndexError, KeyError, ValueError) as e:
                     print(e)
@@ -358,11 +374,17 @@ class DeapRunHandler:
                     # FIXME
                     self.logger.info(
                         # "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                        "xmax_camb1: {0} , xmax_camb2:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                        # "xmax_camb1: {0} , xmax_camb2:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
+                        "alph11:{0} ,alph12:{1} ,alph21:{2} ,alph22:{3} ,Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+
                             # self.df.iloc[idx + self.pointer_df].PP,
                             # self.df.iloc[idx + self.pointer_df].AO,
-                            self.df.iloc[idx + self.pointer_df].xmax_camb1,
-                            self.df.iloc[idx + self.pointer_df].xmax_camb2,
+                            # self.df.iloc[idx + self.pointer_df].xmax_camb1,
+                            # self.df.iloc[idx + self.pointer_df].xmax_camb2,
+                            self.df.iloc[idx + self.pointer_df].alph11,
+                            self.df.iloc[idx + self.pointer_df].alph12,
+                            self.df.iloc[idx + self.pointer_df].alph21,
+                            self.df.iloc[idx + self.pointer_df].alph22,
                             self.df.iloc[idx + self.pointer_df].omega,
                             self.df.iloc[idx + self.pointer_df].beta,
                             self.df.iloc[idx + self.pointer_df].cp,

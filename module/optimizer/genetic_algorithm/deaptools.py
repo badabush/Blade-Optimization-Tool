@@ -63,7 +63,7 @@ def readLog(file):
                 blades.append(blade_param)
 
         # FIXME
-        ds = pd.DataFrame(res, columns=["xmax_camber1", "xmax_camber2", "omega", "beta", "cp", "fitness"])
+        ds = pd.DataFrame(res, columns=["alph11", "alph12", "alph21", "alph22", "omega", "beta", "cp", "fitness"])
 
 
     f.close()
@@ -73,23 +73,36 @@ def readLog(file):
 def plotDeapResult(file, logdir):
     ds, blades = readLog(file)
     # plots for PP and AO over time
-    # filter omega > 0.1
-    ds = ds[ds.omega < 0.1]
+    # filter fitness > 0.1
+    ds = ds[ds.fitness < 0.1]
+    ds.reset_index(inplace=True, drop=True)
+    ds = ds[ds.fitness > 0.0]
     ds.reset_index(inplace=True, drop=True)
 
-    fig, ax = plt.subplots(2, 1, sharex=True, figsize=(10, 8))
+    fig, ax = plt.subplots(4, 1, sharex=True, figsize=(10, 8))
     # FIXME
-    ax[0].plot(ds.xmax_camber1, label="xmax_camber1")
+    ax[0].plot(ds.alph11, label="alpha 11")
     ax[0].legend()
     # ax[0].set_ylabel("Percent Pitch [-]")
-    ax[0].set_ylabel("x max camber (1) [-]")
+    ax[0].set_ylabel("alpha1 (1) [-]")
 
-    ax[1].plot(ds.xmax_camber2, label="xmax_camber2")
+    ax[1].plot(ds.alph12, label="alpha 12")
     ax[1].set_xlabel("Iteration")
     # ax[1].set_ylabel("Axial Overlap [-]")
-    ax[1].set_ylabel("x max camber (2) [-]")
+    ax[1].set_ylabel("alpha2 (1) [-]")
+
+    ax[2].plot(ds.alph21, label="alpha 21")
+    ax[2].set_xlabel("Iteration")
+    # ax[1].set_ylabel("Axial Overlap [-]")
+    ax[2].set_ylabel("alpha1 (2) [-]")
+
+    ax[3].plot(ds.alph22, label="alpha 22")
+    ax[3].set_xlabel("Iteration")
+    # ax[1].set_ylabel("Axial Overlap [-]")
+    ax[3].set_ylabel("alpha2 (2) [-]")
+
     ax[1].legend()
-    fig.savefig(Path(logdir + "/xmaxcamber_time.png"))
+    fig.savefig(Path(logdir + "/alph_time.png"))
 
     #
     fig, ax = plt.subplots(3, 2, figsize=(10, 8), sharex='col', sharey='row')
@@ -113,16 +126,16 @@ def plotDeapResult(file, logdir):
     fig.savefig(Path(logdir + "/gene_output_density.png"))
 
     # contour plot
-    npts = len(ds.omega)
-    ngridx = 5 * len(ds.omega)
-    ngridy = 5 * len(ds.omega)
+    npts = len(ds.fitness)
+    ngridx = 5 * len(ds.fitness)
+    ngridy = 5 * len(ds.fitness)
 
     # npts = len(ds.omega)
     # FIXME
-    ngrid = len(ds.omega)
+    ngrid = len(ds.fitness)
     x = ds.xmax_camber1
     y = ds.xmax_camber2
-    z = ds.omega
+    z = ds.fitness
 
     fig, (ax1) = plt.subplots(nrows=1, figsize=(10, 8))
 
@@ -147,8 +160,8 @@ def plotDeapResult(file, logdir):
     # FIXME
     ax1.set_xlabel('x max camber (1) [-]')
     ax1.set_ylabel('x max camber (2) [-]')
-    ax1.set_title('Omega')
-    fig.savefig(Path(logdir + "/xmaxcamber_omega_contour.png"))
+    ax1.set_title('fitness')
+    fig.savefig(Path(logdir + "/xmaxcamber_fitness_contour.png"))
 
     # plot blade
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -179,7 +192,7 @@ def deapCleanupHandle(logname, mailing=True):
 
 
 if __name__ == '__main__':
-    deapCleanupHandle("04-12-20_18-05-41.log", False)
+    deapCleanupHandle("06-12-20_17-48-20.log", False)
     # file = Path.cwd() / "log/04-12-2020_18.05.41_manually/04-12-20_18_05_41.log"
     # logdir = "D:/git/master-thesis/module/log/03-12-2020_07.19.36_manually"
     # plotDeapResult(file, logdir)
