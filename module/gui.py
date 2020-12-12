@@ -102,6 +102,9 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         self.btn_in_right.clicked.connect(self.update_in_right)
 
         """ Optimizer links """
+        # init deap config window
+        self.deap_config_ui = DeapConfigUi()
+
         # optimizer inits
         self.optim_handler_init()
 
@@ -113,6 +116,8 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         self.select_blade = 2
         self.update_select()
         # self.select_blade = 1
+
+
         self.show()
 
     def get_spline_pts(self, value):
@@ -162,8 +167,8 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         """
         Opens Popup for DEAP config.
         """
-        self.deap_ui = DeapConfigUi()
-        self.deap_ui.show()
+        # self.deap_ui = DeapConfigUi()
+        self.deap_config_ui.show()
 
     def camber_spline_window(self):
         """

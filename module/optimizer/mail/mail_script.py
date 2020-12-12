@@ -1,4 +1,4 @@
-import email, smtplib, ssl
+import smtplib, ssl
 
 import configparser
 import json

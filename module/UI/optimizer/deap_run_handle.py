@@ -17,49 +17,36 @@ from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
 from module.optimizer.generate_script import gen_script
 from module.optimizer.optimtools import calc_xmf
-from module.optimizer.genetic_algorithm.deaptools import _random
+from module.optimizer.genetic_algorithm.deaptools import _random, read_deap_restraints
 from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
+from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
 
 
 class DeapRunHandler:
     def ga_run(self):
-        # min / max, fixed(bool)
-        ds_genes = {"pp": [0.9177, 0.9177, 1,3],
-                    "ao": [0.9177, 0.9177, 1,3],
-                    "div": [0.9177, 0.9177, 1,3],
-                    "alph11": [0.9177, 0.9177, 1,3],
-                    "alph12": [0.9177, 0.9177, 1,3],
-                    "alph21": [0.9177, 0.9177, 1,3],
-                    "alph22": [0.9177, 0.9177, 1,3],
-                    "lambd1": [0.9177, 0.9177, 1,3],
-                    "lambd2": [0.9177, 0.9177, 1,3],
-                    "th1": [0.9177, 0.9177, 1,3],
-                    "th2": [0.9177, 0.9177, 1,3],
-                    "xmaxth1": [0.9177, 0.9177, 1,3],
-                    "xmaxth2": [0.9177, 0.9177, 1,3],
-                    "leth1": [0.9177, 0.9177, 1,3],
-                    "leth2": [0.9177, 0.9177, 1,3],
-                    "teth1": [0.9177, 0.9177, 1,3],
-                    "teth2": [0.9177, 0.9177, 1,3],
-                    "xmaxth2": [0.9177, 0.9177, 1,3],
-                    "pp": [0.9177, 0.9177, 1,3]
-                    }
-        self.dp_genes = np.array([
-            [0.9177, 0.9177, 1, "pp"],  # PP
-            [0.0271, 0.0271, 1, "ao"],  # AO
-            [0.43, 0.43, 1, "div"],  # division
-            [15., 29., 0, "alph11"],  # alpha1 (default: 17)
-            [5., 9., 0, "alph12"],  # alpha2 (default: 7)
-            [16., 20., 0, "alph21"],  # alpha21 (default: 18)
-            [21., 25., 0, "alph22"],  # alpha22 (default: 23)
-            [23., 23., 1, "lambd"],  # lambd
-            [0.0477, 0.0477, 1, "th"],  # thickness
-            [0.4, 0.4, 1, "xmaxth"],  # xmaxth
-            [0.3742, 0.3742, 1, "xmax_camber1"],  # xmaxcamber1
-            [0.3742, 0.3742, 1, "xmax_camber2"],  # xmaxcamber2
-            [0.01, 0.01, 1, "leth"],  # LE thickness
-            [0.01, 0.01, 1, "teth"]  # TE thickness
-        ])
+        self.dp_genes = read_deap_restraints()
+
+        # get updates from DEAP settings window
+        self.deap_config_ui.get_checkbox()
+        self.deap_config_ui.get_values()
+        deap_settings = DeapSettingsHandle(self.deap_config_ui, self.dp_genes)
+        # # min / max, fixed(bool)
+        # self.dp_genes = np.array([
+        #     [0.9177, 0.9177, 1, "pp"],  # PP
+        #     [0.0271, 0.0271, 1, "ao"],  # AO
+        #     [0.43, 0.43, 1, "div"],  # division
+        #     [15., 29., 0, "alph11"],  # alpha1 (default: 17)
+        #     [5., 9., 0, "alph12"],  # alpha2 (default: 7)
+        #     [16., 20., 0, "alph21"],  # alpha21 (default: 18)
+        #     [21., 25., 0, "alph22"],  # alpha22 (default: 23)
+        #     [23., 23., 1, "lambd"],  # lambd
+        #     [0.0477, 0.0477, 1, "th"],  # thickness
+        #     [0.4, 0.4, 1, "xmaxth"],  # xmaxth
+        #     [0.3742, 0.3742, 1, "xmax_camber1"],  # xmaxcamber1
+        #     [0.3742, 0.3742, 1, "xmax_camber2"],  # xmaxcamber2
+        #     [0.01, 0.01, 1, "leth"],  # LE thickness
+        #     [0.01, 0.01, 1, "teth"]  # TE thickness
+        # ])
         self.beta = [np.deg2rad(17)]
         # init logs
         log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
@@ -76,7 +63,8 @@ class DeapRunHandler:
 
         # init dataframe for tracking each individuals
         # FIXME
-        self.df = pd.DataFrame(columns=['alph11', 'alph12', 'alph21', 'alph22', 'beta', 'omega', 'cp', 'fitness', 'generation'])
+        self.df = pd.DataFrame(
+            columns=['alph11', 'alph12', 'alph21', 'alph22', 'beta', 'omega', 'cp', 'fitness', 'generation'])
         self.pointer_df = 0
         # init plot
         self.optifig_deap = OptimPlotDEAP(self, width=8, height=10)
@@ -86,10 +74,11 @@ class DeapRunHandler:
         vbl.addWidget(toolbar)
         vbl.addWidget(self.optifig_deap)
 
-        # IND_SIZE = genes[np.where(genes[:, 2] == 0)].size  # number of non-fixed genes
         self.dp_IND_SIZE = self.dp_genes.shape[0]
-        self.dp_POP_SIZE = 30
-        self.dp_CXPB, self.dp_MUTPB = .5, .2  # crossover probability, mutation probability
+        self.dp_POP_SIZE = self.deap_config_ui.vallist['pop_size']
+        self.dp_CXPB = self.deap_config_ui.vallist['cxpb']  # crossover probability
+        self.dp_MUTPB = self.deap_config_ui.vallist['mutpb']  # mutation probability
+        self.dp_MAX_GENERATIONS = self.deap_config_ui.vallist['max_gens']  # maximum number of generations
 
         # Creator
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
@@ -99,17 +88,22 @@ class DeapRunHandler:
         self.toolbox = base.Toolbox()
 
         # Attribute generator
-        list(self.toolbox.register("attr_%s" % i[3], _random, float(i[0]), float(i[1]), 4) for i in self.dp_genes)
-
+        list(self.toolbox.register("attr_%s" % val[3], _random, float(val[0]), float(val[1]), int(val[2])) for val in
+             deap_settings.attribute_generator())
+        # list(self.toolbox.register("attr_%s" % i[3], _random, float(i[0]), float(i[1]), 4) for i in self.dp_IND_SIZE)
         # self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_item, n=IND_SIZE)
-        self.toolbox.register("individual", tools.initCycle, creator.Individual,
-                              (self.toolbox.attr_pp, self.toolbox.attr_ao, self.toolbox.attr_div,
-                               self.toolbox.attr_alph11, self.toolbox.attr_alph12, self.toolbox.attr_alph21,
-                               self.toolbox.attr_alph22,
-                               self.toolbox.attr_lambd,
-                               self.toolbox.attr_th, self.toolbox.attr_xmaxth,
-                               self.toolbox.attr_xmax_camber1, self.toolbox.attr_xmax_camber2,
-                               self.toolbox.attr_leth, self.toolbox.attr_teth), n=1)
+        self.toolbox.register(
+            "individual", tools.initCycle, creator.Individual,
+            (
+                self.toolbox.attr_pp, self.toolbox.attr_ao, self.toolbox.attr_div,
+                self.toolbox.attr_alph11, self.toolbox.attr_alph12, self.toolbox.attr_alph21, self.toolbox.attr_alph22,
+                self.toolbox.attr_lambd1, self.toolbox.attr_lambd2,
+                self.toolbox.attr_th1, self.toolbox.attr_th2,
+                self.toolbox.attr_xmaxth1, self.toolbox.attr_xmaxth2,
+                self.toolbox.attr_xmaxcamber1, self.toolbox.attr_xmaxcamber2,
+                self.toolbox.attr_leth1, self.toolbox.attr_leth2,
+                self.toolbox.attr_teth1, self.toolbox.attr_teth2
+            ), n=1)
 
         self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
@@ -329,7 +323,7 @@ class DeapRunHandler:
 
         minlist = []
         # genlist = []
-        while min(fits) > 0 and g < 100:
+        while min(fits) > 0 and g < self.dp_MAX_GENERATIONS:
             # new generation
             g += 1
             self.logger.info("** Generation {0} **".format(g))
@@ -347,7 +341,7 @@ class DeapRunHandler:
                     # match_idx = np.where((self.df.xmax_camb1 == child[8]) & (self.df.xmax_camb2 == child[9]))
                     match_idx = np.where(
                         (self.df.alph11 == child[3]) & (self.df.alph12 == child[4]) & (self.df.alph21 == child[5]) & (
-                                    self.df.alph22 == child[6]))
+                                self.df.alph22 == child[6]))
                     # assures that match_idx is scalar
                     match = self.df.loc[np.min(match_idx)]
                     # FIXME
@@ -427,7 +421,7 @@ class DeapRunHandler:
             # get total length of individuals within a generation
             try:
                 ds_len = self.df[self.df.generation == g].shape[0]
-                self.logger.info("Population size: {0}".format(ds_len+length))
+                self.logger.info("Population size: {0}".format(ds_len + length))
             except (IndexError, AttributeError) as e:
                 print(e)
 
