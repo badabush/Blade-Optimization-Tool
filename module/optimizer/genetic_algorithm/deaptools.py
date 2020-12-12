@@ -73,8 +73,8 @@ def readLog(file):
 def plotDeapResult(file, logdir):
     ds, blades = readLog(file)
     # plots for PP and AO over time
-    # filter fitness > 0.1
-    ds = ds[ds.fitness < 0.1]
+    # filter fitness < 1
+    ds = ds[ds.fitness < 1]
     ds.reset_index(inplace=True, drop=True)
     ds = ds[ds.fitness > 0.0]
     ds.reset_index(inplace=True, drop=True)
@@ -133,14 +133,14 @@ def plotDeapResult(file, logdir):
     # npts = len(ds.omega)
     # FIXME
     ngrid = len(ds.fitness)
-    x = ds.xmax_camber1
-    y = ds.xmax_camber2
+    x = ds.alph11
+    y = ds.alph12
     z = ds.fitness
 
     fig, (ax1) = plt.subplots(nrows=1, figsize=(10, 8))
 
-    xi = np.linspace(min(ds.xmax_camber1) - 0.05, max(ds.xmax_camber1) + 0.05, ngridx)
-    yi = np.linspace(min(ds.xmax_camber2) - 0.005, max(ds.xmax_camber2) + 0.05, ngridy)
+    xi = np.linspace(min(ds.alph11) - 0.05, max(ds.alph11) + 0.05, ngridx)
+    yi = np.linspace(min(ds.alph12) - 0.005, max(ds.alph12) + 0.05, ngridy)
 
     triang = tri.Triangulation(x, y)
 
@@ -153,20 +153,23 @@ def plotDeapResult(file, logdir):
 
     fig.colorbar(cntr1, ax=ax1)
     ax1.scatter(x, y, facecolors='w', alpha=0.5, edgecolors='k', s=50)
-    ax1.set(xlim=(min(ds.xmax_camber1), max(ds.xmax_camber1)), ylim=(min(ds.xmax_camber2), max(ds.xmax_camber2)))
+    ax1.set(xlim=(min(ds.alph11), max(ds.alph11)), ylim=(min(ds.alph12), max(ds.alph12)))
 
     plt.subplots_adjust(hspace=0.5)
     # plt.show()
     # FIXME
-    ax1.set_xlabel('x max camber (1) [-]')
-    ax1.set_ylabel('x max camber (2) [-]')
+    ax1.set_xlabel('alpha 1 (1) [-]')
+    ax1.set_ylabel('alpha 2 (2) [-]')
     ax1.set_title('fitness')
     fig.savefig(Path(logdir + "/xmaxcamber_fitness_contour.png"))
 
     # plot blade
-    fig, ax = plt.subplots(figsize=(10, 8))
-    bladePlot(ax, blades[0], ds1=blades[0], ds2=blades[1])
-    fig.savefig(Path(logdir + "/blades.png"))
+    try:
+        fig, ax = plt.subplots(figsize=(10, 8))
+        bladePlot(ax, blades[0], ds1=blades[0], ds2=blades[1])
+        fig.savefig(Path(logdir + "/blades.png"))
+    except IndexError:
+        pass
 
 
 
@@ -192,7 +195,7 @@ def deapCleanupHandle(logname, mailing=True):
 
 
 if __name__ == '__main__':
-    deapCleanupHandle("06-12-20_17-48-20.log", False)
+    deapCleanupHandle("10-12-20_14-38-41.log", False)
     # file = Path.cwd() / "log/04-12-2020_18.05.41_manually/04-12-20_18_05_41.log"
     # logdir = "D:/git/master-thesis/module/log/03-12-2020_07.19.36_manually"
     # plotDeapResult(file, logdir)

@@ -55,7 +55,7 @@ class DeapRunHandler:
 
         # init dataframe for tracking each individuals
         # FIXME
-        self.df = pd.DataFrame(columns=['xmax_camb1', 'xmax_camb2', 'beta', 'omega', 'cp', 'fitness', 'generation'])
+        self.df = pd.DataFrame(columns=['alph11', 'alph12', 'alph21', 'alph22', 'beta', 'omega', 'cp', 'fitness', 'generation'])
         self.pointer_df = 0
         # init plot
         self.optifig_deap = OptimPlotDEAP(self, width=8, height=10)
@@ -67,7 +67,7 @@ class DeapRunHandler:
 
         # IND_SIZE = genes[np.where(genes[:, 2] == 0)].size  # number of non-fixed genes
         self.dp_IND_SIZE = self.dp_genes.shape[0]
-        self.dp_POP_SIZE = 5
+        self.dp_POP_SIZE = 30
         self.dp_CXPB, self.dp_MUTPB = .5, .2  # crossover probability, mutation probability
 
         # Creator
@@ -288,7 +288,7 @@ class DeapRunHandler:
                 self.df.iloc[idx + self.pointer_df].generation = g
                 # FIXME
                 self.logger.info(
-                    "alph11:{0} ,alph12:{1} ,alph21:{2} ,alph22:{3} ,Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+                    "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
                         # self.df.iloc[idx + self.pointer_df].PP,
                         # self.df.iloc[idx + self.pointer_df].AO,
                         self.df.iloc[idx + self.pointer_df].alph11,
@@ -336,7 +336,7 @@ class DeapRunHandler:
                     #         match.PP, match.AO, match.omega, match.beta, match.cp, match.fitness
                     #     ))
                     self.logger.info(
-                        "alph11: {0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+                        "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
                             match.alph11, match.alph12, match.alph21, match.alph22, match.omega, match.beta, match.cp,
                             match.fitness
                         ))
@@ -375,7 +375,7 @@ class DeapRunHandler:
                     self.logger.info(
                         # "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
                         # "xmax_camb1: {0} , xmax_camb2:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                        "alph11:{0} ,alph12:{1} ,alph21:{2} ,alph22:{3} ,Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+                        "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3} ,Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
 
                             # self.df.iloc[idx + self.pointer_df].PP,
                             # self.df.iloc[idx + self.pointer_df].AO,
@@ -405,8 +405,8 @@ class DeapRunHandler:
 
             # get total length of individuals within a generation
             try:
-                ds_len = self.df.where(self.df.generation == g).shape[0]
-                self.logger.info("Population size: {0}".format(ds_len))
+                ds_len = self.df[self.df.generation == g].shape[0]
+                self.logger.info("Population size: {0}".format(ds_len+length))
             except (IndexError, AttributeError) as e:
                 print(e)
 
