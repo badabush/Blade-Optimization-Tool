@@ -17,12 +17,33 @@ from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
 from module.optimizer.generate_script import gen_script
 from module.optimizer.optimtools import calc_xmf
-from module.optimizer.genetic_algorithm.deaptools import _random, deapCleanupHandle
+from module.optimizer.genetic_algorithm.deaptools import _random
+from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
 
 
 class DeapRunHandler:
     def ga_run(self):
         # min / max, fixed(bool)
+        ds_genes = {"pp": [0.9177, 0.9177, 1,3],
+                    "ao": [0.9177, 0.9177, 1,3],
+                    "div": [0.9177, 0.9177, 1,3],
+                    "alph11": [0.9177, 0.9177, 1,3],
+                    "alph12": [0.9177, 0.9177, 1,3],
+                    "alph21": [0.9177, 0.9177, 1,3],
+                    "alph22": [0.9177, 0.9177, 1,3],
+                    "lambd1": [0.9177, 0.9177, 1,3],
+                    "lambd2": [0.9177, 0.9177, 1,3],
+                    "th1": [0.9177, 0.9177, 1,3],
+                    "th2": [0.9177, 0.9177, 1,3],
+                    "xmaxth1": [0.9177, 0.9177, 1,3],
+                    "xmaxth2": [0.9177, 0.9177, 1,3],
+                    "leth1": [0.9177, 0.9177, 1,3],
+                    "leth2": [0.9177, 0.9177, 1,3],
+                    "teth1": [0.9177, 0.9177, 1,3],
+                    "teth2": [0.9177, 0.9177, 1,3],
+                    "xmaxth2": [0.9177, 0.9177, 1,3],
+                    "pp": [0.9177, 0.9177, 1,3]
+                    }
         self.dp_genes = np.array([
             [0.9177, 0.9177, 1, "pp"],  # PP
             [0.0271, 0.0271, 1, "ao"],  # AO
@@ -444,7 +465,7 @@ class DeapRunHandler:
         self.logger.info("[blade1] " + blade1_str[:-2])  # log it, remove trailing ,
         self.logger.info("[blade2] " + blade2_str[:-2])  # log it, remove trailing ,
         # create dir and save plots of results to it. Move debug.log to folder and delete original.
-        deapCleanupHandle(self.logfile)
+        DeapVisualize(self.logfile)
 
         # plt.plot(minlist)
         # plt.show()
