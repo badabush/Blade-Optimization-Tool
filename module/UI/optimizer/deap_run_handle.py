@@ -30,23 +30,6 @@ class DeapRunHandler:
         self.deap_config_ui.get_checkbox()
         self.deap_config_ui.get_values()
         deap_settings = DeapSettingsHandle(self.deap_config_ui, self.dp_genes)
-        # # min / max, fixed(bool)
-        # self.dp_genes = np.array([
-        #     [0.9177, 0.9177, 1, "pp"],  # PP
-        #     [0.0271, 0.0271, 1, "ao"],  # AO
-        #     [0.43, 0.43, 1, "div"],  # division
-        #     [15., 29., 0, "alph11"],  # alpha1 (default: 17)
-        #     [5., 9., 0, "alph12"],  # alpha2 (default: 7)
-        #     [16., 20., 0, "alph21"],  # alpha21 (default: 18)
-        #     [21., 25., 0, "alph22"],  # alpha22 (default: 23)
-        #     [23., 23., 1, "lambd"],  # lambd
-        #     [0.0477, 0.0477, 1, "th"],  # thickness
-        #     [0.4, 0.4, 1, "xmaxth"],  # xmaxth
-        #     [0.3742, 0.3742, 1, "xmax_camber1"],  # xmaxcamber1
-        #     [0.3742, 0.3742, 1, "xmax_camber2"],  # xmaxcamber2
-        #     [0.01, 0.01, 1, "leth"],  # LE thickness
-        #     [0.01, 0.01, 1, "teth"]  # TE thickness
-        # ])
         self.beta = [np.deg2rad(17)]
         # init logs
         log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
@@ -108,7 +91,7 @@ class DeapRunHandler:
         self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
         self.toolbox.register("evaluate", self.evalEngine)
-        # self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
+        self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
 
         self.toolbox.register("mate", tools.cxTwoPoint)
         self.toolbox.register("mutate", self.mutRestricted, indpb=.3)

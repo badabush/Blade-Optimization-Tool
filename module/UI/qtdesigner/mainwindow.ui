@@ -1725,8 +1725,15 @@ inside VNC enter: echo $DISPLAY</string>
     </property>
     <addaction name="actionCredential"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionTestrun"/>
+   </widget>
    <addaction name="menuBlade_generator"/>
    <addaction name="menuOptimize"/>
+   <addaction name="menuSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="thdist_V1">
@@ -1798,6 +1805,17 @@ inside VNC enter: echo $DISPLAY</string>
   <action name="actionCredential">
    <property name="text">
     <string>create config</string>
+   </property>
+  </action>
+  <action name="actionTestrun">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>testrun</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
    </property>
   </action>
  </widget>
