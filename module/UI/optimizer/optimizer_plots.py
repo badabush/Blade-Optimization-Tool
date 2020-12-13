@@ -145,7 +145,7 @@ class OptimPlotDEAP(FigureCanvas):
         self.ax = self.figure.add_subplot(111)
         self.ax.set_title(r'DEAP Generation/Min')
         self.ax.set_xlabel("generation")
-        self.ax.set_ylabel(r"$\omega$")
+        self.ax.set_ylabel("fitness")
         # self.ax.legend()
         self.ax.grid()
         self.xlim = (0, 0)

@@ -12,19 +12,23 @@ from module.UI.blade.blade_plots import bladePlot
 from module.optimizer.mail.mail_script import deapMail
 
 class DeapVisualize:
-    def __init__(self, logname, mailing=True):
+    def __init__(self, logname, testrun=False):
 
         # read config files
         mail_configfile = Path.cwd() / "config/mailinglist.ini"
         dtime = datetime.datetime.now().strftime("%d-%m-%Y_%H.%M.%S")
         self.logfile = Path.cwd() / logname
-        os.mkdir(os.path.join(Path.cwd() / "log/", dtime))
+        if not testrun:
+            path = os.path.join(Path.cwd() / "log/", dtime)
+        else:
+            path = os.path.join(Path.cwd() / "log/", "test_" + dtime)
+        os.mkdir(path)
         # copy log file to newly created folder
-        copy(self.logfile, os.path.join(Path.cwd() / "log", dtime))
+        copy(self.logfile, path)
 
-        self.plotDeapResult(os.path.join(Path.cwd() / "log", dtime))
+        self.plotDeapResult(path)
         # mail results to recipients
-        if mailing:
+        if not testrun:
             attachments = []
             for item in os.listdir(Path.cwd() / "log" / dtime):
                 attachments.append(Path.cwd() / "log" / dtime / item)

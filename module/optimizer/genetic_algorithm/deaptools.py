@@ -38,6 +38,39 @@ def read_deap_restraints():
             df.loc[section, option] = config.get(section, option)
     return df
 
+def custom_penalty(fit, beta):
+    """
+
+    :param fitnesses: list with (val,) tuples
+    :param df:
+    :return:
+    """
+    if feasible(beta):
+        return fit
+
+    else:
+        # quadratic penalty
+        penalty = penalty_distance(beta)
+        new_fit = fit[0]
+        return (new_fit + penalty,)
+
+def feasible(val):
+    """
+    Feasibility test for input val (beta).
+    :param val:
+    :return:
+    """
+    beta_min = 17.
+    beta_max = 19.
+
+    if (val > beta_min) and (val < beta_max):
+        return True
+    return False
+
+def penalty_distance(val):
+    average = 18.
+    return (np.deg2rad(val-18)**2) * 50
+
 
 if __name__ == '__main__':
     # deapCleanupHandle("10-12-20_14-38-41.log", False)

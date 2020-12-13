@@ -17,23 +17,30 @@ from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
 from module.optimizer.generate_script import gen_script
 from module.optimizer.optimtools import calc_xmf
-from module.optimizer.genetic_algorithm.deaptools import _random, read_deap_restraints
+from module.optimizer.genetic_algorithm.deaptools import _random, read_deap_restraints, custom_penalty
 from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
 from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
 
 
 class DeapRunHandler:
     def ga_run(self):
+        self.testrun = False
+        if self.actionTestrun.isChecked():
+            self.testrun = True
+
         self.dp_genes = read_deap_restraints()
 
         # get updates from DEAP settings window
         self.deap_config_ui.get_checkbox()
         self.deap_config_ui.get_values()
-        deap_settings = DeapSettingsHandle(self.deap_config_ui, self.dp_genes)
+        self.deap_settings = DeapSettingsHandle(self.deap_config_ui, self.dp_genes)
         self.beta = [np.deg2rad(17)]
         # init logs
         log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
-        self.logfile = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
+        if not self.testrun:
+            self.logfile = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
+        else:
+            self.logfile = "test_"+datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
         logging.basicConfig(
             level=logging.INFO,
             format=log_format,
@@ -72,7 +79,7 @@ class DeapRunHandler:
 
         # Attribute generator
         list(self.toolbox.register("attr_%s" % val[3], _random, float(val[0]), float(val[1]), int(val[2])) for val in
-             deap_settings.attribute_generator())
+             self.deap_settings.attribute_generator())
         # list(self.toolbox.register("attr_%s" % i[3], _random, float(i[0]), float(i[1]), 4) for i in self.dp_IND_SIZE)
         # self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_item, n=IND_SIZE)
         self.toolbox.register(
@@ -90,11 +97,15 @@ class DeapRunHandler:
 
         self.toolbox.register("population", tools.initRepeat, list, self.toolbox.individual)
 
-        self.toolbox.register("evaluate", self.evalEngine)
-        self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
+        if not self.testrun:
+            self.toolbox.register("evaluate", self.eval_engine)
+            # self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
+        else:
+            self.toolbox.register("evaluate", self.test_eval)
+            # self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
 
         self.toolbox.register("mate", tools.cxTwoPoint)
-        self.toolbox.register("mutate", self.mutRestricted, indpb=.3)
+        self.toolbox.register("mutate", self.mut_restricted, indpb=.3)
         # self.toolbox.register("mutate", tools.mutFlipBit, indpb=.05)
 
         # pick 3 random individuals, fitness evaluation and selection
@@ -111,7 +122,39 @@ class DeapRunHandler:
         self.logger.info("begin population")
         # self.populate()
 
-    def evalEngine(self, individual):
+    def test_eval(self, individual):
+        """
+        generate geomTurbo
+        generate .trb
+        calculate blade
+        calculate beta
+        """
+        self.outputbox("Beginning DEAP algorithm")
+
+        print("alph1 blade1: {0}, alph2 blade1: {1}".format(individual[3], individual[4]))
+        print("alph1 blade2: {0}, alph2 blade2: {1}".format(individual[5], individual[6]))
+
+        beta = np.sum(individual[3:6])/4 + 6
+        omega = np.deg2rad(beta)
+        self.cp = [0, 2 * omega]
+        self.beta = [beta, beta]
+        self.omega = [0, omega]
+
+        foolist = []
+        foolist.append(self.omega[-1])
+        # new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
+        #            'cp': self.cp[-1]}
+        # new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]),
+        #            'omega': self.omega[-1],
+        #            'cp': self.cp[-1]}
+        new_row = {'alph11': individual[3], 'alph12': individual[4], 'alph21': individual[5], 'alph22': individual[6],
+                   'beta': self.beta[-1],
+                   'omega': self.omega[-1],
+                   'cp': self.cp[-1]}
+        self.df = self.df.append(new_row, ignore_index=True)
+        return omega,
+
+    def eval_engine(self, individual):
         """
         generate geomTurbo
         generate .trb
@@ -195,14 +238,14 @@ class DeapRunHandler:
             omega = 9999
         return omega,
 
-    def mutRestricted(self, individual, indpb):
+    def mut_restricted(self, individual, indpb):
         """
         Custom Mutation rule for keeping the genes in range.
         """
 
-        for i, gene in enumerate(self.dp_genes):
+        for i, gene in enumerate(self.deap_settings.attribute_generator()):
             if random.random() < indpb:
-                individual[i] = _random(float(gene[0]), float(gene[1]), 4)
+                individual[i] = _random(float(gene[0]), float(gene[1]), int(gene[2]))
         return individual,
 
     def deap_script(self):
@@ -279,7 +322,11 @@ class DeapRunHandler:
         pop = self.toolbox.population(n=self.dp_POP_SIZE)
         # evaluate population
         fitnesses = list(map(self.toolbox.evaluate, pop))
+
         for idx, (ind, fit) in enumerate(zip(pop, fitnesses)):
+            # ind.fitness.values = fit
+            # penalty on fitness when beta out of range
+            fit = custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
             ind.fitness.values = fit
             try:
                 self.df.iloc[idx + self.pointer_df].fitness = fit[0]
@@ -361,10 +408,14 @@ class DeapRunHandler:
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
 
             fitnesses = map(self.toolbox.evaluate, invalid_ind)
-            # idx needs to be reset in case no mutation or cx happened (for pointer_df +idx)
+
+
             for idx, (ind, fit) in enumerate(zip(invalid_ind, fitnesses)):
                 # new fitness values evaluation begins
+                # penalty on fitness when beta out of range
+                fit = custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
                 ind.fitness.values = fit
+
                 try:
                     print("inloop fitness:{0}".format(fit[0]))
                     self.df.iloc[idx + self.pointer_df].fitness = fit[0]
@@ -442,7 +493,8 @@ class DeapRunHandler:
         self.logger.info("[blade1] " + blade1_str[:-2])  # log it, remove trailing ,
         self.logger.info("[blade2] " + blade2_str[:-2])  # log it, remove trailing ,
         # create dir and save plots of results to it. Move debug.log to folder and delete original.
-        DeapVisualize(self.logfile)
+
+        DeapVisualize(self.logfile, self.testrun)
 
         # plt.plot(minlist)
         # plt.show()
