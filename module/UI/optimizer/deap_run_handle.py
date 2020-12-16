@@ -499,7 +499,7 @@ class DeapRunHandler:
             # FIXME:
             # break loop when omega of last 5 generations didn't change
             if (g > 5):
-                if np.sum(np.gradient(np.array([np.round(minlist[i], 5) for i in range(g - 5, g)]))):
+                if (np.sum(np.gradient(np.array([np.round(minlist[i], 5) for i in range(g - 5, g)]))) == 0):
                     self.logger.info("Omega didn't change for 5 Generations, breaking loop.")
                     break
 

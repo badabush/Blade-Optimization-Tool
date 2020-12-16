@@ -12,6 +12,7 @@ from module.UI.blade.blade_plots import bladePlot
 from module.optimizer.mail.mail_script import deapMail
 from module.blade.bladetools import get_blade_from_csv
 
+
 class DeapVisualize:
     def __init__(self, logname, testrun=False):
 
@@ -35,7 +36,6 @@ class DeapVisualize:
                 attachments.append(Path.cwd() / "log" / dtime / item)
             print("Sending Mail.")
             deapMail(mail_configfile, attachments)
-
 
     def plotDeapResult(self, logdir):
         ds, blades = self.readLog(self.logfile)
@@ -141,11 +141,18 @@ class DeapVisualize:
 
             bladePlot(ax, blades[0], ds1=blades[0], ds2=blades[1], alpha=.5)
 
-            bladePlot(ax, default_blade[0], ds1=default_blade[1], ds2=default_blade[0], alpha=1, clear=False, transparent=True)
+            bladePlot(ax, default_blade[0], ds1=default_blade[1], ds2=default_blade[0], alpha=1, clear=False,
+                      transparent=True)
             fig.savefig(Path(logdir + "/blades.png"))
         except IndexError as e:
             print(e)
             print("No blade parameters found in log file.")
+
+        # fig, ax = plt.subplots(figsize=(10, 8))
+        # scatter matrix
+        pd.plotting.scatter_matrix(ds, alpha=.2, figsize=(10,8))
+        # fig.savefig(Path(logdir + "/scatter_matrix.png"))
+        plt.savefig(Path(logdir + "/scatter_matrix.png"))
 
     def readLog(self, file):
         res = []
