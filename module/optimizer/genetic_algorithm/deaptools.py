@@ -60,8 +60,8 @@ def feasible(val):
     :param val:
     :return:
     """
-    beta_min = 17.
-    beta_max = 19.
+    beta_min = 17.5
+    beta_max = 18.5
 
     if (val > beta_min) and (val < beta_max):
         return True
@@ -69,7 +69,7 @@ def feasible(val):
 
 def penalty_distance(val):
     average = 18.
-    return (np.deg2rad(val-18)**2) * 50
+    return (np.deg2rad(val-average)**2) * 25
 
 
 if __name__ == '__main__':

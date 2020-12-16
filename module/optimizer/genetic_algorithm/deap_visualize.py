@@ -10,6 +10,7 @@ from scipy.stats import gaussian_kde
 
 from module.UI.blade.blade_plots import bladePlot
 from module.optimizer.mail.mail_script import deapMail
+from module.blade.bladetools import get_blade_from_csv
 
 class DeapVisualize:
     def __init__(self, logname, testrun=False):
@@ -32,6 +33,7 @@ class DeapVisualize:
             attachments = []
             for item in os.listdir(Path.cwd() / "log" / dtime):
                 attachments.append(Path.cwd() / "log" / dtime / item)
+            print("Sending Mail.")
             deapMail(mail_configfile, attachments)
 
 
@@ -100,7 +102,8 @@ class DeapVisualize:
         ngrid = len(ds.fitness)
         x = ds.alph11
         y = ds.alph12
-        z = ds.fitness
+        z = ds.omega
+        # z = ds.fitness
 
         fig, (ax1) = plt.subplots(nrows=1, figsize=(10, 8))
 
@@ -125,13 +128,20 @@ class DeapVisualize:
         # FIXME
         ax1.set_xlabel('alpha 1 (1) [-]')
         ax1.set_ylabel('alpha 2 (2) [-]')
-        ax1.set_title('fitness')
+        ax1.set_title('omega')
         fig.savefig(Path(logdir + "/xmaxcamber_fitness_contour.png"))
+        # get default blade parameters
 
-        # plot blade
+        default_blade_path = Path(os.getcwd() + "/UI/config/default_blade.csv")
+        default_blade = get_blade_from_csv(default_blade_path)
+        # plot blades
         try:
             fig, ax = plt.subplots(figsize=(10, 8))
-            bladePlot(ax, blades[0], ds1=blades[0], ds2=blades[1])
+            # plot best blade
+
+            bladePlot(ax, blades[0], ds1=blades[0], ds2=blades[1], alpha=.5)
+
+            bladePlot(ax, default_blade[0], ds1=default_blade[1], ds2=default_blade[0], alpha=1, clear=False, transparent=True)
             fig.savefig(Path(logdir + "/blades.png"))
         except IndexError as e:
             print(e)
@@ -184,4 +194,4 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    DeapVisualize("10-12-20_14-38-41.log", False)
+    DeapVisualize("13-12-20_16-06-30.log", True)

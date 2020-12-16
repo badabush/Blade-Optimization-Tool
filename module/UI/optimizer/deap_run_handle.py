@@ -140,13 +140,6 @@ class DeapRunHandler:
         self.beta = [beta, beta]
         self.omega = [0, omega]
 
-        foolist = []
-        foolist.append(self.omega[-1])
-        # new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
-        #            'cp': self.cp[-1]}
-        # new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]),
-        #            'omega': self.omega[-1],
-        #            'cp': self.cp[-1]}
         new_row = {'alph11': individual[3], 'alph12': individual[4], 'alph21': individual[5], 'alph22': individual[6],
                    'beta': self.beta[-1],
                    'omega': self.omega[-1],
@@ -176,6 +169,40 @@ class DeapRunHandler:
 
         print("alph1 blade1: {0}, alph2 blade1: {1}".format(individual[3], individual[4]))
         print("alph1 blade2: {0}, alph2 blade2: {1}".format(individual[5], individual[6]))
+
+        match_idx = np.where(
+            (self.df.alph11 == individual[3]) &
+            (self.df.alph12 == individual[4]) &
+            (self.df.alph21 == individual[5]) &
+            (self.df.alph22 == individual[6]))
+
+        # if blade was simulated before, skip numeca process
+        if len(match_idx[0]) != 0:
+            # assures that match_idx is scalar
+            match = self.df.loc[np.min(match_idx)]
+            foolist = []
+            foolist.append(self.omega[-1])
+            # new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
+            #            'cp': self.cp[-1]}
+            # new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]),
+            #            'omega': self.omega[-1],
+            #            'cp': self.cp[-1]}
+            new_row = {'alph11': individual[3], 'alph12': individual[4], 'alph21': individual[5],
+                       'alph22': individual[6],
+                       'beta': match.beta,
+                       'omega': match.omega,
+                       'cp': match.cp}
+            self.df = self.df.append(new_row, ignore_index=True)
+            print("Omega: " + str(foolist))
+            # FIXME
+            # self.logger.info(
+            #     "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}".format(individual[0], individual[1], self.omega[-1],
+            #                                                             np.rad2deg(self.beta[-1]), self.cp[-1]))
+            self.omega = [0, match.omega]
+            self.beta = [0, match.beta]
+            self.cp = [0, match.cp]
+            return match.omega,
+
 
         # no dialog window if running DEAP
         self.meshgen = MeshGenUI()
@@ -469,9 +496,10 @@ class DeapRunHandler:
             # genlist.append()
             self.optifig_deap.animate_deap(minlist)
 
+            # FIXME:
             # break loop when omega of last 5 generations didn't change
             if (g > 5):
-                if np.sum(np.gradient(np.array([np.round(minlist[i], 8) for i in range(g - 5, g)]))):
+                if np.sum(np.gradient(np.array([np.round(minlist[i], 5) for i in range(g - 5, g)]))):
                     self.logger.info("Omega didn't change for 5 Generations, breaking loop.")
                     break
 

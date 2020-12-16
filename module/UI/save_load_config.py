@@ -5,6 +5,8 @@ from pathlib import Path
 import os
 import csv
 
+from module.blade.bladetools import get_blade_from_csv
+
 class SaveLoadConfig:
 
     def save_config(self):
@@ -36,32 +38,7 @@ class SaveLoadConfig:
                                                       "CSV Files (*.csv)", options=options)
 
         try:
-            with open(fileName, 'r') as data:
-                reader = csv.DictReader(data)
-                ds_list = []
-                for row in reader:
-                    # values to float
-                    for key in row.keys():
-                        try:
-                            if key == "pts" or key == "pts_th":
-                                pts = []
-                                string = row[key]
-                                string = string.strip("[").strip("]").split("]\n [")
-                                for line in string:
-                                    line = line.split(' ')
-                                    slice = list(filter(None, line))
-                                    slice = [float(i) for i in slice]
-                                    pts.append(slice)
-                                row[key] = np.array(pts)
-                            else:
-                                row[key] = float(row[key])
-                        except ValueError:
-                            pass
-                    ds_list.append(row)
-                # translate OrderedDict to dict
-                self.ds = dict(ds_list[0])
-                self.ds1 = dict(ds_list[1])
-                self.ds2 = dict(ds_list[2])
+            self.ds, self.ds1, self.ds2 = get_blade_from_csv(fileName)
         except IOError:
             print("I/O error")
 

@@ -1,8 +1,8 @@
+import csv
+
 import numpy as np
 import pandas as pd
 from scipy.special import binom
-from matplotlib import pyplot as plt
-from module.blade import testspline
 
 
 def euclidean_dist(xy1, xy2):
@@ -204,6 +204,35 @@ def cdist_from_spline(xy_spline, delta_alpha):
     # plt.axis('equal')
     # plt.show()
     return xy_camber
+
+def get_blade_from_csv(file_name):
+    with open(file_name, 'r') as data:
+        reader = csv.DictReader(data)
+        ds_list = []
+        for row in reader:
+            # values to float
+            for key in row.keys():
+                try:
+                    if key == "pts" or key == "pts_th":
+                        pts = []
+                        string = row[key]
+                        string = string.strip("[").strip("]").split("]\n [")
+                        for line in string:
+                            line = line.split(' ')
+                            slice = list(filter(None, line))
+                            slice = [float(i) for i in slice]
+                            pts.append(slice)
+                        row[key] = np.array(pts)
+                    else:
+                        row[key] = float(row[key])
+                except ValueError:
+                    pass
+            ds_list.append(row)
+        # translate OrderedDict to dict
+        ds = dict(ds_list[0])
+        ds1 = dict(ds_list[1])
+        ds2 = dict(ds_list[2])
+        return ds, ds1, ds2
 
 
 class AnnulusGen:
