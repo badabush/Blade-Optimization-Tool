@@ -41,7 +41,7 @@ class DeapVisualize:
         ds, blades = self.readLog(self.logfile)
         # plots for PP and AO over time
         # filter fitness < 1
-        ds = ds[ds.fitness < 1]
+        ds = ds[ds.omega < 0.1]
         ds.reset_index(inplace=True, drop=True)
         ds = ds[ds.fitness > 0.0]
         ds.reset_index(inplace=True, drop=True)
@@ -94,14 +94,14 @@ class DeapVisualize:
 
         # contour plot
         npts = len(ds.fitness)
-        ngridx = 5 * len(ds.fitness)
-        ngridy = 5 * len(ds.fitness)
+        ngridx = 4 * len(ds.fitness)
+        ngridy = 4 * len(ds.fitness)
 
         # npts = len(ds.omega)
         # FIXME
         ngrid = len(ds.fitness)
         x = ds.alph11
-        y = ds.alph12
+        y = ds.alph22
         z = ds.omega
         # z = ds.fitness
 
@@ -201,4 +201,4 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    DeapVisualize("13-12-20_16-06-30.log", True)
+    DeapVisualize("17-12-20_13-41-10.log", True)
