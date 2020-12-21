@@ -3,14 +3,14 @@ import os
 from pathlib import Path
 from shutil import copy
 
-import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt, tri
-from scipy.stats import gaussian_kde
 
-from module.UI.blade.blade_plots import bladePlot
 from module.optimizer.mail.mail_script import deapMail
-from module.blade.bladetools import get_blade_from_csv
+from module.optimizer.genetic_algorithm.plot.plot_feature_time import feature_time
+from module.optimizer.genetic_algorithm.plot.plot_feature_density import feature_density
+from module.optimizer.genetic_algorithm.plot.plot_contour import contour
+from module.optimizer.genetic_algorithm.plot.plot_blades import deap_blade
+from module.optimizer.genetic_algorithm.plot.plot_scatter_matrix import scatter_matrix
 
 
 class DeapVisualize:
@@ -46,113 +46,23 @@ class DeapVisualize:
         ds = ds[ds.fitness > 0.0]
         ds.reset_index(inplace=True, drop=True)
 
-        fig, ax = plt.subplots(4, 1, sharex=True, figsize=(10, 8))
-        # FIXME
-        ax[0].plot(ds.alph11, label="alpha 11")
-        ax[0].legend()
-        # ax[0].set_ylabel("Percent Pitch [-]")
-        ax[0].set_ylabel("alpha1 (1) [-]")
+        # plot a feature over time
+        feature_time(ds, logdir)
 
-        ax[1].plot(ds.alph12, label="alpha 12")
-        ax[1].set_xlabel("Iteration")
-        # ax[1].set_ylabel("Axial Overlap [-]")
-        ax[1].set_ylabel("alpha2 (1) [-]")
+        # plot features over density
+        feature_density(ds, logdir)
 
-        ax[2].plot(ds.alph21, label="alpha 21")
-        ax[2].set_xlabel("Iteration")
-        # ax[1].set_ylabel("Axial Overlap [-]")
-        ax[2].set_ylabel("alpha1 (2) [-]")
-
-        ax[3].plot(ds.alph22, label="alpha 22")
-        ax[3].set_xlabel("Iteration")
-        # ax[1].set_ylabel("Axial Overlap [-]")
-        ax[3].set_ylabel("alpha2 (2) [-]")
-
-        ax[1].legend()
-        fig.savefig(Path(logdir + "/alph_time.png"))
-
-        #
-        fig, ax = plt.subplots(3, 2, figsize=(10, 8), sharex='col', sharey='row')
-        for row in range(3):
-            for col in range(2):
-                x = ds.iloc[:, col]
-                y = ds.iloc[:, row + 2]
-                # calc density
-                xy = np.vstack([x, y])
-                z = gaussian_kde(xy)(xy)
-
-                # sort by density (plotted last)
-                idx = z.argsort()
-                x, y, z = x[idx], y[idx], z[idx]
-                ax[row, col].scatter(x, y, c=z)
-                if col == 0:
-                    ax[row, col].set_ylabel(ds.columns[2 + row])
-                if row == 2:
-                    ax[row, col].set_xlabel(ds.columns[col])
-
-        fig.savefig(Path(logdir + "/gene_output_density.png"))
-
-        # contour plot
-        npts = len(ds.fitness)
-        ngridx = 4 * len(ds.fitness)
-        ngridy = 4 * len(ds.fitness)
-
-        # npts = len(ds.omega)
-        # FIXME
-        ngrid = len(ds.fitness)
-        x = ds.alph11
-        y = ds.alph22
-        z = ds.omega
-        # z = ds.fitness
-
-        fig, (ax1) = plt.subplots(nrows=1, figsize=(10, 8))
-
-        xi = np.linspace(min(ds.alph11) - 0.05, max(ds.alph11) + 0.05, ngridx)
-        yi = np.linspace(min(ds.alph12) - 0.005, max(ds.alph12) + 0.05, ngridy)
-
-        triang = tri.Triangulation(x, y)
-
-        interpolator_1 = tri.LinearTriInterpolator(triang, z)  # der kubische läuft irgendwie nicht...mh
-        # interpolator_1 = tri.CubicTriInterpolator(triang, z)
-        Xi, Yi = np.meshgrid(xi, yi)
-        zi = interpolator_1(Xi, Yi)
-
-        cntr1 = ax1.contourf(xi, yi, zi, levels=14, cmap="RdBu_r")
-
-        fig.colorbar(cntr1, ax=ax1)
-        ax1.scatter(x, y, facecolors='w', alpha=0.5, edgecolors='k', s=50)
-        ax1.set(xlim=(min(ds.alph11), max(ds.alph11)), ylim=(min(ds.alph12), max(ds.alph12)))
-
-        plt.subplots_adjust(hspace=0.5)
-        # plt.show()
-        # FIXME
-        ax1.set_xlabel('alpha 1 (1) [-]')
-        ax1.set_ylabel('alpha 2 (2) [-]')
-        ax1.set_title('omega')
-        fig.savefig(Path(logdir + "/xmaxcamber_fitness_contour.png"))
+        contour(ds, logdir)
         # get default blade parameters
-
-        default_blade_path = Path(os.getcwd() + "/UI/config/default_blade.csv")
-        default_blade = get_blade_from_csv(default_blade_path)
-        # plot blades
         try:
-            fig, ax = plt.subplots(figsize=(10, 8))
-            # plot best blade
-
-            bladePlot(ax, blades[0], ds1=blades[0], ds2=blades[1], alpha=.5)
-
-            bladePlot(ax, default_blade[0], ds1=default_blade[1], ds2=default_blade[0], alpha=1, clear=False,
-                      transparent=True)
-            fig.savefig(Path(logdir + "/blades.png"))
+            deap_blade(blades, logdir)
         except IndexError as e:
             print(e)
             print("No blade parameters found in log file.")
 
-        # fig, ax = plt.subplots(figsize=(10, 8))
         # scatter matrix
-        pd.plotting.scatter_matrix(ds, alpha=.2, figsize=(10,8))
-        # fig.savefig(Path(logdir + "/scatter_matrix.png"))
-        plt.savefig(Path(logdir + "/scatter_matrix.png"))
+        scatter_matrix(ds, logdir)
+
 
     def readLog(self, file):
         res = []
