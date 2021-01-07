@@ -104,7 +104,8 @@ class DeapRunHandler:
             self.toolbox.register("evaluate", self.test_eval)
             # self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
 
-        self.toolbox.register("mate", tools.cxTwoPoint)
+        # self.toolbox.register("mate", tools.cxTwoPoint)
+        self.toolbox.register("mate", tools.cxUniform, indpb=.5)
         self.toolbox.register("mutate", self.mut_restricted, indpb=.3)
         # self.toolbox.register("mutate", tools.mutFlipBit, indpb=.05)
 

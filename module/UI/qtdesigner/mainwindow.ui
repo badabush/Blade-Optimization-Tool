@@ -1487,13 +1487,13 @@ inside VNC enter: echo $DISPLAY</string>
            <double>2.000000000000000</double>
           </property>
           <property name="maximum">
-           <double>20.000000000000000</double>
+           <double>24.000000000000000</double>
           </property>
           <property name="singleStep">
            <double>1.000000000000000</double>
           </property>
           <property name="value">
-           <double>7.000000000000000</double>
+           <double>23.000000000000000</double>
           </property>
          </widget>
         </item>

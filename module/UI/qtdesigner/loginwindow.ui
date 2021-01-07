@@ -115,6 +115,46 @@
          <string>node12</string>
         </property>
        </item>
+       <item>
+        <property name="text">
+         <string>node13</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node14</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node15</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node16</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node17</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node18</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node19</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>node20</string>
+        </property>
+       </item>
       </widget>
      </item>
     </layout>

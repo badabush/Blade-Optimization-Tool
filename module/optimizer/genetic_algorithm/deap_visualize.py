@@ -8,7 +8,7 @@ import pandas as pd
 from module.optimizer.mail.mail_script import deapMail
 from module.optimizer.genetic_algorithm.plot.plot_feature_time import feature_time
 from module.optimizer.genetic_algorithm.plot.plot_feature_density import feature_density
-from module.optimizer.genetic_algorithm.plot.plot_contour import contour
+from module.optimizer.genetic_algorithm.plot.plot_contour import contour, contour2
 from module.optimizer.genetic_algorithm.plot.plot_blades import deap_blade
 from module.optimizer.genetic_algorithm.plot.plot_scatter_matrix import scatter_matrix
 
@@ -52,7 +52,8 @@ class DeapVisualize:
         # plot features over density
         feature_density(ds, logdir)
 
-        contour(ds, logdir)
+        # contour(ds, logdir)
+        contour2(ds, logdir)
         # get default blade parameters
         try:
             deap_blade(blades, logdir)
