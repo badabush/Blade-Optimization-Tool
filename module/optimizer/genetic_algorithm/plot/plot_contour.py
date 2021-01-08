@@ -63,12 +63,20 @@ def contour2(df, logdir):
 
         for i in range(2):
             ax = fig.add_subplot(121+i, projection='3d')
+            ax.grid(False)
+            # remove grey background of plot
+            ax.w_xaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
+            ax.w_yaxis.set_pane_color((1.0, 1.0, 1.0, 1.0))
 
-            surf = ax.plot_trisurf(x, y, z[i], cmap=matplotlib.cm.jet, linewidth=0)
+            # hide z axis
+            ax.set(zticklabels=[])
+            ax.set_zticks([])
+            ax.w_zaxis.line.set_lw(0.)
+
+            surf = ax.plot_trisurf(x, y, z[i], cmap=matplotlib.cm.RdBu, linewidth=0)
             fig.colorbar(surf)
             ax.set_xlabel(ds[2][:7])
             ax.set_ylabel(ds[2][8:])
-            ax.set(zticklabels=[])
             ax.set(zlabel=None)
 
             if i==0:
@@ -77,7 +85,7 @@ def contour2(df, logdir):
                 ax.set_title("Fitness")
             ax.xaxis.set_major_locator(MaxNLocator(5))
             ax.yaxis.set_major_locator(MaxNLocator(6))
-            ax.zaxis.set_major_locator(MaxNLocator(5))
+            # ax.zaxis.set_major_locator(MaxNLocator(5))
 
             ax.view_init(elev=-90, azim=90)
         fig.tight_layout()

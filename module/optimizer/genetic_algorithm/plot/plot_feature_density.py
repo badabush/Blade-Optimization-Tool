@@ -2,6 +2,7 @@ from pathlib import Path
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm as cm
 from scipy.stats import gaussian_kde
 
 def feature_density(ds, logdir):
@@ -17,7 +18,7 @@ def feature_density(ds, logdir):
             # sort by density (plotted last)
             idx = z.argsort()
             x, y, z = x[idx], y[idx], z[idx]
-            ax[row, col].scatter(x, y, c=z)
+            ax[row, col].scatter(x, y, c=z, cmap=cm.RdBu)
             if col == 0:
                 ax[row, col].set_ylabel(ds.columns[2 + row])
             if row == 2:

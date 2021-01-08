@@ -243,7 +243,11 @@ class DeapRunHandler:
         self.igg_event.clear()
         self.res_event.clear()
         foolist = []
-        foolist.append(self.omega[-1])
+        try:
+            omega = self.omega[-1]
+        except IndexError:
+            omega = 0
+        foolist.append(omega)
         # new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
         #            'cp': self.cp[-1]}
         # new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]),
