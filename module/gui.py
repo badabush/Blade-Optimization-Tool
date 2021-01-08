@@ -1,13 +1,16 @@
+import sys, os
+from pathlib import Path
+from datetime import datetime
+
 from PyQt5.QtWidgets import QSizePolicy
 from PyQt5 import QtWidgets, uic
 from pyface.qt import QtGui
-import sys, os
-from pathlib import Path
+import cgitb
+
 import numpy as np
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
-from datetime import datetime
 
 from module.blade.bladetools import load_config_file
 from module.UI.initialize import Initialize
@@ -24,6 +27,8 @@ from module.UI.optimizer.deap_config_ui import DeapConfigUi
 from module.UI.optimizer.run_handle import RunHandler
 from module.UI.optimizer.deap_run_handle import DeapRunHandler
 from module.UI.blade.blade_plots import bladePlot
+
+cgitb.enable(format='text')
 
 
 class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Initialize, SaveLoadConfig, LoadBlade,
@@ -44,6 +49,16 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         self.menu_default()  # set menu defaults
         self.init_variables()  # initialize some variables at GUI start
         self.init_slider_control()
+
+        # see silent exception messages on crash
+        sys._excepthook = sys.excepthook
+
+        def exception_hook(exctype, value, traceback):
+            print(exctype, value, traceback)
+            sys._excepthook(exctype, value, traceback)
+            sys.exit(1)
+
+        sys.excepthook = exception_hook
 
         # tabs
         self.tabWidget.setTabText(0, "BladeDesigner")
@@ -116,7 +131,6 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         self.select_blade = 2
         self.update_select()
         # self.select_blade = 1
-
 
         self.show()
 

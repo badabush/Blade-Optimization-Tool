@@ -1241,7 +1241,7 @@
         <item row="5" column="4">
          <widget class="QLineEdit" name="box_DISPLAY">
           <property name="text">
-           <string>localhost:16.0</string>
+           <string>localhost:15.0</string>
           </property>
          </widget>
         </item>
