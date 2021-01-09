@@ -7,6 +7,8 @@ class GeomTurboFile:
 
     def __init__(self, fname, path, type, blade, r, l, N, spacing):
         """
+        :param fname: filename.geomTurbo
+        :type fname: str
         :param type: single or tandem
         :type type: str
         :param blade: list with array of single blade or list of arrays for tandem blades, cols: r, y, x
@@ -61,8 +63,6 @@ class GeomTurboFile:
         """
         Generating geomTurbo file for Single or tandem blade from Template.
 
-        :param fname: filename.geomTurbo
-        :type fname: str
         :param blade: single blade or tandem blade 1
         :type blade: np.array
         :param blade_av: tandem blade 2 (optional)
@@ -83,7 +83,8 @@ class GeomTurboFile:
         if self.type == "single":
             f = open(self.temp_path / "single_template.geomTurbo", "r")
         else:
-            f = open(self.temp_path / "tandem_template.geomTurbo", "r")
+            # f = open(self.temp_path / "tandem_template.geomTurbo", "r")
+            f = open(self.temp_path / "TandemGridMedium.geomTurbo", "r")
         f_str = f.read()
 
         # HUBCURVE

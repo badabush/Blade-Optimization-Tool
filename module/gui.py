@@ -24,6 +24,7 @@ from module.UI.save_load_config import SaveLoadConfig
 from module.UI.optimizer.optimizer_handle import OptimHandler
 from module.optimizer.optimizer_loadblade import LoadBlade
 from module.UI.optimizer.deap_config_ui import DeapConfigUi
+from module.UI.optimizer.three_point_settings_ui import ThreePointSettingsUI
 from module.UI.optimizer.run_handle import RunHandler
 from module.UI.optimizer.deap_run_handle import DeapRunHandler
 from module.UI.blade.blade_plots import bladePlot
@@ -120,6 +121,10 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         # init deap config window
         self.deap_config_ui = DeapConfigUi()
 
+        # open 3Point settings
+        self.three_point_settings_ui = ThreePointSettingsUI()
+        self.btn_3point_settings.clicked.connect(self.three_point_settings_window)
+
         # optimizer inits
         self.optim_handler_init()
 
@@ -181,8 +186,10 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         """
         Opens Popup for DEAP config.
         """
-        # self.deap_ui = DeapConfigUi()
         self.deap_config_ui.show()
+
+    def three_point_settings_window(self):
+        self.three_point_settings_ui.show()
 
     def camber_spline_window(self):
         """

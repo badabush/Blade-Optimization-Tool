@@ -3,7 +3,8 @@ import time, datetime
 import threading
 import os, glob
 import queue
-from pathlib import Path
+from configparser import ConfigParser
+
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from pyface.qt import QtGui
@@ -44,6 +45,7 @@ class OptimHandler:
         self.btn_deapsettings.clicked.connect(self.deap_config_window)
         self.btn_deaprun.clicked.connect(self.ga_run)
 
+
         # init LEDs
         self.toggle_leds(self.led_connection, 0)
         self.toggle_leds(self.led_mesh, 0)
@@ -68,11 +70,14 @@ class OptimHandler:
         self.res_event = threading.Event()
 
         # set default paths for lazy development
+        # set default values from config
+        self.configfile = "config/optimizer_paths.ini"
+        self.config = configparser.ConfigParser()
+        self.config.read(self.configfile)
         self.box_pathtodir.setText("//130.149.110.81/liang/Tandem_Opti")
-        self.box_pathtoiec.setText("//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3.iec")
-        self.box_pathtoigg.setText("//130.149.110.81/liang/Tandem_Opti/BOT/template/autogrid/test_template.igg")
-        self.box_pathtorun.setText(
-            "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_brustinzidenz/parent_V3_brustinzidenz.run")
+        self.box_pathtoiec.setText(self.config['paths']['iec'])
+        self.box_pathtoigg.setText(self.config['paths']['igg'])
+        self.box_pathtorun.setText(self.config['run']['design'])
 
         # grab paths
         self.paths = {}
@@ -320,11 +325,11 @@ class OptimHandler:
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
         self.outputbox("Generating Mesh. This might take a while.")
         stdout = self.sshobj.send_cmd(
-            self.display + "/opt/numeca/bin/igg131 -batch -print -autogrid5 " +
+            self.display + "/opt/numeca/bin/igg141 -batch -print -autogrid5 " +
             "-trb " + path_unix + iggname + ".trb " +
             " -geomTurbo " + gT_unix + " " +
             " -mesh " + path_unix + iggname + ".igg " +
-            "-niversion 131"
+            "-niversion 141"
         )
         if ("Writing Configuration File... Done" in stdout) and ("Exit IGG Background Session" in stdout):
             self.outputbox("Successfully created Meshfile in Autogrid.")

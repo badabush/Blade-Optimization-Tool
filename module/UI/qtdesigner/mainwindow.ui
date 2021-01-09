@@ -20,7 +20,7 @@
       <x>0</x>
       <y>0</y>
       <width>1121</width>
-      <height>741</height>
+      <height>740</height>
      </rect>
     </property>
     <property name="currentIndex">
@@ -1324,9 +1324,9 @@ Designer: </string>
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>590</y>
+        <y>510</y>
         <width>191</width>
-        <height>101</height>
+        <height>201</height>
        </rect>
       </property>
       <property name="title">
@@ -1335,14 +1335,14 @@ Designer: </string>
       <widget class="QToolButton" name="btn_run">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>10</x>
          <y>20</y>
-         <width>61</width>
+         <width>171</width>
          <height>31</height>
         </rect>
        </property>
        <property name="text">
-        <string>run</string>
+        <string>run single Blade</string>
        </property>
        <property name="toolButtonStyle">
         <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -1354,9 +1354,9 @@ Designer: </string>
       <widget class="QToolButton" name="btn_kill">
        <property name="geometry">
         <rect>
-         <x>100</x>
-         <y>20</y>
-         <width>61</width>
+         <x>10</x>
+         <y>100</y>
+         <width>171</width>
          <height>31</height>
         </rect>
        </property>
@@ -1376,9 +1376,9 @@ Designer: </string>
       <widget class="QToolButton" name="btn_deaprun">
        <property name="geometry">
         <rect>
-         <x>20</x>
+         <x>10</x>
          <y>60</y>
-         <width>141</width>
+         <width>171</width>
          <height>31</height>
         </rect>
        </property>
@@ -1437,7 +1437,7 @@ inside VNC enter: echo $DISPLAY</string>
         <x>10</x>
         <y>230</y>
         <width>191</width>
-        <height>361</height>
+        <height>271</height>
        </rect>
       </property>
       <property name="title">
@@ -1448,8 +1448,8 @@ inside VNC enter: echo $DISPLAY</string>
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>169</width>
-         <height>271</height>
+         <width>171</width>
+         <height>201</height>
         </rect>
        </property>
        <layout class="QGridLayout" name="gridLayout_5">
@@ -1475,6 +1475,13 @@ inside VNC enter: echo $DISPLAY</string>
           </property>
          </widget>
         </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="opt_label_iteration_2">
+          <property name="text">
+           <string>#cores [2, max-1]</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="1">
          <widget class="QDoubleSpinBox" name="opt_input_cores">
           <property name="enabled">
@@ -1494,13 +1501,6 @@ inside VNC enter: echo $DISPLAY</string>
           </property>
           <property name="value">
            <double>23.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QLabel" name="opt_label_iteration_2">
-          <property name="text">
-           <string>#cores [2, max-1]</string>
           </property>
          </widget>
         </item>
@@ -1526,6 +1526,13 @@ inside VNC enter: echo $DISPLAY</string>
           </property>
          </widget>
         </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="opt_label_iteration_3">
+          <property name="text">
+           <string>convergence criteria</string>
+          </property>
+         </widget>
+        </item>
         <item row="0" column="0">
          <widget class="QLabel" name="opt_label_iteration">
           <property name="text">
@@ -1533,10 +1540,29 @@ inside VNC enter: echo $DISPLAY</string>
           </property>
          </widget>
         </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="opt_label_iteration_3">
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="cb_3point">
+          <property name="layoutDirection">
+           <enum>Qt::LeftToRight</enum>
+          </property>
           <property name="text">
-           <string>convergence criteria</string>
+           <string> 3 Point</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QToolButton" name="btn_3point_settings">
+          <property name="text">
+           <string>Settings</string>
+          </property>
+          <property name="popupMode">
+           <enum>QToolButton::DelayedPopup</enum>
+          </property>
+          <property name="toolButtonStyle">
+           <enum>Qt::ToolButtonTextBesideIcon</enum>
+          </property>
+          <property name="arrowType">
+           <enum>Qt::NoArrow</enum>
           </property>
          </widget>
         </item>
@@ -1545,9 +1571,9 @@ inside VNC enter: echo $DISPLAY</string>
       <widget class="QToolButton" name="opt_btn_update_param">
        <property name="geometry">
         <rect>
-         <x>110</x>
-         <y>300</y>
-         <width>71</width>
+         <x>90</x>
+         <y>230</y>
+         <width>91</width>
          <height>31</height>
         </rect>
        </property>
@@ -1596,8 +1622,8 @@ inside VNC enter: echo $DISPLAY</string>
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>300</y>
-         <width>71</width>
+         <y>230</y>
+         <width>81</width>
          <height>31</height>
         </rect>
        </property>

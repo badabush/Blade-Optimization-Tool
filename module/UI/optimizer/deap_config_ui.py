@@ -84,7 +84,7 @@ class DeapConfigUi(QtWidgets.QDialog):
 
     def save_config(self):
         """
-        Saves the most recent user input to config. Automatically called when APPLY is presed.
+        Saves the most recent user input to config. Automatically called when APPLY is pressed.
         :return:
         """
         cfgfile = open(self.configfile, 'w')

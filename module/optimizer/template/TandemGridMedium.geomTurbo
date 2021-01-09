@@ -1,0 +1,179 @@
+GEOMETRY TURBO
+VERSION		 5.8
+TOLERANCE	 1e-06
+UNITS        Meters
+UNITS-FACTOR 1
+cascade yes
+NI_BEGIN CHANNEL 
+ NI_BEGIN basic_curve
+  NAME		 hub_crv_1
+  DISCRETISATION 20
+  DATA_REDUCTION 0
+  NI_BEGIN zrcurve
+   ZR
+   ?IN_HUBCURVE
+  NI_END zrcurve
+ NI_END   basic_curve
+ NI_BEGIN basic_curve
+  NAME		 shroud_crv_1
+  DISCRETISATION 10
+  DATA_REDUCTION 0
+  NI_BEGIN zrcurve
+   ZR
+   ?IN_SHROUD
+  NI_END zrcurve
+ NI_END   basic_curve
+ NI_BEGIN channel_curve hub    
+  NAME		 hub
+  VERTEX	 CURVE_P hub_crv_1 0
+  VERTEX	 CURVE_P hub_crv_1 1
+ NI_END   channel_curve hub    
+ NI_BEGIN channel_curve shroud 
+  NAME		 shroud
+  VERTEX	 CURVE_P shroud_crv_1 0
+  VERTEX	 CURVE_P shroud_crv_1 1
+ NI_END   channel_curve shroud 
+ NI_BEGIN channel_curve nozzle 
+  NAME		 nozzle
+ NI_END   channel_curve nozzle 
+NI_END   CHANNEL 
+NI_BEGIN nirow
+  NAME			row 1
+  TYPE			normal
+  PERIODICITY			?PERIODICITY
+  GEOMETRY_PERIODICITY_NUMBER 1
+  ROTATION_SPEED		0
+NI_BEGIN NINonAxiSurfaces hub
+  NAME			non axisymmetric hub
+  REPETITION			0
+NI_END   NINonAxiSurfaces hub
+NI_BEGIN NINonAxiSurfaces shroud
+  NAME			non axisymmetric shroud
+  REPETITION			0
+NI_END   NINonAxiSurfaces shroud
+NI_BEGIN NINonAxiSurfaces tip_gap
+  NAME			non axisymmetric tip gap
+  REPETITION			0
+NI_END   NINonAxiSurfaces tip_gap
+NI_BEGIN NIBlade
+  NAME			main blade
+NI_BEGIN nibladegeometry
+	TYPE	GEOMTURBO
+	GEOMETRY_MODIFIED	0
+intersection_npts    10
+intersection_control 0
+intersection_check_ratio 5
+blade_expansion_factor_hub	  2
+blade_expansion_factor_shroud 1.5
+blade_tangential_definition	  0
+number_of_blades    ?NOB_AV
+suction
+SECTIONAL
+2
+# section 1
+XYZ
+?IN_UPPER1
+# section 2
+XYZ
+?IN_UPPER2
+pressure
+SECTIONAL
+2
+# section 1
+XYZ
+?IN_LOWER1
+# section 2
+XYZ
+?IN_LOWER2
+NI_END   nibladegeometry
+NI_BEGIN nisolid_angle_at_leading_edge
+5
+3.41523684332934e-18 0.08593 -0.944926476099374
+-1.20617491689012e-18 0.08613 -0.944926476099363
+-1.75505226671057e-18 0.08643 -0.944926476099374
+-2.215838190017e-18 0.0867299999999999 -0.944926476099384
+-4.74338450462408e-20 0.08693 -0.944926476099385
+NI_END   nisolid_angle_at_leading_edge
+NI_BEGIN nisolid_angle_at_trailing_edge
+5
+0.0156213554194489 0.08593 0.577477360139483
+0.0156213554194489 0.08613 0.5774773601395
+0.0156213554194489 0.08643 0.577477360139496
+0.0156213554194489 0.08673 0.57747736013948
+0.0156213554194489 0.08693 0.577477360139465
+NI_END   nisolid_angle_at_trailing_edge
+  DUPLICATION_NUMBER		1
+  DUPLICATION_ZANGLE		1e+30
+  DUPLICATION_BLADE_ANGLE	0
+  DUPLICATION_BLADE_AXIS	1 0 0
+  DUPLICATION_BLADE_AXISPt	0 0 0
+  SOLID_BODY_CONFIGURATION	0
+NI_END   NIBlade
+NI_BEGIN NIBlade
+  NAME			splitter 1
+NI_BEGIN nibladegeometry
+	TYPE	GEOMTURBO
+	GEOMETRY_MODIFIED	0
+intersection_npts    10
+intersection_control 0
+intersection_check_ratio 5
+blade_expansion_factor_hub	  2
+blade_expansion_factor_shroud 1.5
+blade_tangential_definition	  0
+number_of_blades    ?NOB_FV
+suction
+SECTIONAL
+2
+# section 1
+XYZ
+?IN_UPPERAV1
+# section 2
+XYZ
+?IN_UPPERAV2
+pressure
+SECTIONAL
+2
+# section 1
+XYZ
+?IN_LOWERAV1
+# section 2
+XYZ
+?IN_LOWERAV2
+NI_END   nibladegeometry
+NI_BEGIN nisolid_angle_at_leading_edge
+5
+0.0161760554323025 0.08593 -0.730091299954033
+0.0161760554323025 0.08613 -0.730091299954055
+0.0161760554323031 0.08643 -0.730091299954326
+0.0161760554323025 0.08673 -0.730091299954014
+0.0161760554323025 0.08693 -0.730091299954014
+NI_END   nisolid_angle_at_leading_edge
+NI_BEGIN nisolid_angle_at_trailing_edge
+5
+0.0359669097802912 0.08593 0.100425951945176
+0.0359669097802912 0.08613 0.100425951945185
+0.0359669097802912 0.08643 0.10042595194517
+0.0359669097802912 0.08673 0.100425951945184
+0.0359669097802912 0.08693 0.100425951945163
+NI_END   nisolid_angle_at_trailing_edge
+  DUPLICATION_NUMBER		1
+  DUPLICATION_ZANGLE		1e+30
+  DUPLICATION_BLADE_ANGLE	0
+  DUPLICATION_BLADE_AXIS	1 0 0
+  DUPLICATION_BLADE_AXISPt	0 0 0
+  SOLID_BODY_CONFIGURATION	0
+NI_END   NIBlade
+NI_END   nirow
+NI_END GEOMTURBO
+
+NI_BEGIN GEOMETRY
+# IGG GEOMETRY VERSION 5
+#  Number of Points   :
+0
+#  Number of Curves   :
+0
+#  Number of Surfaces :
+0
+#  Number of Groups :
+0
+NI_END   GEOMETRY
