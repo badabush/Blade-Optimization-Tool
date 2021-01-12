@@ -324,12 +324,19 @@ class OptimHandler:
         self.create_trb(iggname, path)
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
         self.outputbox("Generating Mesh. This might take a while.")
-        stdout = self.sshobj.send_cmd(
-            self.display + "/opt/numeca/bin/igg141 -batch -print -autogrid5 " +
+        print(
+            self.display + "/opt/numeca/bin/igg131 -batch -print -autogrid5 " +
             "-trb " + path_unix + iggname + ".trb " +
             " -geomTurbo " + gT_unix + " " +
             " -mesh " + path_unix + iggname + ".igg " +
-            "-niversion 141"
+            "-niversion 131"
+        )
+        stdout = self.sshobj.send_cmd(
+            self.display + "/opt/numeca/bin/igg131 -batch -print -autogrid5 " +
+            "-trb " + path_unix + iggname + ".trb " +
+            " -geomTurbo " + gT_unix + " " +
+            " -mesh " + path_unix + iggname + ".igg " +
+            "-niversion 131"
         )
         if ("Writing Configuration File... Done" in stdout) and ("Exit IGG Background Session" in stdout):
             self.outputbox("Successfully created Meshfile in Autogrid.")
@@ -361,17 +368,16 @@ class OptimHandler:
             stdout = self.sshobj.send_cmd(
                 'ps aux | grep -v grep | grep "/opt/numeca/fine131/LINUX/fine/taskManagerx86_64" | grep "[f]ine" | grep "' + self.box_DISPLAY.text() + '"' + " | awk '{print $2}'")
             if stdout == "":
-                self.outputbox("No running processes found.")
-                return
+                self.outputbox("No running fine processes found.")
             else:
                 stdout = self.sshobj.send_cmd("kill " + str(stdout))
                 self.outputbox("Killed fine taskManager.")
 
             self.outputbox("Attempting to kill process.")
             stdout = self.sshobj.send_cmd(
-                'ps aux | grep -v grep | grep "/opt/numeca/fine131/LINUX/euranus/euranusTurbox86_64" | grep "[f]ine" | grep "' + self.box_DISPLAY.text() + '"' + " | awk '{print $2}'")
+                'ps aux | grep -v grep | grep "/opt/numeca/fine131/LINUX/euranus/euranusTurbo" | grep "[f]ine" | grep "' + self.box_DISPLAY.text() + '"' + " | awk '{print $2}'")
             if stdout == "":
-                self.outputbox("No running processes found.")
+                self.outputbox("No running euranus processes found.")
                 return
             else:
                 process_list = stdout.split('\n')

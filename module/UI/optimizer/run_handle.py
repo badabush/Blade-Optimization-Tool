@@ -27,7 +27,9 @@ class RunHandler:
         if not self.cb_3point.isChecked():
             self.run_1point()
         else:
-            self.run_3point()
+            t = threading.Thread(name="3point", target=self.run_3point)
+            t.start()
+            # self.run_3point()
 
     def run_1point(self):
 
@@ -44,7 +46,7 @@ class RunHandler:
             self.outputbox("opening FineTurbo..")
             # sending command with display | fine version location | script + location | batch | print
             stdout = self.sshobj.send_cmd(
-                self.display + "/opt/numeca/bin/fine141 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
+                self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
                 self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
             self.outputbox(stdout)
 
@@ -86,12 +88,13 @@ class RunHandler:
                 self.outputbox("opening FineTurbo..")
                 # sending command with display | fine version location | script + location | batch | print
                 stdout = self.sshobj.send_cmd(
-                    self.display + "/opt/numeca/bin/fine141 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
+                    self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
                     self.paths['proj_folder'] + "/BOT/py_script/" + script + " -batch -print")
                 self.outputbox(stdout)
 
                 t = threading.Thread(name='res_reader', target=self.read_res)
                 t.start()
+                self.res_event.wait()
 
             except (paramiko.ssh_exception.NoValidConnectionsError) as e:
                 self.outputbox(e)

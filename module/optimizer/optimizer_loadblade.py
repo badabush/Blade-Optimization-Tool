@@ -65,8 +65,8 @@ class LoadBlade:
         temp_path = Path(os.getcwd() + "/optimizer/template/")
         save_path = Path(path)
         try:
-            f = open(temp_path / "trb_template.trb", "r")
-            # f = open(temp_path / "TandemGridMedium.trb", "r")
+            # f = open(temp_path / "trb_template.trb", "r")
+            f = open(temp_path / "TandemGridMedium.trb", "r")
             # f = open(temp_path / "Template_Tandem_grob.trb", "r")
             fsave = open(save_path / (fname + ".trb"), "w")
             fsave.write(f.read())
