@@ -172,7 +172,7 @@ class OptimHandler:
         except paramiko.ssh_exception.NoValidConnectionsError:
             self.outputbox("Error closing Session.")
 
-    def read_res(self):
+    def read_res(self, res_file, xmf_file):
         """
         Waiting for FineTurbo to create the .res file, then read it periodically in one thread and plot it in another
         thread. New data is handled by queueing.
@@ -186,8 +186,10 @@ class OptimHandler:
         ds_res = {}
         ds_xmf = {}
 
-        res_file = self.paths['res']
-        xmf_file = self.paths['xmf']
+        # res_file = self.paths['res']
+        # xmf_file = self.paths['xmf']
+
+
         # delete old .res file
         try:
             os.remove(res_file)
@@ -262,8 +264,8 @@ class OptimHandler:
 
                     if not first_run:
                         self.optifig_massflow.animate_massflow(ds_res)
-
-                    if ((idx == (niter + 100)) and not first_run) or convergence:
+                    # +N for iteration offsets
+                    if ((idx == (niter + 0)) and not first_run) or convergence:
                         # idx = 0
                         # val = []
                         self.outputbox("Cleaning up.")

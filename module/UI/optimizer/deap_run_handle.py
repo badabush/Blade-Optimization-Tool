@@ -317,7 +317,9 @@ class DeapRunHandler:
             self.outputbox(stdout)
 
             # start thread to read res file
-            t = threading.Thread(name='res_reader', target=self.read_res)
+            resfile = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_design/parent_V3_design.res"
+            xmffile = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_design/parent_V3_design.xmf"
+            t = threading.Thread(name='res_reader', target=self.read_res, args=(resfile, xmffile))
             t.start()
 
         except (TimeoutError) as e:
