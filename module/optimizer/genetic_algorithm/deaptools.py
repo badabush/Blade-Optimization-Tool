@@ -72,6 +72,23 @@ def penalty_distance(val):
     return (np.deg2rad(val-average)**2) * 25
 
 
+def get_three_point_paths(paths):
+
+    configfile = "config/three_point_paths.ini"
+    config = configparser.ConfigParser()
+    config.read(configfile)
+
+    xmf_files = []
+    xmf_files.append(paths['xmf'])
+    xmf_files.append(paths['xmf'].replace("design", "lower"))
+    xmf_files.append(paths['xmf'].replace("design", "upper"))
+
+    res_files = []
+    res_files.append(paths['res'])
+    res_files.append(paths['res'].replace("design", "lower"))
+    res_files.append(paths['res'].replace("design", "upper"))
+    return xmf_files, res_files, config
+
 if __name__ == '__main__':
     # deapCleanupHandle("10-12-20_14-38-41.log", False)
     read_deap_restraints()

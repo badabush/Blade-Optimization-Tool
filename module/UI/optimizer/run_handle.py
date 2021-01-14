@@ -74,13 +74,13 @@ class RunHandler:
         # generate scripts for DP, +3deg, -3deg
         scriptfiles = []
         paths['run'] = config['paths']['design']
-        scriptfiles.append(gen_script(self.paths, self.opt_param, suffix="_design"))
+        scriptfiles.append(gen_script(paths, self.opt_param, suffix="_design"))
 
         paths['run'] = config['paths']['lower']
-        scriptfiles.append(gen_script(self.paths, self.opt_param, suffix="_lower"))
+        scriptfiles.append(gen_script(paths, self.opt_param, suffix="_lower"))
 
         paths['run'] = config['paths']['upper']
-        scriptfiles.append(gen_script(self.paths, self.opt_param, suffix="_upper"))
+        scriptfiles.append(gen_script(paths, self.opt_param, suffix="_upper"))
         xmf_files = []
         xmf_files.append(paths['xmf'])
         xmf_files.append(paths['xmf'].replace("design", "lower"))

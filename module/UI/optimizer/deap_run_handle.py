@@ -4,6 +4,7 @@ import numpy as np
 import threading
 import datetime
 import time
+
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from pyface.qt import QtGui
@@ -17,16 +18,24 @@ from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
 from module.optimizer.generate_script import gen_script
 from module.optimizer.optimtools import calc_xmf
-from module.optimizer.genetic_algorithm.deaptools import _random, read_deap_restraints, custom_penalty
+from module.optimizer.genetic_algorithm.deaptools import _random, read_deap_restraints, custom_penalty, \
+    get_three_point_paths
 from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
 from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
+from module.UI.optimizer.deap_run import DeapScripts
 
 
-class DeapRunHandler:
+class DeapRunHandler(DeapScripts):
     def ga_run(self):
+
         self.testrun = False
         if self.actionTestrun.isChecked():
             self.testrun = True
+
+        if self.cb_3point.isChecked():
+            # refresh paths
+            self.grab_paths()
+            self.xmf_files, self.res_files, self.config_3point = get_three_point_paths(self.paths)
 
         self.dp_genes = read_deap_restraints()
 
@@ -40,7 +49,7 @@ class DeapRunHandler:
         if not self.testrun:
             self.logfile = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
         else:
-            self.logfile = "test_"+datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
+            self.logfile = "test_" + datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
         logging.basicConfig(
             level=logging.INFO,
             format=log_format,
@@ -135,7 +144,7 @@ class DeapRunHandler:
         print("alph1 blade1: {0}, alph2 blade1: {1}".format(individual[3], individual[4]))
         print("alph1 blade2: {0}, alph2 blade2: {1}".format(individual[5], individual[6]))
 
-        beta = np.sum(individual[3:6])/4 + 6
+        beta = np.sum(individual[3:6]) / 4 + 6
         omega = np.deg2rad(beta)
         self.cp = [0, 2 * omega]
         self.beta = [beta, beta]
@@ -204,7 +213,6 @@ class DeapRunHandler:
             self.cp = [0, match.cp]
             return match.omega,
 
-
         # no dialog window if running DEAP
         self.meshgen = MeshGenUI()
         # TODO: grab paths from user somewhere
@@ -214,28 +222,30 @@ class DeapRunHandler:
         # check for existing connection
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
-        try:
-            t = threading.Thread(name="create_meshfile", target=self.run_igg)
-            t.start()
-        except AttributeError:
-            self.outputbox("Connecting...")
+        # try:
+        #     t = threading.Thread(name="create_meshfile", target=self.run_igg)
+        #     t.start()
+        # except AttributeError:
+        #     self.outputbox("Connecting...")
+        #
+        # self.outputbox("[DEAP] Waiting for igg to finish ...")
+        # self.igg_event.wait()
+        # self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
+        # # self.logger.info("Mesh created successfully.")
+        # time.sleep(2)
 
-        self.outputbox("[DEAP] Waiting for igg to finish ...")
-        self.igg_event.wait()
-        self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
-        # self.logger.info("Mesh created successfully.")
-        time.sleep(2)
-
         try:
-            self.deap_script()
+            if not self.cb_3point.isChecked():
+                self.deap_one_point()
+            else:
+                self.deap_three_point()
         except AttributeError:
             print("deap script crashed.")
 
         self.outputbox("[DEAP] Waiting for FineTurbo to finish ...")
         self.res_event.wait()
         time.sleep(2)
-        # try:
-        # except:
+        # TODO: read xmf from all 3 points
         self.beta, self.cp, self.omega = calc_xmf(self.xmf_param)
         # print("Omega: " + str(omega))
 
@@ -248,26 +258,27 @@ class DeapRunHandler:
         except IndexError:
             omega = 0
         foolist.append(omega)
-        # new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
-        #            'cp': self.cp[-1]}
-        # new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]),
-        #            'omega': self.omega[-1],
-        #            'cp': self.cp[-1]}
         new_row = {'alph11': individual[3], 'alph12': individual[4], 'alph21': individual[5], 'alph22': individual[6],
                    'beta': np.rad2deg(self.beta[-1]),
                    'omega': self.omega[-1],
                    'cp': self.cp[-1]}
         self.df = self.df.append(new_row, ignore_index=True)
         print("Omega: " + str(foolist))
-        # FIXME
-        # self.logger.info(
-        #     "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}".format(individual[0], individual[1], self.omega[-1],
-        #                                                             np.rad2deg(self.beta[-1]), self.cp[-1]))
         try:
             omega = self.omega[-1]
         except (IndexError, KeyError, ValueError) as e:
             print(e)
             omega = 9999
+
+        if self.cb_3point.isChecked:
+            a = .5
+            b = 1
+            c = .5
+            beta_lower, cp_lower, omega_lower = calc_xmf(self.xmf_param_lower)
+            beta_upper, cp_upper, omega_upper = calc_xmf(self.xmf_param_upper)
+
+            return a * (omega_lower / self.ref_blade["omega"]) + b * (omega / self.ref_blade["omega"]) + c * (
+                        omega_upper / self.ref_blade["omega"])
         return omega,
 
     def mut_restricted(self, individual, indpb):
@@ -280,64 +291,65 @@ class DeapRunHandler:
                 individual[i] = _random(float(gene[0]), float(gene[1]), int(gene[2]))
         return individual,
 
-    def deap_script(self):
-        """
-        TODO:
-        """
-        # update params from control
-        self.update_param()
-        # refresh paths
-        self.grab_paths()
-        # clear plot
-        self.optifig_massflow.animate_massflow({})
-        # self.optifig_xmf.animate_xmf({})
-        # self.optifig_xmf.clear()
-
-        if self.box_pathtodir.text() == "":
-            self.outputbox("Set Path to Project Directory first!")
-            return 0
-        # get display address
-        self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
-
-        # get node_id, number of cores, writing frequency here
-        self.scriptfile = gen_script(self.paths, self.opt_param)
-
-        # run fine131 with script
-        if not hasattr(self, 'sshobj'):
-            self.ssh_connect()
-        if self.sshobj.transport.is_active() == False:
-            self.outputbox("Could not find active session.")
-            return
-        try:
-            self.outputbox("opening FineTurbo..")
-            # sending command with display | fine version location | script + location | batch | print
-            stdout = self.sshobj.send_cmd(
-                self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
-                self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
-            self.outputbox(stdout)
-
-            # start thread to read res file
-            resfile = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_design/parent_V3_design.res"
-            xmffile = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_design/parent_V3_design.xmf"
-            t = threading.Thread(name='res_reader', target=self.read_res, args=(resfile, xmffile))
-            t.start()
-
-        except (TimeoutError) as e:
-            # if timeout error, kill all tasks and try again
-            print(e)
-            self.outputbox("Fine didnt start properly. Killing tasks and retrying..")
-            self.kill_loop()
-            time.sleep(15)
-            self.outputbox("Retrying..")
-            # sending command with display | fine version location | script + location | batch | print
-            stdout = self.sshobj.send_cmd(
-                self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
-                self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
-            self.outputbox(stdout)
-
-            # start thread to read res file
-            t = threading.Thread(name='res_reader', target=self.read_res)
-            t.start()
+    #
+    # def deap_script(self):
+    #     """
+    #     TODO:
+    #     """
+    #     # update params from control
+    #     self.update_param()
+    #     # refresh paths
+    #     self.grab_paths()
+    #     # clear plot
+    #     self.optifig_massflow.animate_massflow({})
+    #     # self.optifig_xmf.animate_xmf({})
+    #     # self.optifig_xmf.clear()
+    #
+    #     if self.box_pathtodir.text() == "":
+    #         self.outputbox("Set Path to Project Directory first!")
+    #         return 0
+    #     # get display address
+    #     self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
+    #
+    #     # get node_id, number of cores, writing frequency here
+    #     self.scriptfile = gen_script(self.paths, self.opt_param)
+    #
+    #     # run fine131 with script
+    #     if not hasattr(self, 'sshobj'):
+    #         self.ssh_connect()
+    #     if self.sshobj.transport.is_active() == False:
+    #         self.outputbox("Could not find active session.")
+    #         return
+    #     try:
+    #         self.outputbox("opening FineTurbo..")
+    #         # sending command with display | fine version location | script + location | batch | print
+    #         stdout = self.sshobj.send_cmd(
+    #             self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
+    #             self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
+    #         self.outputbox(stdout)
+    #
+    #         # start thread to read res file
+    #         resfile = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_design/parent_V3_design.res"
+    #         xmffile = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_design/parent_V3_design.xmf"
+    #         t = threading.Thread(name='res_reader', target=self.read_res, args=(resfile, xmffile))
+    #         t.start()
+    #
+    #     except (TimeoutError) as e:
+    #         # if timeout error, kill all tasks and try again
+    #         print(e)
+    #         self.outputbox("Fine didnt start properly. Killing tasks and retrying..")
+    #         self.kill_loop()
+    #         time.sleep(15)
+    #         self.outputbox("Retrying..")
+    #         # sending command with display | fine version location | script + location | batch | print
+    #         stdout = self.sshobj.send_cmd(
+    #             self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
+    #             self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
+    #         self.outputbox(stdout)
+    #
+    #         # start thread to read res file
+    #         t = threading.Thread(name='res_reader', target=self.read_res)
+    #         t.start()
 
     def feasible(self, _):
         """Feasibility function for beta. Returns True if feasible, False otherwise."""
@@ -442,7 +454,6 @@ class DeapRunHandler:
             invalid_ind = [ind for ind in offspring if not ind.fitness.valid]
 
             fitnesses = map(self.toolbox.evaluate, invalid_ind)
-
 
             for idx, (ind, fit) in enumerate(zip(invalid_ind, fitnesses)):
                 # new fitness values evaluation begins

@@ -45,7 +45,6 @@ class OptimHandler:
         self.btn_deapsettings.clicked.connect(self.deap_config_window)
         self.btn_deaprun.clicked.connect(self.ga_run)
 
-
         # init LEDs
         self.toggle_leds(self.led_connection, 0)
         self.toggle_leds(self.led_mesh, 0)
@@ -84,12 +83,16 @@ class OptimHandler:
         self.grab_paths
 
         # init XMF dict
-        self.xmf_param = {}  # [['Inlet', Outlet'], ...]
-        self.xmf_param['abs_total_pressure'] = []
-        self.xmf_param['static_pressure'] = []
-        self.xmf_param['y_velocity'] = []
-        self.xmf_param['z_velocity'] = []
-        self.xmf_param['i'] = []
+        self.xmf_param = init_xmf_param()
+        self.xmf_param_lower = init_xmf_param()
+        self.xmf_param_upper = init_xmf_param()
+
+        # get reference blade beta/cp/omega from ini file
+        ref_blade_config = configparser.ConfigParser()
+        ref_blade_config.read("config/reference_blade.ini")
+        self.ref_blade = {"beta": float(ref_blade_config['param']['beta']),
+                          "cp": float(ref_blade_config['param']['cp']),
+                          "omega": float(ref_blade_config['param']['omega'])}
 
     def toggle_leds(self, led, state):
         if state == 0:
@@ -189,7 +192,6 @@ class OptimHandler:
         # res_file = self.paths['res']
         # xmf_file = self.paths['xmf']
 
-
         # delete old .res file
         try:
             os.remove(res_file)
@@ -256,11 +258,11 @@ class OptimHandler:
                             idx = int(val[0])
                             ds_res[idx] = val
                         # plot2 every 500 steps (writing frequency)
-                        if (idx - 100) % 500 == 0:
-                            self.xmf_param['i'].append(idx)
-                            self.xmf_param = read_xmf(xmf_file, self.xmf_param)
+                        # if (idx - 100) % 500 == 0:
+                        #     self.xmf_param['i'].append(idx)
+                        #     self.xmf_param = read_xmf(xmf_file, self.xmf_param)
 
-                            # self.optifig_xmf.animate_xmf(self.xmf_param)
+                        # self.optifig_xmf.animate_xmf(self.xmf_param)
 
                     if not first_run:
                         self.optifig_massflow.animate_massflow(ds_res)
@@ -273,7 +275,15 @@ class OptimHandler:
                         # set events, end taskmanager, end parseres, kill while loops
                         self.kill_loop()
                         # save values from XMF
-                        self.xmf_param = read_xmf(xmf_file, self.xmf_param)
+                        if not self.cb_3point.isChecked():
+                            self.xmf_param = read_xmf(xmf_file, self.xmf_param)
+                        else:
+                            if "lower" in xmf_file:
+                                self.xmf_param_lower = read_xmf(xmf_file, self.xmf_param_lower)
+                            elif "upper" in xmf_file:
+                                self.xmf_param_upper = read_xmf(xmf_file, self.xmf_param_upper)
+                            else:
+                                self.xmf_param = read_xmf(xmf_file, self.xmf_param)
 
                         # display time elapsed
                         elapsed_time = datetime.datetime.now() - start_time
@@ -391,5 +401,3 @@ class OptimHandler:
                 self.outputbox("Killed multiple processes.")
         except AttributeError:
             self.outputbox("Error killing the process.")
-
-
