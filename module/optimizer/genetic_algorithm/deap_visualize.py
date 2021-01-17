@@ -41,10 +41,10 @@ class DeapVisualize:
         ds, blades = self.readLog(self.logfile)
         # plots for PP and AO over time
         # filter fitness < 1
-        ds = ds[ds.omega < 0.1]
-        ds.reset_index(inplace=True, drop=True)
-        ds = ds[ds.fitness > 0.0]
-        ds.reset_index(inplace=True, drop=True)
+        # ds = ds[ds.omega < 0.1]
+        # ds.reset_index(inplace=True, drop=True)
+        # ds = ds[ds.fitness > 0.0]
+        # ds.reset_index(inplace=True, drop=True)
 
         # plot a feature over time
         feature_time(ds, logdir)
@@ -112,4 +112,4 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    DeapVisualize("06-01-21_13-39-42.log", True)
+    DeapVisualize("15-01-21_13-07-42.log", True)

@@ -27,6 +27,9 @@ from module.UI.optimizer.deap_run import DeapScripts
 
 class DeapRunHandler(DeapScripts):
     def ga_run(self):
+        self.A = .5
+        self.B = 1.
+        self.C = .5
 
         self.testrun = False
         if self.actionTestrun.isChecked():
@@ -154,8 +157,24 @@ class DeapRunHandler(DeapScripts):
                    'beta': self.beta[-1],
                    'omega': self.omega[-1],
                    'cp': self.cp[-1]}
-        self.df = self.df.append(new_row, ignore_index=True)
-        return omega,
+        if not self.cb_3point.isChecked():
+
+            self.df = self.df.append(new_row, ignore_index=True)
+            return omega,
+        else:
+
+            new_row['beta_lower'] = self.beta[-1] * .9
+            new_row['omega_lower'] = self.omega[-1] * .9
+            new_row['cp_lower'] = self.cp[-1] * .9
+            new_row['beta_upper'] = self.beta[-1] * 1.1
+            new_row['omega_upper'] = self.omega[-1] * 1.1
+            new_row['cp_upper'] = self.cp[-1] * 1.1
+            res = self.A * (new_row['omega_lower'] / self.ref_blade["omega"]) + self.B * (
+                    omega / self.ref_blade["omega"]) + self.C * (
+                          new_row['omega_upper'] / self.ref_blade["omega"])
+
+            self.df = self.df.append(new_row, ignore_index=True)
+            return res,
 
     def eval_engine(self, individual):
         """
@@ -192,11 +211,6 @@ class DeapRunHandler(DeapScripts):
             match = self.df.loc[np.min(match_idx)]
             foolist = []
             foolist.append(self.omega[-1])
-            # new_row = {'PP': individual[0], 'AO': individual[1], 'beta': np.rad2deg(self.beta[-1]), 'omega': self.omega[-1],
-            #            'cp': self.cp[-1]}
-            # new_row = {'xmax_camb1': individual[8], 'xmax_camb2': individual[9], 'beta': np.rad2deg(self.beta[-1]),
-            #            'omega': self.omega[-1],
-            #            'cp': self.cp[-1]}
             new_row = {'alph11': individual[3], 'alph12': individual[4], 'alph21': individual[5],
                        'alph22': individual[6],
                        'beta': match.beta,
@@ -204,14 +218,21 @@ class DeapRunHandler(DeapScripts):
                        'cp': match.cp}
             self.df = self.df.append(new_row, ignore_index=True)
             print("Omega: " + str(foolist))
-            # FIXME
-            # self.logger.info(
-            #     "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}".format(individual[0], individual[1], self.omega[-1],
-            #                                                             np.rad2deg(self.beta[-1]), self.cp[-1]))
+
             self.omega = [0, match.omega]
             self.beta = [0, match.beta]
             self.cp = [0, match.cp]
-            return match.omega,
+            if not self.cb_3point.isChecked():
+                return match.omega,
+            else:
+                omega_lower = [0, match.omega_lower]
+                omega = self.omega
+                omega_upper = [0, match.omega_upper]
+                res = self.A * (omega_lower / self.ref_blade["omega"]) + self.B * (
+                            omega / self.ref_blade["omega"]) + self.C * (
+                              omega_upper / self.ref_blade["omega"])
+                return res[-1],
+
 
         # no dialog window if running DEAP
         self.meshgen = MeshGenUI()
@@ -220,20 +241,24 @@ class DeapRunHandler(DeapScripts):
         self.meshgen.iggfolder = "//130.149.110.81/liang/Tandem_Opti/BOT/template/autogrid/"
         self.meshgen.iggname = "test_template.igg"
         # check for existing connection
+
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
-        # try:
-        #     t = threading.Thread(name="create_meshfile", target=self.run_igg)
-        #     t.start()
-        # except AttributeError:
-        #     self.outputbox("Connecting...")
-        #
-        # self.outputbox("[DEAP] Waiting for igg to finish ...")
-        # self.igg_event.wait()
-        # self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
-        # # self.logger.info("Mesh created successfully.")
-        # time.sleep(2)
+        try:
+            t = threading.Thread(name="create_meshfile", target=self.run_igg)
+            t.start()
+        except AttributeError:
+            self.outputbox("Connecting...")
 
+        self.outputbox("[DEAP] Waiting for igg to finish ...")
+        self.igg_event.wait()
+        self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
+        # self.logger.info("Mesh created successfully.")
+        time.sleep(2)
+
+
+        if not hasattr(self, 'sshobj'):
+            self.ssh_connect()
         try:
             if not self.cb_3point.isChecked():
                 self.deap_one_point()
@@ -262,7 +287,7 @@ class DeapRunHandler(DeapScripts):
                    'beta': np.rad2deg(self.beta[-1]),
                    'omega': self.omega[-1],
                    'cp': self.cp[-1]}
-        self.df = self.df.append(new_row, ignore_index=True)
+        # self.df = self.df.append(new_row, ignore_index=True)
         print("Omega: " + str(foolist))
         try:
             omega = self.omega[-1]
@@ -271,14 +296,20 @@ class DeapRunHandler(DeapScripts):
             omega = 9999
 
         if self.cb_3point.isChecked:
-            a = .5
-            b = 1
-            c = .5
             beta_lower, cp_lower, omega_lower = calc_xmf(self.xmf_param_lower)
             beta_upper, cp_upper, omega_upper = calc_xmf(self.xmf_param_upper)
+            new_row['beta_lower'] = beta_lower[-1]
+            new_row['omega_lower'] = omega_lower[-1]
+            new_row['cp_lower'] = cp_lower[-1]
+            new_row['beta_upper'] = beta_upper[-1]
+            new_row['omega_upper'] = omega_upper[-1]
+            new_row['cp_upper'] = cp_upper[-1]
+            res = self.A * (omega_lower / self.ref_blade["omega"]) + self.B * (
+                    omega / self.ref_blade["omega"]) + self.C * (
+                          omega_upper / self.ref_blade["omega"])
 
-            return a * (omega_lower / self.ref_blade["omega"]) + b * (omega / self.ref_blade["omega"]) + c * (
-                        omega_upper / self.ref_blade["omega"])
+            self.df = self.df.append(new_row, ignore_index=True)
+            return res[-1],
         return omega,
 
     def mut_restricted(self, individual, indpb):
@@ -413,19 +444,11 @@ class DeapRunHandler(DeapScripts):
             # put every winner of tournament into log
             for child in offspring:
                 try:
-                    # match_idx = np.where((self.df.PP == child[0]) & (self.df.AO == child[1]))
-                    # match_idx = np.where((self.df.xmax_camb1 == child[8]) & (self.df.xmax_camb2 == child[9]))
                     match_idx = np.where(
                         (self.df.alph11 == child[3]) & (self.df.alph12 == child[4]) & (self.df.alph21 == child[5]) & (
                                 self.df.alph22 == child[6]))
                     # assures that match_idx is scalar
                     match = self.df.loc[np.min(match_idx)]
-                    # FIXME
-                    # put winners in log (note: no extra entry in df)
-                    # self.logger.info(
-                    #     "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                    #         match.PP, match.AO, match.omega, match.beta, match.cp, match.fitness
-                    #     ))
                     self.logger.info(
                         "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
                             match.alph11, match.alph12, match.alph21, match.alph22, match.omega, match.beta, match.cp,
