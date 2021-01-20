@@ -225,13 +225,13 @@ class DeapRunHandler(DeapScripts):
             if not self.cb_3point.isChecked():
                 return match.omega,
             else:
-                omega_lower = [0, match.omega_lower]
-                omega = self.omega
-                omega_upper = [0, match.omega_upper]
+                omega_lower = match.omega_lower
+                omega = match.omega
+                omega_upper = match.omega_upper
                 res = self.A * (omega_lower / self.ref_blade["omega"]) + self.B * (
                             omega / self.ref_blade["omega"]) + self.C * (
                               omega_upper / self.ref_blade["omega"])
-                return res[-1],
+                return res,
 
 
         # no dialog window if running DEAP
@@ -304,12 +304,12 @@ class DeapRunHandler(DeapScripts):
             new_row['beta_upper'] = beta_upper[-1]
             new_row['omega_upper'] = omega_upper[-1]
             new_row['cp_upper'] = cp_upper[-1]
-            res = self.A * (omega_lower / self.ref_blade["omega"]) + self.B * (
+            res = self.A * (omega_lower[-1] / self.ref_blade["omega"]) + self.B * (
                     omega / self.ref_blade["omega"]) + self.C * (
-                          omega_upper / self.ref_blade["omega"])
+                          omega_upper[-1] / self.ref_blade["omega"])
 
             self.df = self.df.append(new_row, ignore_index=True)
-            return res[-1],
+            return res,
         return omega,
 
     def mut_restricted(self, individual, indpb):
@@ -321,66 +321,6 @@ class DeapRunHandler(DeapScripts):
             if random.random() < indpb:
                 individual[i] = _random(float(gene[0]), float(gene[1]), int(gene[2]))
         return individual,
-
-    #
-    # def deap_script(self):
-    #     """
-    #     TODO:
-    #     """
-    #     # update params from control
-    #     self.update_param()
-    #     # refresh paths
-    #     self.grab_paths()
-    #     # clear plot
-    #     self.optifig_massflow.animate_massflow({})
-    #     # self.optifig_xmf.animate_xmf({})
-    #     # self.optifig_xmf.clear()
-    #
-    #     if self.box_pathtodir.text() == "":
-    #         self.outputbox("Set Path to Project Directory first!")
-    #         return 0
-    #     # get display address
-    #     self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
-    #
-    #     # get node_id, number of cores, writing frequency here
-    #     self.scriptfile = gen_script(self.paths, self.opt_param)
-    #
-    #     # run fine131 with script
-    #     if not hasattr(self, 'sshobj'):
-    #         self.ssh_connect()
-    #     if self.sshobj.transport.is_active() == False:
-    #         self.outputbox("Could not find active session.")
-    #         return
-    #     try:
-    #         self.outputbox("opening FineTurbo..")
-    #         # sending command with display | fine version location | script + location | batch | print
-    #         stdout = self.sshobj.send_cmd(
-    #             self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
-    #             self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
-    #         self.outputbox(stdout)
-    #
-    #         # start thread to read res file
-    #         resfile = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_design/parent_V3_design.res"
-    #         xmffile = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_design/parent_V3_design.xmf"
-    #         t = threading.Thread(name='res_reader', target=self.read_res, args=(resfile, xmffile))
-    #         t.start()
-    #
-    #     except (TimeoutError) as e:
-    #         # if timeout error, kill all tasks and try again
-    #         print(e)
-    #         self.outputbox("Fine didnt start properly. Killing tasks and retrying..")
-    #         self.kill_loop()
-    #         time.sleep(15)
-    #         self.outputbox("Retrying..")
-    #         # sending command with display | fine version location | script + location | batch | print
-    #         stdout = self.sshobj.send_cmd(
-    #             self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
-    #             self.paths['proj_folder'] + "/BOT/py_script/" + self.scriptfile + " -batch -print")
-    #         self.outputbox(stdout)
-    #
-    #         # start thread to read res file
-    #         t = threading.Thread(name='res_reader', target=self.read_res)
-    #         t.start()
 
     def feasible(self, _):
         """Feasibility function for beta. Returns True if feasible, False otherwise."""
@@ -409,19 +349,40 @@ class DeapRunHandler(DeapScripts):
                 self.df.iloc[idx + self.pointer_df].fitness = fit[0]
                 self.df.iloc[idx + self.pointer_df].generation = g
                 # FIXME
-                self.logger.info(
-                    "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
-                        # self.df.iloc[idx + self.pointer_df].PP,
-                        # self.df.iloc[idx + self.pointer_df].AO,
-                        self.df.iloc[idx + self.pointer_df].alph11,
-                        self.df.iloc[idx + self.pointer_df].alph12,
-                        self.df.iloc[idx + self.pointer_df].alph21,
-                        self.df.iloc[idx + self.pointer_df].alph22,
-                        self.df.iloc[idx + self.pointer_df].omega,
-                        self.df.iloc[idx + self.pointer_df].beta,
-                        self.df.iloc[idx + self.pointer_df].cp,
-                        self.df.iloc[idx + self.pointer_df].fitness
-                    ))
+                if not self.cb_3point.isChecked():
+                    self.logger.info(
+                        "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+                            self.df.iloc[idx + self.pointer_df].alph11,
+                            self.df.iloc[idx + self.pointer_df].alph12,
+                            self.df.iloc[idx + self.pointer_df].alph21,
+                            self.df.iloc[idx + self.pointer_df].alph22,
+                            self.df.iloc[idx + self.pointer_df].omega,
+                            self.df.iloc[idx + self.pointer_df].beta,
+                            self.df.iloc[idx + self.pointer_df].cp,
+                            self.df.iloc[idx + self.pointer_df].fitness
+                        ))
+                else:
+                    self.logger.info(
+                        "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, "
+                        "Omega:{4}, Omega_lower:{5}, Omega_upper:{6}, "
+                        "Beta:{7}, Beta_lower:{8}, Beta_upper:{9}, "
+                        "Cp:{10}, Cp_lower:{11}, Cp_upper:{12}, "
+                        "Fitness:{13}".format(
+                            self.df.iloc[idx + self.pointer_df].alph11,
+                            self.df.iloc[idx + self.pointer_df].alph12,
+                            self.df.iloc[idx + self.pointer_df].alph21,
+                            self.df.iloc[idx + self.pointer_df].alph22,
+                            self.df.iloc[idx + self.pointer_df].omega,
+                            self.df.iloc[idx + self.pointer_df].omega_lower,
+                            self.df.iloc[idx + self.pointer_df].omega_upper,
+                            self.df.iloc[idx + self.pointer_df].beta,
+                            self.df.iloc[idx + self.pointer_df].beta_lower,
+                            self.df.iloc[idx + self.pointer_df].beta_upper,
+                            self.df.iloc[idx + self.pointer_df].cp,
+                            self.df.iloc[idx + self.pointer_df].cp_lower,
+                            self.df.iloc[idx + self.pointer_df].cp_upper,
+                            self.df.iloc[idx + self.pointer_df].fitness
+                        ))
             except IndexError as e:
                 print(e)
                 self.logger.info("Error writing individual data.")
@@ -449,11 +410,25 @@ class DeapRunHandler(DeapScripts):
                                 self.df.alph22 == child[6]))
                     # assures that match_idx is scalar
                     match = self.df.loc[np.min(match_idx)]
-                    self.logger.info(
-                        "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
-                            match.alph11, match.alph12, match.alph21, match.alph22, match.omega, match.beta, match.cp,
-                            match.fitness
-                        ))
+                    if not self.cb_3point.isChecked():
+                        self.logger.info(
+                            "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+                                match.alph11, match.alph12, match.alph21, match.alph22, match.omega, match.beta, match.cp,
+                                match.fitness
+                            ))
+                    else:
+                        self.logger.info(
+                            "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, "
+                            "Omega:{4}, Omega_lower:{5}, Omega_upper:{6}, "
+                            "Beta:{7}, Beta_lower:{8}, Beta_upper:{9}, "
+                            "Cp:{10}, Cp_lower:{11}, Cp_upper:{12}, "
+                            "Fitness:{13}".format(
+                                match.alph11, match.alph12, match.alph21, match.alph22,
+                                match.omega, match.omega_lower, match.omega_upper,
+                                match.beta, match.beta_lower, match.beta_upper,
+                                match.cp, match.cp_lower, match.cp_upper,
+                                match.fitness
+                            ))
                 except (IndexError, KeyError, ValueError) as e:
                     print(e)
                     self.logger.info("Error writing individual data.")
@@ -489,24 +464,40 @@ class DeapRunHandler(DeapScripts):
                     self.df.iloc[idx + self.pointer_df].fitness = fit[0]
                     self.df.iloc[idx + self.pointer_df].generation = g
                     # FIXME
-                    self.logger.info(
-                        # "PP: {0} , AO:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                        # "xmax_camb1: {0} , xmax_camb2:{1} , Omega:{2}, Beta:{3}, Cp:{4}, Fitness:{5}".format(
-                        "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3} ,Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
-
-                            # self.df.iloc[idx + self.pointer_df].PP,
-                            # self.df.iloc[idx + self.pointer_df].AO,
-                            # self.df.iloc[idx + self.pointer_df].xmax_camb1,
-                            # self.df.iloc[idx + self.pointer_df].xmax_camb2,
-                            self.df.iloc[idx + self.pointer_df].alph11,
-                            self.df.iloc[idx + self.pointer_df].alph12,
-                            self.df.iloc[idx + self.pointer_df].alph21,
-                            self.df.iloc[idx + self.pointer_df].alph22,
-                            self.df.iloc[idx + self.pointer_df].omega,
-                            self.df.iloc[idx + self.pointer_df].beta,
-                            self.df.iloc[idx + self.pointer_df].cp,
-                            self.df.iloc[idx + self.pointer_df].fitness
-                        ))
+                    if not self.cb_3point.isChecked():
+                        self.logger.info(
+                            "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+                                self.df.iloc[idx + self.pointer_df].alph11,
+                                self.df.iloc[idx + self.pointer_df].alph12,
+                                self.df.iloc[idx + self.pointer_df].alph21,
+                                self.df.iloc[idx + self.pointer_df].alph22,
+                                self.df.iloc[idx + self.pointer_df].omega,
+                                self.df.iloc[idx + self.pointer_df].beta,
+                                self.df.iloc[idx + self.pointer_df].cp,
+                                self.df.iloc[idx + self.pointer_df].fitness
+                            ))
+                    else:
+                        self.logger.info(
+                            "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, "
+                            "Omega:{4}, Omega_lower:{5}, Omega_upper:{6}, "
+                            "Beta:{7}, Beta_lower:{8}, Beta_upper:{9}, "
+                            "Cp:{10}, Cp_lower:{11}, Cp_upper:{12}, "
+                            "Fitness:{13}".format(
+                                self.df.iloc[idx + self.pointer_df].alph11,
+                                self.df.iloc[idx + self.pointer_df].alph12,
+                                self.df.iloc[idx + self.pointer_df].alph21,
+                                self.df.iloc[idx + self.pointer_df].alph22,
+                                self.df.iloc[idx + self.pointer_df].omega,
+                                self.df.iloc[idx + self.pointer_df].omega_lower,
+                                self.df.iloc[idx + self.pointer_df].omega_upper,
+                                self.df.iloc[idx + self.pointer_df].beta,
+                                self.df.iloc[idx + self.pointer_df].beta_lower,
+                                self.df.iloc[idx + self.pointer_df].beta_upper,
+                                self.df.iloc[idx + self.pointer_df].cp,
+                                self.df.iloc[idx + self.pointer_df].cp_lower,
+                                self.df.iloc[idx + self.pointer_df].cp_upper,
+                                self.df.iloc[idx + self.pointer_df].fitness
+                            ))
                 except (IndexError, KeyError, ValueError) as e:
                     print(e)
             # replace entire existing population with offspring
@@ -523,7 +514,7 @@ class DeapRunHandler(DeapScripts):
             # get total length of individuals within a generation
             try:
                 ds_len = self.df[self.df.generation == g].shape[0]
-                self.logger.info("Population size: {0}".format(ds_len + length))
+                self.logger.info("Population size: {0}, best Fitness: {1}".format((ds_len + length), min(fits)))
             except (IndexError, AttributeError) as e:
                 print(e)
 
@@ -541,7 +532,7 @@ class DeapRunHandler(DeapScripts):
             # break loop when omega of last 5 generations didn't change
             if (g > 5):
                 if (np.sum(np.gradient(np.array([np.round(minlist[i], 5) for i in range(g - 5, g)]))) == 0):
-                    self.logger.info("Omega didn't change for 5 Generations, breaking loop.")
+                    self.logger.info("Fitness didn't change for 5 Generations, breaking loop.")
                     break
 
         print("-- End of (successful) evolution --")

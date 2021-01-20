@@ -2,15 +2,17 @@ import datetime
 import os
 from pathlib import Path
 from shutil import copy
+from configparser import ConfigParser
 
 import pandas as pd
 
 from module.optimizer.mail.mail_script import deapMail
 from module.optimizer.genetic_algorithm.plot.plot_feature_time import feature_time
 from module.optimizer.genetic_algorithm.plot.plot_feature_density import feature_density
-from module.optimizer.genetic_algorithm.plot.plot_contour import contour, contour2
+from module.optimizer.genetic_algorithm.plot.plot_contour import contour2
 from module.optimizer.genetic_algorithm.plot.plot_blades import deap_blade
 from module.optimizer.genetic_algorithm.plot.plot_scatter_matrix import scatter_matrix
+from module.optimizer.genetic_algorithm.plot.plot_threepoint import three_point
 
 
 class DeapVisualize:
@@ -27,6 +29,20 @@ class DeapVisualize:
         os.mkdir(path)
         # copy log file to newly created folder
         copy(self.logfile, path)
+
+        # get reference blade beta/cp/omega from ini file
+        refblade_configfile = Path.cwd() / "config/reference_blade.ini"
+        ref_blade_config = ConfigParser()
+        ref_blade_config.read("config/reference_blade.ini")
+        self.ref_blade = {"beta": float(ref_blade_config['param']['beta']),
+                          "cp": float(ref_blade_config['param']['cp']),
+                          "omega": float(ref_blade_config['param']['omega']),
+                          "beta_lower": float(ref_blade_config['param']['beta_lower']),
+                          "cp_lower": float(ref_blade_config['param']['cp_lower']),
+                          "omega_lower": float(ref_blade_config['param']['omega_lower']),
+                          "beta_upper": float(ref_blade_config['param']['beta_upper']),
+                          "cp_upper": float(ref_blade_config['param']['cp_upper']),
+                          "omega_upper": float(ref_blade_config['param']['omega_upper'])}
 
         self.plotDeapResult(path)
         # mail results to recipients
@@ -46,6 +62,9 @@ class DeapVisualize:
         # ds = ds[ds.fitness > 0.0]
         # ds.reset_index(inplace=True, drop=True)
 
+        # 3point curve ref/best blade
+        three_point(ds, self.ref_blade, logdir)
+
         # plot a feature over time
         feature_time(ds, logdir)
 
@@ -61,9 +80,9 @@ class DeapVisualize:
             print(e)
             print("No blade parameters found in log file.")
 
+
         # scatter matrix
         scatter_matrix(ds, logdir)
-
 
     def readLog(self, file):
         res = []
@@ -104,12 +123,21 @@ class DeapVisualize:
 
                     blades.append(blade_param)
 
-            # FIXME
-            ds = pd.DataFrame(res, columns=["alph11", "alph12", "alph21", "alph22", "omega", "beta", "cp", "fitness"])
+            # Try creating pandasframe for 1point, if that doesn't work assume it was a 3point calculation.
+            try:
+                ds = pd.DataFrame(res,
+                                  columns=["alph11", "alph12", "alph21", "alph22", "omega", "beta", "cp", "fitness"])
+            except ValueError:
+                ds = pd.DataFrame(res,
+                                  columns=["alph11", "alph12", "alph21", "alph22",
+                                           "omega", "omega_lower", "omega_upper",
+                                           "beta", "beta_lower", "beta_upper",
+                                           "cp", "cp_lower", "cp_upper",
+                                           "fitness"])
 
         f.close()
         return ds, blades
 
 
 if __name__ == '__main__':
-    DeapVisualize("15-01-21_13-07-42.log", True)
+    DeapVisualize("test_20-01-21_16-37-27.log", True)

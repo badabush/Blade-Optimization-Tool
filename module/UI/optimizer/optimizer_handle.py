@@ -3,13 +3,12 @@ import time, datetime
 import threading
 import os, glob
 import queue
-from configparser import ConfigParser
+import configparser
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
 from pyface.qt import QtGui
 from PyQt5.QtWidgets import QTableView
-import configparser
 
 from module.optimizer.ssh_login import ssh_connect
 from module.optimizer.optimtools import *
@@ -336,13 +335,6 @@ class OptimHandler:
         self.create_trb(iggname, path)
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
         self.outputbox("Generating Mesh. This might take a while.")
-        print(
-            self.display + "/opt/numeca/bin/igg131 -batch -print -autogrid5 " +
-            "-trb " + path_unix + iggname + ".trb " +
-            " -geomTurbo " + gT_unix + " " +
-            " -mesh " + path_unix + iggname + ".igg " +
-            "-niversion 131"
-        )
         stdout = self.sshobj.send_cmd(
             self.display + "/opt/numeca/bin/igg131 -batch -print -autogrid5 " +
             "-trb " + path_unix + iggname + ".trb " +
