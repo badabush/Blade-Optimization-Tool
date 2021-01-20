@@ -13,6 +13,7 @@ from module.optimizer.genetic_algorithm.plot.plot_contour import contour2
 from module.optimizer.genetic_algorithm.plot.plot_blades import deap_blade
 from module.optimizer.genetic_algorithm.plot.plot_scatter_matrix import scatter_matrix
 from module.optimizer.genetic_algorithm.plot.plot_threepoint import three_point
+from module.optimizer.genetic_algorithm.plot.plot_fitness_generation import fitness_generation
 
 
 class DeapVisualize:
@@ -54,7 +55,7 @@ class DeapVisualize:
             deapMail(mail_configfile, attachments)
 
     def plotDeapResult(self, logdir):
-        ds, blades = self.readLog(self.logfile)
+        ds, blades, ds_popfit = self.readLog(self.logfile)
         # plots for PP and AO over time
         # filter fitness < 1
         # ds = ds[ds.omega < 0.1]
@@ -62,7 +63,10 @@ class DeapVisualize:
         # ds = ds[ds.fitness > 0.0]
         # ds.reset_index(inplace=True, drop=True)
 
-        # 3point curve ref/best blade
+        # plot fitness/generation
+        fitness_generation(ds_popfit, logdir)
+
+        # plot 3point curve ref/best blade
         three_point(ds, self.ref_blade, logdir)
 
         # plot a feature over time
@@ -87,12 +91,14 @@ class DeapVisualize:
     def readLog(self, file):
         res = []
         blades = []
+        popfit = []
         with open(file) as f:
             lines = f.readlines()
             for line in lines:
                 if "---DEAP START---" in lines:
                     # routine for detecting different runs
                     pass
+                # find lines with data
                 if "Omega:" in line:
                     string = line.split("DEAP_info   ")[1].replace("\n", "")
                     param = string.split(",")
@@ -100,6 +106,7 @@ class DeapVisualize:
                     for item in param:
                         lst.append(float(item.split(":")[1]))
                     res.append(lst)
+                # find final line of best blade
                 if ("[blade1] " in line) or ("[blade2] " in line):
                     # reconstruct blade datasets
                     blade_param = {}
@@ -120,8 +127,13 @@ class DeapVisualize:
                     blade_param['pts_th'] = [9999]
                     blade_param['l_chord'] = 1
                     blade_param['selected_blade'] = 2
-
                     blades.append(blade_param)
+                # find fitness of each generation
+                if "best Fitness: " in line:
+                    string = line.split("DEAP_info   ")[1].replace("\n", "")
+                    pop, fit = string.split(",")
+                    popfit.append([float(pop.split(": ")[1]), float(fit.split(": ")[1])])
+
 
             # Try creating pandasframe for 1point, if that doesn't work assume it was a 3point calculation.
             try:
@@ -136,7 +148,7 @@ class DeapVisualize:
                                            "fitness"])
 
         f.close()
-        return ds, blades
+        return ds, blades, popfit
 
 
 if __name__ == '__main__':
