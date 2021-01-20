@@ -79,14 +79,19 @@ def contour2(df, logdir):
             ax.set_ylabel(ds[2][8:])
             ax.set(zlabel=None)
 
+
             if i==0:
                 ax.set_title("Omega")
             else:
                 ax.set_title("Fitness")
             ax.xaxis.set_major_locator(MaxNLocator(5))
             ax.yaxis.set_major_locator(MaxNLocator(6))
-            # ax.zaxis.set_major_locator(MaxNLocator(5))
 
-            ax.view_init(elev=-90, azim=90)
+            # top down view on xy plane, make xy label appear on the right side
+            ax.view_init(elev=89.9, azim=-90.1)
+
+            # rotate y label
+            ax.yaxis.set_rotate_label(False)
+            ax.yaxis.label.set_rotation(90)
         fig.tight_layout()
         fig.savefig(Path(logdir + "/" + ds[2] + '_contour.png'))
