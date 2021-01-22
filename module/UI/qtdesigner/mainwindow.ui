@@ -1433,7 +1433,7 @@ inside VNC enter: echo $DISPLAY</string>
            <double>100.000000000000000</double>
           </property>
           <property name="value">
-           <double>10000.000000000000000</double>
+           <double>600.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -1462,7 +1462,7 @@ inside VNC enter: echo $DISPLAY</string>
            <double>1.000000000000000</double>
           </property>
           <property name="value">
-           <double>9.000000000000000</double>
+           <double>10.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -1484,7 +1484,7 @@ inside VNC enter: echo $DISPLAY</string>
            <double>1.000000000000000</double>
           </property>
           <property name="value">
-           <double>-7.000000000000000</double>
+           <double>-6.000000000000000</double>
           </property>
          </widget>
         </item>
@@ -1509,6 +1509,9 @@ inside VNC enter: echo $DISPLAY</string>
           </property>
           <property name="text">
            <string> 3 Point</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
           </property>
          </widget>
         </item>

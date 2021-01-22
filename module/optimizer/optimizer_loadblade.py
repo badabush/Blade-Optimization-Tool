@@ -66,7 +66,8 @@ class LoadBlade:
         save_path = Path(path)
         try:
             # f = open(temp_path / "trb_template.trb", "r")
-            f = open(temp_path / "TandemGridMedium.trb", "r")
+            # f = open(temp_path / "TandemGridMedium.trb", "r")
+            f = open(temp_path / "tandem_22_01_2021.trb", "r")
             # f = open(temp_path / "Template_Tandem_grob.trb", "r")
             fsave = open(save_path / (fname + ".trb"), "w")
             fsave.write(f.read())

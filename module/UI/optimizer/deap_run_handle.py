@@ -119,7 +119,6 @@ class DeapRunHandler(DeapScripts):
         # self.toolbox.register("mate", tools.cxTwoPoint)
         self.toolbox.register("mate", tools.cxUniform, indpb=.5)
         self.toolbox.register("mutate", self.mut_restricted, indpb=.3)
-        # self.toolbox.register("mutate", tools.mutFlipBit, indpb=.05)
 
         # pick 3 random individuals, fitness evaluation and selection
         self.toolbox.register("select", tools.selTournament, tournsize=3)
@@ -137,10 +136,10 @@ class DeapRunHandler(DeapScripts):
 
     def test_eval(self, individual):
         """
-        generate geomTurbo
-        generate .trb
-        calculate blade
-        calculate beta
+        This method is called when the user enables test run. This will skip all connections and calculations
+        in fine and instead generate some random numbers. Test runs are useful for checking GUI stability, especially
+        when new implementations took place.
+
         """
         self.outputbox("Beginning DEAP algorithm")
 
@@ -216,23 +215,30 @@ class DeapRunHandler(DeapScripts):
                        'beta': match.beta,
                        'omega': match.omega,
                        'cp': match.cp}
-            self.df = self.df.append(new_row, ignore_index=True)
             print("Omega: " + str(foolist))
 
             self.omega = [0, match.omega]
             self.beta = [0, match.beta]
             self.cp = [0, match.cp]
             if not self.cb_3point.isChecked():
+                self.df = self.df.append(new_row, ignore_index=True)
                 return match.omega,
             else:
                 omega_lower = match.omega_lower
                 omega = match.omega
                 omega_upper = match.omega_upper
-                res = self.A * (omega_lower / self.ref_blade["omega"]) + self.B * (
-                            omega / self.ref_blade["omega"]) + self.C * (
-                              omega_upper / self.ref_blade["omega"])
+                res = self.A * (omega_lower / self.ref_blade["omega"]) + \
+                      self.B * (omega / self.ref_blade["omega"]) + \
+                      self.C * (omega_upper / self.ref_blade["omega"])
+                # add 3 point parameters to new row
+                new_row['beta_lower'] = match.beta_lower
+                new_row['omega_lower'] = match.omega_lower
+                new_row['cp_lower'] = match.cp_lower
+                new_row['beta_upper'] = match.beta_upper
+                new_row['omega_upper'] = match.omega_upper
+                new_row['cp_upper'] = match.cp_upper
+                self.df = self.df.append(new_row, ignore_index=True)
                 return res,
-
 
         # no dialog window if running DEAP
         self.meshgen = MeshGenUI()
@@ -256,7 +262,6 @@ class DeapRunHandler(DeapScripts):
         # self.logger.info("Mesh created successfully.")
         time.sleep(2)
 
-
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
         try:
@@ -270,6 +275,7 @@ class DeapRunHandler(DeapScripts):
         self.outputbox("[DEAP] Waiting for FineTurbo to finish ...")
         self.res_event.wait()
         time.sleep(2)
+
         # TODO: read xmf from all 3 points
         self.beta, self.cp, self.omega = calc_xmf(self.xmf_param)
         # print("Omega: " + str(omega))
@@ -295,9 +301,11 @@ class DeapRunHandler(DeapScripts):
             print(e)
             omega = 9999
 
-        if self.cb_3point.isChecked:
+        if self.cb_3point.isChecked():
             beta_lower, cp_lower, omega_lower = calc_xmf(self.xmf_param_lower)
             beta_upper, cp_upper, omega_upper = calc_xmf(self.xmf_param_upper)
+
+            # add 3 point parameters to new row
             new_row['beta_lower'] = beta_lower[-1]
             new_row['omega_lower'] = omega_lower[-1]
             new_row['cp_lower'] = cp_lower[-1]

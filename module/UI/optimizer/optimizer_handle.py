@@ -35,7 +35,7 @@ class OptimHandler:
         self.btn_projectiec.clicked.connect(self.project_explorer_iec)
         self.btn_projectigg.clicked.connect(self.project_explorer_igg)
         self.btn_projectrun.clicked.connect(self.project_explorer_run)
-        self.btn_projectgeomturbo.clicked.connect(self.project_explorer_geomturbo)
+        # self.btn_projectgeomturbo.clicked.connect(self.project_explorer_geomturbo)
         self.btn_run.clicked.connect(self.run_script)
         self.btn_kill.clicked.connect(self.kill_loop)
         self.opt_btn_update_param.clicked.connect(self.update_param)
@@ -243,7 +243,7 @@ class OptimHandler:
                         if timeout > 15:
                             # print("Queue empty for 15 seconds, checking if process has finished.")
                             if status_convergence(res_file.replace("res", "log")):
-                                self.outputbox("Convergence reached.")
+                                self.outputbox("Convergence reached or run has finished.")
                                 convergence = True
                     else:
                         timeout = 0

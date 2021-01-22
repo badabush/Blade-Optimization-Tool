@@ -45,6 +45,7 @@ def contour2(df, logdir):
     filtered = df.sort_values(["omega"], ascending=True)
     df_unique = filtered.groupby("omega").first().reset_index()
     df = df_unique
+    cmap = matplotlib.cm.RdBu_r
 
     feature = [
         [df.alph11, df.alph12, "alpha11_alpha12"],
@@ -73,7 +74,7 @@ def contour2(df, logdir):
             ax.set_zticks([])
             ax.w_zaxis.line.set_lw(0.)
 
-            surf = ax.plot_trisurf(x, y, z[i], cmap=matplotlib.cm.RdBu, linewidth=0)
+            surf = ax.plot_trisurf(x, y, z[i], cmap=cmap, linewidth=0)
             fig.colorbar(surf)
             ax.set_xlabel(ds[2][:7])
             ax.set_ylabel(ds[2][8:])

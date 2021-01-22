@@ -160,6 +160,9 @@ def status_convergence(file):
             if "CONVERGENCE CRITERIA SATISFIED" in line:
                 f.close()
                 return True
+            elif "EURANUS/TURBO HAS FINISHED" in line:
+                f.close()
+                return True
             else:
                 f.close()
                 return False
@@ -167,8 +170,8 @@ def status_convergence(file):
 
 if __name__ == "__main__":
     # f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_lower/parent_V3_lower.xmf"
-    f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_upper/parent_V3_upper.xmf"
-    # f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_design/parent_V3_design.xmf"
+    # f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_upper/parent_V3_upper.xmf"
+    f = "//130.149.110.81/liang/Tandem_Opti/parent_V3/parent_V3_design/parent_V3_design.xmf"
 
     # status_convergence(f)
     # init XMF dict

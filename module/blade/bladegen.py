@@ -266,7 +266,7 @@ class BladeGen:
 
         :param theta: sum of alpha1 and alpha2 (Chi1 and Chi2 in R.Aungier)
         :type theta: float
-        :param a: max. chamber position
+        :param a: max. camber position
         :type a: float
         :return: xy_camber
         :rtype xy_camber: (npts, 2) ndarray
