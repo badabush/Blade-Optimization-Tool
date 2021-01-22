@@ -1,5 +1,6 @@
 import threading
 import time
+import os
 
 import paramiko
 from configparser import ConfigParser
@@ -66,61 +67,69 @@ class RunHandler:
         """
         TODO:
         """
-        configfile = "config/three_point_paths.ini"
-        config = ConfigParser()
-        config.read(configfile)
+        # update params from control
+        self.update_param()
+        # refresh paths
+        self.grab_paths()
+        # clear plot
+        self.optifig_massflow.animate_massflow({})
+
+        if self.box_pathtodir.text() == "":
+            self.outputbox("Set Path to Project Directory first!")
+            return 0
+        # get display address
+        self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
 
         paths = self.paths
-        # generate scripts for DP, +3deg, -3deg
-        scriptfiles = []
-        paths['run'] = config['paths']['design']
-        scriptfiles.append(gen_script(paths, self.opt_param, suffix="_design"))
-
-        paths['run'] = config['paths']['lower']
-        scriptfiles.append(gen_script(paths, self.opt_param, suffix="_lower"))
-
-        paths['run'] = config['paths']['upper']
-        scriptfiles.append(gen_script(paths, self.opt_param, suffix="_upper"))
-        xmf_files = []
-        xmf_files.append(paths['xmf'])
-        xmf_files.append(paths['xmf'].replace("design", "lower"))
-        xmf_files.append(paths['xmf'].replace("design", "upper"))
-
-        res_files = []
-        res_files.append(paths['res'])
-        res_files.append(paths['res'].replace("design", "lower"))
-        res_files.append(paths['res'].replace("design", "upper"))
+        # get node_id, number of cores, writing frequency here
+        # scriptfiles = []
+        #
+        # paths['run'] = self.config_3point['paths']['design']
+        # scriptfiles.append(gen_script(paths, self.opt_param, suffix="_design"))
+        #
+        # paths['run'] = self.config_3point['paths']['lower']
+        # scriptfiles.append(gen_script(paths, self.opt_param, suffix="_lower"))
+        #
+        # paths['run'] = self.config_3point['paths']['upper']
+        # scriptfiles.append(gen_script(paths, self.opt_param, suffix="_upper"))
+        paths['run_design'] = self.config_3point['paths']['design']
+        paths['run_lower'] = self.config_3point['paths']['lower']
+        paths['run_upper'] = self.config_3point['paths']['upper']
+        scriptfile = gen_script(paths, self.opt_param, suffix="_simultaneous")
 
         self.res_event.clear()
 
-        # xmf_param = init_xmf_param()
+        # try removing all res files
+        for i in range(3):
+            try:
+                os.remove(self.res_files[i])
+            except (FileNotFoundError, PermissionError):
+                print("No .res file removed.")
+
         # run fine131 with script
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
         if self.sshobj.transport.is_active() == False:
             self.outputbox("Could not find active session.")
             return
-
         try:
-            for i, script in enumerate(scriptfiles):
-                self.outputbox("opening FineTurbo..")
-                # sending command with display | fine version location | script + location | batch | print
-                stdout = self.sshobj.send_cmd(
-                    self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + self.paths['usr_folder'] + "/" +
-                    self.paths['proj_folder'] + "/BOT/py_script/" + script + " -batch -print")
-                self.outputbox(stdout)
+            self.outputbox("opening FineTurbo..")
+            # sending command with display | fine version location | script + location | batch | print
+            stdout = self.sshobj.send_cmd(
+                self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + paths['usr_folder'] + "/" +
+                paths['proj_folder'] + "/BOT/py_script/" + scriptfile + " -batch -print")
+            self.outputbox(stdout)
 
+            for i in range(3):
+                # try removing old res files
                 # change paths of res and xmf files
-                t = threading.Thread(name='res_reader', target=self.read_res, args=(res_files[i], xmf_files[i]))
+                t = threading.Thread(name='res_reader', target=self.read_res, args=(self.res_files[i], self.xmf_files[i]))
                 t.start()
                 self.res_event.wait()
                 time.sleep(2)
                 self.res_event.clear()
+            self.res_event.set()
 
-            #     xmf_param = read_xmf(xmf_files[i], xmf_param)
-            # beta, cp, omega = read_xmf(calc_xmf())
-            # print("beta: {}, cp: {}, omega: {}".format(se))
-            print(self.xmf_param)
-
-        except (paramiko.ssh_exception.NoValidConnectionsError) as e:
-            self.outputbox(e)
+        except (TimeoutError) as e:
+            # if timeout error, kill all tasks and try again
+            print(e)

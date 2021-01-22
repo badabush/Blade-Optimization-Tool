@@ -15,6 +15,7 @@ from module.optimizer.optimtools import *
 from module.optimizer.pandasviewer import pandasModel
 from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.UI.optimizer.optimizer_plots import *
+from module.optimizer.genetic_algorithm.deaptools import get_three_point_paths
 
 
 class OptimHandler:
@@ -92,6 +93,12 @@ class OptimHandler:
         self.ref_blade = {"beta": float(ref_blade_config['param']['beta']),
                           "cp": float(ref_blade_config['param']['cp']),
                           "omega": float(ref_blade_config['param']['omega'])}
+
+
+        if self.cb_3point.isChecked():
+            # refresh paths
+            self.grab_paths()
+            self.xmf_files, self.res_files, self.config_3point = get_three_point_paths(self.paths)
 
     def toggle_leds(self, led, state):
         if state == 0:

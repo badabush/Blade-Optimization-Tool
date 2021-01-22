@@ -25,16 +25,20 @@ class DeapScripts:
 
         paths = self.paths
         # get node_id, number of cores, writing frequency here
-        scriptfiles = []
-
-        paths['run'] = self.config_3point['paths']['design']
-        scriptfiles.append(gen_script(paths, self.opt_param, suffix="_design"))
-
-        paths['run'] = self.config_3point['paths']['lower']
-        scriptfiles.append(gen_script(paths, self.opt_param, suffix="_lower"))
-
-        paths['run'] = self.config_3point['paths']['upper']
-        scriptfiles.append(gen_script(paths, self.opt_param, suffix="_upper"))
+        # scriptfiles = []
+        #
+        # paths['run'] = self.config_3point['paths']['design']
+        # scriptfiles.append(gen_script(paths, self.opt_param, suffix="_design"))
+        #
+        # paths['run'] = self.config_3point['paths']['lower']
+        # scriptfiles.append(gen_script(paths, self.opt_param, suffix="_lower"))
+        #
+        # paths['run'] = self.config_3point['paths']['upper']
+        # scriptfiles.append(gen_script(paths, self.opt_param, suffix="_upper"))
+        paths['run_design'] = self.config_3point['paths']['design']
+        paths['run_lower'] = self.config_3point['paths']['lower']
+        paths['run_upper'] = self.config_3point['paths']['upper']
+        scriptfile = gen_script(paths, self.opt_param, suffix="_design")
 
         self.res_event.clear()
 
@@ -45,14 +49,15 @@ class DeapScripts:
             self.outputbox("Could not find active session.")
             return
         try:
-            for i, script in enumerate(scriptfiles):
-                self.outputbox("opening FineTurbo..")
-                # sending command with display | fine version location | script + location | batch | print
-                stdout = self.sshobj.send_cmd(
-                    self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + paths['usr_folder'] + "/" +
-                    paths['proj_folder'] + "/BOT/py_script/" + script + " -batch -print")
-                self.outputbox(stdout)
 
+            self.outputbox("opening FineTurbo..")
+            # sending command with display | fine version location | script + location | batch | print
+            stdout = self.sshobj.send_cmd(
+                self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + paths['usr_folder'] + "/" +
+                paths['proj_folder'] + "/BOT/py_script/" + scriptfile + " -batch -print")
+            self.outputbox(stdout)
+
+            for i in range(3):
                 # change paths of res and xmf files
                 t = threading.Thread(name='res_reader', target=self.read_res, args=(self.res_files[i], self.xmf_files[i]))
                 t.start()
@@ -64,25 +69,25 @@ class DeapScripts:
         except (TimeoutError) as e:
             # if timeout error, kill all tasks and try again
             print(e)
-            self.outputbox("Fine didnt start properly. Killing tasks and retrying..")
-            self.kill_loop()
-            time.sleep(15)
-            self.outputbox("Retrying..")
-            for i, script in enumerate(scriptfiles):
-                self.outputbox("opening FineTurbo..")
-                # sending command with display | fine version location | script + location | batch | print
-                stdout = self.sshobj.send_cmd(
-                    self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + paths['usr_folder'] + "/" +
-                    paths['proj_folder'] + "/BOT/py_script/" + script + " -batch -print")
-                self.outputbox(stdout)
-
-                # change paths of res and xmf files
-                t = threading.Thread(name='res_reader', target=self.read_res, args=(self.res_files[i], self.xmf_files[i]))
-                t.start()
-                self.res_event.wait()
-                time.sleep(2)
-                self.res_event.clear()
-            self.res_event.set()
+            # self.outputbox("Fine didnt start properly. Killing tasks and retrying..")
+            # self.kill_loop()
+            # time.sleep(15)
+            # self.outputbox("Retrying..")
+            # for i, script in enumerate(scriptfiles):
+            #     self.outputbox("opening FineTurbo..")
+            #     # sending command with display | fine version location | script + location | batch | print
+            #     stdout = self.sshobj.send_cmd(
+            #         self.display + "/opt/numeca/bin/fine131 -script " + "/home/HLR/" + paths['usr_folder'] + "/" +
+            #         paths['proj_folder'] + "/BOT/py_script/" + script + " -batch -print")
+            #     self.outputbox(stdout)
+            #
+            #     # change paths of res and xmf files
+            #     t = threading.Thread(name='res_reader', target=self.read_res, args=(self.res_files[i], self.xmf_files[i]))
+            #     t.start()
+            #     self.res_event.wait()
+            #     time.sleep(2)
+            #     self.res_event.clear()
+            # self.res_event.set()
 
     def deap_one_point(self):
         """

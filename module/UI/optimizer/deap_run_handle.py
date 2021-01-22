@@ -266,9 +266,11 @@ class DeapRunHandler(DeapScripts):
             self.ssh_connect()
         try:
             if not self.cb_3point.isChecked():
+
                 self.deap_one_point()
             else:
-                self.deap_three_point()
+                # self.deap_three_point()
+                self.run_3point()
         except AttributeError:
             print("deap script crashed.")
 
