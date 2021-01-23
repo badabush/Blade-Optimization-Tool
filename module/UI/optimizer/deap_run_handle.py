@@ -18,8 +18,7 @@ from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
 from module.optimizer.generate_script import gen_script
 from module.optimizer.optimtools import calc_xmf
-from module.optimizer.genetic_algorithm.deaptools import _random, read_deap_restraints, custom_penalty, \
-    get_three_point_paths
+import module.optimizer.genetic_algorithm.deaptools as deaptools
 from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
 from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
 from module.UI.optimizer.deap_run import DeapScripts
@@ -27,6 +26,7 @@ from module.UI.optimizer.deap_run import DeapScripts
 
 class DeapRunHandler(DeapScripts):
     def ga_run(self):
+        # constant tuning parameters for objective function
         self.A = .5
         self.B = 1.
         self.C = .5
@@ -38,9 +38,9 @@ class DeapRunHandler(DeapScripts):
         if self.cb_3point.isChecked():
             # refresh paths
             self.grab_paths()
-            self.xmf_files, self.res_files, self.config_3point = get_three_point_paths(self.paths)
+            self.xmf_files, self.res_files, self.config_3point = deaptools.get_three_point_paths(self.paths)
 
-        self.dp_genes = read_deap_restraints()
+        self.dp_genes = deaptools.read_deap_restraints()
 
         # get updates from DEAP settings window
         self.deap_config_ui.get_checkbox()
@@ -64,9 +64,8 @@ class DeapRunHandler(DeapScripts):
         self.logger.info('---DEAP START---')
 
         # init dataframe for tracking each individuals
-        # FIXME
-        self.df = pd.DataFrame(
-            columns=['alph11', 'alph12', 'alph21', 'alph22', 'beta', 'omega', 'cp', 'fitness', 'generation'])
+
+        self.df = deaptools.init_deap_df(self.deap_settings.checkboxes, self.cb_3point.isChecked())
         self.pointer_df = 0
         # init plot
         self.optifig_deap = OptimPlotDEAP(self, width=8, height=10)
@@ -90,8 +89,8 @@ class DeapRunHandler(DeapScripts):
         self.toolbox = base.Toolbox()
 
         # Attribute generator
-        list(self.toolbox.register("attr_%s" % val[3], _random, float(val[0]), float(val[1]), int(val[2])) for val in
-             self.deap_settings.attribute_generator())
+        list(self.toolbox.register("attr_%s" % val[3], deaptools._random, float(val[0]), float(val[1]), int(val[2])) for
+             val in self.deap_settings.attribute_generator())
         # list(self.toolbox.register("attr_%s" % i[3], _random, float(i[0]), float(i[1]), 4) for i in self.dp_IND_SIZE)
         # self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_item, n=IND_SIZE)
         self.toolbox.register(
@@ -111,10 +110,8 @@ class DeapRunHandler(DeapScripts):
 
         if not self.testrun:
             self.toolbox.register("evaluate", self.eval_engine)
-            # self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
         else:
             self.toolbox.register("evaluate", self.test_eval)
-            # self.toolbox.decorate("evaluate", tools.DeltaPenality(self.feasible, 3.0, self.distance))
 
         # self.toolbox.register("mate", tools.cxTwoPoint)
         self.toolbox.register("mate", tools.cxUniform, indpb=.5)
@@ -143,19 +140,20 @@ class DeapRunHandler(DeapScripts):
         """
         self.outputbox("Beginning DEAP algorithm")
 
-        print("alph1 blade1: {0}, alph2 blade1: {1}".format(individual[3], individual[4]))
-        print("alph1 blade2: {0}, alph2 blade2: {1}".format(individual[5], individual[6]))
+        # match param names with individual value
+        clean_individuals = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes, individual)
 
-        beta = np.sum(individual[3:6]) / 4 + 6
+        beta = clean_individuals.value.to_numpy().sum() / 4 + 6
         omega = np.deg2rad(beta)
         self.cp = [0, 2 * omega]
         self.beta = [beta, beta]
         self.omega = [0, omega]
 
-        new_row = {'alph11': individual[3], 'alph12': individual[4], 'alph21': individual[5], 'alph22': individual[6],
-                   'beta': self.beta[-1],
-                   'omega': self.omega[-1],
-                   'cp': self.cp[-1]}
+        new_row = deaptools.get_row(clean_individuals)
+        new_row['beta'] = self.beta[-1]
+        new_row['omega'] = self.omega[-1]
+        new_row['cp'] = self.cp[-1]
+
         if not self.cb_3point.isChecked():
 
             self.df = self.df.append(new_row, ignore_index=True)
@@ -163,10 +161,10 @@ class DeapRunHandler(DeapScripts):
         else:
 
             new_row['beta_lower'] = self.beta[-1] * .9
-            new_row['omega_lower'] = self.omega[-1] * .9
+            new_row['omega_lower'] = self.omega[-1] + 1
             new_row['cp_lower'] = self.cp[-1] * .9
             new_row['beta_upper'] = self.beta[-1] * 1.1
-            new_row['omega_upper'] = self.omega[-1] * 1.1
+            new_row['omega_upper'] = self.omega[-1] + 3
             new_row['cp_upper'] = self.cp[-1] * 1.1
             res = self.A * (new_row['omega_lower'] / self.ref_blade["omega"]) + self.B * (
                     omega / self.ref_blade["omega"]) + self.C * (
@@ -183,26 +181,20 @@ class DeapRunHandler(DeapScripts):
         calculate beta
         """
         self.outputbox("Beginning DEAP algorithm")
+        # match param names with individual value
+        clean_individuals = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes, individual)
 
         # update tandem blades
+        self.ds1, self.ds2 = deaptools.update_blade_individuals(self.ds1, self.ds2, clean_individuals)
         # xoffset and yoffset need to be calculated from PP and AO
         self.ds2['x_offset'] = individual[1] * self.ds1['dist_blades']  # AO
         self.ds2['y_offset'] = (1 - individual[0]) * self.ds1['dist_blades']  # PP
 
-        # set blade 1 and 2 alphas
-        self.ds1['alpha1'] = individual[3]
-        self.ds1['alpha2'] = individual[4]
-        self.ds2['alpha1'] = individual[5]
-        self.ds2['alpha2'] = individual[6]
-
-        print("alph1 blade1: {0}, alph2 blade1: {1}".format(individual[3], individual[4]))
-        print("alph1 blade2: {0}, alph2 blade2: {1}".format(individual[5], individual[6]))
-
         match_idx = np.where(
-            (self.df.alph11 == individual[3]) &
-            (self.df.alph12 == individual[4]) &
-            (self.df.alph21 == individual[5]) &
-            (self.df.alph22 == individual[6]))
+            (self.df.alph11 == clean_individuals.loc["alph11"].value) &
+            (self.df.alph12 == clean_individuals.loc["alph12"].value) &
+            (self.df.alph21 == clean_individuals.loc["alph21"].value) &
+            (self.df.alph22 == clean_individuals.loc["alph22"].value))
 
         # if blade was simulated before, skip numeca process
         if len(match_idx[0]) != 0:
@@ -215,6 +207,12 @@ class DeapRunHandler(DeapScripts):
                        'beta': match.beta,
                        'omega': match.omega,
                        'cp': match.cp}
+
+            new_row = deaptools.get_row(clean_individuals)
+            new_row['beta'] = match.beta
+            new_row['omega'] = match.omega
+            new_row['cp'] = match.cp
+
             print("Omega: " + str(foolist))
 
             self.omega = [0, match.omega]
@@ -286,11 +284,11 @@ class DeapRunHandler(DeapScripts):
         except IndexError:
             omega = 0
         foolist.append(omega)
-        new_row = {'alph11': individual[3], 'alph12': individual[4], 'alph21': individual[5], 'alph22': individual[6],
-                   'beta': np.rad2deg(self.beta[-1]),
-                   'omega': self.omega[-1],
-                   'cp': self.cp[-1]}
-        # self.df = self.df.append(new_row, ignore_index=True)
+        new_row = deaptools.get_row(clean_individuals)
+        new_row['beta'] = np.rad2deg(self.beta[-1])
+        new_row['omega'] = self.omega[-1]
+        new_row['cp'] = self.cp[-1]
+
         print("Omega: " + str(foolist))
         try:
             omega = self.omega[-1]
@@ -324,7 +322,7 @@ class DeapRunHandler(DeapScripts):
 
         for i, gene in enumerate(self.deap_settings.attribute_generator()):
             if random.random() < indpb:
-                individual[i] = _random(float(gene[0]), float(gene[1]), int(gene[2]))
+                individual[i] = deaptools._random(float(gene[0]), float(gene[1]), int(gene[2]))
         return individual,
 
     def feasible(self, _):
@@ -348,46 +346,50 @@ class DeapRunHandler(DeapScripts):
         for idx, (ind, fit) in enumerate(zip(pop, fitnesses)):
             # ind.fitness.values = fit
             # penalty on fitness when beta out of range
-            fit = custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
+            fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
             ind.fitness.values = fit
             try:
                 self.df.iloc[idx + self.pointer_df].fitness = fit[0]
                 self.df.iloc[idx + self.pointer_df].generation = g
                 # FIXME
                 if not self.cb_3point.isChecked():
-                    self.logger.info(
-                        "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
-                            self.df.iloc[idx + self.pointer_df].alph11,
-                            self.df.iloc[idx + self.pointer_df].alph12,
-                            self.df.iloc[idx + self.pointer_df].alph21,
-                            self.df.iloc[idx + self.pointer_df].alph22,
-                            self.df.iloc[idx + self.pointer_df].omega,
-                            self.df.iloc[idx + self.pointer_df].beta,
-                            self.df.iloc[idx + self.pointer_df].cp,
-                            self.df.iloc[idx + self.pointer_df].fitness
-                        ))
+                    entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+                    self.logger.info(entry)
+                    # self.logger.info(
+                    #     "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+                    #         self.df.iloc[idx + self.pointer_df].alph11,
+                    #         self.df.iloc[idx + self.pointer_df].alph12,
+                    #         self.df.iloc[idx + self.pointer_df].alph21,
+                    #         self.df.iloc[idx + self.pointer_df].alph22,
+                    #         self.df.iloc[idx + self.pointer_df].omega,
+                    #         self.df.iloc[idx + self.pointer_df].beta,
+                    #         self.df.iloc[idx + self.pointer_df].cp,
+                    #         self.df.iloc[idx + self.pointer_df].fitness
+                    #     ))
                 else:
-                    self.logger.info(
-                        "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, "
-                        "Omega:{4}, Omega_lower:{5}, Omega_upper:{6}, "
-                        "Beta:{7}, Beta_lower:{8}, Beta_upper:{9}, "
-                        "Cp:{10}, Cp_lower:{11}, Cp_upper:{12}, "
-                        "Fitness:{13}".format(
-                            self.df.iloc[idx + self.pointer_df].alph11,
-                            self.df.iloc[idx + self.pointer_df].alph12,
-                            self.df.iloc[idx + self.pointer_df].alph21,
-                            self.df.iloc[idx + self.pointer_df].alph22,
-                            self.df.iloc[idx + self.pointer_df].omega,
-                            self.df.iloc[idx + self.pointer_df].omega_lower,
-                            self.df.iloc[idx + self.pointer_df].omega_upper,
-                            self.df.iloc[idx + self.pointer_df].beta,
-                            self.df.iloc[idx + self.pointer_df].beta_lower,
-                            self.df.iloc[idx + self.pointer_df].beta_upper,
-                            self.df.iloc[idx + self.pointer_df].cp,
-                            self.df.iloc[idx + self.pointer_df].cp_lower,
-                            self.df.iloc[idx + self.pointer_df].cp_upper,
-                            self.df.iloc[idx + self.pointer_df].fitness
-                        ))
+                    entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+                    self.logger.info(entry)
+                    # self.logger.info(
+                    #     "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, "
+                    #     "Omega:{4}, Omega_lower:{5}, Omega_upper:{6}, "
+                    #     "Beta:{7}, Beta_lower:{8}, Beta_upper:{9}, "
+                    #     "Cp:{10}, Cp_lower:{11}, Cp_upper:{12}, "
+                    #     "Fitness:{13}".format(
+                    #         self.df.iloc[idx + self.pointer_df].alph11,
+                    #         self.df.iloc[idx + self.pointer_df].alph12,
+                    #         self.df.iloc[idx + self.pointer_df].alph21,
+                    #         self.df.iloc[idx + self.pointer_df].alph22,
+                    #         self.df.iloc[idx + self.pointer_df].omega,
+                    #         self.df.iloc[idx + self.pointer_df].omega_lower,
+                    #         self.df.iloc[idx + self.pointer_df].omega_upper,
+                    #         self.df.iloc[idx + self.pointer_df].beta,
+                    #         self.df.iloc[idx + self.pointer_df].beta_lower,
+                    #         self.df.iloc[idx + self.pointer_df].beta_upper,
+                    #         self.df.iloc[idx + self.pointer_df].cp,
+                    #         self.df.iloc[idx + self.pointer_df].cp_lower,
+                    #         self.df.iloc[idx + self.pointer_df].cp_upper,
+                    #         self.df.iloc[idx + self.pointer_df].fitness
+                    #     ))
             except IndexError as e:
                 print(e)
                 self.logger.info("Error writing individual data.")
@@ -416,24 +418,29 @@ class DeapRunHandler(DeapScripts):
                     # assures that match_idx is scalar
                     match = self.df.loc[np.min(match_idx)]
                     if not self.cb_3point.isChecked():
-                        self.logger.info(
-                            "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
-                                match.alph11, match.alph12, match.alph21, match.alph22, match.omega, match.beta, match.cp,
-                                match.fitness
-                            ))
+                        entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+                        self.logger.info(entry)
+                        # self.logger.info(
+                        #     "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+                        #         match.alph11, match.alph12, match.alph21, match.alph22, match.omega, match.beta,
+                        #         match.cp,
+                        #         match.fitness
+                        #     ))
                     else:
-                        self.logger.info(
-                            "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, "
-                            "Omega:{4}, Omega_lower:{5}, Omega_upper:{6}, "
-                            "Beta:{7}, Beta_lower:{8}, Beta_upper:{9}, "
-                            "Cp:{10}, Cp_lower:{11}, Cp_upper:{12}, "
-                            "Fitness:{13}".format(
-                                match.alph11, match.alph12, match.alph21, match.alph22,
-                                match.omega, match.omega_lower, match.omega_upper,
-                                match.beta, match.beta_lower, match.beta_upper,
-                                match.cp, match.cp_lower, match.cp_upper,
-                                match.fitness
-                            ))
+                        entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+                        self.logger.info(entry)
+                        # self.logger.info(
+                        #     "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, "
+                        #     "Omega:{4}, Omega_lower:{5}, Omega_upper:{6}, "
+                        #     "Beta:{7}, Beta_lower:{8}, Beta_upper:{9}, "
+                        #     "Cp:{10}, Cp_lower:{11}, Cp_upper:{12}, "
+                        #     "Fitness:{13}".format(
+                        #         match.alph11, match.alph12, match.alph21, match.alph22,
+                        #         match.omega, match.omega_lower, match.omega_upper,
+                        #         match.beta, match.beta_lower, match.beta_upper,
+                        #         match.cp, match.cp_lower, match.cp_upper,
+                        #         match.fitness
+                        #     ))
                 except (IndexError, KeyError, ValueError) as e:
                     print(e)
                     self.logger.info("Error writing individual data.")
@@ -461,7 +468,7 @@ class DeapRunHandler(DeapScripts):
             for idx, (ind, fit) in enumerate(zip(invalid_ind, fitnesses)):
                 # new fitness values evaluation begins
                 # penalty on fitness when beta out of range
-                fit = custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
+                fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
                 ind.fitness.values = fit
 
                 try:
@@ -470,39 +477,43 @@ class DeapRunHandler(DeapScripts):
                     self.df.iloc[idx + self.pointer_df].generation = g
                     # FIXME
                     if not self.cb_3point.isChecked():
-                        self.logger.info(
-                            "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
-                                self.df.iloc[idx + self.pointer_df].alph11,
-                                self.df.iloc[idx + self.pointer_df].alph12,
-                                self.df.iloc[idx + self.pointer_df].alph21,
-                                self.df.iloc[idx + self.pointer_df].alph22,
-                                self.df.iloc[idx + self.pointer_df].omega,
-                                self.df.iloc[idx + self.pointer_df].beta,
-                                self.df.iloc[idx + self.pointer_df].cp,
-                                self.df.iloc[idx + self.pointer_df].fitness
-                            ))
+                        entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+                        self.logger.info(entry)
+                        # self.logger.info(
+                        #     "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, Omega:{4}, Beta:{5}, Cp:{6}, Fitness:{7}".format(
+                        #         self.df.iloc[idx + self.pointer_df].alph11,
+                        #         self.df.iloc[idx + self.pointer_df].alph12,
+                        #         self.df.iloc[idx + self.pointer_df].alph21,
+                        #         self.df.iloc[idx + self.pointer_df].alph22,
+                        #         self.df.iloc[idx + self.pointer_df].omega,
+                        #         self.df.iloc[idx + self.pointer_df].beta,
+                        #         self.df.iloc[idx + self.pointer_df].cp,
+                        #         self.df.iloc[idx + self.pointer_df].fitness
+                        #     ))
                     else:
-                        self.logger.info(
-                            "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, "
-                            "Omega:{4}, Omega_lower:{5}, Omega_upper:{6}, "
-                            "Beta:{7}, Beta_lower:{8}, Beta_upper:{9}, "
-                            "Cp:{10}, Cp_lower:{11}, Cp_upper:{12}, "
-                            "Fitness:{13}".format(
-                                self.df.iloc[idx + self.pointer_df].alph11,
-                                self.df.iloc[idx + self.pointer_df].alph12,
-                                self.df.iloc[idx + self.pointer_df].alph21,
-                                self.df.iloc[idx + self.pointer_df].alph22,
-                                self.df.iloc[idx + self.pointer_df].omega,
-                                self.df.iloc[idx + self.pointer_df].omega_lower,
-                                self.df.iloc[idx + self.pointer_df].omega_upper,
-                                self.df.iloc[idx + self.pointer_df].beta,
-                                self.df.iloc[idx + self.pointer_df].beta_lower,
-                                self.df.iloc[idx + self.pointer_df].beta_upper,
-                                self.df.iloc[idx + self.pointer_df].cp,
-                                self.df.iloc[idx + self.pointer_df].cp_lower,
-                                self.df.iloc[idx + self.pointer_df].cp_upper,
-                                self.df.iloc[idx + self.pointer_df].fitness
-                            ))
+                        entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+                        self.logger.info(entry)
+                        # self.logger.info(
+                        #     "alph11:{0}, alph12:{1}, alph21:{2}, alph22:{3}, "
+                        #     "Omega:{4}, Omega_lower:{5}, Omega_upper:{6}, "
+                        #     "Beta:{7}, Beta_lower:{8}, Beta_upper:{9}, "
+                        #     "Cp:{10}, Cp_lower:{11}, Cp_upper:{12}, "
+                        #     "Fitness:{13}".format(
+                        #         self.df.iloc[idx + self.pointer_df].alph11,
+                        #         self.df.iloc[idx + self.pointer_df].alph12,
+                        #         self.df.iloc[idx + self.pointer_df].alph21,
+                        #         self.df.iloc[idx + self.pointer_df].alph22,
+                        #         self.df.iloc[idx + self.pointer_df].omega,
+                        #         self.df.iloc[idx + self.pointer_df].omega_lower,
+                        #         self.df.iloc[idx + self.pointer_df].omega_upper,
+                        #         self.df.iloc[idx + self.pointer_df].beta,
+                        #         self.df.iloc[idx + self.pointer_df].beta_lower,
+                        #         self.df.iloc[idx + self.pointer_df].beta_upper,
+                        #         self.df.iloc[idx + self.pointer_df].cp,
+                        #         self.df.iloc[idx + self.pointer_df].cp_lower,
+                        #         self.df.iloc[idx + self.pointer_df].cp_upper,
+                        #         self.df.iloc[idx + self.pointer_df].fitness
+                        #     ))
                 except (IndexError, KeyError, ValueError) as e:
                     print(e)
             # replace entire existing population with offspring
@@ -544,7 +555,14 @@ class DeapRunHandler(DeapScripts):
 
         best_ind = tools.selBest(pop, 1)[0]
         print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
-        self.logger.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+        # self.logger.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
+        try:
+            idx_best = self.df[self.df.fitness == np.min(minlist)].index[0]
+            self.logger.info("Best individual: ")
+            entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+            self.logger.info(entry)
+        except IndexError:
+            print(e)
         blade1_str = ""
         blade2_str = ""
         for key, val in self.ds1.items():

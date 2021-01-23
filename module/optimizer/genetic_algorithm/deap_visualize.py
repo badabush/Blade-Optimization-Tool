@@ -92,6 +92,7 @@ class DeapVisualize:
         res = []
         blades = []
         popfit = []
+        colnames = []
         with open(file) as f:
             lines = f.readlines()
             for line in lines:
@@ -99,13 +100,19 @@ class DeapVisualize:
                     # routine for detecting different runs
                     pass
                 # find lines with data
-                if "Omega:" in line:
+                if "omega:" in line:
                     string = line.split("DEAP_info   ")[1].replace("\n", "")
                     param = string.split(",")
                     lst = []
+                    col = []
                     for item in param:
+                        # get column names from data row
+                        if colnames.__len__() == 0:
+                            col.append(item.split(":")[0].strip())
                         lst.append(float(item.split(":")[1]))
                     res.append(lst)
+                    if colnames.__len__() == 0:
+                        colnames = col
                 # find final line of best blade
                 if ("[blade1] " in line) or ("[blade2] " in line):
                     # reconstruct blade datasets
@@ -136,20 +143,11 @@ class DeapVisualize:
 
 
             # Try creating pandasframe for 1point, if that doesn't work assume it was a 3point calculation.
-            try:
-                ds = pd.DataFrame(res,
-                                  columns=["alph11", "alph12", "alph21", "alph22", "omega", "beta", "cp", "fitness"])
-            except ValueError:
-                ds = pd.DataFrame(res,
-                                  columns=["alph11", "alph12", "alph21", "alph22",
-                                           "omega", "omega_lower", "omega_upper",
-                                           "beta", "beta_lower", "beta_upper",
-                                           "cp", "cp_lower", "cp_upper",
-                                           "fitness"])
+            ds = pd.DataFrame(res, columns=colnames)
 
         f.close()
         return ds, blades, popfit
 
 
 if __name__ == '__main__':
-    DeapVisualize("20-01-21_19-31-30.log", True)
+    DeapVisualize("test_23-01-21_20-05-13.log", True)

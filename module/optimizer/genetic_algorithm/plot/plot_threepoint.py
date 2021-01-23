@@ -8,10 +8,8 @@ from matplotlib import cm as cm
 def three_point(ds, ref_blade, logdir):
     fig, ax = plt.subplots(figsize=(10, 8), sharex='col', sharey='row')
     ref_omega = [ref_blade['omega_lower'], ref_blade['omega'], ref_blade['omega_upper']]
-    # ref_beta = np.rad2deg([ref_blade['beta_lower'], ref_blade['beta'], ref_blade['beta_upper']])
-    ref_beta = [49, 52, 55]
+    ref_beta = [ref_blade['beta_lower'], ref_blade['beta'], ref_blade['beta_upper']]
     best_omega = [ds.iloc[-1]['omega_lower'], ds.iloc[-1]['omega'], ds.iloc[-1]['omega_upper']]
-    # best_beta = [ds.iloc[-1]['beta_lower'], ds.iloc[-1]['beta'], ds.iloc[-1]['beta_upper']]
     best_beta = ref_beta
 
     ref_model = np.polyfit(ref_beta, ref_omega, 2)
@@ -25,7 +23,7 @@ def three_point(ds, ref_blade, logdir):
         best_model = np.polyfit(best_beta, best_omega, 2)
         best_model_fn = np.poly1d(best_model)
         best_dist = max([abs(best_beta[0] - best_beta[1]), abs(best_beta[0] - best_beta[1])])
-        best_x_s = np.linspace(best_beta[0] - best_dist, best_beta[0] + best_dist, 30)
+        best_x_s = np.linspace(best_beta[1] - best_dist, best_beta[1] + best_dist, 30)
         ax.plot(best_x_s, best_model_fn(best_x_s), label="best blade", color="indianred")
         ax.scatter(best_beta, best_omega, marker='o', color="indianred")
 
