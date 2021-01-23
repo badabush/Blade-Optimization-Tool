@@ -80,6 +80,7 @@ def gen_script(paths, param, suffix=""):
                    'FT.set_nb_iter_max(' + no_iter + ')\n' +
                    'FT.set_output_writing_frequency(' + writing_frequency + ')\n' +
                    'FT.set_convergence_criteria(' + convergence_crit + ')\n' +
+                   'FT.save_selected_computations()\n' +
                    # lower
                    'FT.task(' + task_idx + ').new_subtask()\n' +
                    'FT.task(' + task_idx + ').subtask(1).set_condition(0)\n' +
@@ -91,6 +92,7 @@ def gen_script(paths, param, suffix=""):
                    'FT.set_nb_iter_max(' + no_iter + ')\n' +
                    'FT.set_output_writing_frequency(' + writing_frequency + ')\n' +
                    'FT.set_convergence_criteria(' + convergence_crit + ')\n' +
+                   'FT.save_selected_computations()\n' +
                    # upper
                    'FT.task(' + task_idx + ').new_subtask()\n' +
                    'FT.task(' + task_idx + ').subtask(2).set_condition(0)\n' +
@@ -102,6 +104,7 @@ def gen_script(paths, param, suffix=""):
                    'FT.set_nb_iter_max(' + no_iter + ')\n' +
                    'FT.set_output_writing_frequency(' + writing_frequency + ')\n' +
                    'FT.set_convergence_criteria(' + convergence_crit + ')\n' +
+                   'FT.save_selected_computations()\n' +
                    'FT.task(' + task_idx + ').start()'
                    )
         file.close()

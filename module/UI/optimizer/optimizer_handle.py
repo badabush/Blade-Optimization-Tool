@@ -281,15 +281,7 @@ class OptimHandler:
                         # set events, end taskmanager, end parseres, kill while loops
                         self.kill_loop()
                         # save values from XMF
-                        if not self.cb_3point.isChecked():
-                            self.xmf_param = read_xmf(xmf_file, self.xmf_param)
-                        else:
-                            if "lower" in xmf_file:
-                                self.xmf_param_lower = read_xmf(xmf_file, self.xmf_param_lower)
-                            elif "upper" in xmf_file:
-                                self.xmf_param_upper = read_xmf(xmf_file, self.xmf_param_upper)
-                            else:
-                                self.xmf_param = read_xmf(xmf_file, self.xmf_param)
+                        self.xmf_param = read_xmf(xmf_file, self.xmf_param)
 
                         # display time elapsed
                         elapsed_time = datetime.datetime.now() - start_time

@@ -250,17 +250,13 @@ class DeapRunHandler(DeapScripts):
 
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
-        try:
-            t = threading.Thread(name="create_meshfile", target=self.run_igg)
-            t.start()
-        except AttributeError:
-            self.outputbox("Connecting...")
+        t = threading.Thread(name="create_meshfile", target=self.run_igg, daemon=True)
+        t.start()
 
         self.outputbox("[DEAP] Waiting for igg to finish ...")
         self.igg_event.wait()
+        time.sleep(5)
         self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
-        # self.logger.info("Mesh created successfully.")
-        time.sleep(2)
 
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
@@ -278,7 +274,6 @@ class DeapRunHandler(DeapScripts):
         self.res_event.wait()
         time.sleep(2)
 
-        # TODO: read xmf from all 3 points
         self.beta, self.cp, self.omega = calc_xmf(self.xmf_param)
         # print("Omega: " + str(omega))
 
