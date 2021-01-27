@@ -40,7 +40,7 @@ def read_deap_restraints():
     return df
 
 
-def custom_penalty(fit, beta):
+def custom_penalty(fit, beta, penalty_factor):
     """
 
     :param fitnesses: list with (val,) tuples
@@ -52,7 +52,7 @@ def custom_penalty(fit, beta):
 
     else:
         # quadratic penalty
-        penalty = penalty_distance(beta)
+        penalty = penalty_distance(beta, penalty_factor)
         new_fit = fit[0]
         return (new_fit + penalty,)
 
@@ -71,9 +71,9 @@ def feasible(val):
     return False
 
 
-def penalty_distance(val):
+def penalty_distance(val, penalty_factor=40):
     average = 16.5
-    return (np.deg2rad(val - average) ** 2) * 40
+    return (np.deg2rad(val - average) ** 2) * penalty_factor
 
 
 def get_three_point_paths(paths):

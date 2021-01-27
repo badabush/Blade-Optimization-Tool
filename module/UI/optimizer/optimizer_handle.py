@@ -40,6 +40,7 @@ class OptimHandler:
         self.btn_run.clicked.connect(self.run_script)
         self.btn_kill.clicked.connect(self.kill_loop)
         self.opt_btn_update_param.clicked.connect(self.update_param)
+        self.actionTestrun.toggled.connect(self.toggle_testrun)
 
         # open DEAP config
         self.btn_deapsettings.clicked.connect(self.deap_config_window)
@@ -100,6 +101,14 @@ class OptimHandler:
             # refresh paths
             self.grab_paths()
             self.xmf_files, self.res_files, self.config_3point = get_three_point_paths(self.paths)
+
+    def toggle_testrun(self):
+        if self.actionTestrun.isChecked():
+            self.testrun = True
+            self.outputbox("Testrun (Debug mode) enabled.")
+        else:
+            self.testrun = False
+            self.outputbox("Testrun (Debug mode) disabled.")
 
     def toggle_leds(self, led, state):
         if state == 0:

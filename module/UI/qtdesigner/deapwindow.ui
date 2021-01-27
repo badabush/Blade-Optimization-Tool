@@ -283,7 +283,7 @@
      <x>470</x>
      <y>10</y>
      <width>231</width>
-     <height>221</height>
+     <height>291</height>
     </rect>
    </property>
    <property name="title">
@@ -295,7 +295,7 @@
       <x>10</x>
       <y>40</y>
       <width>211</width>
-      <height>171</height>
+      <height>241</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
@@ -306,20 +306,6 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="1">
-      <widget class="QSpinBox" name="input_pop">
-       <property name="maximum">
-        <number>500</number>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QSpinBox" name="input_gen">
-       <property name="maximum">
-        <number>100</number>
-       </property>
-      </widget>
-     </item>
      <item row="1" column="0">
       <widget class="QLabel" name="label_4">
        <property name="text">
@@ -327,8 +313,8 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QDoubleSpinBox" name="input_cxpb">
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="input_mutpb">
        <property name="singleStep">
         <double>0.100000000000000</double>
        </property>
@@ -342,18 +328,52 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QDoubleSpinBox" name="input_mutpb">
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-      </widget>
-     </item>
      <item row="3" column="0">
       <widget class="QLabel" name="label_2">
        <property name="text">
         <string>Mutation Prob.
 (MUTPB)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="input_gen">
+       <property name="maximum">
+        <number>100</number>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QDoubleSpinBox" name="input_cxpb">
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="input_pop">
+       <property name="maximum">
+        <number>500</number>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="input_penalty_factor">
+       <property name="maximum">
+        <double>999.899999999999977</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>100.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Penalty Factor</string>
        </property>
       </widget>
      </item>

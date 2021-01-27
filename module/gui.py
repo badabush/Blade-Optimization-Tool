@@ -64,7 +64,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         # tabs
         self.tabWidget.setTabText(0, "BladeDesigner")
         self.tabWidget.setTabText(1, "Optimizer")
-        self.tabWidget.setCurrentIndex(0)  # set default tab
+        self.tabWidget.setCurrentIndex(1)  # set default tab
 
         # init plot
         self.m = PlotCanvas(self, width=8, height=10)
@@ -235,6 +235,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         """
         Terminal in Optimizer window at the bottom.
         """
+
         datetimeobj = datetime.now()
         ts_str = datetimeobj.strftime("[%H:%M:%S]   ")
         self.box_terminal.append(ts_str + msg)

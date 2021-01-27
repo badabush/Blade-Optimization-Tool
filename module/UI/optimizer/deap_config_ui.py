@@ -39,7 +39,8 @@ class DeapConfigUi(QtWidgets.QDialog):
             "pop_size": self.input_pop,
             "max_gens": self.input_gen,
             "cxpb": self.input_cxpb,
-            "mutpb": self.input_mutpb
+            "mutpb": self.input_mutpb,
+            "penalty_factor": self.input_penalty_factor
 
         }
         self.cblist = {}
@@ -77,6 +78,7 @@ class DeapConfigUi(QtWidgets.QDialog):
         self.vallist['max_gens'] = self.input_gen.value()
         self.vallist['cxpb'] = self.input_cxpb.value()
         self.vallist['mutpb'] = self.input_mutpb.value()
+        self.vallist['penalty_factor'] = self.input_penalty_factor.value()
 
     def _close(self):
         self.close()

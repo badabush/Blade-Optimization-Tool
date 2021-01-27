@@ -57,10 +57,10 @@ class DeapVisualize:
         ds, blades, ds_popfit = self.readLog(self.logfile)
         # plots for PP and AO over time
         # filter fitness < 1
-        ds = ds[ds.omega < 0.1]
-        ds.reset_index(inplace=True, drop=True)
-        ds = ds[ds.fitness > 0.0]
-        ds.reset_index(inplace=True, drop=True)
+        # ds = ds[ds.omega < 0.1]
+        # ds.reset_index(inplace=True, drop=True)
+        # ds = ds[ds.fitness > 0.0]
+        # ds.reset_index(inplace=True, drop=True)
 
         # plot fitness/generation
         fitness_generation(ds_popfit, logdir)
@@ -87,7 +87,7 @@ class DeapVisualize:
             print("No blade parameters found in log file.")
 
         # scatter matrix
-        scatter_matrix(ds, logdir)
+        # scatter_matrix(ds, logdir)
 
     def readLog(self, file):
         res = []
@@ -150,4 +150,4 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    DeapVisualize("26-01-21_18-10-28.log", True)
+    DeapVisualize("test_27-01-21_17-50-36.log", True)

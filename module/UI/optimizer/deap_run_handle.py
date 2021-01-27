@@ -143,8 +143,8 @@ class DeapRunHandler(DeapScripts):
         # match param names with individual value
         clean_individuals = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes, individual)
 
-        beta = clean_individuals.value.to_numpy().sum() / 4 + 6
-        omega = np.deg2rad(beta)
+        beta = clean_individuals.value.to_numpy().sum() / 4
+        omega = np.deg2rad(beta) / 10
         self.cp = [0, 2 * omega]
         self.beta = [beta, beta]
         self.omega = [0, omega]
@@ -161,10 +161,10 @@ class DeapRunHandler(DeapScripts):
         else:
 
             new_row['beta_lower'] = self.beta[-1] * .9
-            new_row['omega_lower'] = self.omega[-1] + 1
+            new_row['omega_lower'] = self.omega[-1] * 1.1
             new_row['cp_lower'] = self.cp[-1] * .9
             new_row['beta_upper'] = self.beta[-1] * 1.1
-            new_row['omega_upper'] = self.omega[-1] + 3
+            new_row['omega_upper'] = self.omega[-1] * 1.3
             new_row['cp_upper'] = self.cp[-1] * 1.1
             res = self.A * (new_row['omega_lower'] / self.ref_blade["omega"]) + self.B * (
                     omega / self.ref_blade["omega"]) + self.C * (
@@ -326,17 +326,6 @@ class DeapRunHandler(DeapScripts):
                 individual[i] = deaptools._random(float(gene[0]), float(gene[1]), int(gene[2]))
         return individual,
 
-    # def feasible(self, _):
-    #     """Feasibility function for beta. Returns True if feasible, False otherwise."""
-    #     if 15 < np.rad2deg(self.beta[-1]) < 20:
-    #         return True
-    #     self.logger.info("Beta {0} not feasible.".format(np.round(np.rad2deg(self.beta[-1]), 3)))
-    #     return False
-    #
-    # def distance(self, _):
-    #     """Quadratic Distance function to the feasibility region."""
-    #     return (np.rad2deg(self.beta[-1]) - 16) ** 2
-
     def populate(self):
         # counter generations
         self.generation = 0
@@ -348,7 +337,8 @@ class DeapRunHandler(DeapScripts):
             # ind.fitness.values = fit
             # penalty on fitness when beta out of range
             if not fit[-1] > 9998:
-                fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
+                fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
+                                               self.deap_settings.values['penalty_factor'])
             ind.fitness.values = fit
             try:
                 self.df.iloc[idx + self.pointer_df].fitness = fit[0]
@@ -424,7 +414,8 @@ class DeapRunHandler(DeapScripts):
 
                 # don't apply custom penalty when fitness is faulty
                 if not fit[-1] > 9998:
-                    fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
+                    fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
+                                                   self.deap_settings.values['penalty_factor'])
                 ind.fitness.values = fit
 
                 try:
