@@ -32,7 +32,6 @@ class DeapVisualize:
         copy(self.logfile, path)
 
         # get reference blade beta/cp/omega from ini file
-        refblade_configfile = Path.cwd() / "config/reference_blade.ini"
         ref_blade_config = ConfigParser()
         ref_blade_config.read("config/reference_blade.ini")
         self.ref_blade = {"beta": float(ref_blade_config['param']['beta']),
@@ -58,16 +57,19 @@ class DeapVisualize:
         ds, blades, ds_popfit = self.readLog(self.logfile)
         # plots for PP and AO over time
         # filter fitness < 1
-        # ds = ds[ds.omega < 0.1]
-        # ds.reset_index(inplace=True, drop=True)
-        # ds = ds[ds.fitness > 0.0]
-        # ds.reset_index(inplace=True, drop=True)
+        ds = ds[ds.omega < 0.1]
+        ds.reset_index(inplace=True, drop=True)
+        ds = ds[ds.fitness > 0.0]
+        ds.reset_index(inplace=True, drop=True)
 
         # plot fitness/generation
         fitness_generation(ds_popfit, logdir)
 
         # plot 3point curve ref/best blade
-        three_point(ds, self.ref_blade, logdir)
+        try:
+            three_point(ds, self.ref_blade, logdir)
+        except KeyError:
+            print("not a 3point run.")
 
         # plot a feature over time
         feature_time(ds, logdir)
@@ -83,7 +85,6 @@ class DeapVisualize:
         except IndexError as e:
             print(e)
             print("No blade parameters found in log file.")
-
 
         # scatter matrix
         scatter_matrix(ds, logdir)
@@ -141,7 +142,6 @@ class DeapVisualize:
                     pop, fit = string.split(",")
                     popfit.append([float(pop.split(": ")[1]), float(fit.split(": ")[1])])
 
-
             # Try creating pandasframe for 1point, if that doesn't work assume it was a 3point calculation.
             ds = pd.DataFrame(res, columns=colnames)
 
@@ -150,4 +150,4 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    DeapVisualize("test_23-01-21_20-05-13.log", True)
+    DeapVisualize("26-01-21_18-10-28.log", True)

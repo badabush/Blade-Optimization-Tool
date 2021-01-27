@@ -14,16 +14,16 @@ def three_point(ds, ref_blade, logdir):
 
     ref_model = np.polyfit(ref_beta, ref_omega, 2)
     ref_model_fn = np.poly1d(ref_model)
-    ref_dist = max([abs(ref_beta[0] - ref_beta[1]), abs(ref_beta[0] - ref_beta[1])])
-    ref_x_s = np.linspace(ref_beta[1] - ref_dist, ref_beta[1] + ref_dist, 30)
+    # ref_dist = max([abs(ref_beta[0] - ref_beta[1]), abs(ref_beta[0] - ref_beta[1])])
+    ref_x_s = np.linspace(ref_beta[0]-2, ref_beta[2]+2, 30)
     ax.plot(ref_x_s, ref_model_fn(ref_x_s), color="royalblue", label="ref blade")
     ax.scatter(ref_beta, ref_omega, marker='o', color="royalblue")
 
     if not (np.any(np.isnan(best_omega)) == True):
         best_model = np.polyfit(best_beta, best_omega, 2)
         best_model_fn = np.poly1d(best_model)
-        best_dist = max([abs(best_beta[0] - best_beta[1]), abs(best_beta[0] - best_beta[1])])
-        best_x_s = np.linspace(best_beta[1] - best_dist, best_beta[1] + best_dist, 30)
+        # best_dist = max([abs(best_beta[0] - best_beta[1]), abs(best_beta[0] - best_beta[1])])
+        best_x_s = np.linspace(ref_beta[0]-2, ref_beta[2]+2, 30)
         ax.plot(best_x_s, best_model_fn(best_x_s), label="best blade", color="indianred")
         ax.scatter(best_beta, best_omega, marker='o', color="indianred")
 

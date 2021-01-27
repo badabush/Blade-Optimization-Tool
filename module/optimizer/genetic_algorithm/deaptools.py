@@ -73,7 +73,7 @@ def feasible(val):
 
 def penalty_distance(val):
     average = 16.5
-    return (np.deg2rad(val - average) ** 2) * 25
+    return (np.deg2rad(val - average) ** 2) * 40
 
 
 def get_three_point_paths(paths):
@@ -151,16 +151,18 @@ def update_blade_individuals(df_blade1, df_blade2, df_ind):
             df_blade2[row.id] = float(row.value)
     return df_blade1, df_blade2
 
-def generate_log(idx, df):
+def generate_log(idx, df, gen=0):
     """
     Generate entry for log
     :param idx:
     :param df:
     :return:
     """
+    df_gen = int(df.generation.iloc[idx])
     cols = df.columns
     entry = "".join("{key}:{val:.{digits}f}, ".format(key=cols[i], val=val, digits=4) for (i,val) in enumerate(df.iloc[idx].to_list()))
-
+    if (gen != 0) and (gen > df_gen):
+        entry = entry.replace("generation:{df_gen}".format(df_gen=df_gen), "generation:{gen}".format(gen=gen))
     return entry[:-2]
 
 def init_deap_df(checkboxes, threepoint_checked):

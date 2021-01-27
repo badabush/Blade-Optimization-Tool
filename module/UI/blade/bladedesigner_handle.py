@@ -231,6 +231,14 @@ class BDUpdateHandler:
         self.label['th_te'].setValue(ds['th_te'])
         self.slider['th_te'].setSliderPosition(ds['th_te'] * self.scale)
 
+        self.label['dist_blades'].setValue(ds['dist_blades'])
+        self.slider['dist_blades'].setSliderPosition(ds['dist_blades'] * self.scale)
+        self.label['PP'].setValue(ds['PP'])
+        self.slider['PP'].setSliderPosition(ds['PP'] * self.scale)
+        self.label['AO'].setValue(ds['AO'])
+        self.slider['AO'].setSliderPosition(ds['AO'] * self.scale)
+
+
     def update_all(self):
         """
         If Button: [Update All] is clicked, get values from labels and plot.

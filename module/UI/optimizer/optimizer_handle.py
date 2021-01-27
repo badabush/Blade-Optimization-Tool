@@ -67,6 +67,7 @@ class OptimHandler:
         # define thread events (for waiting)
         self.igg_event = threading.Event()
         self.res_event = threading.Event()
+        self.res_failed_event = threading.Event()
 
         # set default paths for lazy development
         # set default values from config
@@ -219,13 +220,16 @@ class OptimHandler:
         # start thread for .res reader generator
         if (timeout >= 300):
             self.outputbox("Error starting the process. Check FineTaskmanager window.")
-            raise TimeoutError
+            self.res_failed_event.set()
+            self.kill_loop()
+            return
+            # raise TimeoutError
 
         self.outputbox("Starting computation ..")
         start_time = datetime.datetime.now()
         q_res = queue.Queue()
         # q_xmf = queue.Queue()
-        t_res = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q_res, self.res_event))
+        t_res = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q_res, self.res_event), daemon=True)
         t_res.start()
 
         # reset and clear queue and plot

@@ -41,7 +41,7 @@ class BladeGen:
 
         # self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         # #TODO: camber spline is disabled for now
-
+        # self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         if 9999 in spline_pts:
             self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         else:

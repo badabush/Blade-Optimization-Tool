@@ -113,8 +113,8 @@ class DeapRunHandler(DeapScripts):
         else:
             self.toolbox.register("evaluate", self.test_eval)
 
-        # self.toolbox.register("mate", tools.cxTwoPoint)
-        self.toolbox.register("mate", tools.cxUniform, indpb=.5)
+        self.toolbox.register("mate", tools.cxTwoPoint)
+        # self.toolbox.register("mate", tools.cxUniform, indpb=.5)
         self.toolbox.register("mutate", self.mut_restricted, indpb=.3)
 
         # pick 3 random individuals, fitness evaluation and selection
@@ -207,6 +207,7 @@ class DeapRunHandler(DeapScripts):
             new_row['beta'] = match.beta
             new_row['omega'] = match.omega
             new_row['cp'] = match.cp
+            new_row['generation'] = self.generation  # update generation
 
             print("Omega: " + str(foolist))
 
@@ -267,6 +268,11 @@ class DeapRunHandler(DeapScripts):
         self.res_event.wait()
         time.sleep(2)
 
+        # if calculation didn't start or ran into an error for whatever reason
+        if self.res_failed_event.is_set():
+            self.res_failed_event.clear()
+            return 9999,
+
         self.beta, self.cp, self.omega = calc_xmf(self.xmf_param)
         # print("Omega: " + str(omega))
 
@@ -296,10 +302,10 @@ class DeapRunHandler(DeapScripts):
             beta_upper, cp_upper, omega_upper = calc_xmf(self.xmf_param_upper)
 
             # add 3 point parameters to new row
-            new_row['beta_lower'] = beta_lower[-1]
+            new_row['beta_lower'] = np.rad2deg(beta_lower[-1])
             new_row['omega_lower'] = omega_lower[-1]
             new_row['cp_lower'] = cp_lower[-1]
-            new_row['beta_upper'] = beta_upper[-1]
+            new_row['beta_upper'] = np.rad2deg(beta_upper[-1])
             new_row['omega_upper'] = omega_upper[-1]
             new_row['cp_upper'] = cp_upper[-1]
             res = self.A * (omega_lower[-1] / self.ref_blade["omega"]) + self.B * (
@@ -320,20 +326,20 @@ class DeapRunHandler(DeapScripts):
                 individual[i] = deaptools._random(float(gene[0]), float(gene[1]), int(gene[2]))
         return individual,
 
-    def feasible(self, _):
-        """Feasibility function for beta. Returns True if feasible, False otherwise."""
-        if 15 < np.rad2deg(self.beta[-1]) < 20:
-            return True
-        self.logger.info("Beta {0} not feasible.".format(np.round(np.rad2deg(self.beta[-1]), 3)))
-        return False
-
-    def distance(self, _):
-        """Quadratic Distance function to the feasibility region."""
-        return (np.rad2deg(self.beta[-1]) - 16) ** 2
+    # def feasible(self, _):
+    #     """Feasibility function for beta. Returns True if feasible, False otherwise."""
+    #     if 15 < np.rad2deg(self.beta[-1]) < 20:
+    #         return True
+    #     self.logger.info("Beta {0} not feasible.".format(np.round(np.rad2deg(self.beta[-1]), 3)))
+    #     return False
+    #
+    # def distance(self, _):
+    #     """Quadratic Distance function to the feasibility region."""
+    #     return (np.rad2deg(self.beta[-1]) - 16) ** 2
 
     def populate(self):
         # counter generations
-        g = 0
+        self.generation = 0
         pop = self.toolbox.population(n=self.dp_POP_SIZE)
         # evaluate population
         fitnesses = list(map(self.toolbox.evaluate, pop))
@@ -341,11 +347,12 @@ class DeapRunHandler(DeapScripts):
         for idx, (ind, fit) in enumerate(zip(pop, fitnesses)):
             # ind.fitness.values = fit
             # penalty on fitness when beta out of range
-            fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
+            if not fit[-1] > 9998:
+                fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
             ind.fitness.values = fit
             try:
                 self.df.iloc[idx + self.pointer_df].fitness = fit[0]
-                self.df.iloc[idx + self.pointer_df].generation = g
+                self.df.iloc[idx + self.pointer_df].generation = self.generation
                 # FIXME
                 if not self.cb_3point.isChecked():
                     entry = deaptools.generate_log(idx + self.pointer_df, self.df)
@@ -361,12 +368,12 @@ class DeapRunHandler(DeapScripts):
 
         minlist = []
         # genlist = []
-        while min(fits) > 0 and g < self.dp_MAX_GENERATIONS:
+        while min(fits) > 0 and self.generation < self.dp_MAX_GENERATIONS:
             # new generation
-            g += 1
-            self.logger.info("** Generation {0} **".format(g))
-            print("-- Generation %i --" % g)
-            self.label_deap_status.setText("Generation " + str(g))
+            self.generation += 1
+            self.logger.info("** Generation {0} **".format(self.generation))
+            print("-- Generation %i --" % self.generation)
+            self.label_deap_status.setText("Generation " + str(self.generation))
             # select next generation individuals
             offspring = self.toolbox.select(pop, len(pop))
             # clone selected individual
@@ -379,13 +386,14 @@ class DeapRunHandler(DeapScripts):
                         (self.df.alph11 == child[3]) & (self.df.alph12 == child[4]) & (self.df.alph21 == child[5]) & (
                                 self.df.alph22 == child[6]))
                     # assures that match_idx is scalar
-                    match = self.df.loc[np.min(match_idx)]
-                    if not self.cb_3point.isChecked():
-                        entry = deaptools.generate_log(idx + self.pointer_df, self.df)
-                        self.logger.info(entry)
-                    else:
-                        entry = deaptools.generate_log(idx + self.pointer_df, self.df)
-                        self.logger.info(entry)
+                    # match = self.df.loc[np.min(match_idx)]
+                    match_idx = np.min(match_idx)
+                    # if not self.cb_3point.isChecked():
+                    entry = deaptools.generate_log(match_idx, self.df, self.generation)
+                    self.logger.info(entry)
+                    # else:
+                    #     entry = deaptools.generate_log(match_idx, self.df)
+                    #     self.logger.info(entry)
                 except (IndexError, KeyError, ValueError) as e:
                     print(e)
                     self.logger.info("Error writing individual data.")
@@ -413,20 +421,18 @@ class DeapRunHandler(DeapScripts):
             for idx, (ind, fit) in enumerate(zip(invalid_ind, fitnesses)):
                 # new fitness values evaluation begins
                 # penalty on fitness when beta out of range
-                fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
+
+                # don't apply custom penalty when fitness is faulty
+                if not fit[-1] > 9998:
+                    fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta)
                 ind.fitness.values = fit
 
                 try:
                     print("inloop fitness:{0}".format(fit[0]))
                     self.df.iloc[idx + self.pointer_df].fitness = fit[0]
-                    self.df.iloc[idx + self.pointer_df].generation = g
-                    # FIXME
-                    if not self.cb_3point.isChecked():
-                        entry = deaptools.generate_log(idx + self.pointer_df, self.df)
-                        self.logger.info(entry)
-                    else:
-                        entry = deaptools.generate_log(idx + self.pointer_df, self.df)
-                        self.logger.info(entry)
+                    self.df.iloc[idx + self.pointer_df].generation = self.generation
+                    entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+                    self.logger.info(entry)
                 except (IndexError, KeyError, ValueError) as e:
                     print(e)
             # replace entire existing population with offspring
@@ -442,7 +448,7 @@ class DeapRunHandler(DeapScripts):
 
             # get total length of individuals within a generation
             try:
-                ds_len = self.df[self.df.generation == g].shape[0]
+                ds_len = self.df[self.df.generation == self.generation].shape[0]
                 self.logger.info("Population size: {0}, best Fitness: {1}".format((ds_len + length), min(fits)))
             except (IndexError, AttributeError) as e:
                 print(e)
@@ -459,8 +465,9 @@ class DeapRunHandler(DeapScripts):
 
             # FIXME:
             # break loop when omega of last 5 generations didn't change
-            if (g > 5):
-                if (np.sum(np.gradient(np.array([np.round(minlist[i], 5) for i in range(g - 5, g)]))) == 0):
+            if (self.generation > 5):
+                if (np.sum(np.gradient(np.array(
+                        [np.round(minlist[i], 5) for i in range(self.generation - 5, self.generation)]))) == 0):
                     self.logger.info("Fitness didn't change for 5 Generations, breaking loop.")
                     break
 
@@ -472,7 +479,7 @@ class DeapRunHandler(DeapScripts):
         try:
             idx_best = self.df[self.df.fitness == np.min(minlist)].index[0]
             self.logger.info("Best individual: ")
-            entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+            entry = deaptools.generate_log(idx_best, self.df)
             self.logger.info(entry)
         except IndexError:
             print(e)
