@@ -36,8 +36,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
          RunHandler, DeapRunHandler):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
-        restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
-        Slider and Textboxes are linked, so change one will modify the other (and vice versa).
+        restraints.txt. Parametee linked, so change one will modify the other (and vice versa).
     """
 
     def __init__(self):

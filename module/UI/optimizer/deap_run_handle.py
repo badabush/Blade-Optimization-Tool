@@ -16,10 +16,9 @@ from deap import base
 
 from module.UI.optimizer.generate_mesh_ui import MeshGenUI
 from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
-from module.optimizer.generate_script import gen_script
-from module.optimizer.optimtools import calc_xmf
 import module.optimizer.genetic_algorithm.deaptools as deaptools
 from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
+from module.optimizer.optimtools import calc_xmf
 from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
 from module.UI.optimizer.deap_run import DeapScripts
 
@@ -30,6 +29,8 @@ class DeapRunHandler(DeapScripts):
         self.A = .5
         self.B = 1.
         self.C = .5
+
+
 
         self.testrun = False
         if self.actionTestrun.isChecked():
@@ -47,6 +48,8 @@ class DeapRunHandler(DeapScripts):
         self.deap_config_ui.get_values()
         self.deap_settings = DeapSettingsHandle(self.deap_config_ui, self.dp_genes)
         self.beta = [np.deg2rad(17)]
+        # initialize fit_ref as 1. During eval of ref_blade, fit/fit_ref = fit
+        self.fit_ref = 1
         # init logs
         log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
         if not self.testrun:
@@ -113,21 +116,23 @@ class DeapRunHandler(DeapScripts):
         else:
             self.toolbox.register("evaluate", self.test_eval)
 
-        self.toolbox.register("mate", tools.cxTwoPoint)
-        # self.toolbox.register("mate", tools.cxUniform, indpb=.5)
+        # self.toolbox.register("mate", tools.cxTwoPoint)
+        self.toolbox.register("mate", tools.cxUniform, indpb=.5)
         self.toolbox.register("mutate", self.mut_restricted, indpb=.3)
 
         # pick 3 random individuals, fitness evaluation and selection
-        self.toolbox.register("select", tools.selTournament, tournsize=3)
+        self.toolbox.register("select", tools.selTournament, tournsize=5)
+        # self.toolbox.register("select", tools.selBest)
 
         # start thread for DEAP loop
-
         self.label_deap_status.setText("Populating.")
-        t = threading.Thread(name="deap_populate", target=self.populate)
+        t = threading.Thread(name="deap_populate", target=self.populate, daemon=True)
         t.start()
 
         self.logger.info(
-            '--- POP_SIZE: {0}, CXPB: {1}, MUTPB: {2}---'.format(self.dp_POP_SIZE, self.dp_CXPB, self.dp_MUTPB))
+            '--- POP_SIZE: {popsize}, CXPB: {cxpb}, MUTPB: {mutpb}, PENALTY_FACTOR: {penalty_factor} ---'.format(
+                popsize=self.dp_POP_SIZE, cxpb=self.dp_CXPB, mutpb=self.dp_MUTPB,
+                penalty_factor=self.deap_settings.values['penalty_factor']))
         self.logger.info("begin population")
         # self.populate()
 
@@ -187,6 +192,7 @@ class DeapRunHandler(DeapScripts):
         # update tandem blades
         self.ds1, self.ds2 = deaptools.update_blade_individuals(self.ds1, self.ds2, clean_individuals)
         # xoffset and yoffset need to be calculated from PP and AO
+        # TODO: change reference to clean_individuals
         self.ds2['x_offset'] = individual[1] * self.ds1['dist_blades']  # AO
         self.ds2['y_offset'] = (1 - individual[0]) * self.ds1['dist_blades']  # PP
 
@@ -313,8 +319,8 @@ class DeapRunHandler(DeapScripts):
                           omega_upper[-1] / self.ref_blade["omega"])
 
             self.df = self.df.append(new_row, ignore_index=True)
-            return res,
-        return omega,
+            return res / self.fit_ref,
+        return omega / self.fit_ref,
 
     def mut_restricted(self, individual, indpb):
         """
@@ -327,6 +333,19 @@ class DeapRunHandler(DeapScripts):
         return individual,
 
     def populate(self):
+        # update fit_ref with the actual value from evaluation of ref_blade
+        if not self.testrun:
+            # Run Reference Blade once
+            self.outputbox("[DEAP] Running Ref_Blade through solver.")
+            ref_individual = deaptools.ind_list_from_datasets(self.ds1, self.ds2, self.dp_genes)
+            self.label_deap_status.setText("Generating reference blade.")
+            self.fit_ref, = self.eval_engine(ref_individual)
+            self.outputbox("[DEAP] Updating fit_ref to {fit}".format(fit=self.fit_ref))
+            print("[DEAP] Updating fit_ref to {fit}".format(fit=self.fit_ref))
+            del ref_individual
+
+        self.label_deap_status.setText("Populating.")
+
         # counter generations
         self.generation = 0
         pop = self.toolbox.population(n=self.dp_POP_SIZE)
@@ -344,27 +363,27 @@ class DeapRunHandler(DeapScripts):
                 self.df.iloc[idx + self.pointer_df].fitness = fit[0]
                 self.df.iloc[idx + self.pointer_df].generation = self.generation
                 # FIXME
-                if not self.cb_3point.isChecked():
-                    entry = deaptools.generate_log(idx + self.pointer_df, self.df)
-                    self.logger.info(entry)
-                else:
-                    entry = deaptools.generate_log(idx + self.pointer_df, self.df)
-                    self.logger.info(entry)
+                # if not self.cb_3point.isChecked():
+                #     entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+                #     self.logger.info(entry)
+                # else:
+                #     entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+                #     self.logger.info(entry)
             except IndexError as e:
                 print(e)
                 self.logger.info("Error writing individual data.")
+
         # extract fitnesses
         fits = [ind.fitness.values[0] for ind in pop]
 
         minlist = []
-        # genlist = []
         while min(fits) > 0 and self.generation < self.dp_MAX_GENERATIONS:
             # new generation
             self.generation += 1
             self.logger.info("** Generation {0} **".format(self.generation))
             print("-- Generation %i --" % self.generation)
             self.label_deap_status.setText("Generation " + str(self.generation))
-            # select next generation individuals
+            # select parent individuals
             offspring = self.toolbox.select(pop, len(pop))
             # clone selected individual
             offspring = list(map(self.toolbox.clone, offspring))
@@ -378,12 +397,9 @@ class DeapRunHandler(DeapScripts):
                     # assures that match_idx is scalar
                     # match = self.df.loc[np.min(match_idx)]
                     match_idx = np.min(match_idx)
-                    # if not self.cb_3point.isChecked():
+
                     entry = deaptools.generate_log(match_idx, self.df, self.generation)
                     self.logger.info(entry)
-                    # else:
-                    #     entry = deaptools.generate_log(match_idx, self.df)
-                    #     self.logger.info(entry)
                 except (IndexError, KeyError, ValueError) as e:
                     print(e)
                     self.logger.info("Error writing individual data.")
@@ -419,7 +435,6 @@ class DeapRunHandler(DeapScripts):
                 ind.fitness.values = fit
 
                 try:
-                    print("inloop fitness:{0}".format(fit[0]))
                     self.df.iloc[idx + self.pointer_df].fitness = fit[0]
                     self.df.iloc[idx + self.pointer_df].generation = self.generation
                     entry = deaptools.generate_log(idx + self.pointer_df, self.df)
@@ -440,7 +455,8 @@ class DeapRunHandler(DeapScripts):
             # get total length of individuals within a generation
             try:
                 ds_len = self.df[self.df.generation == self.generation].shape[0]
-                self.logger.info("Population size: {0}, best Fitness: {1}".format((ds_len + length), min(fits)))
+                # self.logger.info("Population size: {0}, best Fitness: {1}".format((ds_len + length), min(fits)))
+                self.logger.info("Population size: {0}, best Fitness: {1}".format(length, min(fits)))
             except (IndexError, AttributeError) as e:
                 print(e)
 
@@ -453,12 +469,12 @@ class DeapRunHandler(DeapScripts):
             minlist.append(min(fits))
             # genlist.append()
             self.optifig_deap.animate_deap(minlist)
-
             # FIXME:
             # break loop when omega of last 5 generations didn't change
-            if (self.generation > 5):
+            n_identical_gens = 6
+            if (self.generation > n_identical_gens):
                 if (np.sum(np.gradient(np.array(
-                        [np.round(minlist[i], 5) for i in range(self.generation - 5, self.generation)]))) == 0):
+                        [np.round(minlist[i], n_identical_gens) for i in range(self.generation - n_identical_gens, self.generation)]))) == 0):
                     self.logger.info("Fitness didn't change for 5 Generations, breaking loop.")
                     break
 

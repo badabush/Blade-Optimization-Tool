@@ -13,7 +13,7 @@ from mimetypes import guess_type
 from pathlib import Path
 
 
-def deapMail(configfile, attachments):
+def deapMail(configfile, attachments, custom_message = ""):
     """
     Function for mailing the Log and Plots to assigned recipients.Called in module/optimizer/genetic_algorithm/deaptools
     after creating log folder and plotting has finished.
@@ -63,7 +63,7 @@ def deapMail(configfile, attachments):
     except IndexError as e:
         print(e)
 
-    body = """
+    body = custom_message + """
         This is a generated E-Mail by the DeapBot. A new run has finished successfully.
         
         Date: {0}

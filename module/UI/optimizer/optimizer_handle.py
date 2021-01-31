@@ -265,6 +265,8 @@ class OptimHandler:
                             if status_convergence(res_file.replace("res", "log")):
                                 self.outputbox("Convergence reached or run has finished.")
                                 convergence = True
+
+
                     else:
                         timeout = 0
                     # empty queue in chunks to minimize processor workload
@@ -276,12 +278,6 @@ class OptimHandler:
                             val = q_res.get()
                             idx = int(val[0])
                             ds_res[idx] = val
-                        # plot2 every 500 steps (writing frequency)
-                        # if (idx - 100) % 500 == 0:
-                        #     self.xmf_param['i'].append(idx)
-                        #     self.xmf_param = read_xmf(xmf_file, self.xmf_param)
-
-                        # self.optifig_xmf.animate_xmf(self.xmf_param)
 
                     if not first_run:
                         self.optifig_massflow.animate_massflow(ds_res)

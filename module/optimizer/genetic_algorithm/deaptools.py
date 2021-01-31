@@ -93,6 +93,27 @@ def get_three_point_paths(paths):
     return xmf_files, res_files, config
 
 
+def ind_list_from_datasets(ds1, ds2, genes):
+    """
+    Generate a list from datasets, mimicing the 'individual' list. Required for calculating reference Blade.
+    :param ds1:
+    :param ds2:
+    :return:
+    """
+    indlist = []
+    for key in genes.index:
+        ds_id = genes.loc[key].id
+        blade = int(genes.loc[key].blade)
+        if blade == 0:
+            indlist.append(ds1[ds_id])
+        elif blade == 1:
+            indlist.append(ds1[ds_id])
+        elif blade == 2:
+            indlist.append(ds2[ds_id])
+
+    return indlist
+
+
 def unravel_individual(checkboxes, dp_genes, individual):
     """
     Matches individuals with name of parameters and user input of free parameters from checkboxes and returns it as a dict so targeting values
@@ -115,7 +136,7 @@ def unravel_individual(checkboxes, dp_genes, individual):
     :return: dict
     """
 
-    df = pd.DataFrame(columns=["id", "blade", "value"]) # {key: individual[i] for }
+    df = pd.DataFrame(columns=["id", "blade", "value"])  # {key: individual[i] for }
     full_names = dp_genes.index.tolist()
     checked_params = [key for (key, bool) in checkboxes.items() if bool == 1]
     for i, full_name in enumerate(full_names):
@@ -151,6 +172,7 @@ def update_blade_individuals(df_blade1, df_blade2, df_ind):
             df_blade2[row.id] = float(row.value)
     return df_blade1, df_blade2
 
+
 def generate_log(idx, df, gen=0):
     """
     Generate entry for log
@@ -164,6 +186,8 @@ def generate_log(idx, df, gen=0):
     if (gen != 0) and (gen > df_gen):
         entry = entry.replace("generation:{df_gen}".format(df_gen=df_gen), "generation:{gen}".format(gen=gen))
     return entry[:-2]
+
+
 
 def init_deap_df(checkboxes, threepoint_checked):
     cols = [key for (key, bool) in checkboxes.items() if bool == 1]
@@ -185,6 +209,7 @@ def init_deap_df(checkboxes, threepoint_checked):
     cols.append("generation")
     df = pd.DataFrame(columns=cols)
     return df
+
 
 if __name__ == '__main__':
     # deapCleanupHandle("10-12-20_14-38-41.log", False)

@@ -17,7 +17,7 @@ from module.optimizer.genetic_algorithm.plot.plot_fitness_generation import fitn
 
 
 class DeapVisualize:
-    def __init__(self, logname, testrun=False):
+    def __init__(self, logname, testrun=False, custom_message=""):
 
         # read config files
         mail_configfile = Path.cwd() / "config/mailinglist.ini"
@@ -51,7 +51,7 @@ class DeapVisualize:
             for item in os.listdir(Path.cwd() / "log" / dtime):
                 attachments.append(Path.cwd() / "log" / dtime / item)
             print("Sending Mail.")
-            deapMail(mail_configfile, attachments)
+            deapMail(mail_configfile, attachments, custom_message=custom_message)
 
     def plotDeapResult(self, logdir):
         ds, blades, ds_popfit = self.readLog(self.logfile)
@@ -59,8 +59,9 @@ class DeapVisualize:
         # filter fitness < 1
         # ds = ds[ds.omega < 0.1]
         # ds.reset_index(inplace=True, drop=True)
-        # ds = ds[ds.fitness > 0.0]
-        # ds.reset_index(inplace=True, drop=True)
+        mean_fitness = ds.fitness.mean()
+        ds = ds[ds.fitness < mean_fitness*2]
+        ds.reset_index(inplace=True, drop=True)
 
         # plot fitness/generation
         fitness_generation(ds_popfit, logdir)
@@ -150,4 +151,6 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    DeapVisualize("test_27-01-21_17-50-36.log", True)
+    DeapVisualize("29-01-21_16-44-33.log", True)
+    # msg = "Fix: A datapoint with an extremly high fitness value was ruining the contour plots."
+    # DeapVisualize("27-01-21_13-57-22.log", False, msg)

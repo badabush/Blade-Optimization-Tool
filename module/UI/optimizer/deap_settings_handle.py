@@ -18,8 +18,6 @@ class DeapSettingsHandle:
         for key in self.df.index:
             # attributes valid for both blades (pp, ao, div)
             row = self.df.loc[key]
-            # if row.blade == 0:
-                # state of attribute is true
             if self.checkboxes[key]:
                 _min = row.minimum
                 _max = row.maximum
