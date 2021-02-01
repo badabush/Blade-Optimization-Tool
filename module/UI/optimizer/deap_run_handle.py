@@ -30,8 +30,6 @@ class DeapRunHandler(DeapScripts):
         self.B = 1.
         self.C = .5
 
-
-
         self.testrun = False
         if self.actionTestrun.isChecked():
             self.testrun = True
@@ -117,8 +115,12 @@ class DeapRunHandler(DeapScripts):
             self.toolbox.register("evaluate", self.test_eval)
 
         # self.toolbox.register("mate", tools.cxTwoPoint)
-        self.toolbox.register("mate", tools.cxUniform, indpb=.5)
-        self.toolbox.register("mutate", self.mut_restricted, indpb=.3)
+        # self.toolbox.register("mate", tools.cxUniform, indpb=.5)
+
+        # using a blend with alpha=0 is identical to a cxUniform, but latter seems to be implemented differently than
+        # it should be (cxUniform only swaps 2 genes)
+        self.toolbox.register("mate", tools.cxBlend, alpha=0.0)
+        self.toolbox.register("mutate", self.mut_restricted, indpb=.1)
 
         # pick 3 random individuals, fitness evaluation and selection
         self.toolbox.register("select", tools.selTournament, tournsize=5)
@@ -148,6 +150,50 @@ class DeapRunHandler(DeapScripts):
         # match param names with individual value
         clean_individuals = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes, individual)
 
+        match_idx = np.where(
+            (self.df.alph11 == clean_individuals.loc["alph11"].value) &
+            (self.df.alph12 == clean_individuals.loc["alph12"].value) &
+            (self.df.alph21 == clean_individuals.loc["alph21"].value) &
+            (self.df.alph22 == clean_individuals.loc["alph22"].value))
+
+        # if blade was simulated before, skip numeca process
+        if len(match_idx[0]) != 0:
+            # assures that match_idx is scalar
+            match = self.df.loc[np.min(match_idx)]
+            foolist = []
+            foolist.append(self.omega[-1])
+
+            new_row = deaptools.get_row(clean_individuals)
+            new_row['beta'] = match.beta
+            new_row['omega'] = match.omega
+            new_row['cp'] = match.cp
+            new_row['generation'] = self.generation  # update generation
+
+            print("Omega: " + str(foolist))
+
+            self.omega = [0, match.omega]
+            self.beta = [0, match.beta]
+            self.cp = [0, match.cp]
+            if not self.cb_3point.isChecked():
+                self.df = self.df.append(new_row, ignore_index=True)
+                return match.omega,
+            else:
+                omega_lower = match.omega_lower
+                omega = match.omega
+                omega_upper = match.omega_upper
+                res = self.A * (omega_lower / self.ref_blade["omega"]) + \
+                      self.B * (omega / self.ref_blade["omega"]) + \
+                      self.C * (omega_upper / self.ref_blade["omega"])
+                # add 3 point parameters to new row
+                new_row['beta_lower'] = match.beta_lower
+                new_row['omega_lower'] = match.omega_lower
+                new_row['cp_lower'] = match.cp_lower
+                new_row['beta_upper'] = match.beta_upper
+                new_row['omega_upper'] = match.omega_upper
+                new_row['cp_upper'] = match.cp_upper
+                self.df = self.df.append(new_row, ignore_index=True)
+                return res,
+
         beta = clean_individuals.value.to_numpy().sum() / 4
         omega = np.deg2rad(beta) / 10
         self.cp = [0, 2 * omega]
@@ -158,13 +204,12 @@ class DeapRunHandler(DeapScripts):
         new_row['beta'] = self.beta[-1]
         new_row['omega'] = self.omega[-1]
         new_row['cp'] = self.cp[-1]
+        new_row['generation'] = self.generation
 
         if not self.cb_3point.isChecked():
-
             self.df = self.df.append(new_row, ignore_index=True)
             return omega,
         else:
-
             new_row['beta_lower'] = self.beta[-1] * .9
             new_row['omega_lower'] = self.omega[-1] * 1.1
             new_row['cp_lower'] = self.cp[-1] * .9
@@ -319,6 +364,9 @@ class DeapRunHandler(DeapScripts):
                           omega_upper[-1] / self.ref_blade["omega"])
 
             self.df = self.df.append(new_row, ignore_index=True)
+
+            entry = deaptools.generate_log(-1, self.df)
+            self.logger.info(entry)
             return res / self.fit_ref,
         return omega / self.fit_ref,
 
@@ -362,13 +410,8 @@ class DeapRunHandler(DeapScripts):
             try:
                 self.df.iloc[idx + self.pointer_df].fitness = fit[0]
                 self.df.iloc[idx + self.pointer_df].generation = self.generation
-                # FIXME
-                # if not self.cb_3point.isChecked():
-                #     entry = deaptools.generate_log(idx + self.pointer_df, self.df)
-                #     self.logger.info(entry)
-                # else:
-                #     entry = deaptools.generate_log(idx + self.pointer_df, self.df)
-                #     self.logger.info(entry)
+                entry = deaptools.generate_log(idx + self.pointer_df, self.df)
+                self.logger.info(entry)
             except IndexError as e:
                 print(e)
                 self.logger.info("Error writing individual data.")
@@ -377,6 +420,7 @@ class DeapRunHandler(DeapScripts):
         fits = [ind.fitness.values[0] for ind in pop]
 
         minlist = []
+        ngen_size = int(self.dp_POP_SIZE/2)
         while min(fits) > 0 and self.generation < self.dp_MAX_GENERATIONS:
             # new generation
             self.generation += 1
@@ -384,38 +428,44 @@ class DeapRunHandler(DeapScripts):
             print("-- Generation %i --" % self.generation)
             self.label_deap_status.setText("Generation " + str(self.generation))
             # select parent individuals
-            offspring = self.toolbox.select(pop, len(pop))
+            offspring = self.toolbox.select(pop, ngen_size)
             # clone selected individual
             offspring = list(map(self.toolbox.clone, offspring))
 
             # put every winner of tournament into log
-            for child in offspring:
-                try:
-                    match_idx = np.where(
-                        (self.df.alph11 == child[3]) & (self.df.alph12 == child[4]) & (self.df.alph21 == child[5]) & (
-                                self.df.alph22 == child[6]))
-                    # assures that match_idx is scalar
-                    # match = self.df.loc[np.min(match_idx)]
-                    match_idx = np.min(match_idx)
-
-                    entry = deaptools.generate_log(match_idx, self.df, self.generation)
-                    self.logger.info(entry)
-                except (IndexError, KeyError, ValueError) as e:
-                    print(e)
-                    self.logger.info("Error writing individual data.")
+            # for child in offspring:
+            #     try:
+            #         match_idx = np.where(
+            #             (self.df.alph11 == child[3]) & (self.df.alph12 == child[4]) & (self.df.alph21 == child[5]) & (
+            #                     self.df.alph22 == child[6]))
+            #         # assures that match_idx is scalar
+            #         # match = self.df.loc[np.min(match_idx)]
+            #         match_idx = np.min(match_idx)
+            #         del child.fitness.values
+            #         # entry = deaptools.generate_log(match_idx, self.df, self.generation)
+            #         # self.logger.info(entry)
+            #     except (IndexError, KeyError, ValueError) as e:
+            #         print(e)
+            #         self.logger.info("Error writing individual data.")
             # crossover and mutations
-            for child1, child2 in zip(offspring[::2], offspring[1::2]):
+            for (idx_cx1, child1), (idx_cx2, child2) in zip(enumerate(offspring[::2]), enumerate(offspring[1::2])):
+                del child1.fitness.values
+                del child2.fitness.values
                 if random.random() < self.dp_CXPB:
                     self.toolbox.mate(child1, child2)
-                    self.logger.info("Crossover.")
-                    del child1.fitness.values
-                    del child2.fitness.values
+                    # self.logger.info("Crossover.")
+                    # print("Index CX1: {idx_cx}".format(idx_cx=idx_cx1))
+                    # # print("Index CX2: {idx_cx}".format(idx_cx=idx_cx2))
+                    # del child1.fitness.values
+                    # del child2.fitness.values
 
-            for mutant in offspring:
+            for idx_mut, mutant in enumerate(offspring):
+                del mutant.fitness.values
                 if random.random() < self.dp_MUTPB:
                     self.toolbox.mutate(mutant)
-                    self.logger.info("Mutation.")
-                    del mutant.fitness.values
+                    # self.logger.info("Mutation.")
+                    # print("Index MUT: {idx_mut}".format(idx_mut=idx_mut))
+                    # del mutant.fitness.values
 
             # set df pointer to number of rows before calculation of CX/MUT
             self.pointer_df = self.df.shape[0]
@@ -474,7 +524,8 @@ class DeapRunHandler(DeapScripts):
             n_identical_gens = 6
             if (self.generation > n_identical_gens):
                 if (np.sum(np.gradient(np.array(
-                        [np.round(minlist[i], n_identical_gens) for i in range(self.generation - n_identical_gens, self.generation)]))) == 0):
+                        [np.round(minlist[i], n_identical_gens) for i in
+                         range(self.generation - n_identical_gens, self.generation)]))) == 0):
                     self.logger.info("Fitness didn't change for 5 Generations, breaking loop.")
                     break
 
