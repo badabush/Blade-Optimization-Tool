@@ -30,6 +30,12 @@ class DeapRunHandler(DeapScripts):
         self.B = 1.
         self.C = .5
 
+        # random seed for testing consistency of GA
+        # good seed example:65, 66, 123, 70, 71, 72
+        # bad seed example: 42, 69
+        seed_number = 65
+        random.seed(seed_number)
+
         self.testrun = False
         if self.actionTestrun.isChecked():
             self.testrun = True
@@ -51,9 +57,17 @@ class DeapRunHandler(DeapScripts):
         # init logs
         log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
         if not self.testrun:
-            self.logfile = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
+            if seed_number == None:
+                self.logfile = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
+            else:
+                self.logfile = datetime.datetime.now().strftime(
+                    "%d-%m-%y_%H-%M-%S_seed_{seed}".format(seed=seed_number)) + '.log'
         else:
-            self.logfile = "test_" + datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
+            if seed_number == None:
+                self.logfile = "test_" + datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
+            else:
+                self.logfile = "test_" + datetime.datetime.now().strftime(
+                    "%d-%m-%y_%H-%M-%S_seed_{seed}".format(seed=seed_number)) + '.log'
         logging.basicConfig(
             level=logging.INFO,
             format=log_format,
@@ -135,8 +149,9 @@ class DeapRunHandler(DeapScripts):
             '--- POP_SIZE: {popsize}, CXPB: {cxpb}, MUTPB: {mutpb}, PENALTY_FACTOR: {penalty_factor} ---'.format(
                 popsize=self.dp_POP_SIZE, cxpb=self.dp_CXPB, mutpb=self.dp_MUTPB,
                 penalty_factor=self.deap_settings.values['penalty_factor']))
+        if seed_number != None:
+            self.logger.info("RANDOM SEED:{n_seed}".format(n_seed=seed_number))
         self.logger.info("begin population")
-        # self.populate()
 
     def test_eval(self, individual):
         """
@@ -365,16 +380,17 @@ class DeapRunHandler(DeapScripts):
 
             self.df = self.df.append(new_row, ignore_index=True)
 
-            entry = deaptools.generate_log(-1, self.df)
-            self.logger.info(entry)
+            # entry = deaptools.generate_log(-1, self.df, )
+            # self.logger.info(entry)
             return res / self.fit_ref,
+
+        self.df = self.df.append(new_row, ignore_index=True)
         return omega / self.fit_ref,
 
     def mut_restricted(self, individual, indpb):
         """
         Custom Mutation rule for keeping the genes in range.
         """
-
         for i, gene in enumerate(self.deap_settings.attribute_generator()):
             if random.random() < indpb:
                 individual[i] = deaptools._random(float(gene[0]), float(gene[1]), int(gene[2]))
@@ -420,7 +436,8 @@ class DeapRunHandler(DeapScripts):
         fits = [ind.fitness.values[0] for ind in pop]
 
         minlist = []
-        ngen_size = int(self.dp_POP_SIZE/2)
+        # ngen_size = int(self.dp_POP_SIZE/2)
+        ngen_size = len(pop)
         while min(fits) > 0 and self.generation < self.dp_MAX_GENERATIONS:
             # new generation
             self.generation += 1
@@ -432,40 +449,21 @@ class DeapRunHandler(DeapScripts):
             # clone selected individual
             offspring = list(map(self.toolbox.clone, offspring))
 
-            # put every winner of tournament into log
-            # for child in offspring:
-            #     try:
-            #         match_idx = np.where(
-            #             (self.df.alph11 == child[3]) & (self.df.alph12 == child[4]) & (self.df.alph21 == child[5]) & (
-            #                     self.df.alph22 == child[6]))
-            #         # assures that match_idx is scalar
-            #         # match = self.df.loc[np.min(match_idx)]
-            #         match_idx = np.min(match_idx)
-            #         del child.fitness.values
-            #         # entry = deaptools.generate_log(match_idx, self.df, self.generation)
-            #         # self.logger.info(entry)
-            #     except (IndexError, KeyError, ValueError) as e:
-            #         print(e)
-            #         self.logger.info("Error writing individual data.")
             # crossover and mutations
             for (idx_cx1, child1), (idx_cx2, child2) in zip(enumerate(offspring[::2]), enumerate(offspring[1::2])):
+                # placing the delete statements here will force the GA to reevaluate all fitnesses, thus logging
+                # the whole new generation
                 del child1.fitness.values
                 del child2.fitness.values
                 if random.random() < self.dp_CXPB:
                     self.toolbox.mate(child1, child2)
-                    # self.logger.info("Crossover.")
-                    # print("Index CX1: {idx_cx}".format(idx_cx=idx_cx1))
-                    # # print("Index CX2: {idx_cx}".format(idx_cx=idx_cx2))
-                    # del child1.fitness.values
-                    # del child2.fitness.values
 
             for idx_mut, mutant in enumerate(offspring):
+                # placing the delete statements here will force the GA to reevaluate all fitnesses, thus logging
+                # the whole new generation
                 del mutant.fitness.values
                 if random.random() < self.dp_MUTPB:
                     self.toolbox.mutate(mutant)
-                    # self.logger.info("Mutation.")
-                    # print("Index MUT: {idx_mut}".format(idx_mut=idx_mut))
-                    # del mutant.fitness.values
 
             # set df pointer to number of rows before calculation of CX/MUT
             self.pointer_df = self.df.shape[0]
@@ -485,7 +483,7 @@ class DeapRunHandler(DeapScripts):
                 ind.fitness.values = fit
 
                 try:
-                    self.df.iloc[idx + self.pointer_df].fitness = fit[0]
+                    self.df.iloc[idx + self.pointer_df].fitness = fit[-1]
                     self.df.iloc[idx + self.pointer_df].generation = self.generation
                     entry = deaptools.generate_log(idx + self.pointer_df, self.df)
                     self.logger.info(entry)
@@ -501,32 +499,29 @@ class DeapRunHandler(DeapScripts):
             mean = sum(fits) / length
             sum2 = sum(x * x for x in fits)
             std = abs(sum2 / length - mean ** 2) ** 0.5
-
+            minfit = self.df.fitness.iloc[self.pointer_df:].min()
             # get total length of individuals within a generation
-            try:
-                ds_len = self.df[self.df.generation == self.generation].shape[0]
-                # self.logger.info("Population size: {0}, best Fitness: {1}".format((ds_len + length), min(fits)))
-                self.logger.info("Population size: {0}, best Fitness: {1}".format(length, min(fits)))
-            except (IndexError, AttributeError) as e:
-                print(e)
+            self.logger.info("Population size: {0}, best Fitness: {1}".format(length, minfit))
+            # self.logger.info("Population size: {0}, best Fitness: {1}".format(length, min(fits)))
 
-            print("  Min %s" % min(fits))
+            # print("  Min %s" % min(fits))
+            print("  Min %s" % minfit)
             print("  Max %s" % max(fits))
             print("  Avg %s" % mean)
             print("  Std %s" % std)
 
             # plot
-            minlist.append(min(fits))
+            minlist.append(minfit)
+            # minlist.append(min(fits))
             # genlist.append()
             self.optifig_deap.animate_deap(minlist)
             # FIXME:
             # break loop when omega of last 5 generations didn't change
-            n_identical_gens = 6
+            n_identical_gens = 10
             if (self.generation > n_identical_gens):
-                if (np.sum(np.gradient(np.array(
-                        [np.round(minlist[i], n_identical_gens) for i in
-                         range(self.generation - n_identical_gens, self.generation)]))) == 0):
-                    self.logger.info("Fitness didn't change for 5 Generations, breaking loop.")
+                if all(np.round(x, 5) == np.round(minlist[-1], 5) for x in minlist[-n_identical_gens:]):
+                    self.logger.info(
+                        "Fitness didn't change for {ngens} Generations, breaking loop.".format(ngens=n_identical_gens))
                     break
 
         print("-- End of (successful) evolution --")
@@ -539,7 +534,7 @@ class DeapRunHandler(DeapScripts):
             self.logger.info("Best individual: ")
             entry = deaptools.generate_log(idx_best, self.df)
             self.logger.info(entry)
-        except IndexError:
+        except IndexError as e:
             print(e)
         blade1_str = ""
         blade2_str = ""

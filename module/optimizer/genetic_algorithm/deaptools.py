@@ -180,7 +180,10 @@ def generate_log(idx, df, gen=0):
     :param df:
     :return:
     """
-    df_gen = int(df.generation.iloc[idx])
+    try:
+        df_gen = int(df.generation.iloc[idx])
+    except ValueError:
+        df_gen = 0
     cols = df.columns
     entry = "".join("{key}:{val:.{digits}f}, ".format(key=cols[i], val=val, digits=4) for (i,val) in enumerate(df.iloc[idx].to_list()))
     if (gen != 0) and (gen > df_gen):

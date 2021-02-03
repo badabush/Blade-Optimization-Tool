@@ -134,7 +134,7 @@ class OptimPlotDEAP(FigureCanvas):
     Real-Time plot of data from xmf file.
     """
 
-    def __init__(self, parent=None, width=5, height=5, dpi=100):
+    def __init__(self, parent=None, width=4, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
