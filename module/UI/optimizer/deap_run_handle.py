@@ -31,9 +31,15 @@ class DeapRunHandler(DeapScripts):
         self.C = .5
 
         # random seed for testing consistency of GA
-        # good seed example:65, 66, 123, 70, 71, 72
+        # Testrun:
+        # good seed example: 65, 66, 123, 70, 71, 72
         # bad seed example: 42, 69
-        seed_number = 65
+        # Real run:
+        # good seed example:
+        # bad seed example: 69 (blows up), 70 (very low fitness value),
+
+        # seed_number = 21
+        seed_number = None
         random.seed(seed_number)
 
         self.testrun = False
