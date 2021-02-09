@@ -123,6 +123,7 @@ class DeapRunHandler(DeapScripts):
                 self.toolbox.attr_th1, self.toolbox.attr_th2,
                 self.toolbox.attr_xmaxth1, self.toolbox.attr_xmaxth2,
                 self.toolbox.attr_xmaxcamber1, self.toolbox.attr_xmaxcamber2,
+                self.toolbox.attr_gamma_te1, self.toolbox.attr_gamma_te2,
                 self.toolbox.attr_leth1, self.toolbox.attr_leth2,
                 self.toolbox.attr_teth1, self.toolbox.attr_teth2
             ), n=1)

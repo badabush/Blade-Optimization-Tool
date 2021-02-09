@@ -30,6 +30,8 @@ class DeapConfigUi(QtWidgets.QDialog):
             "xmaxth2": self.cb_xmaxth2,
             "xmaxcamber1": self.cb_xmaxcamber1,
             "xmaxcamber2": self.cb_xmaxcamber2,
+            "gamma_te1": self.cb_gamma_te1,
+            "gamma_te2": self.cb_gamma_te2,
             "leth1": self.cb_leth1,
             "leth2": self.cb_leth2,
             "teth1": self.cb_teth1,

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>707</width>
-    <height>433</height>
+    <height>480</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <property name="geometry">
     <rect>
      <x>530</x>
-     <y>390</y>
+     <y>440</y>
      <width>168</width>
      <height>27</height>
     </rect>
@@ -51,7 +51,7 @@
      <x>20</x>
      <y>10</y>
      <width>421</width>
-     <height>411</height>
+     <height>461</height>
     </rect>
    </property>
    <property name="title">
@@ -76,27 +76,10 @@
       <x>0</x>
       <y>40</y>
       <width>201</width>
-      <height>366</height>
+      <height>412</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="0" column="0">
-      <widget class="QCheckBox" name="cb_pp">
-       <property name="text">
-        <string>Percent Pitch (PP)</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QCheckBox" name="cb_lambd1">
-       <property name="text">
-        <string>Lambda (lambd1)</string>
-       </property>
-      </widget>
-     </item>
      <item row="7" column="0">
       <widget class="QCheckBox" name="cb_xmaxth1">
        <property name="text">
@@ -104,12 +87,24 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QCheckBox" name="cb_ao">
+     <item row="10" column="0">
+      <widget class="QCheckBox" name="cb_leth1">
        <property name="text">
-        <string>Axial Overlap (AO)</string>
+        <string>Leading Edge Thickness
+(leth1)</string>
        </property>
-       <property name="checked">
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QCheckBox" name="cb_teth1">
+       <property name="text">
+        <string>Trailing Edge Thickness
+(teth1)</string>
+       </property>
+       <property name="checkable">
         <bool>false</bool>
        </property>
       </widget>
@@ -121,10 +116,13 @@
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
-      <widget class="QCheckBox" name="cb_th1">
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="cb_pp">
        <property name="text">
-        <string>Thickness (th1)</string>
+        <string>Percent Pitch (PP)</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -135,6 +133,38 @@
        </property>
        <property name="checked">
         <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QCheckBox" name="cb_th1">
+       <property name="text">
+        <string>Thickness (th1)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <widget class="QCheckBox" name="cb_xmaxcamber1">
+       <property name="text">
+        <string>Pos. max. Camber
+(xmaxcamber1)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="0">
+      <widget class="QCheckBox" name="cb_lambd1">
+       <property name="text">
+        <string>Lambda (lambd1)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QCheckBox" name="cb_ao">
+       <property name="text">
+        <string>Axial Overlap (AO)</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
        </property>
       </widget>
      </item>
@@ -149,32 +179,9 @@
       </widget>
      </item>
      <item row="9" column="0">
-      <widget class="QCheckBox" name="cb_leth1">
+      <widget class="QCheckBox" name="cb_gamma_te1">
        <property name="text">
-        <string>Leading Edge Thickness
-(leth1)</string>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
-      <widget class="QCheckBox" name="cb_xmaxcamber1">
-       <property name="text">
-        <string>Pos. max. Camber
-(xmaxcamber1)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QCheckBox" name="cb_teth1">
-       <property name="text">
-        <string>Trailing Edge Thickness
-(teth1)</string>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
+        <string>Gamma TE (gamma_te1)</string>
        </property>
       </widget>
      </item>
@@ -186,7 +193,7 @@
       <x>210</x>
       <y>20</y>
       <width>211</width>
-      <height>391</height>
+      <height>431</height>
      </rect>
     </property>
     <property name="title">
@@ -196,16 +203,19 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>105</y>
-       <width>202</width>
-       <height>281</height>
+       <y>109</y>
+       <width>204</width>
+       <height>321</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="cb_lambd2">
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="cb_alpha22">
         <property name="text">
-         <string>Lambda (lambd2)</string>
+         <string>Alpha 2 (alph22)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -213,6 +223,32 @@
        <widget class="QCheckBox" name="cb_xmaxth2">
         <property name="text">
          <string>Pos max. Th (xmaxth2)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="cb_th2">
+        <property name="text">
+         <string>Thickness (th2)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="QCheckBox" name="cb_xmaxcamber2">
+        <property name="text">
+         <string>Position max. Camber
+(xmaxcamber2)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QCheckBox" name="cb_leth2">
+        <property name="text">
+         <string>Leading Edge Thickness
+(leth2)</string>
+        </property>
+        <property name="checkable">
+         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -226,7 +262,7 @@
         </property>
        </widget>
       </item>
-      <item row="7" column="0">
+      <item row="8" column="0">
        <widget class="QCheckBox" name="cb_teth2">
         <property name="text">
          <string>Trailing Edge Thickness
@@ -237,39 +273,17 @@
         </property>
        </widget>
       </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="cb_th2">
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="cb_lambd2">
         <property name="text">
-         <string>Thickness (th2)</string>
+         <string>Lambda (lambd2)</string>
         </property>
        </widget>
       </item>
       <item row="6" column="0">
-       <widget class="QCheckBox" name="cb_leth2">
+       <widget class="QCheckBox" name="cb_gamma_te2">
         <property name="text">
-         <string>Leading Edge Thickness
-(leth2)</string>
-        </property>
-        <property name="checkable">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QCheckBox" name="cb_xmaxcamber2">
-        <property name="text">
-         <string>Position max. Camber
-(xmaxcamber2)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="cb_alpha22">
-        <property name="text">
-         <string>Alpha 2 (alph22)</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
+         <string>Gamma TE (gamma_te2)</string>
         </property>
        </widget>
       </item>
