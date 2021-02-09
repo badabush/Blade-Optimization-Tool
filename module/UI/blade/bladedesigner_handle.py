@@ -28,8 +28,14 @@ class BDUpdateHandler:
         """
         Get Value from Slider, apply to Label Lambda (lambd).
         """
-        value = self.label['lambd'].value()
+        value = self.label['lambd'].value() * 10
         self.slider['lambd'].setSliderPosition(value)
+
+    def update_lambd(self, value):
+        """
+        Set Label to input value wiht scale for lambda (lambd).
+        """
+        self.label['lambd'].setValue(float(value)/10)
 
     def update_box_npts(self):
         """
@@ -218,8 +224,8 @@ class BDUpdateHandler:
         self.slider['alpha1'].setSliderPosition(ds['alpha1'])
         self.label['alpha2'].setValue(ds['alpha2'])
         self.slider['alpha2'].setSliderPosition(ds['alpha2'])
-        self.label['lambd'].setValue(ds['lambd'])
-        self.slider['lambd'].setSliderPosition(ds['lambd'])
+        self.label['lambd'].setValue(ds['lambd']*10)
+        self.slider['lambd'].setSliderPosition(ds['lambd']*10)
         self.label['th'].setValue(ds['th'])
         self.slider['th'].setSliderPosition(ds['th'] * self.scale)
         self.label['xmax_th'].setValue(ds['xmax_th'])
@@ -237,7 +243,6 @@ class BDUpdateHandler:
         self.slider['PP'].setSliderPosition(ds['PP'] * self.scale)
         self.label['AO'].setValue(ds['AO'])
         self.slider['AO'].setSliderPosition(ds['AO'] * self.scale)
-
 
     def update_all(self):
         """
@@ -267,7 +272,8 @@ class BDUpdateHandler:
             # try to get data from imported blade
             if self.imported_blade_vis == 1:
                 self.ds_import = pd.DataFrame(
-                    {'x': self.imported_blade.x, 'y': self.imported_blade.y, 'x_offset': 0, 'y_offset': 0})
+                    {'x': self.imported_blade.x, 'y': self.imported_blade.y, 'x_offset': self.in_blade_offset[0],
+                     'y_offset': self.in_blade_offset[1]})
             else:
                 self.ds_import = 0
         except AttributeError as e:
@@ -284,7 +290,8 @@ class BDUpdateHandler:
             if self.imported_blade_vis == 1:
                 self.ds_import = pd.DataFrame(
                     {'x1': self.imported_blade1.x, 'y1': self.imported_blade1.y,
-                     'x2': self.imported_blade2.x, 'y2': self.imported_blade2.y, 'x_offset': 0, 'y_offset': 0})
+                     'x2': self.imported_blade2.x, 'y2': self.imported_blade2.y,
+                     'x_offset': self.in_blade_offset[0], 'y_offset': self.in_blade_offset[1]})
             else:
                 self.ds_import = 0
         except AttributeError as e:
@@ -303,11 +310,11 @@ class BDUpdateHandler:
             ds1['pts_th'] = self.thdist_spline_pts
             ds1['npts'] = self.number_of_points
             ds1['l_chord'] = self.length_chord
-            ds1['x_offset'] = ds1['AO'] * ds1['dist_blades']# AO
-            ds1['y_offset'] = (1 - ds1['PP']) * ds1['dist_blades']# PP
+            ds1['x_offset'] = ds1['AO'] * ds1['dist_blades']  # AO
+            ds1['y_offset'] = (1 - ds1['PP']) * ds1['dist_blades']  # PP
 
-            self.ds2['x_offset'] = ds1['AO'] * ds1['dist_blades']# AO
-            self.ds2['y_offset'] = (1 - ds1['PP']) * ds1['dist_blades']# PP
+            self.ds2['x_offset'] = ds1['AO'] * ds1['dist_blades']  # AO
+            self.ds2['y_offset'] = (1 - ds1['PP']) * ds1['dist_blades']  # PP
             self.ds1 = ds1
 
             self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
@@ -326,11 +333,11 @@ class BDUpdateHandler:
             ds2['npts'] = self.number_of_points
             ds2['l_chord'] = self.length_chord
             # same xy offset as in ds1, but required here to update div,PP,AO when blade 2 is selected
-            ds2['x_offset'] = ds2['AO'] * ds2['dist_blades']# AO
-            ds2['y_offset'] = (1 - ds2['PP']) * ds2['dist_blades']# PP
+            ds2['x_offset'] = ds2['AO'] * ds2['dist_blades']  # AO
+            ds2['y_offset'] = (1 - ds2['PP']) * ds2['dist_blades']  # PP
 
-            self.ds1['x_offset'] = ds2['AO'] * ds2['dist_blades']# AO
-            self.ds1['y_offset'] = (1 - ds2['PP']) * ds2['dist_blades']# PP
+            self.ds1['x_offset'] = ds2['AO'] * ds2['dist_blades']  # AO
+            self.ds1['y_offset'] = (1 - ds2['PP']) * ds2['dist_blades']  # PP
             self.ds2 = ds2
             self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
@@ -393,46 +400,12 @@ class BDUpdateHandler:
         self.update_select()
         self.select_blade = 1
 
-    # def update_tandem_gap(self):
-    #     """
-    #     Blade 2 position control, button [up].
-    #     """
-    #     PP = self.ds2['PP']
-    #     AO = self.ds2['AO']
-    #
-    #     self.ds2['x_offset'] = self.blade2_offset[1]
-    #     self.ds2['y_offset'] = self.blade2_offset[1]
-    #     self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
-    #
-    # def update_B2_down(self):
-    #     """
-    #     Blade 2 position control, button [down].
-    #     """
-    #     self.blade2_offset[1] -= 0.01
-    #     self.ds2['y_offset'] = self.blade2_offset[1]
-    #     self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
-    #
-    # def update_B2_left(self):
-    #     """
-    #     Blade 2 position control, button [left].
-    #     """
-    #     self.blade2_offset[0] -= 0.01
-    #     self.ds2['x_offset'] = self.blade2_offset[0]
-    #     self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
-    #
-    # def update_B2_right(self):
-    #     """
-    #     Blade 2 position control, button [right].
-    #     """
-    #     self.blade2_offset[0] += 0.01
-    #     self.ds2['x_offset'] = self.blade2_offset[0]
-    #     self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2)
-
     def update_in_up(self):
         """
         Imported Blade position control, button [up].
         """
         self.ds_import['y_offset'] += 0.001
+        self.in_blade_offset[1] = self.ds_import['y_offset']
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
     def update_in_down(self):
@@ -440,6 +413,7 @@ class BDUpdateHandler:
         Imported Blade position control, button [down].
         """
         self.ds_import['y_offset'] -= 0.001
+        self.in_blade_offset[1] = self.ds_import['y_offset']
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
     def update_in_left(self):
@@ -447,6 +421,7 @@ class BDUpdateHandler:
         Imported Blade position control, button [left].
         """
         self.ds_import['x_offset'] -= 0.001
+        self.in_blade_offset[0] = self.ds_import['x_offset']
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
     def update_in_right(self):
@@ -454,6 +429,7 @@ class BDUpdateHandler:
         Imported Blade position control, button [right].
         """
         self.ds_import['x_offset'] += 0.001
+        self.in_blade_offset[0] = self.ds_import['x_offset']
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
     def update_imported_blade(self):
@@ -466,7 +442,6 @@ class BDUpdateHandler:
         else:
             self.update_in_control_vis(1)
             self.imported_blade_vis = 1
-
 
     def update_in_control_vis(self, visible=0):
         """

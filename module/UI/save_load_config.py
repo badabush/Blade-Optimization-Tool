@@ -29,8 +29,8 @@ class SaveLoadConfig:
             print("I/O error")
         pass
 
-    def load_config(self, fileName):
-        if fileName == "":
+    def load_config(self, fileName=""):
+        if (fileName == "") or (fileName==False):
             path = Path(os.getcwd() + "../../geo_output/blade_config/")
             options = QFileDialog.Options()
             options |= QFileDialog.DontUseNativeDialog

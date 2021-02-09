@@ -3,7 +3,7 @@ import os
 from pathlib import Path
 from shutil import copy
 from configparser import ConfigParser
-
+import matplotlib
 import pandas as pd
 
 from module.optimizer.mail.mail_script import deapMail
@@ -14,22 +14,30 @@ from module.optimizer.genetic_algorithm.plot.plot_blades import deap_blade
 from module.optimizer.genetic_algorithm.plot.plot_scatter_matrix import scatter_matrix
 from module.optimizer.genetic_algorithm.plot.plot_threepoint import three_point
 from module.optimizer.genetic_algorithm.plot.plot_fitness_generation import fitness_generation
+from module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter import fitness_generation_scatter
 
 
 class DeapVisualize:
     def __init__(self, logname, testrun=False, custom_message=""):
+        font = {'family': 'normal',
+                'weight': 'bold',
+                'size': 16}
 
+        matplotlib.rc('font', **font)
         # read config files
         mail_configfile = Path.cwd() / "config/mailinglist.ini"
         dtime = datetime.datetime.now().strftime("%d-%m-%Y_%H.%M.%S")
-        self.logfile = Path.cwd() / logname
+        self.logfile = []
+        self.logfile.append(Path.cwd() / logname)
+        # self.logfile.append(Path.cwd() / logname[1])
         if not testrun:
             path = os.path.join(Path.cwd() / "log/", dtime)
         else:
-            path = os.path.join(Path.cwd() / "log/", "test_" + dtime)
+            path = os.path.join(Path.cwd() / "log/tex/", "test_" + dtime)
+            # path = os.path.join(Path.cwd() / "log/", "test_" + dtime)
         os.mkdir(path)
         # copy log file to newly created folder
-        copy(self.logfile, path)
+        # copy(self.logfile, path)
 
         # get reference blade beta/cp/omega from ini file
         ref_blade_config = ConfigParser()
@@ -46,46 +54,48 @@ class DeapVisualize:
 
         self.plotDeapResult(path)
         # mail results to recipients
-        if not testrun:
-            attachments = []
-            for item in os.listdir(Path.cwd() / "log" / dtime):
-                attachments.append(Path.cwd() / "log" / dtime / item)
-            print("Sending Mail.")
-            deapMail(mail_configfile, attachments, custom_message=custom_message)
+        # if not testrun:
+        #     attachments = []
+        #     for item in os.listdir(Path.cwd() / "log" / dtime):
+        #         attachments.append(Path.cwd() / "log" / dtime / item)
+        #     print("Sending Mail.")
+        #     deapMail(mail_configfile, attachments, custom_message=custom_message)
 
     def plotDeapResult(self, logdir):
-        ds, blades, ds_popfit = self.readLog(self.logfile)
+        ds1, blades1, ds_popfit1 = self.readLog(self.logfile[0])
+        # ds2, blades2, ds_popfit2 = self.readLog(self.logfile[1])
         # plots for PP and AO over time
         # filter fitness < 1
         # ds = ds[ds.omega < 0.1]
         # ds.reset_index(inplace=True, drop=True)
-        mean_fitness = ds.fitness.mean()
-        ds = ds[ds.fitness < mean_fitness*2]
-        ds.reset_index(inplace=True, drop=True)
+        # mean_fitness = ds.fitness.mean()
+        # ds = ds[ds.fitness < mean_fitness*2]
+        # ds.reset_index(inplace=True, drop=True)
 
         # plot fitness/generation
-        fitness_generation(ds_popfit, logdir)
+        # fitness_generation([ds_popfit1,ds_popfit2], logdir)
+        # fitness_generation(ds_popfit1, logdir)
+        fitness_generation_scatter(ds1, logdir)
+        # # plot 3point curve ref/best blade
+        # try:
+        #     three_point(ds, self.ref_blade, logdir)
+        # except KeyError:
+        #     print("not a 3point run.")
 
-        # plot 3point curve ref/best blade
-        try:
-            three_point(ds, self.ref_blade, logdir)
-        except KeyError:
-            print("not a 3point run.")
-
-        # plot a feature over time
-        feature_time(ds, logdir)
-
-        # plot features over density
-        feature_density(ds, logdir)
-
-        # contour(ds, logdir)
-        contour2(ds, logdir)
+        # # plot a feature over time
+        # feature_time(ds, logdir)
+        #
+        # # plot features over density
+        # feature_density(ds, logdir)
+        #
+        # # contour(ds, logdir)
+        # contour2(ds, logdir)
         # get default blade parameters
-        try:
-            deap_blade(blades, logdir)
-        except IndexError as e:
-            print(e)
-            print("No blade parameters found in log file.")
+        # try:
+        #     deap_blade(blades, logdir)
+        # except IndexError as e:
+        #     print(e)
+        #     print("No blade parameters found in log file.")
 
         # scatter matrix
         # scatter_matrix(ds, logdir)
@@ -151,6 +161,7 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    DeapVisualize("29-01-21_16-44-33.log", True)
+    # DeapVisualize(["test_03-02-21_16-02-10_seed_65.log", "test_03-02-21_16-10-18_seed_65.log"], True)
+    DeapVisualize("07-02-21_21-51-56 - Copy.log", True)
     # msg = "Fix: A datapoint with an extremly high fitness value was ruining the contour plots."
     # DeapVisualize("27-01-21_13-57-22.log", False, msg)

@@ -39,16 +39,15 @@ class BladeGen:
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, int(self.ds['npts']/2))))  # x-coord generation
         # self.x = np.linspace(0, 1, self.ds['npts'])
 
-        # self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         # #TODO: camber spline is disabled for now
-        # self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
-        if 9999 in spline_pts:
-            self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
-        else:
-            self.xy_cspline = compute_spline(spline_pts[:, 0], spline_pts[:, 1])
-            self.xy_camber = cdist_from_spline(self.xy_cspline, self.ds['theta'])
-            # update x because spline function in spline differs x slightly (otherwise thickness dist doesnt fit spline)
-            self.x = self.xy_camber[:, 0]
+        self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
+        # if 9999 in spline_pts:
+        #     self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
+        # else:
+        #     self.xy_cspline = compute_spline(spline_pts[:, 0], spline_pts[:, 1])
+        #     self.xy_camber = cdist_from_spline(self.xy_cspline, self.ds['theta'])
+        #     update x because spline function in spline differs x slightly (otherwise thickness dist doesnt fit spline)
+            # self.x = self.xy_camber[:, 0]
 
         if self.thdist_option == 0:
             xy_th = self.thickness_dist_v1()
