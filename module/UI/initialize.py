@@ -72,6 +72,9 @@ class Initialize:
         self.slider['xmax_camber'] = self.slider_xmax_camber
         self.label['xmax_camber'] = self.val_xmax_camber
 
+        self.slider['gamma_te'] = self.slider_gamma_te
+        self.label['gamma_te'] = self.val_gamma_te
+
         self.slider['th_le'] = self.slider_thle
         self.label['th_le'] = self.val_thle
 
@@ -112,6 +115,8 @@ class Initialize:
         self.label['xmax_th'].editingFinished.connect(self.update_box_xmax_th)
         self.slider['xmax_camber'].valueChanged[int].connect(self.update_xmax_camber)
         self.label['xmax_camber'].editingFinished.connect(self.update_box_xmax_camber)
+        self.slider['gamma_te'].valueChanged[int].connect(self.update_gamma_te)
+        self.label['gamma_te'].editingFinished.connect(self.update_box_gamma_te)
         self.slider['th_le'].valueChanged[int].connect(self.update_thle)
         self.label['th_le'].editingFinished.connect(self.update_box_thle)
         self.slider['th_te'].valueChanged[int].connect(self.update_thte)

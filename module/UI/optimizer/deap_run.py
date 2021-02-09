@@ -5,6 +5,11 @@ from configparser import ConfigParser
 from module.optimizer.generate_script import gen_script
 
 class DeapScripts:
+    """
+    Note: three point calculation will be used from optimizer (run_handle), thus reimplementing it here has become
+    obsolete.
+    TODO: Do the same with one_point
+    """
     #
     # def deap_three_point(self):
     #     """

@@ -43,7 +43,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         super(Ui, self).__init__()
         uic.loadUi('UI/qtdesigner/mainwindow.ui', self)
         # declaring param keys, load restraints for slider
-        self.param_keys = ['alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'th_le',
+        self.param_keys = ['alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'gamma_te', 'th_le',
                            'th_te', 'dist_blades', 'PP', 'AO']
         self.restraints = load_config_file('UI/config/restraints.txt')
         self.menu_default()  # set menu defaults

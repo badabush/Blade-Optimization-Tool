@@ -94,6 +94,21 @@ class BDUpdateHandler:
         value = self.label['xmax_camber'].value() * self.scale
         self.slider['xmax_camber'].setSliderPosition(value)
 
+    def update_gamma_te(self, value):
+        """
+        Set Label to input value with scale for gamma trailing edge (gamma_te).
+        :param value: input value
+        :type value: float
+        """
+        self.label['gamma_te'].setValue(float(value) / self.scale)
+
+    def update_box_gamma_te(self):
+        """
+        Scale Value from Label, set Slider Position of gamma trailing edge (gamma_te).
+        """
+        value = self.label['gamma_te'].value() * self.scale
+        self.slider['gamma_te'].setSliderPosition(value)
+
     def update_thle(self, value):
         """
         Set Label to input value with scale and excluded range for thickness LE (thle).
@@ -232,6 +247,8 @@ class BDUpdateHandler:
         self.slider['xmax_th'].setSliderPosition(ds['xmax_th'] * self.scale)
         self.label['xmax_camber'].setValue(ds['xmax_camber'])
         self.slider['xmax_camber'].setSliderPosition(ds['xmax_camber'] * self.scale)
+        self.label['gamma_te'].setValue(ds['gamma_te'])
+        self.slider['gamma_te'].setSliderPosition(ds['gamma_te'] * self.scale)
         self.label['th_le'].setValue(ds['th_le'])
         self.slider['th_le'].setSliderPosition(ds['th_le'] * self.scale)
         self.label['th_te'].setValue(ds['th_te'])

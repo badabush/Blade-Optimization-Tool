@@ -15,7 +15,7 @@ class BladeGen:
     """
 
     def __init__(self, frontend='user', file='', nblade='single', th_dist_option=0, th=.0215, alpha1=25, alpha2=25,
-                 x_maxcamber=.4, x_maxth=.3, l_chord=1.0, lambd=20, th_le=0.01, th_te=0.0135, npts=1000,
+                 x_maxcamber=.4, gamma_te=.14, x_maxth=.3, l_chord=1.0, lambd=20, th_le=0.01, th_te=0.0135, npts=1000,
                  spline_pts=[9999], thdist_points=[9999]):
 
         self.file = file
@@ -35,7 +35,7 @@ class BladeGen:
 
         # pack parameters into dict
         self.ds = self.params(th, [alpha1, alpha2], x_maxcamber, x_maxth, l_chord, lambd, th_le,
-                              th_te, npts)
+                              th_te, gamma_te, npts)
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, int(self.ds['npts']/2))))  # x-coord generation
         # self.x = np.linspace(0, 1, self.ds['npts'])
 
@@ -68,7 +68,7 @@ class BladeGen:
             self._return()
 
     def params(self, th, alpha, x_maxcamber, x_maxth, l_chord, lambd, th_le,
-               th_te, npts):
+               th_te, gamma_te, npts):
         """
         Generate parameters.
         Return dataset (ds) with parameters.
@@ -90,7 +90,7 @@ class BladeGen:
             ds['xmax_th'] = x_maxth
             ds['th_le'] = th_le  # * ds['l_chord']
             ds['th_te'] = th_te  # * ds['l_chord']
-            ds['gamma_te'] = .07  # Lieblein Diffusion Factor for front and rear blade
+            ds['gamma_te'] = gamma_te  # Lieblein Diffusion Factor for front and rear blade
 
         elif self.nblade == 'tandem':
             ds['l_chord'] = l_chord / 2
@@ -102,7 +102,7 @@ class BladeGen:
             ds['xmax_th'] = x_maxth
             ds['th_le'] = th_le  # * ds['l_chord']
             ds['th_te'] = th_te  # * ds['l_chord']
-            ds['gamma_te'] = .14  # Lieblein Diffusion Factor for front and rear blade
+            ds['gamma_te'] = gamma_te  # Lieblein Diffusion Factor for front and rear blade
         ds['npts'] = int(npts / 2)
 
         return ds
