@@ -40,6 +40,7 @@ class OptimHandler:
         self.btn_run.clicked.connect(self.run_script)
         self.btn_kill.clicked.connect(self.kill_loop)
         self.opt_btn_update_param.clicked.connect(self.update_param)
+        self.actionTestrun.toggled.connect(self.toggle_testrun)
 
         # open DEAP config
         self.btn_deapsettings.clicked.connect(self.deap_config_window)
@@ -67,6 +68,7 @@ class OptimHandler:
         # define thread events (for waiting)
         self.igg_event = threading.Event()
         self.res_event = threading.Event()
+        self.res_failed_event = threading.Event()
 
         # set default paths for lazy development
         # set default values from config
@@ -99,6 +101,14 @@ class OptimHandler:
             # refresh paths
             self.grab_paths()
             self.xmf_files, self.res_files, self.config_3point = get_three_point_paths(self.paths)
+
+    def toggle_testrun(self):
+        if self.actionTestrun.isChecked():
+            self.testrun = True
+            self.outputbox("Testrun (Debug mode) enabled.")
+        else:
+            self.testrun = False
+            self.outputbox("Testrun (Debug mode) disabled.")
 
     def toggle_leds(self, led, state):
         if state == 0:
@@ -219,13 +229,16 @@ class OptimHandler:
         # start thread for .res reader generator
         if (timeout >= 300):
             self.outputbox("Error starting the process. Check FineTaskmanager window.")
-            raise TimeoutError
+            self.res_failed_event.set()
+            self.kill_loop()
+            return
+            # raise TimeoutError
 
         self.outputbox("Starting computation ..")
         start_time = datetime.datetime.now()
         q_res = queue.Queue()
         # q_xmf = queue.Queue()
-        t_res = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q_res, self.res_event))
+        t_res = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q_res, self.res_event), daemon=True)
         t_res.start()
 
         # reset and clear queue and plot
@@ -252,6 +265,8 @@ class OptimHandler:
                             if status_convergence(res_file.replace("res", "log")):
                                 self.outputbox("Convergence reached or run has finished.")
                                 convergence = True
+
+
                     else:
                         timeout = 0
                     # empty queue in chunks to minimize processor workload
@@ -263,12 +278,6 @@ class OptimHandler:
                             val = q_res.get()
                             idx = int(val[0])
                             ds_res[idx] = val
-                        # plot2 every 500 steps (writing frequency)
-                        # if (idx - 100) % 500 == 0:
-                        #     self.xmf_param['i'].append(idx)
-                        #     self.xmf_param = read_xmf(xmf_file, self.xmf_param)
-
-                        # self.optifig_xmf.animate_xmf(self.xmf_param)
 
                     if not first_run:
                         self.optifig_massflow.animate_massflow(ds_res)

@@ -90,7 +90,7 @@ class SshUtil:
             self.remote_session.connect(self.node, username=self.username, password=(cipher_suite.decrypt(self.password.encode('utf-8'))).decode('utf-8'), sock=session)
 
             return 0
-        except ValueError as e:
+        except ValueError:
             return 1
 
     def send_cmd(self, cmd):

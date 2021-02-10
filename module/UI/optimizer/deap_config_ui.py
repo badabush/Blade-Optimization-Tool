@@ -18,27 +18,38 @@ class DeapConfigUi(QtWidgets.QDialog):
             "pp": self.cb_pp,
             "ao": self.cb_ao,
             "div": self.cb_division,
-            "alph1": self.cb_alpha1,
-            "alph2": self.cb_alpha2,
-            "lambd": self.cb_lambda,
-            "th": self.cb_th,
-            "xmaxth": self.cb_xmaxth,
-            "xmaxcamber": self.cb_xmaxcmb,
-            "leth": self.cb_leth,
-            "teth": self.cb_teth}
+            "alph11": self.cb_alpha11,
+            "alph12": self.cb_alpha12,
+            "alph21": self.cb_alpha21,
+            "alph22": self.cb_alpha22,
+            "lambd1": self.cb_lambd1,
+            "lambd2": self.cb_lambd2,
+            "th1": self.cb_th1,
+            "th2": self.cb_th2,
+            "xmaxth1": self.cb_xmaxth1,
+            "xmaxth2": self.cb_xmaxth2,
+            "xmaxcamber1": self.cb_xmaxcamber1,
+            "xmaxcamber2": self.cb_xmaxcamber2,
+            "gamma_te1": self.cb_gamma_te1,
+            "gamma_te2": self.cb_gamma_te2,
+            "leth1": self.cb_leth1,
+            "leth2": self.cb_leth2,
+            "teth1": self.cb_teth1,
+            "teth2": self.cb_teth2}
 
         self.deap_config_inputs = {
             "pop_size": self.input_pop,
             "max_gens": self.input_gen,
             "cxpb": self.input_cxpb,
-            "mutpb": self.input_mutpb
+            "mutpb": self.input_mutpb,
+            "penalty_factor": self.input_penalty_factor
 
         }
         self.cblist = {}
         self.vallist = {}
 
         # set default values from config
-        self.configfile = "config/deap_default_settings.ini"
+        self.configfile = "config/deap_settings.ini"
         self.config = configparser.ConfigParser()
         self.config.read(self.configfile)
         self.set_default()
@@ -56,19 +67,20 @@ class DeapConfigUi(QtWidgets.QDialog):
         for key, widget in self.deap_config_cb.items():
             if widget.isChecked() == True:
                 self.cblist[key] = 1
-                config_checkboxes = self.config["checkboxes"]
+                # config_checkboxes = self.config["checkboxes"]
             else:
                 self.cblist[key] = 0
 
     def get_values(self):
         """
-        Get Values from Input boxes.
+        Get Values (not CB) from Input boxes.
         :return:
         """
         self.vallist['pop_size'] = self.input_pop.value()
         self.vallist['max_gens'] = self.input_gen.value()
         self.vallist['cxpb'] = self.input_cxpb.value()
         self.vallist['mutpb'] = self.input_mutpb.value()
+        self.vallist['penalty_factor'] = self.input_penalty_factor.value()
 
     def _close(self):
         self.close()

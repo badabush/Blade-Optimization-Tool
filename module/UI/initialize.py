@@ -72,6 +72,9 @@ class Initialize:
         self.slider['xmax_camber'] = self.slider_xmax_camber
         self.label['xmax_camber'] = self.val_xmax_camber
 
+        self.slider['gamma_te'] = self.slider_gamma_te
+        self.label['gamma_te'] = self.val_gamma_te
+
         self.slider['th_le'] = self.slider_thle
         self.label['th_le'] = self.val_thle
 
@@ -95,13 +98,16 @@ class Initialize:
                     self.label[key].setSingleStep(0.001)
                 elif key == 'dist_blades':
                     self.label[key].setSingleStep(0.01)
+                elif key == 'lambd':
+                    self.label[key].setSingleStep(0.1)
                 else:
                     self.label[key].setSingleStep(0.0001)
                 self.label[key].setValue(self.restraints[key][3])
 
-        # connect labels->slider
+        # connect labels<->slider
         self.label['alpha1'].editingFinished.connect(self.update_box_alpha1)
         self.label['alpha2'].editingFinished.connect(self.update_box_alpha2)
+        self.slider['lambd'].valueChanged[int].connect(self.update_lambd)
         self.label['lambd'].editingFinished.connect(self.update_box_lambd)
         self.slider['th'].valueChanged[int].connect(self.update_th)
         self.label['th'].editingFinished.connect(self.update_box_th)
@@ -109,6 +115,8 @@ class Initialize:
         self.label['xmax_th'].editingFinished.connect(self.update_box_xmax_th)
         self.slider['xmax_camber'].valueChanged[int].connect(self.update_xmax_camber)
         self.label['xmax_camber'].editingFinished.connect(self.update_box_xmax_camber)
+        self.slider['gamma_te'].valueChanged[int].connect(self.update_gamma_te)
+        self.label['gamma_te'].editingFinished.connect(self.update_box_gamma_te)
         self.slider['th_le'].valueChanged[int].connect(self.update_thle)
         self.label['th_le'].editingFinished.connect(self.update_box_thle)
         self.slider['th_te'].valueChanged[int].connect(self.update_thte)
@@ -139,7 +147,7 @@ class Initialize:
         step = restraint[2]
         defaultval = restraint[3]
 
-        if (maxval > 1):
+        if (maxval > 1) and (key != 'lambd'):
             label.setMinimum(minval)
             label.setMaximum(maxval)
             label.setSingleStep(step)
@@ -155,6 +163,17 @@ class Initialize:
                 slider.setValue(defaultval)
                 slider.valueChanged[int].connect(label.setValue)
             return 0
+
+        elif key == 'lambd':
+            label.setMinimum(minval)
+            label.setMaximum(maxval)
+            # label.setSingleStep(step)
+            slider.setMinimum(minval * 10)
+            slider.setMaximum(maxval * 10)
+            slider.setSingleStep(step * 10)
+            slider.setValue(defaultval * 10)
+            return 1
+
         else:
             label.setMinimum(minval)
             label.setMaximum(maxval)

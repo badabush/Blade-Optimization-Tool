@@ -17,7 +17,7 @@ from module.optimizer.genetic_algorithm.plot.plot_fitness_generation import fitn
 
 
 class DeapVisualize:
-    def __init__(self, logname, testrun=False):
+    def __init__(self, logname, testrun=False, custom_message=""):
 
         # read config files
         mail_configfile = Path.cwd() / "config/mailinglist.ini"
@@ -32,7 +32,6 @@ class DeapVisualize:
         copy(self.logfile, path)
 
         # get reference blade beta/cp/omega from ini file
-        refblade_configfile = Path.cwd() / "config/reference_blade.ini"
         ref_blade_config = ConfigParser()
         ref_blade_config.read("config/reference_blade.ini")
         self.ref_blade = {"beta": float(ref_blade_config['param']['beta']),
@@ -52,7 +51,7 @@ class DeapVisualize:
             for item in os.listdir(Path.cwd() / "log" / dtime):
                 attachments.append(Path.cwd() / "log" / dtime / item)
             print("Sending Mail.")
-            deapMail(mail_configfile, attachments)
+            deapMail(mail_configfile, attachments, custom_message=custom_message)
 
     def plotDeapResult(self, logdir):
         ds, blades, ds_popfit = self.readLog(self.logfile)
@@ -60,14 +59,18 @@ class DeapVisualize:
         # filter fitness < 1
         # ds = ds[ds.omega < 0.1]
         # ds.reset_index(inplace=True, drop=True)
-        # ds = ds[ds.fitness > 0.0]
-        # ds.reset_index(inplace=True, drop=True)
+        mean_fitness = ds.fitness.mean()
+        ds = ds[ds.fitness < mean_fitness*2]
+        ds.reset_index(inplace=True, drop=True)
 
         # plot fitness/generation
         fitness_generation(ds_popfit, logdir)
 
         # plot 3point curve ref/best blade
-        three_point(ds, self.ref_blade, logdir)
+        try:
+            three_point(ds, self.ref_blade, logdir)
+        except KeyError:
+            print("not a 3point run.")
 
         # plot a feature over time
         feature_time(ds, logdir)
@@ -84,14 +87,14 @@ class DeapVisualize:
             print(e)
             print("No blade parameters found in log file.")
 
-
         # scatter matrix
-        scatter_matrix(ds, logdir)
+        # scatter_matrix(ds, logdir)
 
     def readLog(self, file):
         res = []
         blades = []
         popfit = []
+        colnames = []
         with open(file) as f:
             lines = f.readlines()
             for line in lines:
@@ -99,13 +102,19 @@ class DeapVisualize:
                     # routine for detecting different runs
                     pass
                 # find lines with data
-                if "Omega:" in line:
+                if "omega:" in line:
                     string = line.split("DEAP_info   ")[1].replace("\n", "")
                     param = string.split(",")
                     lst = []
+                    col = []
                     for item in param:
+                        # get column names from data row
+                        if colnames.__len__() == 0:
+                            col.append(item.split(":")[0].strip())
                         lst.append(float(item.split(":")[1]))
                     res.append(lst)
+                    if colnames.__len__() == 0:
+                        colnames = col
                 # find final line of best blade
                 if ("[blade1] " in line) or ("[blade2] " in line):
                     # reconstruct blade datasets
@@ -134,22 +143,14 @@ class DeapVisualize:
                     pop, fit = string.split(",")
                     popfit.append([float(pop.split(": ")[1]), float(fit.split(": ")[1])])
 
-
             # Try creating pandasframe for 1point, if that doesn't work assume it was a 3point calculation.
-            try:
-                ds = pd.DataFrame(res,
-                                  columns=["alph11", "alph12", "alph21", "alph22", "omega", "beta", "cp", "fitness"])
-            except ValueError:
-                ds = pd.DataFrame(res,
-                                  columns=["alph11", "alph12", "alph21", "alph22",
-                                           "omega", "omega_lower", "omega_upper",
-                                           "beta", "beta_lower", "beta_upper",
-                                           "cp", "cp_lower", "cp_upper",
-                                           "fitness"])
+            ds = pd.DataFrame(res, columns=colnames)
 
         f.close()
         return ds, blades, popfit
 
 
 if __name__ == '__main__':
-    DeapVisualize("20-01-21_19-31-30.log", True)
+    DeapVisualize("test_09-02-21_16-46-05.log", True)
+    # msg = "Fix: A datapoint with an extremly high fitness value was ruining the contour plots."
+    # DeapVisualize("27-01-21_13-57-22.log", False, msg)

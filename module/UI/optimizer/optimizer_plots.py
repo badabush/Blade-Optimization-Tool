@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QSizePolicy
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 import matplotlib.animation as animation
-import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
 
 from module.optimizer.optimtools import calc_xmf
 
@@ -134,7 +134,7 @@ class OptimPlotDEAP(FigureCanvas):
     Real-Time plot of data from xmf file.
     """
 
-    def __init__(self, parent=None, width=5, height=5, dpi=100):
+    def __init__(self, parent=None, width=4, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         FigureCanvas.__init__(self, fig)
         self.setParent(parent)
@@ -158,8 +158,9 @@ class OptimPlotDEAP(FigureCanvas):
         # gen = ds
         # fitmin = []
         #
-        self.ax.plot(np.arange(len(ds)), ds, color="indianred", label=r"\omega")
-
+        self.clear()
+        self.ax.plot(np.arange(len(ds))+1, ds, color="indianred", label="fitness")
+        self.ax.xaxis.set_major_locator(MaxNLocator(integer=True))  # force integer x values
         self.draw()
 
     def clear(self):

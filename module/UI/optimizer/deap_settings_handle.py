@@ -10,16 +10,15 @@ class DeapSettingsHandle:
     def attribute_generator(self):
         """
         Format a list from User settings and gene list for DEAP attribute generator.
-
+        Returns a list of attributes with min and max values, depending on if the user marked it as a free
+        parameter or not.
         :return: list
         """
         attributes = []
         for key in self.df.index:
             # attributes valid for both blades (pp, ao, div)
             row = self.df.loc[key]
-            # if row.blade == 0:
-                # state of attribute is true
-            if self.checkboxes[row.id]:
+            if self.checkboxes[key]:
                 _min = row.minimum
                 _max = row.maximum
             else:

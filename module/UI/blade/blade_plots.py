@@ -18,12 +18,12 @@ def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha
     :return: None
     """
     # get zoom state
-    if xlim == (0, 0) and ylim == (0, 0):
-        xlim = (-.1, 1)
-        ylim = (-.1, 1)
-    else:
-        xlim = ax.get_xlim()
-        ylim = ax.get_ylim()
+    # if xlim == (0, 0) and ylim == (0, 0):
+    #     xlim = (-.1, 1)
+    #     ylim = (-.1, 1)
+    # else:
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
     if clear:
         ax.cla()  # clear existing plots
 
@@ -34,8 +34,8 @@ def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha
     if ds['nblades'] == 'single':
         """Single blade"""
         bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
-                            alpha1=ds['alpha1'], alpha2=ds['alpha2'],
-                            lambd=ds['lambd'], th=ds['th'], x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'],
+                            alpha1=ds['alpha1'], alpha2=ds['alpha2'], lambd=ds['lambd'], th=ds['th'],
+                            x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'], gamma_te=ds['gamma_te'],
                             l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'], spline_pts=ds['pts'],
                             thdist_points=ds['pts_th'])
         blade_data, camber_data = bladegen._return()
@@ -61,7 +61,7 @@ def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha
                                 npts=df['npts'],
                                 alpha1=df['alpha1'], alpha2=df['alpha2'],
                                 lambd=df['lambd'], th=df['th'], x_maxth=df['xmax_th'],
-                                x_maxcamber=df['xmax_camber'],
+                                x_maxcamber=df['xmax_camber'], gamma_te=df['gamma_te'],
                                 l_chord=df['l_chord'], th_le=df['th_le'], th_te=df['th_te'], spline_pts=df['pts'],
                                 thdist_points=df['pts_th'])
             blade_data, camber_data = bladegen._return()

@@ -36,15 +36,14 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
          RunHandler, DeapRunHandler):
     """
         Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
-        restraints.txt. Parameters with values or steps <1 have to be scaled since the slider only accepts int values.
-        Slider and Textboxes are linked, so change one will modify the other (and vice versa).
+        restraints.txt. Parametee linked, so change one will modify the other (and vice versa).
     """
 
     def __init__(self):
         super(Ui, self).__init__()
         uic.loadUi('UI/qtdesigner/mainwindow.ui', self)
         # declaring param keys, load restraints for slider
-        self.param_keys = ['alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'th_le',
+        self.param_keys = ['alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'gamma_te', 'th_le',
                            'th_te', 'dist_blades', 'PP', 'AO']
         self.restraints = load_config_file('UI/config/restraints.txt')
         self.menu_default()  # set menu defaults
@@ -64,7 +63,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         # tabs
         self.tabWidget.setTabText(0, "BladeDesigner")
         self.tabWidget.setTabText(1, "Optimizer")
-        self.tabWidget.setCurrentIndex(0)  # set default tab
+        self.tabWidget.setCurrentIndex(1)  # set default tab
 
         # init plot
         self.m = PlotCanvas(self, width=8, height=10)
@@ -235,6 +234,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         """
         Terminal in Optimizer window at the bottom.
         """
+
         datetimeobj = datetime.now()
         ts_str = datetimeobj.strftime("[%H:%M:%S]   ")
         self.box_terminal.append(ts_str + msg)
