@@ -96,7 +96,8 @@ class DeapVisualize:
         # scatter matrix
         # scatter_matrix(ds, logdir)
 
-    def readLog(self, file):
+    @staticmethod
+    def readLog(file):
         res = []
         blades = []
         popfit = []

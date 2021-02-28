@@ -695,7 +695,7 @@
         <rect>
          <x>0</x>
          <y>20</y>
-         <width>231</width>
+         <width>312</width>
          <height>161</height>
         </rect>
        </property>
@@ -950,6 +950,25 @@
         <enum>Qt::RightArrow</enum>
        </property>
       </widget>
+      <widget class="QToolButton" name="btn_continue_log">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>140</y>
+         <width>171</width>
+         <height>31</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Continue Log</string>
+       </property>
+       <property name="toolButtonStyle">
+        <enum>Qt::ToolButtonTextBesideIcon</enum>
+       </property>
+       <property name="arrowType">
+        <enum>Qt::RightArrow</enum>
+       </property>
+      </widget>
      </widget>
      <widget class="QLabel" name="label_13">
       <property name="geometry">
@@ -1006,7 +1025,7 @@ inside VNC enter: echo $DISPLAY</string>
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>171</width>
+         <width>221</width>
          <height>201</height>
         </rect>
        </property>
@@ -1257,7 +1276,7 @@ inside VNC enter: echo $DISPLAY</string>
      <x>0</x>
      <y>0</y>
      <width>1125</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuBlade_generator">

@@ -218,7 +218,7 @@ class DeapRunHandler(DeapScripts):
                     new_row['omega_upper'] = match.omega_upper
                     new_row['cp_upper'] = match.cp_upper
                     self.df = self.df.append(new_row, ignore_index=True)
-                    self.log_idx +=1
+                    self.log_idx += 1
                     return res,
 
         # if blade was simulated before, skip numeca process

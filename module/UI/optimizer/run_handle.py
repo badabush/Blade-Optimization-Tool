@@ -81,17 +81,6 @@ class RunHandler:
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
 
         paths = self.paths
-        # get node_id, number of cores, writing frequency here
-        # scriptfiles = []
-        #
-        # paths['run'] = self.config_3point['paths']['design']
-        # scriptfiles.append(gen_script(paths, self.opt_param, suffix="_design"))
-        #
-        # paths['run'] = self.config_3point['paths']['lower']
-        # scriptfiles.append(gen_script(paths, self.opt_param, suffix="_lower"))
-        #
-        # paths['run'] = self.config_3point['paths']['upper']
-        # scriptfiles.append(gen_script(paths, self.opt_param, suffix="_upper"))
         paths['run_design'] = self.config_3point['paths']['design']
         paths['run_lower'] = self.config_3point['paths']['lower']
         paths['run_upper'] = self.config_3point['paths']['upper']

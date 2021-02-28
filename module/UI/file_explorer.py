@@ -6,6 +6,7 @@ from pathlib import Path
 
 from module.blade.bladetools import ImportExport, normalize
 from module.blade.bladegen import BladeGen
+from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
 
 
 class FileExplorer:
@@ -93,8 +94,8 @@ class FileExplorer:
                     fname2 = fname1.replace('AV', 'FV')
                     blade2 = ie._import(fileName)
                     blade1 = ie._import(fileName.replace(fname1, fname2))
-                self.imported_blade1 = normalize(blade1)/2
-                self.imported_blade2 = normalize(blade2)/2
+                self.imported_blade1 = normalize(blade1) / 2
+                self.imported_blade2 = normalize(blade2) / 2
             self.update_in_control_vis(1)
             self.imported_blade_vis = 1
 
@@ -147,3 +148,28 @@ class FileExplorer:
                     ds = pd.DataFrame({'x': blade_data[:, 0], 'y': blade_data[:, 1]})
 
                     ie._export(fname, ds)
+
+    def load_log(self):
+        """
+        Opens a File Explorer to select log file.
+        :return: None
+        """
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        log_path, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()",
+                                                  "test_28-02-21_15-16-22_seed_76.log",
+                                                  "Log Files (*.log)", options=options)
+        filename = Path(log_path).stem
+        if not "seed" in filename:
+            self.outputbox("Logfile doesn't contain a seed. Make sure to choose a valid log file.")
+            return
+        else:
+            if "test" in filename:
+                self.testrun = True
+            else:
+                self.testrun = False
+
+            self.log_df, _, _ = DeapVisualize.readLog(log_path)
+            self.log_file = filename
+            self.ga_run()
+        # assert "seed" in fileName

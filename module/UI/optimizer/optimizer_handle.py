@@ -36,7 +36,6 @@ class OptimHandler:
         self.btn_projectiec.clicked.connect(self.project_explorer_iec)
         self.btn_projectigg.clicked.connect(self.project_explorer_igg)
         self.btn_projectrun.clicked.connect(self.project_explorer_run)
-        # self.btn_projectgeomturbo.clicked.connect(self.project_explorer_geomturbo)
         self.btn_run.clicked.connect(self.run_script)
         self.btn_kill.clicked.connect(self.kill_loop)
         self.opt_btn_update_param.clicked.connect(self.update_param)
@@ -45,6 +44,9 @@ class OptimHandler:
         # open DEAP config
         self.btn_deapsettings.clicked.connect(self.deap_config_window)
         self.btn_deaprun.clicked.connect(self.ga_run)
+
+        # load existing log and continue on seed
+        self.btn_continue_log.clicked.connect(self.load_log)
 
         # init LEDs
         self.toggle_leds(self.led_connection, 0)
@@ -102,6 +104,10 @@ class OptimHandler:
             self.grab_paths()
             self.xmf_files, self.res_files, self.config_3point = get_three_point_paths(self.paths)
 
+        # initialize df from logfile:
+        self.log_df = pd.DataFrame()
+        self.log_file = ""
+
     def toggle_testrun(self):
         if self.actionTestrun.isChecked():
             self.testrun = True
@@ -109,6 +115,7 @@ class OptimHandler:
         else:
             self.testrun = False
             self.outputbox("Testrun (Debug mode) disabled.")
+
 
     def toggle_leds(self, led, state):
         if state == 0:

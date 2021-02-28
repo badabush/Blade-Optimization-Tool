@@ -143,7 +143,8 @@ def unravel_individual(checkboxes, dp_genes, individual):
         ID = dp_genes[dp_genes.index == full_name].id.values[0]
         blade = dp_genes[dp_genes.index == full_name].blade.values[0]
         if full_name in checked_params:
-            df = df.append({"id": ID, "blade": blade, "value": individual[i]}, ignore_index=True)
+            digit = int(dp_genes[dp_genes.index ==full_name].digits.values[0])
+            df = df.append({"id": ID, "blade": blade, "value": np.round(individual[i], digit)}, ignore_index=True)
     df.index = checked_params
 
     # print("alph1 blade1: {0}, alph2 blade1: {1}".format(individual[3], individual[4]))
