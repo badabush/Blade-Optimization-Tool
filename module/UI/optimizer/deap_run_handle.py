@@ -4,6 +4,7 @@ import numpy as np
 import threading
 import datetime
 import time
+import re
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
@@ -29,7 +30,7 @@ class DeapRunHandler(DeapScripts):
         self.A = .5
         self.B = 1.
         self.C = .5
-
+        self.log_loaded = False
         # random seed for testing consistency of GA
         # Testrun:
         # good seed example: 65, 66, 123, 70, 71, 72
@@ -40,11 +41,17 @@ class DeapRunHandler(DeapScripts):
 
         seed_number = 76
         # seed_number = None
+
+        # load log_file if not empty
+        if self.log_file:
+            seed_number = int(re.search("seed_(\d)+", self.log_file).group().split("_")[-1])
+            self.log_loaded = True
+        self.log_idx = 0 # counter for row in loaded log file
         random.seed(seed_number)
 
-        self.testrun = False
-        if self.actionTestrun.isChecked():
-            self.testrun = True
+        # self.testrun = False
+        # if self.actionTestrun.isChecked():
+        #     self.testrun = True
 
         if self.cb_3point.isChecked():
             # refresh paths
@@ -178,12 +185,49 @@ class DeapRunHandler(DeapScripts):
             (self.df.alph21 == clean_individuals.loc["alph21"].value) &
             (self.df.alph22 == clean_individuals.loc["alph22"].value))
 
+        # look up in loaded log file
+        if self.log_loaded:
+            ind_row = clean_individuals.value.transpose()
+            if ind_row.isin(self.log_df.iloc[self.log_idx]).all():
+                print("Match!")
+                new_row = deaptools.get_row(clean_individuals)
+                match = self.log_df.iloc[self.log_idx]
+                new_row['beta'] = match.beta
+                new_row['omega'] = match.omega
+                new_row['cp'] = match.cp
+                new_row['generation'] = self.generation  # update generation
+
+                self.omega = [0, match.omega]
+                self.beta = [0, match.beta]
+                self.cp = [0, match.cp]
+                if not self.cb_3point.isChecked():
+                    self.df = self.df.append(new_row, ignore_index=True)
+                    return match.omega,
+                else:
+                    omega_lower = match.omega_lower
+                    omega = match.omega
+                    omega_upper = match.omega_upper
+                    res = self.A * (omega_lower / self.ref_blade["omega"]) + \
+                          self.B * (omega / self.ref_blade["omega"]) + \
+                          self.C * (omega_upper / self.ref_blade["omega"])
+                    # add 3 point parameters to new row
+                    new_row['beta_lower'] = match.beta_lower
+                    new_row['omega_lower'] = match.omega_lower
+                    new_row['cp_lower'] = match.cp_lower
+                    new_row['beta_upper'] = match.beta_upper
+                    new_row['omega_upper'] = match.omega_upper
+                    new_row['cp_upper'] = match.cp_upper
+                    self.df = self.df.append(new_row, ignore_index=True)
+                    self.log_idx +=1
+                    return res,
+
         # if blade was simulated before, skip numeca process
         if len(match_idx[0]) != 0:
             # assures that match_idx is scalar
             match = self.df.loc[np.min(match_idx)]
             foolist = []
             foolist.append(self.omega[-1])
+
 
             new_row = deaptools.get_row(clean_individuals)
             new_row['beta'] = match.beta
@@ -545,13 +589,19 @@ class DeapRunHandler(DeapScripts):
             print(e)
         blade1_str = ""
         blade2_str = ""
+        # blade1_str, blade2_str = deaptools.unravel_winner(self.dp_genes, best_ind)
+        ind_best = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes, best_ind)
         for key, val in self.ds1.items():
             # ignore pts and pts_th
             if ("pts" not in key) and ("pts_th" not in key):
+                if key in ind_best.id.to_list():
+                    val = ind_best[(ind_best.id == 'alpha1') & (ind_best.blade != "2")].value.values[0]
                 blade1_str += "{0}:{1}, ".format(key, val)
         for key, val in self.ds2.items():
             # ignore pts and pts_th
             if ("pts" not in key) and ("pts_th" not in key):
+                if key in ind_best.id.to_list():
+                    val = ind_best[(ind_best.id == 'alpha1') & (ind_best.blade != "1")].value.values[0]
                 blade2_str += "{0}:{1}, ".format(key, val)
         self.logger.info("[blade1] " + blade1_str[:-2])  # log it, remove trailing ,
         self.logger.info("[blade2] " + blade2_str[:-2])  # log it, remove trailing ,
