@@ -35,11 +35,11 @@ class DeapRunHandler(DeapScripts):
         # good seed example: 65, 66, 123, 70, 71, 72
         # bad seed example: 42, 69
         # Real run:
-        # good seed example:
+        # good seed example: 73 (but doesnt get to global min), 74 (clean run), 75,
         # bad seed example: 69 (blows up), 70 (very low fitness value),
 
-        # seed_number = 21
-        seed_number = None
+        seed_number = 76
+        # seed_number = None
         random.seed(seed_number)
 
         self.testrun = False

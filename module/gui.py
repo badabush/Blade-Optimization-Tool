@@ -4,6 +4,7 @@ from datetime import datetime
 
 from PyQt5.QtWidgets import QSizePolicy
 from PyQt5 import QtWidgets, uic
+from PyQt5.QtCore import Qt as qt
 from pyface.qt import QtGui
 import cgitb
 
@@ -284,4 +285,5 @@ class PlotCanvas(FigureCanvas):
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = Ui()
+    window.setAttribute(qt.WA_DeleteOnClose)
     app.exec_()

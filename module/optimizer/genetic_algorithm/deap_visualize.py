@@ -67,20 +67,26 @@ class DeapVisualize:
         fitness_generation(ds_popfit, logdir)
 
         # plot 3point curve ref/best blade
+        print("Generating 3point plot...")
         try:
             three_point(ds, self.ref_blade, logdir)
         except KeyError:
             print("not a 3point run.")
 
         # plot a feature over time
+        print("Generating Feature/time plot...")
         feature_time(ds, logdir)
 
         # plot features over density
+        print("Generating feature/density plot...")
         feature_density(ds, logdir)
 
         # contour(ds, logdir)
-        contour2(ds, logdir)
+        # print("Generating contour2 plot...")
+        # contour2(ds, logdir)
+
         # get default blade parameters
+        print("Generating Blade plot...")
         try:
             deap_blade(blades, logdir)
         except IndexError as e:
@@ -151,6 +157,6 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    DeapVisualize("test_09-02-21_16-46-05.log", True)
-    # msg = "Fix: A datapoint with an extremly high fitness value was ruining the contour plots."
+    msg = "Run stopped at generation 27 because the computer restarted...Thus, no blade plot.\n\n"
+    DeapVisualize("test_10-02-21_19-51-14.log", True, msg)
     # DeapVisualize("27-01-21_13-57-22.log", False, msg)
