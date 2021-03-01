@@ -170,6 +170,10 @@ class FileExplorer:
                 self.testrun = False
 
             self.log_df, _, _ = DeapVisualize.readLog(log_path)
+            self.log_df.xmaxth1 = self.log_df.xmaxth1.round(3)
+            self.log_df.xmaxth2 = self.log_df.xmaxth2.round(3)
+            self.log_df.xmaxcamber1 = self.log_df.xmaxcamber1.round(3)
+            self.log_df.xmaxcamber2 = self.log_df.xmaxcamber2.round(3)
             self.log_file = filename
             self.ga_run()
         # assert "seed" in fileName

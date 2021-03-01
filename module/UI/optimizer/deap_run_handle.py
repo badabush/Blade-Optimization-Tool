@@ -58,6 +58,9 @@ class DeapRunHandler(DeapScripts):
             self.grab_paths()
             self.xmf_files, self.res_files, self.config_3point = deaptools.get_three_point_paths(self.paths)
 
+        # counter generations
+        self.generation = 0
+
         self.dp_genes = deaptools.read_deap_restraints()
 
         # get updates from DEAP settings window
@@ -313,6 +316,42 @@ class DeapRunHandler(DeapScripts):
             (self.df.alph21 == clean_individuals.loc["alph21"].value) &
             (self.df.alph22 == clean_individuals.loc["alph22"].value))
 
+        # look up in loaded log file
+        if self.log_loaded:
+            ind_row = clean_individuals.value.transpose()
+            if ind_row.isin(self.log_df.iloc[self.log_idx]).all():
+                print("Match!")
+                new_row = deaptools.get_row(clean_individuals)
+                match = self.log_df.iloc[self.log_idx]
+                new_row['beta'] = match.beta
+                new_row['omega'] = match.omega
+                new_row['cp'] = match.cp
+                new_row['generation'] = self.generation  # update generation
+
+                self.omega = [0, match.omega]
+                self.beta = [0, match.beta]
+                self.cp = [0, match.cp]
+                if not self.cb_3point.isChecked():
+                    self.df = self.df.append(new_row, ignore_index=True)
+                    return match.omega,
+                else:
+                    omega_lower = match.omega_lower
+                    omega = match.omega
+                    omega_upper = match.omega_upper
+                    res = self.A * (omega_lower / self.ref_blade["omega"]) + \
+                          self.B * (omega / self.ref_blade["omega"]) + \
+                          self.C * (omega_upper / self.ref_blade["omega"])
+                    # add 3 point parameters to new row
+                    new_row['beta_lower'] = match.beta_lower
+                    new_row['omega_lower'] = match.omega_lower
+                    new_row['cp_lower'] = match.cp_lower
+                    new_row['beta_upper'] = match.beta_upper
+                    new_row['omega_upper'] = match.omega_upper
+                    new_row['cp_upper'] = match.cp_upper
+                    self.df = self.df.append(new_row, ignore_index=True)
+                    self.log_idx += 1
+                    return res,
+
         # if blade was simulated before, skip numeca process
         if len(match_idx[0]) != 0:
             # assures that match_idx is scalar
@@ -349,8 +388,12 @@ class DeapRunHandler(DeapScripts):
                 new_row['omega_upper'] = match.omega_upper
                 new_row['cp_upper'] = match.cp_upper
                 self.df = self.df.append(new_row, ignore_index=True)
-                return res,
+                return res/self.fit_ref,
 
+        # solve blade with numeca if none of the above applies
+        return self.solve_blade(clean_individuals)
+
+    def solve_blade(self, clean_individuals, refblade=False):
         # no dialog window if running DEAP
         self.meshgen = MeshGenUI()
         # TODO: grab paths from user somewhere
@@ -358,17 +401,14 @@ class DeapRunHandler(DeapScripts):
         self.meshgen.iggfolder = "//130.149.110.81/liang/Tandem_Opti/BOT/template/autogrid/"
         self.meshgen.iggname = "test_template.igg"
         # check for existing connection
-
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
         t = threading.Thread(name="create_meshfile", target=self.run_igg, daemon=True)
         t.start()
-
         self.outputbox("[DEAP] Waiting for igg to finish ...")
         self.igg_event.wait()
         time.sleep(5)
         self.outputbox("[DEAP] IGG has finished. Starting FineTurbo.")
-
         if not hasattr(self, 'sshobj'):
             self.ssh_connect()
         try:
@@ -380,19 +420,15 @@ class DeapRunHandler(DeapScripts):
                 self.run_3point()
         except AttributeError:
             print("deap script crashed.")
-
         self.outputbox("[DEAP] Waiting for FineTurbo to finish ...")
         self.res_event.wait()
         time.sleep(2)
-
         # if calculation didn't start or ran into an error for whatever reason
         if self.res_failed_event.is_set():
             self.res_failed_event.clear()
             return 9999,
-
         self.beta, self.cp, self.omega = calc_xmf(self.xmf_param)
         # print("Omega: " + str(omega))
-
         # clear events
         self.igg_event.clear()
         self.res_event.clear()
@@ -406,14 +442,12 @@ class DeapRunHandler(DeapScripts):
         new_row['beta'] = np.rad2deg(self.beta[-1])
         new_row['omega'] = self.omega[-1]
         new_row['cp'] = self.cp[-1]
-
         print("Omega: " + str(foolist))
         try:
             omega = self.omega[-1]
         except (IndexError, KeyError, ValueError) as e:
             print(e)
             omega = 9999
-
         if self.cb_3point.isChecked():
             beta_lower, cp_lower, omega_lower = calc_xmf(self.xmf_param_lower)
             beta_upper, cp_upper, omega_upper = calc_xmf(self.xmf_param_upper)
@@ -428,14 +462,15 @@ class DeapRunHandler(DeapScripts):
             res = self.A * (omega_lower[-1] / self.ref_blade["omega"]) + self.B * (
                     omega / self.ref_blade["omega"]) + self.C * (
                           omega_upper[-1] / self.ref_blade["omega"])
-
-            self.df = self.df.append(new_row, ignore_index=True)
+            if not refblade:
+                self.df = self.df.append(new_row, ignore_index=True)
 
             # entry = deaptools.generate_log(-1, self.df, )
             # self.logger.info(entry)
             return res / self.fit_ref,
 
-        self.df = self.df.append(new_row, ignore_index=True)
+        if not refblade:
+            self.df = self.df.append(new_row, ignore_index=True)
         return omega / self.fit_ref,
 
     def mut_restricted(self, individual, indpb):
@@ -454,15 +489,23 @@ class DeapRunHandler(DeapScripts):
             self.outputbox("[DEAP] Running Ref_Blade through solver.")
             ref_individual = deaptools.ind_list_from_datasets(self.ds1, self.ds2, self.dp_genes)
             self.label_deap_status.setText("Generating reference blade.")
-            self.fit_ref, = self.eval_engine(ref_individual)
+
+            clean_individuals = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes, ref_individual)
+
+            # update tandem blades
+            self.ds1, self.ds2 = deaptools.update_blade_individuals(self.ds1, self.ds2, clean_individuals)
+            # xoffset and yoffset need to be calculated from PP and AO
+            # TODO: change reference to clean_individuals
+            self.ds2['x_offset'] = ref_individual[1] * self.ds1['dist_blades']  # AO
+            self.ds2['y_offset'] = (1 - ref_individual[0]) * self.ds1['dist_blades']  # PP
+            self.fit_ref, = self.solve_blade(clean_individuals, True)
             self.outputbox("[DEAP] Updating fit_ref to {fit}".format(fit=self.fit_ref))
             print("[DEAP] Updating fit_ref to {fit}".format(fit=self.fit_ref))
             del ref_individual
 
         self.label_deap_status.setText("Populating.")
 
-        # counter generations
-        self.generation = 0
+
         pop = self.toolbox.population(n=self.dp_POP_SIZE)
         # evaluate population
         fitnesses = list(map(self.toolbox.evaluate, pop))
@@ -540,7 +583,7 @@ class DeapRunHandler(DeapScripts):
                         fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
                                                        self.deap_settings.values['penalty_factor'])
                     else:
-                        if (self.pointer_df+idx)<=self.log_df.shape[0]:
+                        if (self.pointer_df+idx)<self.log_df.shape[0]:
                             fit = (self.log_df.iloc[self.pointer_df+idx].fitness,)
                         else:
                             fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
@@ -621,6 +664,7 @@ class DeapRunHandler(DeapScripts):
         self.logger.info("[blade2] " + blade2_str[:-2])  # log it, remove trailing ,
         # create dir and save plots of results to it. Move debug.log to folder and delete original.
 
+        self.testrun = True
         DeapVisualize(self.logfile, self.testrun)
 
         # plt.plot(minlist)

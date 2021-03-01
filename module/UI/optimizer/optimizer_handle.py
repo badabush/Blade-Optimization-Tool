@@ -52,6 +52,9 @@ class OptimHandler:
         self.toggle_leds(self.led_connection, 0)
         self.toggle_leds(self.led_mesh, 0)
 
+        # default setting for testrun
+        self.testrun = False
+
         # init plot
         self.optifig_massflow = OptimPlotMassflow(self, width=8, height=10)
         toolbar = NavigationToolbar(self.optifig_massflow, self)

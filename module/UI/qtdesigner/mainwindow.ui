@@ -695,7 +695,7 @@
         <rect>
          <x>0</x>
          <y>20</y>
-         <width>312</width>
+         <width>221</width>
          <height>161</height>
         </rect>
        </property>
@@ -1025,7 +1025,7 @@ inside VNC enter: echo $DISPLAY</string>
         <rect>
          <x>10</x>
          <y>20</y>
-         <width>221</width>
+         <width>171</width>
          <height>201</height>
         </rect>
        </property>
@@ -1276,7 +1276,7 @@ inside VNC enter: echo $DISPLAY</string>
      <x>0</x>
      <y>0</y>
      <width>1125</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuBlade_generator">
