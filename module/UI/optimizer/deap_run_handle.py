@@ -258,7 +258,7 @@ class DeapRunHandler(DeapScripts):
                 new_row['omega_upper'] = match.omega_upper
                 new_row['cp_upper'] = match.cp_upper
                 self.df = self.df.append(new_row, ignore_index=True)
-                return res,
+                return np.round(res,4),
 
         beta = clean_individuals.value.to_numpy().sum() / 4
         omega = np.deg2rad(beta) / 10
@@ -287,7 +287,7 @@ class DeapRunHandler(DeapScripts):
                           new_row['omega_upper'] / self.ref_blade["omega"])
 
             self.df = self.df.append(new_row, ignore_index=True)
-            return res,
+            return np.round(res,4),
 
     def eval_engine(self, individual):
         """
@@ -471,8 +471,15 @@ class DeapRunHandler(DeapScripts):
             # ind.fitness.values = fit
             # penalty on fitness when beta out of range
             if not fit[-1] > 9998:
-                fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
-                                               self.deap_settings.values['penalty_factor'])
+                if not self.log_loaded:
+                    fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
+                                                   self.deap_settings.values['penalty_factor'])
+                else:
+                    if (self.pointer_df+idx)<=self.log_df.shape[0]:
+                        fit = (self.log_df.iloc[self.pointer_df+idx].fitness,)
+                    else:
+                        fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
+                                                       self.deap_settings.values['penalty_factor'])
             ind.fitness.values = fit
             try:
                 self.df.iloc[idx + self.pointer_df].fitness = fit[0]
@@ -529,8 +536,15 @@ class DeapRunHandler(DeapScripts):
 
                 # don't apply custom penalty when fitness is faulty
                 if not fit[-1] > 9998:
-                    fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
-                                                   self.deap_settings.values['penalty_factor'])
+                    if not self.log_loaded:
+                        fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
+                                                       self.deap_settings.values['penalty_factor'])
+                    else:
+                        if (self.pointer_df+idx)<=self.log_df.shape[0]:
+                            fit = (self.log_df.iloc[self.pointer_df+idx].fitness,)
+                        else:
+                            fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
+                                                           self.deap_settings.values['penalty_factor'])
                 ind.fitness.values = fit
 
                 try:
@@ -595,13 +609,13 @@ class DeapRunHandler(DeapScripts):
             # ignore pts and pts_th
             if ("pts" not in key) and ("pts_th" not in key):
                 if key in ind_best.id.to_list():
-                    val = ind_best[(ind_best.id == 'alpha1') & (ind_best.blade != "2")].value.values[0]
+                    val = ind_best[(ind_best.id == key) & (ind_best.blade != "2")].value.values[0]
                 blade1_str += "{0}:{1}, ".format(key, val)
         for key, val in self.ds2.items():
             # ignore pts and pts_th
             if ("pts" not in key) and ("pts_th" not in key):
                 if key in ind_best.id.to_list():
-                    val = ind_best[(ind_best.id == 'alpha1') & (ind_best.blade != "1")].value.values[0]
+                    val = ind_best[(ind_best.id == key) & (ind_best.blade != "1")].value.values[0]
                 blade2_str += "{0}:{1}, ".format(key, val)
         self.logger.info("[blade1] " + blade1_str[:-2])  # log it, remove trailing ,
         self.logger.info("[blade2] " + blade2_str[:-2])  # log it, remove trailing ,

@@ -93,6 +93,7 @@ class DeapVisualize:
             print(e)
             print("No blade parameters found in log file.")
 
+        print("Done plotting.")
         # scatter matrix
         # scatter_matrix(ds, logdir)
 
@@ -158,6 +159,6 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    msg = "Run stopped at generation 27 because the computer restarted...Thus, no blade plot.\n\n"
-    DeapVisualize("test_10-02-21_19-51-14.log", True, msg)
-    # DeapVisualize("27-01-21_13-57-22.log", False, msg)
+    # msg = "Run stopped at generation 27 because the computer restarted...Thus, no blade plot.\n\n"
+    # DeapVisualize("test_10-02-21_19-51-14.log", True, msg)
+    DeapVisualize("test_01-03-21_14-52-48_seed_76.log", testrun=True)

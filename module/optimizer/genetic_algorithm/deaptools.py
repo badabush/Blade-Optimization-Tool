@@ -54,7 +54,7 @@ def custom_penalty(fit, beta, penalty_factor):
         # quadratic penalty
         penalty = penalty_distance(beta, penalty_factor)
         new_fit = fit[0]
-        return (new_fit + penalty,)
+        return (np.round(new_fit + penalty,4),)
 
 
 def feasible(val):
