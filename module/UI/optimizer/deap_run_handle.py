@@ -21,37 +21,43 @@ import module.optimizer.genetic_algorithm.deaptools as deaptools
 from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
 from module.optimizer.optimtools import calc_xmf
 from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
-from module.UI.optimizer.deap_run import DeapScripts
+# from module.UI.optimizer.deap_run import DeapScripts
 
 
-class DeapRunHandler(DeapScripts):
-    def ga_run(self):
+class DeapRunHandler:
+    def ga_run(self, log_loaded=False):
         # constant tuning parameters for objective function
         self.A = .5
         self.B = 1.
         self.C = .5
-        self.log_loaded = False
+        self.log_loaded = log_loaded
+
+        # get updates from DEAP settings window
+        self.deap_config_ui.get_checkbox()
+        self.deap_config_ui.get_values()
+        self.dp_genes = deaptools.read_deap_restraints()
+        self.deap_settings = DeapSettingsHandle(self.deap_config_ui, self.dp_genes)
+        self.beta = [np.deg2rad(17)]
+
         # random seed for testing consistency of GA
         # Testrun:
         # good seed example: 65, 66, 123, 70, 71, 72
         # bad seed example: 42, 69
         # Real run:
-        # good seed example: 73 (but doesnt get to global min), 74 (clean run), 75,
+        # good seed example: 73 (but doesnt get to global min), 74 (clean run), 75,76
         # bad seed example: 69 (blows up), 70 (very low fitness value),
 
-        seed_number = 76
-        # seed_number = None
+        if self.deap_settings.values["random_seed"] == 0:
+            seed_number = None
+        else:
+            seed_number = self.deap_settings.values["random_seed"]  # get seed from UI
 
         # load log_file if not empty
         if self.log_file:
             seed_number = int(re.search("seed_(\d)+", self.log_file).group().split("_")[-1])
             self.log_loaded = True
-        self.log_idx = 0 # counter for row in loaded log file
+        self.log_idx = 0  # counter for row in loaded log file
         random.seed(seed_number)
-
-        # self.testrun = False
-        # if self.actionTestrun.isChecked():
-        #     self.testrun = True
 
         if self.cb_3point.isChecked():
             # refresh paths
@@ -61,15 +67,9 @@ class DeapRunHandler(DeapScripts):
         # counter generations
         self.generation = 0
 
-        self.dp_genes = deaptools.read_deap_restraints()
-
-        # get updates from DEAP settings window
-        self.deap_config_ui.get_checkbox()
-        self.deap_config_ui.get_values()
-        self.deap_settings = DeapSettingsHandle(self.deap_config_ui, self.dp_genes)
-        self.beta = [np.deg2rad(17)]
         # initialize fit_ref as 1. During eval of ref_blade, fit/fit_ref = fit
         self.fit_ref = 1
+
         # init logs
         log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
         if not self.testrun:
@@ -92,7 +92,8 @@ class DeapRunHandler(DeapScripts):
         )
         # Define logger name
         self.logger = logging.getLogger("DEAP_info")
-        self.logger.info('---DEAP START---')
+        self.logger.info('--- DEAP START')
+        self.logger.info('--- SOFTWARE VERSION:{version}'.format(version=self.VERSION))
 
         # init dataframe for tracking each individuals
 
@@ -105,6 +106,8 @@ class DeapRunHandler(DeapScripts):
         vbl = QtGui.QVBoxLayout(centralwidget2)
         vbl.addWidget(toolbar)
         vbl.addWidget(self.optifig_deap)
+
+        ### DEAP CONFIGURATION ###
 
         self.dp_IND_SIZE = self.dp_genes.shape[0]
         self.dp_POP_SIZE = self.deap_config_ui.vallist['pop_size']
@@ -122,8 +125,6 @@ class DeapRunHandler(DeapScripts):
         # Attribute generator
         list(self.toolbox.register("attr_%s" % val[3], deaptools._random, float(val[0]), float(val[1]), int(val[2])) for
              val in self.deap_settings.attribute_generator())
-        # list(self.toolbox.register("attr_%s" % i[3], _random, float(i[0]), float(i[1]), 4) for i in self.dp_IND_SIZE)
-        # self.toolbox.register("individual", tools.initRepeat, creator.Individual, self.toolbox.attr_item, n=IND_SIZE)
         self.toolbox.register(
             "individual", tools.initCycle, creator.Individual,
             (
@@ -145,9 +146,6 @@ class DeapRunHandler(DeapScripts):
         else:
             self.toolbox.register("evaluate", self.test_eval)
 
-        # self.toolbox.register("mate", tools.cxTwoPoint)
-        # self.toolbox.register("mate", tools.cxUniform, indpb=.5)
-
         # using a blend with alpha=0 is identical to a cxUniform, but latter seems to be implemented differently than
         # it should be (cxUniform only swaps 2 genes)
         self.toolbox.register("mate", tools.cxBlend, alpha=0.0)
@@ -155,20 +153,24 @@ class DeapRunHandler(DeapScripts):
 
         # pick 3 random individuals, fitness evaluation and selection
         self.toolbox.register("select", tools.selTournament, tournsize=5)
-        # self.toolbox.register("select", tools.selBest)
+
+        # generate header in logfile
+        self.logger.info(
+            '--- POP_SIZE:{popsize}, CXPB:{cxpb}, MUTPB:{mutpb}, PENALTY_FACTOR:{penalty_factor}'.format(
+                popsize=self.dp_POP_SIZE, cxpb=self.dp_CXPB, mutpb=self.dp_MUTPB,
+                penalty_factor=self.deap_settings.values['penalty_factor']))
+        free_params = "".join(["{param}, ".format(param=param) for (param,val) in self.deap_settings.checkboxes.items() if val == 1])
+        self.logger.info("--- Free Parameters: " + free_params[:-2])
+        del free_params
+        if seed_number != None:
+            self.logger.info("--- RANDOM SEED:{n_seed}".format(n_seed=seed_number))
+        self.logger.info(
+            "--- Objective function parameters: A:{A}, B:{B}, C:{C}".format(A=self.A, B=self.B, C=self.C))
 
         # start thread for DEAP loop
         self.label_deap_status.setText("Populating.")
         t = threading.Thread(name="deap_populate", target=self.populate, daemon=True)
         t.start()
-
-        self.logger.info(
-            '--- POP_SIZE: {popsize}, CXPB: {cxpb}, MUTPB: {mutpb}, PENALTY_FACTOR: {penalty_factor} ---'.format(
-                popsize=self.dp_POP_SIZE, cxpb=self.dp_CXPB, mutpb=self.dp_MUTPB,
-                penalty_factor=self.deap_settings.values['penalty_factor']))
-        if seed_number != None:
-            self.logger.info("RANDOM SEED:{n_seed}".format(n_seed=seed_number))
-        self.logger.info("begin population")
 
     def test_eval(self, individual):
         """
@@ -231,7 +233,6 @@ class DeapRunHandler(DeapScripts):
             foolist = []
             foolist.append(self.omega[-1])
 
-
             new_row = deaptools.get_row(clean_individuals)
             new_row['beta'] = match.beta
             new_row['omega'] = match.omega
@@ -261,7 +262,7 @@ class DeapRunHandler(DeapScripts):
                 new_row['omega_upper'] = match.omega_upper
                 new_row['cp_upper'] = match.cp_upper
                 self.df = self.df.append(new_row, ignore_index=True)
-                return np.round(res,4),
+                return np.round(res, 4),
 
         beta = clean_individuals.value.to_numpy().sum() / 4
         omega = np.deg2rad(beta) / 10
@@ -290,7 +291,7 @@ class DeapRunHandler(DeapScripts):
                           new_row['omega_upper'] / self.ref_blade["omega"])
 
             self.df = self.df.append(new_row, ignore_index=True)
-            return np.round(res,4),
+            return np.round(res, 4),
 
     def eval_engine(self, individual):
         """
@@ -388,7 +389,7 @@ class DeapRunHandler(DeapScripts):
                 new_row['omega_upper'] = match.omega_upper
                 new_row['cp_upper'] = match.cp_upper
                 self.df = self.df.append(new_row, ignore_index=True)
-                return res/self.fit_ref,
+                return res / self.fit_ref,
 
         # solve blade with numeca if none of the above applies
         return self.solve_blade(clean_individuals)
@@ -490,7 +491,13 @@ class DeapRunHandler(DeapScripts):
             ref_individual = deaptools.ind_list_from_datasets(self.ds1, self.ds2, self.dp_genes)
             self.label_deap_status.setText("Generating reference blade.")
 
-            clean_individuals = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes, ref_individual)
+            logstr = "".join(["{key}:{val}, ".format(key=key, val=val) for key, val in
+                              zip(self.dp_genes.index.to_list(), ref_individual)])
+            self.logger.info("--- Reference Blade parameters: " + logstr[:-2] + " ---")
+            del logstr
+
+            clean_individuals = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes,
+                                                             ref_individual)
 
             # update tandem blades
             self.ds1, self.ds2 = deaptools.update_blade_individuals(self.ds1, self.ds2, clean_individuals)
@@ -500,26 +507,24 @@ class DeapRunHandler(DeapScripts):
             self.ds2['y_offset'] = (1 - ref_individual[0]) * self.ds1['dist_blades']  # PP
             self.fit_ref, = self.solve_blade(clean_individuals, True)
             self.outputbox("[DEAP] Updating fit_ref to {fit}".format(fit=self.fit_ref))
-            print("[DEAP] Updating fit_ref to {fit}".format(fit=self.fit_ref))
             del ref_individual
-
+            self.logger.info("--- Reference Blade Fitness:{fit_ref}".format(fit_ref=np.round(self.fit_ref,4)))
+        self.logger.info("begin population")
         self.label_deap_status.setText("Populating.")
-
 
         pop = self.toolbox.population(n=self.dp_POP_SIZE)
         # evaluate population
         fitnesses = list(map(self.toolbox.evaluate, pop))
 
         for idx, (ind, fit) in enumerate(zip(pop, fitnesses)):
-            # ind.fitness.values = fit
             # penalty on fitness when beta out of range
             if not fit[-1] > 9998:
                 if not self.log_loaded:
                     fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
                                                    self.deap_settings.values['penalty_factor'])
                 else:
-                    if (self.pointer_df+idx)<=self.log_df.shape[0]:
-                        fit = (self.log_df.iloc[self.pointer_df+idx].fitness,)
+                    if (self.pointer_df + idx) <= self.log_df.shape[0]:
+                        fit = (self.log_df.iloc[self.pointer_df + idx].fitness,)
                     else:
                         fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
                                                        self.deap_settings.values['penalty_factor'])
@@ -537,7 +542,6 @@ class DeapRunHandler(DeapScripts):
         fits = [ind.fitness.values[0] for ind in pop]
 
         minlist = []
-        # ngen_size = int(self.dp_POP_SIZE/2)
         ngen_size = len(pop)
         while min(fits) > 0 and self.generation < self.dp_MAX_GENERATIONS:
             # new generation
@@ -583,8 +587,8 @@ class DeapRunHandler(DeapScripts):
                         fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
                                                        self.deap_settings.values['penalty_factor'])
                     else:
-                        if (self.pointer_df+idx)<self.log_df.shape[0]:
-                            fit = (self.log_df.iloc[self.pointer_df+idx].fitness,)
+                        if (self.pointer_df + idx) < self.log_df.shape[0]:
+                            fit = (self.log_df.iloc[self.pointer_df + idx].fitness,)
                         else:
                             fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
                                                            self.deap_settings.values['penalty_factor'])
@@ -610,9 +614,7 @@ class DeapRunHandler(DeapScripts):
             minfit = self.df.fitness.iloc[self.pointer_df:].min()
             # get total length of individuals within a generation
             self.logger.info("Population size: {0}, best Fitness: {1}".format(length, minfit))
-            # self.logger.info("Population size: {0}, best Fitness: {1}".format(length, min(fits)))
 
-            # print("  Min %s" % min(fits))
             print("  Min %s" % minfit)
             print("  Max %s" % max(fits))
             print("  Avg %s" % mean)
@@ -620,11 +622,8 @@ class DeapRunHandler(DeapScripts):
 
             # plot
             minlist.append(minfit)
-            # minlist.append(min(fits))
-            # genlist.append()
             self.optifig_deap.animate_deap(minlist)
-            # FIXME:
-            # break loop when omega of last 5 generations didn't change
+            # break loop when omega of last n generations didn't change
             n_identical_gens = 10
             if (self.generation > n_identical_gens):
                 if all(np.round(x, 5) == np.round(minlist[-1], 5) for x in minlist[-n_identical_gens:]):
@@ -644,9 +643,9 @@ class DeapRunHandler(DeapScripts):
             self.logger.info(entry)
         except IndexError as e:
             print(e)
+
         blade1_str = ""
         blade2_str = ""
-        # blade1_str, blade2_str = deaptools.unravel_winner(self.dp_genes, best_ind)
         ind_best = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes, best_ind)
         for key, val in self.ds1.items():
             # ignore pts and pts_th
@@ -666,7 +665,3 @@ class DeapRunHandler(DeapScripts):
 
         self.testrun = True
         DeapVisualize(self.logfile, self.testrun)
-
-        # plt.plot(minlist)
-        # plt.show()
-        # pass

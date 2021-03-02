@@ -54,7 +54,7 @@ def custom_penalty(fit, beta, penalty_factor):
         # quadratic penalty
         penalty = penalty_distance(beta, penalty_factor)
         new_fit = fit[0]
-        return (np.round(new_fit + penalty,4),)
+        return (np.round(new_fit + penalty, 4),)
 
 
 def feasible(val):
@@ -143,7 +143,7 @@ def unravel_individual(checkboxes, dp_genes, individual):
         ID = dp_genes[dp_genes.index == full_name].id.values[0]
         blade = dp_genes[dp_genes.index == full_name].blade.values[0]
         if full_name in checked_params:
-            digit = int(dp_genes[dp_genes.index ==full_name].digits.values[0])
+            digit = int(dp_genes[dp_genes.index == full_name].digits.values[0])
             df = df.append({"id": ID, "blade": blade, "value": np.round(individual[i], digit)}, ignore_index=True)
     df.index = checked_params
 
@@ -186,11 +186,11 @@ def generate_log(idx, df, gen=0):
     except ValueError:
         df_gen = 0
     cols = df.columns
-    entry = "".join("{key}:{val:.{digits}f}, ".format(key=cols[i], val=val, digits=4) for (i,val) in enumerate(df.iloc[idx].to_list()))
+    entry = "".join("{key}:{val:.{digits}f}, ".format(key=cols[i], val=val, digits=4) for (i, val) in
+                    enumerate(df.iloc[idx].to_list()))
     if (gen != 0) and (gen > df_gen):
         entry = entry.replace("generation:{df_gen}".format(df_gen=df_gen), "generation:{gen}".format(gen=gen))
     return entry[:-2]
-
 
 
 def init_deap_df(checkboxes, threepoint_checked):
@@ -213,6 +213,51 @@ def init_deap_df(checkboxes, threepoint_checked):
     cols.append("generation")
     df = pd.DataFrame(columns=cols)
     return df
+
+
+def read_header(log_path):
+    """
+    Extract meta data from logfile. Returns dictionary of data.
+    :param logfile:
+    :return: log_meta
+    :rtype dict
+    """
+    log_meta = {}
+    with open(log_path, "r") as f:
+        lines = f.readlines(2000)
+        for line in lines:
+            line = line.strip("\n")
+            if "SOFTWARE VERSION" in line:
+                chunk = line.split(":")
+                log_meta["version"] = chunk[-1]
+            elif "POP_SIZE" in line:
+                chunk = line.split("--- ")[-1]
+                chunk = chunk.replace(" ", "")
+                chunklist = chunk.split(",")
+                temp_dict = {elem.split(":")[0]: float(elem.split(":")[1]) for elem in chunklist}
+                log_meta.update(temp_dict)
+                del temp_dict
+            elif "Free Parameters" in line:
+                chunk = line.split(":")[-1]
+                chunk = chunk.replace(" ", "")
+                chunklist = chunk.split(",")
+                log_meta["free_params"] = chunklist
+            elif "RANDOM SEED" in line:
+                chunk = line.split("--- ")[-1]
+                log_meta["random_seed"] = int(chunk.split(":")[-1])
+            elif "Objective function parameters" in line:
+                chunk = line.split("--- ")[-1]
+                chunk = chunk.lstrip("Objective function parameters: ")
+                chunklist = chunk.replace(" ", "").split(",")
+                log_meta["objective_params"] = [elem.split(":")[-1] for elem in chunklist]
+            elif "Reference Blade parameters" in line:
+                chunk = line.split("--- ")[-1]
+                chunk = chunk.split("Reference Blade parameters: ")[-1]
+                chunklist = chunk.replace(" ", "").split(",")
+                log_meta["ref_params"] = {elem.split(":")[0]: float(elem.split(":")[1]) for elem in chunklist}
+            elif "Reference Blade Fitness" in line:
+                log_meta["ref_fit"] = float(line.split(":")[-1])
+    return log_meta
 
 
 if __name__ == '__main__':

@@ -35,16 +35,18 @@ class DeapConfigUi(QtWidgets.QDialog):
             "leth1": self.cb_leth1,
             "leth2": self.cb_leth2,
             "teth1": self.cb_teth1,
-            "teth2": self.cb_teth2}
+            "teth2": self.cb_teth2
+        }
 
         self.deap_config_inputs = {
             "pop_size": self.input_pop,
             "max_gens": self.input_gen,
             "cxpb": self.input_cxpb,
             "mutpb": self.input_mutpb,
-            "penalty_factor": self.input_penalty_factor
-
+            "penalty_factor": self.input_penalty_factor,
+            "random_seed": self.input_rnd_seed
         }
+
         self.cblist = {}
         self.vallist = {}
 
@@ -81,6 +83,7 @@ class DeapConfigUi(QtWidgets.QDialog):
         self.vallist['cxpb'] = self.input_cxpb.value()
         self.vallist['mutpb'] = self.input_mutpb.value()
         self.vallist['penalty_factor'] = self.input_penalty_factor.value()
+        self.vallist['random_seed'] = self.input_rnd_seed.value()
 
     def _close(self):
         self.close()
@@ -108,10 +111,9 @@ class DeapConfigUi(QtWidgets.QDialog):
                 self.config.set("checkboxes", key, 'false')
 
         for key, val in self.vallist.items():
-                self.config.set("DEAP", key, str(val))
+            self.config.set("DEAP", key, str(val))
         self.config.write(cfgfile)
         cfgfile.close()
-
 
     def _apply(self):
         """

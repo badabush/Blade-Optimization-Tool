@@ -46,7 +46,8 @@ class OptimHandler:
         self.btn_deaprun.clicked.connect(self.ga_run)
 
         # load existing log and continue on seed
-        self.btn_continue_log.clicked.connect(self.load_log)
+        # self.btn_continue_log.clicked.connect(self.load_log)
+        self.btn_continue_log.clicked.connect(self.deaprun_with_log)
 
         # init LEDs
         self.toggle_leds(self.led_connection, 0)
@@ -62,13 +63,6 @@ class OptimHandler:
         vbl = QtGui.QVBoxLayout(centralwidget)
         vbl.addWidget(toolbar)
         vbl.addWidget(self.optifig_massflow)
-
-        # self.optifig_xmf = OptimPlotXMF(self, width=8, height=10)
-        # toolbar = NavigationToolbar(self.optifig_xmf, self)
-        # centralwidget2 = self.optimfig_widget_2
-        # vbl = QtGui.QVBoxLayout(centralwidget2)
-        # vbl.addWidget(toolbar)
-        # vbl.addWidget(self.optifig_xmf)
 
         # define thread events (for waiting)
         self.igg_event = threading.Event()
@@ -101,7 +95,6 @@ class OptimHandler:
                           "cp": float(ref_blade_config['param']['cp']),
                           "omega": float(ref_blade_config['param']['omega'])}
 
-
         if self.cb_3point.isChecked():
             # refresh paths
             self.grab_paths()
@@ -118,7 +111,6 @@ class OptimHandler:
         else:
             self.testrun = False
             self.outputbox("Testrun (Debug mode) disabled.")
-
 
     def toggle_leds(self, led, state):
         if state == 0:
@@ -248,7 +240,8 @@ class OptimHandler:
         start_time = datetime.datetime.now()
         q_res = queue.Queue()
         # q_xmf = queue.Queue()
-        t_res = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q_res, self.res_event), daemon=True)
+        t_res = threading.Thread(name='res_generator', target=parse_res, args=(res_file, q_res, self.res_event),
+                                 daemon=True)
         t_res.start()
 
         # reset and clear queue and plot

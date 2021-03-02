@@ -7,6 +7,7 @@ from pathlib import Path
 from module.blade.bladetools import ImportExport, normalize
 from module.blade.bladegen import BladeGen
 from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
+from module.optimizer.genetic_algorithm.deaptools import read_header
 
 
 class FileExplorer:
@@ -170,10 +171,14 @@ class FileExplorer:
                 self.testrun = False
 
             self.log_df, _, _ = DeapVisualize.readLog(log_path)
-            self.log_df.xmaxth1 = self.log_df.xmaxth1.round(3)
-            self.log_df.xmaxth2 = self.log_df.xmaxth2.round(3)
-            self.log_df.xmaxcamber1 = self.log_df.xmaxcamber1.round(3)
-            self.log_df.xmaxcamber2 = self.log_df.xmaxcamber2.round(3)
+            try:
+                self.log_df.xmaxth1 = self.log_df.xmaxth1.round(3)
+                self.log_df.xmaxth2 = self.log_df.xmaxth2.round(3)
+                self.log_df.xmaxcamber1 = self.log_df.xmaxcamber1.round(3)
+                self.log_df.xmaxcamber2 = self.log_df.xmaxcamber2.round(3)
+            except AttributeError:
+                pass
+
             self.log_file = filename
-            self.ga_run()
-        # assert "seed" in fileName
+        header = read_header(log_path)
+        return header

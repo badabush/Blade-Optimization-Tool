@@ -6,9 +6,76 @@ import paramiko
 from configparser import ConfigParser
 
 from module.optimizer.generate_script import gen_script
-from module.optimizer.optimtools import init_xmf_param, read_xmf, calc_xmf
+from module.optimizer.optimtools import read_xmf
+from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
+from module.optimizer.genetic_algorithm.deaptools import read_deap_restraints
+
 
 class RunHandler:
+
+    def deaprun_with_log(self):
+        """
+        When UI button 'Continue Log' is pressed, open file explorer for log file and run GA.
+        :return:
+        """
+        ds_log_meta = self.load_log()
+
+        self.deap_config_ui.get_checkbox()
+        self.deap_config_ui.get_values()
+        dp_genes = read_deap_restraints()
+        deap_settings = DeapSettingsHandle(self.deap_config_ui, dp_genes)
+        ds_curr = deap_settings.values
+        # assert parameters between log file and UI settings
+        try:
+            if not ds_log_meta["version"] is self.VERSION:
+                raise AssertionError(
+                    "Software version don't match (Current:{curr}, Log:{log})".format(curr=self.VERSION,
+                                                                                      log=ds_log_meta["version"]))
+
+            if not ds_log_meta["POP_SIZE"] == ds_curr["pop_size"]:
+                raise AssertionError(
+                    "Population size don't match (Current:{curr}, Log:{log})".format(log=ds_log_meta["POP_SIZE"],
+                                                                                     curr=ds_curr["pop_size"]))
+
+            if not ds_log_meta["CXPB"] == ds_curr["cxpb"]:
+                raise AssertionError(
+                    "CXPB don't match (Current:{curr}, Log:{log})".format(log=ds_log_meta["CXPB"],
+                                                                          curr=ds_curr["cxpb"]))
+
+            if not ds_log_meta["MUTPB"] == ds_curr["mutpb"]:
+                raise AssertionError(
+                    "MUTPB don't match (Current:{curr}, Log:{log})".format(log=ds_log_meta["MUTPB"],
+                                                                           curr=ds_curr["mutpb"]))
+
+            if not ds_log_meta["PENALTY_FACTOR"] == ds_curr["penalty_factor"]:
+                raise AssertionError(
+                    "Penalty factor don't match (Current:{curr}, Log:{log})".format(log=ds_log_meta["PENALTY_FACTOR"],
+                                                                                    curr=ds_curr["penalty_factor"]))
+
+            if not ds_log_meta["random_seed"] == ds_curr["random_seed"]:
+                raise AssertionError(
+                    "Penalty factor don't match (Current:{curr}, Log:{log})".format(log=ds_log_meta["random_seed"],
+                                                                                    curr=ds_curr["random_seed"]))
+
+            curr_free_params = [key for key, val in deap_settings.checkboxes.items() if val == 1]
+            if not ds_log_meta["free_params"].sort() == curr_free_params.sort():
+                raise AssertionError("Free parameters don't match.")
+
+            #TODO: ref blade params, ref blade fit, ABC
+            #TODO: move objective function parameters to init (from ga_run)
+
+
+
+
+
+
+        except AssertionError as e:
+
+            self.outputbox(
+                "AssertionError: Log file and user settings don't match. Aborting 'Continue log', back to idle.")
+            self.outputbox(e.__str__())
+            return
+        self.ga_run(log_loaded=True)
 
     def run_script(self):
         """
@@ -26,7 +93,6 @@ class RunHandler:
             return 0
         # get display address
         self.display = "export DISPLAY=" + self.box_DISPLAY.text() + ";"
-
 
         if not self.cb_3point.isChecked():
             self.run_1point()
@@ -61,7 +127,6 @@ class RunHandler:
 
         except (paramiko.ssh_exception.NoValidConnectionsError) as e:
             self.outputbox(e)
-
 
     def run_3point(self):
         """
@@ -110,9 +175,10 @@ class RunHandler:
             self.outputbox(stdout)
 
             # for i in range(3):
-                # try removing old res files
-                # change paths of res and xmf files
-            t = threading.Thread(name='res_reader', target=self.read_res, args=(self.res_files[0], self.xmf_files[0]), daemon=True)
+            # try removing old res files
+            # change paths of res and xmf files
+            t = threading.Thread(name='res_reader', target=self.read_res, args=(self.res_files[0], self.xmf_files[0]),
+                                 daemon=True)
             t.start()
             self.res_event.wait()
             time.sleep(2)
