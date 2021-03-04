@@ -8,7 +8,8 @@ from configparser import ConfigParser
 from module.optimizer.generate_script import gen_script
 from module.optimizer.optimtools import read_xmf
 from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
-from module.optimizer.genetic_algorithm.deaptools import read_deap_restraints
+from module.optimizer.genetic_algorithm.deaptools import read_deap_restraints, ind_list_from_datasets, \
+    unravel_individual
 
 
 class RunHandler:
@@ -27,7 +28,7 @@ class RunHandler:
         ds_curr = deap_settings.values
         # assert parameters between log file and UI settings
         try:
-            if not ds_log_meta["version"] is self.VERSION:
+            if not ds_log_meta["version"] == self.VERSION:
                 raise AssertionError(
                     "Software version don't match (Current:{curr}, Log:{log})".format(curr=self.VERSION,
                                                                                       log=ds_log_meta["version"]))
@@ -61,13 +62,18 @@ class RunHandler:
             if not ds_log_meta["free_params"].sort() == curr_free_params.sort():
                 raise AssertionError("Free parameters don't match.")
 
-            #TODO: ref blade params, ref blade fit, ABC
-            #TODO: move objective function parameters to init (from ga_run)
+            if not ds_log_meta["objective_params"] == ds_curr["objective_params"]:
+                raise AssertionError(
+                    "Penalty factor don't match (Current:{curr}, Log:{log})".format(log=ds_log_meta["objective_params"],
+                                                                                    curr=ds_curr["objective_params"]))
 
-
-
-
-
+            ref_individual = ind_list_from_datasets(self.ds1, self.ds2, dp_genes)
+            for i, (key, val) in enumerate(ds_log_meta["ref_params"].items()):
+                if not ref_individual[i] == val:
+                    print("False")
+                    raise AssertionError(
+                        "{key} don't match (Current:{curr}, Log:{log})".format(key=key, log=val,
+                                                                               curr=ref_individual[i]))
 
         except AssertionError as e:
 
@@ -75,6 +81,8 @@ class RunHandler:
                 "AssertionError: Log file and user settings don't match. Aborting 'Continue log', back to idle.")
             self.outputbox(e.__str__())
             return
+
+        self.ds_log_meta = ds_log_meta
         self.ga_run(log_loaded=True)
 
     def run_script(self):

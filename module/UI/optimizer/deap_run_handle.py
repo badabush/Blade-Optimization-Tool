@@ -27,9 +27,6 @@ from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
 class DeapRunHandler:
     def ga_run(self, log_loaded=False):
         # constant tuning parameters for objective function
-        self.A = .5
-        self.B = 1.
-        self.C = .5
         self.log_loaded = log_loaded
 
         # get updates from DEAP settings window
@@ -37,6 +34,9 @@ class DeapRunHandler:
         self.deap_config_ui.get_values()
         self.dp_genes = deaptools.read_deap_restraints()
         self.deap_settings = DeapSettingsHandle(self.deap_config_ui, self.dp_genes)
+
+        # get objective params from deap settings
+        self.A, self.B, self.C = self.deap_settings.values["objective_params"]
         self.beta = [np.deg2rad(17)]
 
         # random seed for testing consistency of GA
@@ -319,39 +319,42 @@ class DeapRunHandler:
 
         # look up in loaded log file
         if self.log_loaded:
-            ind_row = clean_individuals.value.transpose()
-            if ind_row.isin(self.log_df.iloc[self.log_idx]).all():
-                print("Match!")
-                new_row = deaptools.get_row(clean_individuals)
-                match = self.log_df.iloc[self.log_idx]
-                new_row['beta'] = match.beta
-                new_row['omega'] = match.omega
-                new_row['cp'] = match.cp
-                new_row['generation'] = self.generation  # update generation
+            try:
+                ind_row = clean_individuals.value.transpose()
+                if ind_row.isin(self.log_df.iloc[self.log_idx]).all():
+                    print("Match!")
+                    new_row = deaptools.get_row(clean_individuals)
+                    match = self.log_df.iloc[self.log_idx]
+                    new_row['beta'] = match.beta
+                    new_row['omega'] = match.omega
+                    new_row['cp'] = match.cp
+                    new_row['generation'] = self.generation  # update generation
 
-                self.omega = [0, match.omega]
-                self.beta = [0, match.beta]
-                self.cp = [0, match.cp]
-                if not self.cb_3point.isChecked():
-                    self.df = self.df.append(new_row, ignore_index=True)
-                    return match.omega,
-                else:
-                    omega_lower = match.omega_lower
-                    omega = match.omega
-                    omega_upper = match.omega_upper
-                    res = self.A * (omega_lower / self.ref_blade["omega"]) + \
-                          self.B * (omega / self.ref_blade["omega"]) + \
-                          self.C * (omega_upper / self.ref_blade["omega"])
-                    # add 3 point parameters to new row
-                    new_row['beta_lower'] = match.beta_lower
-                    new_row['omega_lower'] = match.omega_lower
-                    new_row['cp_lower'] = match.cp_lower
-                    new_row['beta_upper'] = match.beta_upper
-                    new_row['omega_upper'] = match.omega_upper
-                    new_row['cp_upper'] = match.cp_upper
-                    self.df = self.df.append(new_row, ignore_index=True)
-                    self.log_idx += 1
-                    return res,
+                    self.omega = [0, match.omega]
+                    self.beta = [0, match.beta]
+                    self.cp = [0, match.cp]
+                    if not self.cb_3point.isChecked():
+                        self.df = self.df.append(new_row, ignore_index=True)
+                        return match.omega,
+                    else:
+                        omega_lower = match.omega_lower
+                        omega = match.omega
+                        omega_upper = match.omega_upper
+                        res = self.A * (omega_lower / self.ref_blade["omega"]) + \
+                              self.B * (omega / self.ref_blade["omega"]) + \
+                              self.C * (omega_upper / self.ref_blade["omega"])
+                        # add 3 point parameters to new row
+                        new_row['beta_lower'] = match.beta_lower
+                        new_row['omega_lower'] = match.omega_lower
+                        new_row['cp_lower'] = match.cp_lower
+                        new_row['beta_upper'] = match.beta_upper
+                        new_row['omega_upper'] = match.omega_upper
+                        new_row['cp_upper'] = match.cp_upper
+                        self.df = self.df.append(new_row, ignore_index=True)
+                        self.log_idx += 1
+                        return res,
+            except IndexError:
+                pass
 
         # if blade was simulated before, skip numeca process
         if len(match_idx[0]) != 0:
@@ -486,6 +489,8 @@ class DeapRunHandler:
     def populate(self):
         # update fit_ref with the actual value from evaluation of ref_blade
         if not self.testrun:
+
+            #TODO: take ref_fit from log if loaded
             # Run Reference Blade once
             self.outputbox("[DEAP] Running Ref_Blade through solver.")
             ref_individual = deaptools.ind_list_from_datasets(self.ds1, self.ds2, self.dp_genes)
@@ -493,11 +498,12 @@ class DeapRunHandler:
 
             logstr = "".join(["{key}:{val}, ".format(key=key, val=val) for key, val in
                               zip(self.dp_genes.index.to_list(), ref_individual)])
-            self.logger.info("--- Reference Blade parameters: " + logstr[:-2] + " ---")
+            self.logger.info("--- Reference Blade parameters: " + logstr[:-2])
             del logstr
 
             clean_individuals = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes,
                                                              ref_individual)
+
 
             # update tandem blades
             self.ds1, self.ds2 = deaptools.update_blade_individuals(self.ds1, self.ds2, clean_individuals)
@@ -505,7 +511,13 @@ class DeapRunHandler:
             # TODO: change reference to clean_individuals
             self.ds2['x_offset'] = ref_individual[1] * self.ds1['dist_blades']  # AO
             self.ds2['y_offset'] = (1 - ref_individual[0]) * self.ds1['dist_blades']  # PP
-            self.fit_ref, = self.solve_blade(clean_individuals, True)
+
+            # take fitref from log file if loaded, calculate otherwise
+            if self.log_loaded:
+                self.fit_ref = float(self.ds_log_meta["ref_fit"])
+            else:
+                self.fit_ref, = self.solve_blade(clean_individuals, True)
+
             self.outputbox("[DEAP] Updating fit_ref to {fit}".format(fit=self.fit_ref))
             del ref_individual
             self.logger.info("--- Reference Blade Fitness:{fit_ref}".format(fit_ref=np.round(self.fit_ref,4)))

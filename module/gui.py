@@ -43,7 +43,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
     def __init__(self):
         super(Ui, self).__init__()
         uic.loadUi('UI/qtdesigner/mainwindow.ui', self)
-        self.VERSION = 0.1
+        self.VERSION = "0.1"
 
         # declaring param keys, load restraints for slider
         self.param_keys = ['alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'gamma_te', 'th_le',

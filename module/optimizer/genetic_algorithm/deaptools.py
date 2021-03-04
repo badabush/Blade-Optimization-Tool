@@ -249,7 +249,7 @@ def read_header(log_path):
                 chunk = line.split("--- ")[-1]
                 chunk = chunk.lstrip("Objective function parameters: ")
                 chunklist = chunk.replace(" ", "").split(",")
-                log_meta["objective_params"] = [elem.split(":")[-1] for elem in chunklist]
+                log_meta["objective_params"] = [float(elem.split(":")[-1]) for elem in chunklist]
             elif "Reference Blade parameters" in line:
                 chunk = line.split("--- ")[-1]
                 chunk = chunk.split("Reference Blade parameters: ")[-1]

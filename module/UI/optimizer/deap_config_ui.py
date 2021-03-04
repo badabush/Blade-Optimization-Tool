@@ -84,6 +84,8 @@ class DeapConfigUi(QtWidgets.QDialog):
         self.vallist['mutpb'] = self.input_mutpb.value()
         self.vallist['penalty_factor'] = self.input_penalty_factor.value()
         self.vallist['random_seed'] = self.input_rnd_seed.value()
+        self.vallist['objective_params'] = [self.input_obj_param_A.value(), self.input_obj_param_B.value(),
+                                            self.input_obj_param_C.value()]
 
     def _close(self):
         self.close()
