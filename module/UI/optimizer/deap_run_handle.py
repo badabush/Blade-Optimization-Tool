@@ -535,7 +535,8 @@ class DeapRunHandler:
                     fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
                                                    self.deap_settings.values['penalty_factor'])
                 else:
-                    if (self.pointer_df + idx) <= self.log_df.shape[0]:
+
+                    if ((self.pointer_df + idx) <= self.log_df.shape[0]) and (self.log_df.shape[0] != 0):
                         fit = (self.log_df.iloc[self.pointer_df + idx].fitness,)
                     else:
                         fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
@@ -566,21 +567,30 @@ class DeapRunHandler:
             # clone selected individual
             offspring = list(map(self.toolbox.clone, offspring))
 
-            # crossover and mutations
-            for (idx_cx1, child1), (idx_cx2, child2) in zip(enumerate(offspring[::2]), enumerate(offspring[1::2])):
-                # placing the delete statements here will force the GA to reevaluate all fitnesses, thus logging
-                # the whole new generation
-                del child1.fitness.values
-                del child2.fitness.values
-                if random.random() < self.dp_CXPB:
-                    self.toolbox.mate(child1, child2)
+            if self.log_loaded and (self.log_idx + self.dp_POP_SIZE) < self.log_df.shape[0]:
+                ### copy offspring from log df
+                subset = self.log_df.iloc[self.log_idx:(self.log_idx+self.dp_POP_SIZE)].reset_index().drop(["index"], axis=1)
+                for idx_child, child in enumerate(offspring):
+                    for idx in range(len(child)):
+                        if self.dp_genes.iloc[idx].name in subset:
+                            offspring[idx_child][idx] = subset[self.dp_genes.iloc[idx].name].iloc[idx_child]
+                            del child.fitness.values
+            else:
+                # crossover and mutations
+                for (idx_cx1, child1), (idx_cx2, child2) in zip(enumerate(offspring[::2]), enumerate(offspring[1::2])):
+                    # placing the delete statements here will force the GA to reevaluate all fitnesses, thus logging
+                    # the whole new generation
+                    del child1.fitness.values
+                    del child2.fitness.values
+                    if random.random() < self.dp_CXPB:
+                        self.toolbox.mate(child1, child2)
 
-            for idx_mut, mutant in enumerate(offspring):
-                # placing the delete statements here will force the GA to reevaluate all fitnesses, thus logging
-                # the whole new generation
-                del mutant.fitness.values
-                if random.random() < self.dp_MUTPB:
-                    self.toolbox.mutate(mutant)
+                for idx_mut, mutant in enumerate(offspring):
+                    # placing the delete statements here will force the GA to reevaluate all fitnesses, thus logging
+                    # the whole new generation
+                    del mutant.fitness.values
+                    if random.random() < self.dp_MUTPB:
+                        self.toolbox.mutate(mutant)
 
             # set df pointer to number of rows before calculation of CX/MUT
             self.pointer_df = self.df.shape[0]
@@ -675,5 +685,8 @@ class DeapRunHandler:
         self.logger.info("[blade2] " + blade2_str[:-2])  # log it, remove trailing ,
         # create dir and save plots of results to it. Move debug.log to folder and delete original.
 
-        self.testrun = True
-        DeapVisualize(self.logfile, self.testrun)
+        # self.testrun = True
+
+        if self.log_loaded:
+            custom_message = "Continuation of log."
+        DeapVisualize(self.logfile, self.testrun, custom_message=custom_message)

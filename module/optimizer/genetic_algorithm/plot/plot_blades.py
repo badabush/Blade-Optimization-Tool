@@ -15,6 +15,7 @@ def deap_blade(blades, logdir):
 
     bladePlot(ax, blades[0], ds1=blades[0], ds2=blades[1], alpha=.5)
 
-    bladePlot(ax, default_blade[0], ds1=default_blade[1], ds2=default_blade[0], alpha=1, clear=False,
+    bladePlot(ax, default_blade[0], ds1=default_blade[1], ds2=default_blade[2], alpha=1, clear=False,
               transparent=True)
+    ax.legend(["filled - best", "outline - reference"])
     fig.savefig(Path(logdir + "/blades.png"))

@@ -159,6 +159,6 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    # msg = "Run stopped at generation 27 because the computer restarted...Thus, no blade plot.\n\n"
+    msg = "BUGFIX: mistakenly plotted wrong reference blade \n\n"
     # DeapVisualize("test_10-02-21_19-51-14.log", True, msg)
-    DeapVisualize("test_01-03-21_14-52-48_seed_76.log", testrun=True)
+    DeapVisualize("07-03-21_18-23-12_seed_76.log", testrun=False, custom_message=msg)

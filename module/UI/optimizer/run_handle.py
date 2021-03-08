@@ -27,6 +27,8 @@ class RunHandler:
         deap_settings = DeapSettingsHandle(self.deap_config_ui, dp_genes)
         ds_curr = deap_settings.values
         # assert parameters between log file and UI settings
+        if not ds_log_meta:
+            return
         try:
             if not ds_log_meta["version"] == self.VERSION:
                 raise AssertionError(

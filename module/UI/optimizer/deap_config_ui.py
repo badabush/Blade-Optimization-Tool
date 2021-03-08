@@ -44,7 +44,8 @@ class DeapConfigUi(QtWidgets.QDialog):
             "cxpb": self.input_cxpb,
             "mutpb": self.input_mutpb,
             "penalty_factor": self.input_penalty_factor,
-            "random_seed": self.input_rnd_seed
+            "random_seed": self.input_rnd_seed,
+            "objective_params": [self.input_obj_param_A,self.input_obj_param_B,self.input_obj_param_C]
         }
 
         self.cblist = {}
@@ -97,7 +98,12 @@ class DeapConfigUi(QtWidgets.QDialog):
                     state = self.config.getboolean(section, option)
                     self.deap_config_cb[option].setChecked(state)
                 elif section == "DEAP":
-                    self.deap_config_inputs[option].setValue(self.config.getfloat(section, option))
+                    if not option == "objective_params":
+                        self.deap_config_inputs[option].setValue(self.config.getfloat(section, option))
+                    else:
+                        param_list = self.config.get(section, option)
+                        param_list = list(map(float,param_list.strip("[]").split(", ")))
+                        [self.deap_config_inputs[option][i].setValue(param_list[i]) for i in range(len(param_list))]
 
     def save_config(self):
         """
