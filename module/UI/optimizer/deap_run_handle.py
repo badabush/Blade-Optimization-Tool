@@ -21,6 +21,8 @@ import module.optimizer.genetic_algorithm.deaptools as deaptools
 from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
 from module.optimizer.optimtools import calc_xmf
 from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
+
+
 # from module.UI.optimizer.deap_run import DeapScripts
 
 
@@ -149,7 +151,8 @@ class DeapRunHandler:
         # using a blend with alpha=0 is identical to a cxUniform, but latter seems to be implemented differently than
         # it should be (cxUniform only swaps 2 genes)
         self.toolbox.register("mate", tools.cxBlend, alpha=0.0)
-        self.toolbox.register("mutate", self.mut_restricted, indpb=.1)
+        self.toolbox.register("mutate", self.mut_restricted,
+                              indpb=.1)  # TODO: indpb affects each gene, make them available in GUI
 
         # pick 3 random individuals, fitness evaluation and selection
         self.toolbox.register("select", tools.selTournament, tournsize=5)
@@ -159,7 +162,8 @@ class DeapRunHandler:
             '--- POP_SIZE:{popsize}, CXPB:{cxpb}, MUTPB:{mutpb}, PENALTY_FACTOR:{penalty_factor}'.format(
                 popsize=self.dp_POP_SIZE, cxpb=self.dp_CXPB, mutpb=self.dp_MUTPB,
                 penalty_factor=self.deap_settings.values['penalty_factor']))
-        free_params = "".join(["{param}, ".format(param=param) for (param,val) in self.deap_settings.checkboxes.items() if val == 1])
+        free_params = "".join(
+            ["{param}, ".format(param=param) for (param, val) in self.deap_settings.checkboxes.items() if val == 1])
         self.logger.info("--- Free Parameters: " + free_params[:-2])
         del free_params
         if seed_number != None:
@@ -307,9 +311,12 @@ class DeapRunHandler:
         # update tandem blades
         self.ds1, self.ds2 = deaptools.update_blade_individuals(self.ds1, self.ds2, clean_individuals)
         # xoffset and yoffset need to be calculated from PP and AO
-        # TODO: change reference to clean_individuals
-        self.ds2['x_offset'] = individual[1] * self.ds1['dist_blades']  # AO
-        self.ds2['y_offset'] = (1 - individual[0]) * self.ds1['dist_blades']  # PP
+        if "AO" in clean_individuals.id.to_list():
+            self.ds1['x_offset'] = clean_individuals.loc["ao"].value * self.ds1['dist_blades']  # AO
+            self.ds2['x_offset'] = clean_individuals.loc["ao"].value * self.ds1['dist_blades']  # AO
+        if "PP" in clean_individuals.id.to_list():
+            self.ds1['y_offset'] = (1 - clean_individuals.loc["pp"].value) * self.ds1['dist_blades']  # PP
+            self.ds2['y_offset'] = (1 - clean_individuals.loc["pp"].value) * self.ds1['dist_blades']  # PP
 
         match_idx = np.where(
             (self.df.alph11 == clean_individuals.loc["alph11"].value) &
@@ -490,7 +497,7 @@ class DeapRunHandler:
         # update fit_ref with the actual value from evaluation of ref_blade
         if not self.testrun:
 
-            #TODO: take ref_fit from log if loaded
+            # TODO: take ref_fit from log if loaded
             # Run Reference Blade once
             self.outputbox("[DEAP] Running Ref_Blade through solver.")
             ref_individual = deaptools.ind_list_from_datasets(self.ds1, self.ds2, self.dp_genes)
@@ -503,7 +510,6 @@ class DeapRunHandler:
 
             clean_individuals = deaptools.unravel_individual(self.deap_settings.checkboxes, self.dp_genes,
                                                              ref_individual)
-
 
             # update tandem blades
             self.ds1, self.ds2 = deaptools.update_blade_individuals(self.ds1, self.ds2, clean_individuals)
@@ -520,7 +526,7 @@ class DeapRunHandler:
 
             self.outputbox("[DEAP] Updating fit_ref to {fit}".format(fit=self.fit_ref))
             del ref_individual
-            self.logger.info("--- Reference Blade Fitness:{fit_ref}".format(fit_ref=np.round(self.fit_ref,4)))
+            self.logger.info("--- Reference Blade Fitness:{fit_ref}".format(fit_ref=np.round(self.fit_ref, 4)))
         self.logger.info("begin population")
         self.label_deap_status.setText("Populating.")
 
@@ -569,7 +575,8 @@ class DeapRunHandler:
 
             if self.log_loaded and (self.log_idx + self.dp_POP_SIZE) < self.log_df.shape[0]:
                 ### copy offspring from log df
-                subset = self.log_df.iloc[self.log_idx:(self.log_idx+self.dp_POP_SIZE)].reset_index().drop(["index"], axis=1)
+                subset = self.log_df.iloc[self.log_idx:(self.log_idx + self.dp_POP_SIZE)].reset_index().drop(["index"],
+                                                                                                             axis=1)
                 for idx_child, child in enumerate(offspring):
                     for idx in range(len(child)):
                         if self.dp_genes.iloc[idx].name in subset:
