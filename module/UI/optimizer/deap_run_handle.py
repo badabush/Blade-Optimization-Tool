@@ -5,6 +5,7 @@ import threading
 import datetime
 import time
 import re
+from pathlib import Path
 
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 
@@ -73,18 +74,22 @@ class DeapRunHandler:
         self.fit_ref = 1
 
         # init logs
+        logging_path = Path.cwd().parent / "log/"
+        logging_path = logging_path.__str__()
         log_format = ("[%(asctime)s] %(levelname)-8s %(name)-12s %(message)s")
         if not self.testrun:
             if seed_number == None:
-                self.logfile = datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
+                self.logfile = logging_path + "/raw/" + datetime.datetime.now().strftime(
+                    "%d-%m-%y_%H-%M-%S") + '.log'
             else:
-                self.logfile = datetime.datetime.now().strftime(
+                self.logfile = logging_path + "/raw/" + datetime.datetime.now().strftime(
                     "%d-%m-%y_%H-%M-%S_seed_{seed}".format(seed=seed_number)) + '.log'
         else:
             if seed_number == None:
-                self.logfile = "test_" + datetime.datetime.now().strftime("%d-%m-%y_%H-%M-%S") + '.log'
+                self.logfile = logging_path + "/raw/" + "test_" + datetime.datetime.now().strftime(
+                    "%d-%m-%y_%H-%M-%S") + '.log'
             else:
-                self.logfile = "test_" + datetime.datetime.now().strftime(
+                self.logfile = logging_path + "/raw/" + "test_" + datetime.datetime.now().strftime(
                     "%d-%m-%y_%H-%M-%S_seed_{seed}".format(seed=seed_number)) + '.log'
         logging.basicConfig(
             level=logging.INFO,

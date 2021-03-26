@@ -6,7 +6,7 @@ module/optimizer/numeca_api
 module/dist
 module/build
 module/BOT.exe
-module/log
+log
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,git

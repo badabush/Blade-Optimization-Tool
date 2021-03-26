@@ -1,4 +1,5 @@
 import numpy as np
+from pathlib import Path
 from matplotlib import pyplot as plt
 from sklearn import preprocessing
 import pandas as pd
@@ -36,7 +37,7 @@ class BladeGen:
         # pack parameters into dict
         self.ds = self.params(th, [alpha1, alpha2], x_maxcamber, x_maxth, l_chord, lambd, th_le,
                               th_te, gamma_te, npts)
-        self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, int(self.ds['npts']/2))))  # x-coord generation
+        self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, int(self.ds['npts'] / 2))))  # x-coord generation
         # self.x = np.linspace(0, 1, self.ds['npts'])
 
         # #TODO: camber spline is disabled for now
@@ -47,7 +48,7 @@ class BladeGen:
         #     self.xy_cspline = compute_spline(spline_pts[:, 0], spline_pts[:, 1])
         #     self.xy_camber = cdist_from_spline(self.xy_cspline, self.ds['theta'])
         #     update x because spline function in spline differs x slightly (otherwise thickness dist doesnt fit spline)
-            # self.x = self.xy_camber[:, 0]
+        # self.x = self.xy_camber[:, 0]
 
         if self.thdist_option == 0:
             xy_th = self.thickness_dist_v1()
@@ -60,7 +61,8 @@ class BladeGen:
                 xy_blade, self.xy_camber = self.thickness_dist_v2(thdist_points)
 
         if self.frontend == 'user':
-            ImportExport()._export(xy_blade)
+            path = Path.cwd() / "geo_output/py"
+            ImportExport()._export(path, xy_blade)
             self.debug_plot(self.xy_camber, xy_blade)
 
         elif self.frontend == 'UI':
@@ -150,36 +152,38 @@ class BladeGen:
         if 0:
             if not 9999 in xyth_spline:
                 xy_th = compute_spline(xyth_spline[:, 0], xyth_spline[:, 1] * ds['rth'])
-                n_half = int(xy_th.shape[0]/2)
-                xy_th_front = np.array([xy_th[i,:] if xy_th[i,1] > th_le else [xy_th[i,0], np.nan] for i in range(0, n_half)])
-                xy_th_rear = np.array([xy_th[i,:] if xy_th[i,1] >= th_te else [xy_th[i,0], np.nan] for i in range(n_half, xy_th.shape[0])])
+                n_half = int(xy_th.shape[0] / 2)
+                xy_th_front = np.array(
+                    [xy_th[i, :] if xy_th[i, 1] > th_le else [xy_th[i, 0], np.nan] for i in range(0, n_half)])
+                xy_th_rear = np.array([xy_th[i, :] if xy_th[i, 1] >= th_te else [xy_th[i, 0], np.nan] for i in
+                                       range(n_half, xy_th.shape[0])])
                 try:
                     # find position of nan entry before/after value
-                    idx_front = np.argwhere(np.isnan(xy_th_front[:,1]))[-1]
-                    idx_rear = np.argwhere(np.isnan(xy_th_rear[:,1]))[0]
+                    idx_front = np.argwhere(np.isnan(xy_th_front[:, 1]))[-1]
+                    idx_rear = np.argwhere(np.isnan(xy_th_rear[:, 1]))[0]
 
                     xy_th = np.vstack((xy_th_front, xy_th_rear))
-                    count_nans = np.isnan(xy_th[:,1]).sum()
+                    count_nans = np.isnan(xy_th[:, 1]).sum()
                     if count_nans > 60:
-                        idx_start = int(np.floor(count_nans/6))
+                        idx_start = int(np.floor(count_nans / 6))
                         # idx_start = int(np.floor(th_le*2000))
-                        idx_end = xy_th.shape[0]-int(np.floor(count_nans/6))
+                        idx_end = xy_th.shape[0] - int(np.floor(count_nans / 6))
                         # idx_end = 470
                         yth = np.zeros(xy_th.shape[0])
                         pointer = int(idx_front)
                         for i in range(idx_start, idx_end):
-                            if pointer>(n_half+idx_rear):
+                            if pointer > (n_half + idx_rear):
                                 break
-                            if i%3==0:
+                            if i % 3 == 0:
                                 # yth[i] = np.nan
-                                yth[i] = xy_th[pointer,1]
-                                pointer+=2
+                                yth[i] = xy_th[pointer, 1]
+                                pointer += 2
                             else:
                                 # yth[i] = xy_th[pointer,1]
                                 # pointer+=1
                                 yth[i] = np.nan
-                    yth = pd.DataFrame({'x': xy_th[:,0], 'y':yth})
-                    yth.y.interpolate(method='piecewise_polynomial', order=5,inplace=True)
+                    yth = pd.DataFrame({'x': xy_th[:, 0], 'y': yth})
+                    yth.y.interpolate(method='piecewise_polynomial', order=5, inplace=True)
                     yth.y.loc[:n_half] = np.where((yth.y.loc[:n_half] <= th_le), np.nan, yth.y.loc[:n_half])
                     yth.y.loc[n_half:] = np.where((yth.y.loc[n_half:] <= th_te), np.nan, yth.y.loc[n_half:])
                     yth.y.iloc[0] = 0
@@ -189,7 +193,7 @@ class BladeGen:
                 except IndexError:
                     print("Error while rounding edges")
         # else:
-            # generate y thickness dist if not given by spline
+        # generate y thickness dist if not given by spline
         x_short = x[np.where(x < (1 - th_te / c))]
 
         x_front = x_short[np.where(x_short < xd)]

@@ -1,9 +1,8 @@
-from PyQt5.QtWidgets import QSizePolicy, QFileDialog
-import numpy as np
-
 from pathlib import Path
 import os
 import csv
+
+from PyQt5.QtWidgets import QFileDialog
 
 from module.blade.bladetools import get_blade_from_csv
 
@@ -52,4 +51,3 @@ class SaveLoadConfig:
             self.radio_blade1.setChecked(False)
             self.radio_blade2.setChecked(True)
             self.set_labelval(self.ds2)
-            # self.select_blade = 1

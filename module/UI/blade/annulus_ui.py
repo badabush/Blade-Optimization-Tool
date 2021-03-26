@@ -172,6 +172,7 @@ class PlotCanvas(FigureCanvas):
     """
     Class to handle Plot inside window. Very similar to main window plot.
     """
+
     def __init__(self, parent=None, width=5, height=4, dpi=100):
         fig = Figure(figsize=(width, height), dpi=dpi)
         # self.axes = fig.add_subplot(111)
@@ -210,8 +211,9 @@ class PlotCanvas(FigureCanvas):
         r_outer = r_inner + 1
         self.ax.plot(r_outer * np.cos(t), r_outer * np.sin(t), 'k--', alpha=.3)
         self.ax.plot(r_outer * np.cos(t2), r_outer * np.sin(t2), color='cornflowerblue', alpha=.5)
-        self.ax.plot([blade_list.iloc[0, 0], blade_list.iloc[0, 1]], [blade_list.iloc[n2, 0], blade_list.iloc[n2, 1]], color='indianred', alpha=1)
-        [self.ax.plot(blade_list.iloc[:n2, i], blade_list.iloc[n2:, i], color='royalblue', alpha=.7) for i in
+        self.ax.plot([blade_list.iloc[0, 0], blade_list.iloc[0, 1]], [blade_list.iloc[n2, 0], blade_list.iloc[n2, 1]],
+                     color='indianred', alpha=1)
+        foo = [self.ax.plot(blade_list.iloc[:n2, i], blade_list.iloc[n2:, i], color='royalblue', alpha=.7) for i in
          range(shape[1] - 1)]
         self.ax.grid()
         self.ax.axis('equal')

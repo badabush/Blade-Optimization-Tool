@@ -211,8 +211,8 @@ class GeomTurboFile:
         fsave.write(f_str)
 
 
-if __name__ == "__main__":
-    blade = np.zeros((600, 3))  # dummy data
-    blade[:, 1] = np.linspace(0, 1, 600)
-    blade[:, 2] = np.linspace(-1, 0, 600)
-    foo = GeomTurboFile("path", "tandem", [blade, blade], 1, 1, 1)
+# if __name__ == "__main__":
+#     blade = np.zeros((600, 3))  # dummy data
+#     blade[:, 1] = np.linspace(0, 1, 600)
+#     blade[:, 2] = np.linspace(-1, 0, 600)
+#     foo = GeomTurboFile("path", "tandem", [blade, blade], 1, 1, 1)
