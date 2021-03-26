@@ -1,5 +1,5 @@
 import numpy as np
-from module.blade.bladetools import load_config_file
+from blade.bladetools import load_config_file
 
 
 class Initialize:

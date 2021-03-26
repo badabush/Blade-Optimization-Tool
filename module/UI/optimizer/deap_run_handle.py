@@ -16,12 +16,12 @@ from deap import creator
 from deap import tools
 from deap import base
 
-from module.UI.optimizer.generate_mesh_ui import MeshGenUI
-from module.UI.optimizer.optimizer_plots import OptimPlotDEAP
-import module.optimizer.genetic_algorithm.deaptools as deaptools
-from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
-from module.optimizer.optimtools import calc_xmf
-from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
+from UI.optimizer.generate_mesh_ui import MeshGenUI
+from UI.optimizer.optimizer_plots import OptimPlotDEAP
+import optimizer.genetic_algorithm.deaptools as deaptools
+from optimizer.genetic_algorithm.deap_visualize import DeapVisualize
+from optimizer.optimtools import calc_xmf
+from UI.optimizer.deap_settings_handle import DeapSettingsHandle
 
 
 # from module.UI.optimizer.deap_run import DeapScripts

@@ -14,3 +14,4 @@ BOT - Blade Optimization Tool
    scripts
    GUI
    optimizer
+   deap

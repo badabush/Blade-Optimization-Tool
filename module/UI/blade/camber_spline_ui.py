@@ -6,8 +6,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from module.blade.testspline import compute_spline
-from module.blade.bladetools import load_config_file
+from blade.testspline import compute_spline
+from blade.bladetools import load_config_file
 
 
 class CamberSplineUi(QtWidgets.QMainWindow):

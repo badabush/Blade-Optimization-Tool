@@ -3,7 +3,7 @@ import threading
 from PyQt5.QtWidgets import QSizePolicy, QFileDialog
 from PyQt5 import QtWidgets, uic
 from PyQt5 import QtCore
-from module.optimizer.ssh_login.ssh_connect import SshUtil
+from optimizer.ssh_login.ssh_connect import SshUtil
 from os.path import expanduser
 
 

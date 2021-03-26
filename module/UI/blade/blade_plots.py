@@ -1,6 +1,6 @@
 import numpy as np
 
-from module.blade.bladegen import BladeGen
+from blade.bladegen import BladeGen
 
 
 def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha=0.5, clear=True, transparent=False):

@@ -4,10 +4,11 @@ import pandas as pd
 from os.path import expanduser
 from pathlib import Path
 
-from module.blade.bladetools import ImportExport, normalize
-from module.blade.bladegen import BladeGen
-from module.optimizer.genetic_algorithm.deap_visualize import DeapVisualize
-from module.optimizer.genetic_algorithm.deaptools import read_header
+
+from blade.bladetools import ImportExport, normalize
+from blade.bladegen import BladeGen
+from optimizer.genetic_algorithm.deap_visualize import DeapVisualize
+from optimizer.genetic_algorithm.deaptools import read_header
 
 
 class FileExplorer:

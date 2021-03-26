@@ -3,8 +3,8 @@ from pathlib import Path
 
 from matplotlib import pyplot as plt
 
-from module.UI.blade.blade_plots import bladePlot
-from module.blade.bladetools import get_blade_from_csv
+from UI.blade.blade_plots import bladePlot
+from blade.bladetools import get_blade_from_csv
 
 def deap_blade(blades, logdir):
     default_blade_path = Path(os.getcwd() + "/UI/config/default_blade.csv")

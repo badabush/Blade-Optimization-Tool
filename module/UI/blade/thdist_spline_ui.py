@@ -8,8 +8,8 @@ from matplotlib.figure import Figure
 
 
 # from module.blade.bladetools import camber_spline
-from module.blade.testspline import compute_spline
-from module.blade.bladetools import load_config_file
+from blade.testspline import compute_spline
+from blade.bladetools import load_config_file
 
 
 class ThdistSplineUi(QtWidgets.QMainWindow):

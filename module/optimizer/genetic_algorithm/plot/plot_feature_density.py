@@ -7,6 +7,12 @@ from scipy.stats import gaussian_kde
 
 
 def feature_density(ds, logdir):
+    """
+    Plot features over density
+    :param ds:
+    :param logdir:
+    :return:
+    """
     n_features = ds.shape[1] - 11
     fig, ax = plt.subplots(n_features, n_features, figsize=(12, 9), sharex='col', sharey='row')
     for row in range(n_features):

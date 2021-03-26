@@ -5,11 +5,10 @@ import os
 import paramiko
 from configparser import ConfigParser
 
-from module.optimizer.generate_script import gen_script
-from module.optimizer.optimtools import read_xmf
-from module.UI.optimizer.deap_settings_handle import DeapSettingsHandle
-from module.optimizer.genetic_algorithm.deaptools import read_deap_restraints, ind_list_from_datasets, \
-    unravel_individual
+from optimizer.generate_script import gen_script
+from optimizer.optimtools import read_xmf
+from UI.optimizer.deap_settings_handle import DeapSettingsHandle
+from optimizer.genetic_algorithm.deaptools import read_deap_restraints, ind_list_from_datasets
 
 
 class RunHandler:

@@ -2,7 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import pandas as pd
 from numpy.linalg import norm as norm
-from module.blade.bladetools import euclidean_dist, min_dist
+from blade.bladetools import euclidean_dist, min_dist
 
 class RoundEdges:
     """

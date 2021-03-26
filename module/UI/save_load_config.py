@@ -4,7 +4,7 @@ import csv
 
 from PyQt5.QtWidgets import QFileDialog
 
-from module.blade.bladetools import get_blade_from_csv
+from blade.bladetools import get_blade_from_csv
 
 class SaveLoadConfig:
 

@@ -10,12 +10,12 @@ from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as Navigatio
 from pyface.qt import QtGui
 from PyQt5.QtWidgets import QTableView
 
-from module.optimizer.ssh_login import ssh_connect
-from module.optimizer.optimtools import *
-from module.optimizer.pandasviewer import pandasModel
-from module.UI.optimizer.generate_mesh_ui import MeshGenUI
-from module.UI.optimizer.optimizer_plots import *
-from module.optimizer.genetic_algorithm.deaptools import get_three_point_paths
+from optimizer.ssh_login import ssh_connect
+from optimizer.optimtools import *
+from optimizer.pandasviewer import pandasModel
+from UI.optimizer.generate_mesh_ui import MeshGenUI
+from UI.optimizer.optimizer_plots import *
+from optimizer.genetic_algorithm.deaptools import get_three_point_paths
 
 
 class OptimHandler:

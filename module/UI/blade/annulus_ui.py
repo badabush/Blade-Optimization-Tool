@@ -6,7 +6,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from module.blade.bladetools import AnnulusGen, load_config_file
+from blade.bladetools import AnnulusGen, load_config_file
 
 
 class AnnulusUi(QtWidgets.QMainWindow):

@@ -13,22 +13,22 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-from module.blade.bladetools import load_config_file
-from module.UI.initialize import Initialize
-from module.UI.blade.bladedesigner_handle import BDUpdateHandler
-from module.UI.file_explorer import FileExplorer
-from module.UI.blade.camber_spline_ui import CamberSplineUi
-from module.UI.blade.thdist_spline_ui import ThdistSplineUi
-from module.UI.blade.annulus_ui import AnnulusUi
-from module.UI.ssh_login_ui import SSHLoginUi
-from module.UI.save_load_config import SaveLoadConfig
-from module.UI.optimizer.optimizer_handle import OptimHandler
-from module.optimizer.optimizer_loadblade import LoadBlade
-from module.UI.optimizer.deap_config_ui import DeapConfigUi
-from module.UI.optimizer.three_point_settings_ui import ThreePointSettingsUI
-from module.UI.optimizer.run_handle import RunHandler
-from module.UI.optimizer.deap_run_handle import DeapRunHandler
-from module.UI.blade.blade_plots import bladePlot
+from blade.bladetools import load_config_file
+from UI.initialize import Initialize
+from UI.blade.bladedesigner_handle import BDUpdateHandler
+from UI.file_explorer import FileExplorer
+from UI.blade.camber_spline_ui import CamberSplineUi
+from UI.blade.thdist_spline_ui import ThdistSplineUi
+from UI.blade.annulus_ui import AnnulusUi
+from UI.ssh_login_ui import SSHLoginUi
+from UI.save_load_config import SaveLoadConfig
+from UI.optimizer.optimizer_handle import OptimHandler
+from optimizer.optimizer_loadblade import LoadBlade
+from UI.optimizer.deap_config_ui import DeapConfigUi
+from UI.optimizer.three_point_settings_ui import ThreePointSettingsUI
+from UI.optimizer.run_handle import RunHandler
+from UI.optimizer.deap_run_handle import DeapRunHandler
+from UI.blade.blade_plots import bladePlot
 
 cgitb.enable(format='text')
 
@@ -42,6 +42,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
 
     def __init__(self):
         super(Ui, self).__init__()
+
         uic.loadUi('UI/qtdesigner/mainwindow.ui', self)
         # Software version. If the version does not match, a continuation of a log is not possible (due to conflicts in
         # implementation).

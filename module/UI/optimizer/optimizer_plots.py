@@ -6,7 +6,7 @@ from matplotlib.figure import Figure
 import matplotlib.animation as animation
 from matplotlib.ticker import MaxNLocator
 
-from module.optimizer.optimtools import calc_xmf
+from optimizer.optimtools import calc_xmf
 
 
 class OptimPlotMassflow(FigureCanvas):

@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QSizePolicy
 from PyQt5 import QtWidgets, uic
-from module.optimizer.ssh_login.ssh_connect import SshUtil
+
+from optimizer.ssh_login.ssh_connect import SshUtil
 
 
 class SSHLoginUi(QtWidgets.QMainWindow):

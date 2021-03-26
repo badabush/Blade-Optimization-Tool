@@ -5,9 +5,9 @@ from sklearn import preprocessing
 import pandas as pd
 import scipy.optimize as optimize
 
-from module.blade.bladetools import ImportExport, normalize, cdist_from_spline
-from module.blade.testspline import compute_spline
-from module.blade.roundedges import RoundEdges
+from blade.bladetools import ImportExport, normalize, cdist_from_spline
+from blade.testspline import compute_spline
+from blade.roundedges import RoundEdges
 
 
 class BladeGen:

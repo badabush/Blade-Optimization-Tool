@@ -3,8 +3,8 @@ import numpy as np
 import os
 from pathlib import Path
 
-from module.blade.bladegen import BladeGen
-from module.optimizer.geomturbo import GeomTurboFile
+from blade.bladegen import BladeGen
+from optimizer.geomturbo import GeomTurboFile
 
 
 class LoadBlade:

@@ -6,14 +6,14 @@ from configparser import ConfigParser
 
 import pandas as pd
 
-from module.optimizer.mail.mail_script import deapMail
-from module.optimizer.genetic_algorithm.plot.plot_feature_time import feature_time
-from module.optimizer.genetic_algorithm.plot.plot_feature_density import feature_density
-from module.optimizer.genetic_algorithm.plot.plot_contour import contour2
-from module.optimizer.genetic_algorithm.plot.plot_blades import deap_blade
-from module.optimizer.genetic_algorithm.plot.plot_scatter_matrix import scatter_matrix
-from module.optimizer.genetic_algorithm.plot.plot_threepoint import three_point
-from module.optimizer.genetic_algorithm.plot.plot_fitness_generation import fitness_generation
+from optimizer.mail.mail_script import deapMail
+from optimizer.genetic_algorithm.plot.plot_feature_time import feature_time
+from optimizer.genetic_algorithm.plot.plot_feature_density import feature_density
+from optimizer.genetic_algorithm.plot.plot_contour import contour2
+from optimizer.genetic_algorithm.plot.plot_blades import deap_blade
+from optimizer.genetic_algorithm.plot.plot_scatter_matrix import scatter_matrix
+from optimizer.genetic_algorithm.plot.plot_threepoint import three_point
+from optimizer.genetic_algorithm.plot.plot_fitness_generation import fitness_generation
 
 
 class DeapVisualize:
