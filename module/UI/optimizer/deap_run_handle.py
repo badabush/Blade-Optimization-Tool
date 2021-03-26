@@ -693,7 +693,7 @@ class DeapRunHandler:
         # create dir and save plots of results to it. Move debug.log to folder and delete original.
 
         # self.testrun = True
-
+        custom_message = ""
         if self.log_loaded:
             custom_message = "Continuation of log."
         DeapVisualize(self.logfile, self.testrun, custom_message=custom_message)

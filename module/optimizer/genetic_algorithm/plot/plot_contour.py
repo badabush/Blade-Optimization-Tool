@@ -54,8 +54,8 @@ def contour2(df, logdir):
         [df.alph12, df.alph21, "alpha12_alpha21"],
         [df.alph12, df.alph22, "alpha12_alpha22"],
         [df.alph21, df.alph22, "alpha21_alpha22"],
-        [df.xmaxth1, df.xmaxth2, "xmaxth1_xmaxth2"],
-        [df.pp, df.ao, "PP_AO"]
+        [df.xmaxth1, df.xmaxth2, "xmaxth1_xmaxth2"]
+        # [df.pp, df.ao, "PP_AO"]
     ]
     for ds in feature:
         x = ds[0].to_numpy()

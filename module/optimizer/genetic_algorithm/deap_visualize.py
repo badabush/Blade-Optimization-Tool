@@ -64,22 +64,22 @@ class DeapVisualize:
         ds.reset_index(inplace=True, drop=True)
 
         # plot fitness/generation
-        # fitness_generation(ds_popfit, logdir)
-        #
-        # # plot 3point curve ref/best blade
-        # print("Generating 3point plot...")
-        # try:
-        #     three_point(ds, self.ref_blade, logdir)
-        # except KeyError:
-        #     print("not a 3point run.")
-        #
-        # # plot a feature over time
-        # print("Generating Feature/time plot...")
-        # feature_time(ds, logdir)
-        #
-        # # plot features over density
-        # print("Generating feature/density plot...")
-        # feature_density(ds, logdir)
+        fitness_generation(ds_popfit, logdir)
+
+        # plot 3point curve ref/best blade
+        print("Generating 3point plot...")
+        try:
+            three_point(ds, self.ref_blade, logdir)
+        except KeyError:
+            print("not a 3point run.")
+
+        # plot a feature over time
+        print("Generating Feature/time plot...")
+        feature_time(ds, logdir)
+
+        # plot features over density
+        print("Generating feature/density plot...")
+        feature_density(ds, logdir)
 
         # contour(ds, logdir)
         # print("Generating contour2 plot...")
@@ -161,4 +161,4 @@ class DeapVisualize:
 if __name__ == '__main__':
     msg = "BUGFIX: mistakenly plotted wrong reference blade \n\n"
     # DeapVisualize("test_10-02-21_19-51-14.log", True, msg)
-    DeapVisualize("11-03-21_14-04-21_seed_76.log", testrun=True, custom_message=msg)
+    DeapVisualize("12-03-21_14-30-38_seed_76.log", testrun=False)
