@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>module.optimizer.genetic_algorithm.deap_visualize &#8212; BOT - Blade Optimization Tool  documentation</title>
+    <link rel="stylesheet" href="../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script src="../../../../_static/jquery.js"></script>
+    <script src="../../../../_static/underscore.js"></script>
+    <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">module.optimizer.genetic_algorithm.deap_visualize</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for module.optimizer.genetic_algorithm.deap_visualize</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="kn">import</span> <span class="n">ConfigParser</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">optimizer.mail.mail_script</span> <span class="kn">import</span> <span class="n">deapMail</span>
+<span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_feature_time</span> <span class="kn">import</span> <span class="n">feature_time</span>
+<span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_feature_density</span> <span class="kn">import</span> <span class="n">feature_density</span>
+<span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_contour</span> <span class="kn">import</span> <span class="n">contour2</span>
+<span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_blades</span> <span class="kn">import</span> <span class="n">deap_blade</span>
+<span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_scatter_matrix</span> <span class="kn">import</span> <span class="n">scatter_matrix</span>
+<span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_threepoint</span> <span class="kn">import</span> <span class="n">three_point</span>
+<span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_fitness_generation</span> <span class="kn">import</span> <span class="n">fitness_generation</span>
+
+
+<div class="viewcode-block" id="DeapVisualize"><a class="viewcode-back" href="../../../../deap.html#module.optimizer.genetic_algorithm.deap_visualize.DeapVisualize">[docs]</a><span class="k">class</span> <span class="nc">DeapVisualize</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logname</span><span class="p">,</span> <span class="n">testrun</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">custom_message</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+
+        <span class="c1"># read config files</span>
+        <span class="n">mail_configfile</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;config/mailinglist.ini&quot;</span>
+        <span class="n">dtime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2">-%m-%Y_%H.%M.%S&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logfile</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="o">/</span> <span class="n">logname</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">testrun</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;log/processed&quot;</span><span class="p">,</span> <span class="n">dtime</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;log/processed&quot;</span><span class="p">,</span> <span class="s2">&quot;test_&quot;</span> <span class="o">+</span> <span class="n">dtime</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="c1"># copy log file to newly created folder</span>
+        <span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logfile</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+
+        <span class="c1"># get reference blade beta/cp/omega from ini file</span>
+        <span class="n">ref_blade_config</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+        <span class="n">ref_blade_config</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="s2">&quot;config/reference_blade.ini&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ref_blade</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;beta&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ref_blade_config</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">][</span><span class="s1">&#39;beta&#39;</span><span class="p">]),</span>
+                          <span class="s2">&quot;cp&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ref_blade_config</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">][</span><span class="s1">&#39;cp&#39;</span><span class="p">]),</span>
+                          <span class="s2">&quot;omega&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ref_blade_config</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">][</span><span class="s1">&#39;omega&#39;</span><span class="p">]),</span>
+                          <span class="s2">&quot;beta_lower&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ref_blade_config</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">][</span><span class="s1">&#39;beta_lower&#39;</span><span class="p">]),</span>
+                          <span class="s2">&quot;cp_lower&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ref_blade_config</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">][</span><span class="s1">&#39;cp_lower&#39;</span><span class="p">]),</span>
+                          <span class="s2">&quot;omega_lower&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ref_blade_config</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">][</span><span class="s1">&#39;omega_lower&#39;</span><span class="p">]),</span>
+                          <span class="s2">&quot;beta_upper&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ref_blade_config</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">][</span><span class="s1">&#39;beta_upper&#39;</span><span class="p">]),</span>
+                          <span class="s2">&quot;cp_upper&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ref_blade_config</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">][</span><span class="s1">&#39;cp_upper&#39;</span><span class="p">]),</span>
+                          <span class="s2">&quot;omega_upper&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">ref_blade_config</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">][</span><span class="s1">&#39;omega_upper&#39;</span><span class="p">])}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plotDeapResult</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="c1"># mail results to recipients</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">testrun</span><span class="p">:</span>
+            <span class="n">attachments</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;log/processed&quot;</span> <span class="o">/</span> <span class="n">dtime</span><span class="p">):</span>
+                <span class="n">attachments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;log/processed&quot;</span> <span class="o">/</span> <span class="n">dtime</span> <span class="o">/</span> <span class="n">item</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sending Mail.&quot;</span><span class="p">)</span>
+            <span class="n">deapMail</span><span class="p">(</span><span class="n">mail_configfile</span><span class="p">,</span> <span class="n">attachments</span><span class="p">,</span> <span class="n">custom_message</span><span class="o">=</span><span class="n">custom_message</span><span class="p">)</span>
+
+<div class="viewcode-block" id="DeapVisualize.plotDeapResult"><a class="viewcode-back" href="../../../../deap.html#module.optimizer.genetic_algorithm.deap_visualize.DeapVisualize.plotDeapResult">[docs]</a>    <span class="k">def</span> <span class="nf">plotDeapResult</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logdir</span><span class="p">):</span>
+        <span class="n">ds</span><span class="p">,</span> <span class="n">blades</span><span class="p">,</span> <span class="n">ds_popfit</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">readLog</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logfile</span><span class="p">)</span>
+        <span class="n">mean_fitness</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">fitness</span> <span class="o">&lt;</span> <span class="n">mean_fitness</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span>
+        <span class="n">ds</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># plot fitness/generation</span>
+        <span class="n">fitness_generation</span><span class="p">(</span><span class="n">ds_popfit</span><span class="p">,</span> <span class="n">logdir</span><span class="p">)</span>
+
+        <span class="c1"># plot 3point curve ref/best blade</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating 3point plot...&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">three_point</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ref_blade</span><span class="p">,</span> <span class="n">logdir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;not a 3point run.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># plot a feature over time</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating Feature/time plot...&quot;</span><span class="p">)</span>
+        <span class="n">feature_time</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">logdir</span><span class="p">)</span>
+
+        <span class="c1"># plot features over density</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating feature/density plot...&quot;</span><span class="p">)</span>
+        <span class="n">feature_density</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">logdir</span><span class="p">)</span>
+
+        <span class="c1"># contour(ds, logdir)</span>
+        <span class="c1"># print(&quot;Generating contour2 plot...&quot;)</span>
+        <span class="c1"># contour2(ds, logdir)</span>
+        <span class="c1">#</span>
+        <span class="c1"># print(&quot;Generating scatter plot...&quot;)</span>
+        <span class="c1"># # scatter matrix</span>
+        <span class="c1"># scatter_matrix(ds, logdir)</span>
+
+        <span class="c1"># get default blade parameters</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating Blade plot...&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">deap_blade</span><span class="p">(</span><span class="n">blades</span><span class="p">,</span> <span class="n">logdir</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;No blade parameters found in log file.&quot;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Done plotting.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DeapVisualize.readLog"><a class="viewcode-back" href="../../../../deap.html#module.optimizer.genetic_algorithm.deap_visualize.DeapVisualize.readLog">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">readLog</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">blades</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">popfit</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">colnames</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;---DEAP START---&quot;</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+                    <span class="c1"># routine for detecting different runs</span>
+                    <span class="k">pass</span>
+                <span class="c1"># find lines with data</span>
+                <span class="k">if</span> <span class="s2">&quot;omega:&quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">string</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;DEAP_info   &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="n">param</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                    <span class="n">lst</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="n">col</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">param</span><span class="p">:</span>
+                        <span class="c1"># get column names from data row</span>
+                        <span class="k">if</span> <span class="n">colnames</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="n">col</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span>
+                        <span class="n">lst</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+                    <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lst</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">colnames</span><span class="o">.</span><span class="fm">__len__</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">colnames</span> <span class="o">=</span> <span class="n">col</span>
+                <span class="c1"># find final line of best blade</span>
+                <span class="k">if</span> <span class="p">(</span><span class="s2">&quot;[blade1] &quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="s2">&quot;[blade2] &quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">):</span>
+                    <span class="c1"># reconstruct blade datasets</span>
+                    <span class="n">blade_param</span> <span class="o">=</span> <span class="p">{}</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">string</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[blade1] &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+                        <span class="n">string</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;[blade2] &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;, &quot;</span><span class="p">):</span>
+                        <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="o">=</span> <span class="n">elem</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">val</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="s2">&quot;nblades&quot;</span><span class="p">:</span>
+                                <span class="n">blade_param</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                            <span class="k">else</span><span class="p">:</span>
+                                <span class="n">blade_param</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+                    <span class="c1"># FIXME</span>
+                    <span class="n">blade_param</span><span class="p">[</span><span class="s1">&#39;npts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1000</span>
+                    <span class="n">blade_param</span><span class="p">[</span><span class="s1">&#39;pts&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9999</span><span class="p">]</span>
+                    <span class="n">blade_param</span><span class="p">[</span><span class="s1">&#39;pts_th&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9999</span><span class="p">]</span>
+                    <span class="n">blade_param</span><span class="p">[</span><span class="s1">&#39;l_chord&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">blade_param</span><span class="p">[</span><span class="s1">&#39;selected_blade&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+                    <span class="n">blades</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">blade_param</span><span class="p">)</span>
+                <span class="c1"># find fitness of each generation</span>
+                <span class="k">if</span> <span class="s2">&quot;best Fitness: &quot;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">string</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;DEAP_info   &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+                    <span class="n">pop</span><span class="p">,</span> <span class="n">fit</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+                    <span class="n">popfit</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">pop</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;: &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;: &quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">])])</span>
+
+            <span class="c1"># Try creating pandasframe for 1point, if that doesn&#39;t work assume it was a 3point calculation.</span>
+            <span class="n">ds</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">colnames</span><span class="p">)</span>
+
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ds</span><span class="p">,</span> <span class="n">blades</span><span class="p">,</span> <span class="n">popfit</span></div></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># msg = &quot;BUGFIX: mistakenly plotted wrong reference blade \n\n&quot;</span>
+    <span class="c1"># DeapVisualize(&quot;test_10-02-21_19-51-14.log&quot;, True, msg)</span>
+    <span class="n">DeapVisualize</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;log/raw/&quot;</span><span class="p">,</span> <span class="s2">&quot;test_26-03-21_15-13-15_seed_76.log&quot;</span><span class="p">),</span> <span class="n">testrun</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">module.optimizer.genetic_algorithm.deap_visualize</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Ga Man Liang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

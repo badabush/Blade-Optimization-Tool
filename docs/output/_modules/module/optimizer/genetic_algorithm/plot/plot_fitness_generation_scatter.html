@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter &#8212; BOT - Blade Optimization Tool  documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script src="../../../../../_static/jquery.js"></script>
+    <script src="../../../../../_static/underscore.js"></script>
+    <script src="../../../../../_static/doctools.js"></script>
+    <script src="../../../../../_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span> <span class="k">as</span> <span class="n">cm</span>
+
+
+<div class="viewcode-block" id="fitness_generation_scatter"><a class="viewcode-back" href="../../../../../deap.html#module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter.fitness_generation_scatter">[docs]</a><span class="k">def</span> <span class="nf">fitness_generation_scatter</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">logdir</span><span class="p">):</span>
+
+    <span class="c1"># first figure</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">12</span><span class="p">))</span>
+    <span class="c1"># data = np.reshape(ds, (len(ds), len(ds[0])))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">ds</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Fitness&quot;</span><span class="p">)</span>
+    <span class="c1"># ax.set_xlim([0, 25])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">([</span><span class="mf">0.8</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Fitness/Generation&quot;</span><span class="p">)</span>
+    <span class="c1"># ax.set_xlabel(&quot;Generation&quot;)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">logdir</span> <span class="o">+</span> <span class="s2">&quot;/fitness_generation_scatter.png&quot;</span><span class="p">))</span></div>
+    <span class="c1">#</span>
+    <span class="c1"># # second figure</span>
+    <span class="c1"># fig, ax = plt.subplots(figsize=(12, 4.3))</span>
+    <span class="c1"># data = np.reshape(ds[1], (len(ds[1]), len(ds[1][0])))</span>
+    <span class="c1"># ax.grid()</span>
+    <span class="c1"># ax.plot(data[:,1],linewidth=3)</span>
+    <span class="c1"># ax.set_ylabel(&quot;Fitness&quot;)</span>
+    <span class="c1"># ax.set_xlim([0, 25])</span>
+    <span class="c1"># ax.set_ylim([0.9034, 0.906])</span>
+    <span class="c1"># # ax.set_title(&quot;Fitness/Generation&quot;)</span>
+    <span class="c1"># ax.set_xlabel(&quot;Generation&quot;)</span>
+    <span class="c1"># plt.tight_layout()</span>
+    <span class="c1"># fig.savefig(Path(logdir + &quot;/fitness_generation_cx08_mut02.png&quot;))</span>
+    <span class="c1"># # ax.set_xticklabels([])</span>
+
+        <span class="c1"># gens = np.arange(1,len(ds)+1)</span>
+        <span class="c1"># ax.set_xticks(gens-1)</span>
+        <span class="c1"># xticklabel = []</span>
+        <span class="c1"># for gen in gens:</span>
+        <span class="c1">#     xticklabel.append(&quot;{gen}&quot;.format(gen=gen))</span>
+        <span class="c1"># ax.set_xticklabels(xticklabel, rotation=45, ha=&quot;right&quot;)</span>
+
+
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../../../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../../../index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../../../index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Ga Man Liang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

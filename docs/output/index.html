@@ -1,0 +1,149 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BOT - Blade Optimization Tool &#8212; BOT - Blade Optimization Tool  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="List of Python Packages" href="packages.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="packages.html" title="List of Python Packages"
+             accesskey="N">next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">BOT - Blade Optimization Tool</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="bot-blade-optimization-tool">
+<h1>BOT - Blade Optimization Tool<a class="headerlink" href="#bot-blade-optimization-tool" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Table of Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="packages.html">List of Python Packages</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#bladegen-module">BladeGen module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#bladetools-module">Bladetools module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="GUI.html">GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#main-window">Main window</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="GUI.html#initialize">Initialize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="GUI.html#bladedesigner-handle">Bladedesigner Handle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="GUI.html#file-explorer">File Explorer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#camber-spline-window">Camber Spline window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#thickness-spline-window">Thickness Spline window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#annulus-window">Annulus window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#optimizer-handle">Optimizer handle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#ssh-login">SSH Login</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#pandasviewer">Pandasviewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html#geomturbo-file-generation">geomTurbo File Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html#pyscript-generation-for-fineturbo">pyscript Generation for FineTurbo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html#optimtools">Optimtools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deap.html">DEAP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deap.html#geomturbo-file-generation">geomTurbo File Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deap.html#logging">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deap.html#visualization-of-results">Visualization of Results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#feature-density-plot">Feature/Density Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#feature-time-plot">Feature/Time Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#fitness-generation-plot">Fitness/Generation Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#fitness-generation-scatter-plot">Fitness/Generation Scatter Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#scatter-matrix-plot">Scatter Matrix Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#three-point-plot">Three-Point Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#ref-best-blade-plot">Ref-/Best-Blade Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#contour-plot">Contour Plot</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deap.html#auto-mailing">Auto-Mailing</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Next topic</h4>
+  <p class="topless"><a href="packages.html"
+                        title="next chapter">List of Python Packages</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="packages.html" title="List of Python Packages"
+             >next</a> |</li>
+        <li class="nav-item nav-item-0"><a href="#">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">BOT - Blade Optimization Tool</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Ga Man Liang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

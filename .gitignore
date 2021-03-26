@@ -1,5 +1,4 @@
 /.idea
-docs/output/
 docs/_build/
 module/optimizer/ssh_login/ssh_config.ini
 module/optimizer/numeca_api

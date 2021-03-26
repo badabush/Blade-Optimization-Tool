@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DEAP &#8212; BOT - Blade Optimization Tool  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Optimizer" href="optimizer.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="optimizer.html" title="Optimizer"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DEAP</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="deap">
+<h1>DEAP<a class="headerlink" href="#deap" title="Permalink to this headline">¶</a></h1>
+<p>Genetic Algorithm for Tandem Blade Optimization.</p>
+<div class="section" id="geomturbo-file-generation">
+<h2>geomTurbo File Generation<a class="headerlink" href="#geomturbo-file-generation" title="Permalink to this headline">¶</a></h2>
+<p>Generation of NUMECA file (geomTurbo) from GUI-blades.</p>
+<span class="target" id="module-module.optimizer.geomturbo"></span><dl class="py class">
+<dt id="module.optimizer.geomturbo.GeomTurboFile">
+<em class="property">class </em><code class="sig-prename descclassname">module.optimizer.geomturbo.</code><code class="sig-name descname">GeomTurboFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="n">blade</span></em>, <em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">l</span></em>, <em class="sig-param"><span class="n">N</span></em>, <em class="sig-param"><span class="n">spacing</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/geomturbo.html#GeomTurboFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.geomturbo.GeomTurboFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="module.optimizer.geomturbo.GeomTurboFile.gen_file">
+<code class="sig-name descname">gen_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">blade</span></em>, <em class="sig-param"><span class="n">blade_av</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/geomturbo.html#GeomTurboFile.gen_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.geomturbo.GeomTurboFile.gen_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generating geomTurbo file for Single or tandem blade from Template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>blade</strong> (<em>np.array</em>) – single blade or tandem blade 1</p></li>
+<li><p><strong>blade_av</strong> (<em>np.array</em>) – tandem blade 2 (optional)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
+<p>Logging of Runs.</p>
+</div>
+<div class="section" id="visualization-of-results">
+<h2>Visualization of Results<a class="headerlink" href="#visualization-of-results" title="Permalink to this headline">¶</a></h2>
+<p>Different Plots of the Run from Logs.</p>
+<span class="target" id="module-module.optimizer.genetic_algorithm.deap_visualize"></span><dl class="py class">
+<dt id="module.optimizer.genetic_algorithm.deap_visualize.DeapVisualize">
+<em class="property">class </em><code class="sig-prename descclassname">module.optimizer.genetic_algorithm.deap_visualize.</code><code class="sig-name descname">DeapVisualize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logname</span></em>, <em class="sig-param"><span class="n">testrun</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">custom_message</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/deap_visualize.html#DeapVisualize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.deap_visualize.DeapVisualize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="module.optimizer.genetic_algorithm.deap_visualize.DeapVisualize.plotDeapResult">
+<code class="sig-name descname">plotDeapResult</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/deap_visualize.html#DeapVisualize.plotDeapResult"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.deap_visualize.DeapVisualize.plotDeapResult" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="module.optimizer.genetic_algorithm.deap_visualize.DeapVisualize.readLog">
+<em class="property">static </em><code class="sig-name descname">readLog</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/deap_visualize.html#DeapVisualize.readLog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.deap_visualize.DeapVisualize.readLog" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<div class="section" id="feature-density-plot">
+<h3>Feature/Density Plot<a class="headerlink" href="#feature-density-plot" title="Permalink to this headline">¶</a></h3>
+<p>Plot density of all free parameters.</p>
+<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_feature_density"></span><dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_feature_density.feature_density">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_feature_density.</code><code class="sig-name descname">feature_density</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_feature_density.html#feature_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_feature_density.feature_density" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot features over density
+:param ds:
+:param logdir:
+:return:</p>
+</dd></dl>
+
+</div>
+<div class="section" id="feature-time-plot">
+<h3>Feature/Time Plot<a class="headerlink" href="#feature-time-plot" title="Permalink to this headline">¶</a></h3>
+<p>Plot free parameters over time.</p>
+<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_feature_time"></span><dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_feature_time.feature_time">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_feature_time.</code><code class="sig-name descname">feature_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_feature_time.html#feature_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_feature_time.feature_time" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="fitness-generation-plot">
+<h3>Fitness/Generation Plot<a class="headerlink" href="#fitness-generation-plot" title="Permalink to this headline">¶</a></h3>
+<p>Plot fitness over generations.</p>
+<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_fitness_generation"></span><dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_fitness_generation.fitness_generation">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_fitness_generation.</code><code class="sig-name descname">fitness_generation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_fitness_generation.html#fitness_generation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_fitness_generation.fitness_generation" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="fitness-generation-scatter-plot">
+<h3>Fitness/Generation Scatter Plot<a class="headerlink" href="#fitness-generation-scatter-plot" title="Permalink to this headline">¶</a></h3>
+<p>Plot fitness over generations as a scatter plot.</p>
+<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter"></span><dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter.fitness_generation_scatter">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter.</code><code class="sig-name descname">fitness_generation_scatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_fitness_generation_scatter.html#fitness_generation_scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter.fitness_generation_scatter" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="scatter-matrix-plot">
+<h3>Scatter Matrix Plot<a class="headerlink" href="#scatter-matrix-plot" title="Permalink to this headline">¶</a></h3>
+<p>Plot scatter matrix.</p>
+<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_scatter_matrix"></span><dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_scatter_matrix.scatter_matrix">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_scatter_matrix.</code><code class="sig-name descname">scatter_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_scatter_matrix.html#scatter_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_scatter_matrix.scatter_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="three-point-plot">
+<h3>Three-Point Plot<a class="headerlink" href="#three-point-plot" title="Permalink to this headline">¶</a></h3>
+<p>Plot omegas of design point, lower point and upper point of reference blade and best blade from GA.</p>
+<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_threepoint"></span><dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_threepoint.three_point">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_threepoint.</code><code class="sig-name descname">three_point</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">ref_blade</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_threepoint.html#three_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_threepoint.three_point" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="ref-best-blade-plot">
+<h3>Ref-/Best-Blade Plot<a class="headerlink" href="#ref-best-blade-plot" title="Permalink to this headline">¶</a></h3>
+<p>Plot the shape of reference blade and best blade from GA.</p>
+<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_blades"></span><dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_blades.deap_blade">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_blades.</code><code class="sig-name descname">deap_blade</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">blades</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_blades.html#deap_blade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_blades.deap_blade" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="contour-plot">
+<h3>Contour Plot<a class="headerlink" href="#contour-plot" title="Permalink to this headline">¶</a></h3>
+<p>Plot several contour plots with feature1/feature2/fitness.</p>
+<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_contour"></span><dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_contour.contour">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_contour.</code><code class="sig-name descname">contour</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_contour.html#contour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_contour.contour" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_contour.contour2">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_contour.</code><code class="sig-name descname">contour2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_contour.html#contour2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_contour.contour2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+<div class="section" id="auto-mailing">
+<h2>Auto-Mailing<a class="headerlink" href="#auto-mailing" title="Permalink to this headline">¶</a></h2>
+<p>Automatically send a mail to recipients after a run has finished.</p>
+<span class="target" id="module-module.optimizer.mail.mail_script"></span><dl class="py function">
+<dt id="module.optimizer.mail.mail_script.deapMail">
+<code class="sig-prename descclassname">module.optimizer.mail.mail_script.</code><code class="sig-name descname">deapMail</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">configfile</span></em>, <em class="sig-param"><span class="n">attachments</span></em>, <em class="sig-param"><span class="n">custom_message</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/mail/mail_script.html#deapMail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.mail.mail_script.deapMail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function for mailing the Log and Plots to assigned recipients.Called in module/optimizer/genetic_algorithm/deaptools
+after creating log folder and plotting has finished.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>configfile</strong> (<em>Path</em>) – full path from cwd to config file</p></li>
+<li><p><strong>attachments</strong> (<em>list</em>) – list of attachments; has to start with log file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">DEAP</a><ul>
+<li><a class="reference internal" href="#geomturbo-file-generation">geomTurbo File Generation</a></li>
+<li><a class="reference internal" href="#logging">Logging</a></li>
+<li><a class="reference internal" href="#visualization-of-results">Visualization of Results</a><ul>
+<li><a class="reference internal" href="#feature-density-plot">Feature/Density Plot</a></li>
+<li><a class="reference internal" href="#feature-time-plot">Feature/Time Plot</a></li>
+<li><a class="reference internal" href="#fitness-generation-plot">Fitness/Generation Plot</a></li>
+<li><a class="reference internal" href="#fitness-generation-scatter-plot">Fitness/Generation Scatter Plot</a></li>
+<li><a class="reference internal" href="#scatter-matrix-plot">Scatter Matrix Plot</a></li>
+<li><a class="reference internal" href="#three-point-plot">Three-Point Plot</a></li>
+<li><a class="reference internal" href="#ref-best-blade-plot">Ref-/Best-Blade Plot</a></li>
+<li><a class="reference internal" href="#contour-plot">Contour Plot</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#auto-mailing">Auto-Mailing</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="optimizer.html"
+                        title="previous chapter">Optimizer</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/deap.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="optimizer.html" title="Optimizer"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DEAP</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Ga Man Liang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

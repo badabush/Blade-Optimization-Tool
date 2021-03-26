@@ -1,0 +1,209 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Optimizer &#8212; BOT - Blade Optimization Tool  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="DEAP" href="deap.html" />
+    <link rel="prev" title="GUI" href="GUI.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="deap.html" title="DEAP"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="GUI.html" title="GUI"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Optimizer</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="optimizer">
+<h1>Optimizer<a class="headerlink" href="#optimizer" title="Permalink to this headline">¶</a></h1>
+<p>Contains scripts regarding the interface between GUI and NUMECA.</p>
+<div class="section" id="geomturbo-file-generation">
+<h2>geomTurbo File Generation<a class="headerlink" href="#geomturbo-file-generation" title="Permalink to this headline">¶</a></h2>
+<p>Generation of NUMECA file (geomTurbo) from GUI-blades.</p>
+<span class="target" id="module-module.optimizer.geomturbo"></span><dl class="py class">
+<dt id="module.optimizer.geomturbo.GeomTurboFile">
+<em class="property">class </em><code class="sig-prename descclassname">module.optimizer.geomturbo.</code><code class="sig-name descname">GeomTurboFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fname</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">type</span></em>, <em class="sig-param"><span class="n">blade</span></em>, <em class="sig-param"><span class="n">r</span></em>, <em class="sig-param"><span class="n">l</span></em>, <em class="sig-param"><span class="n">N</span></em>, <em class="sig-param"><span class="n">spacing</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/geomturbo.html#GeomTurboFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.geomturbo.GeomTurboFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="module.optimizer.geomturbo.GeomTurboFile.gen_file">
+<code class="sig-name descname">gen_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">blade</span></em>, <em class="sig-param"><span class="n">blade_av</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/geomturbo.html#GeomTurboFile.gen_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.geomturbo.GeomTurboFile.gen_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generating geomTurbo file for Single or tandem blade from Template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>blade</strong> (<em>np.array</em>) – single blade or tandem blade 1</p></li>
+<li><p><strong>blade_av</strong> (<em>np.array</em>) – tandem blade 2 (optional)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="pyscript-generation-for-fineturbo">
+<h2>pyscript Generation for FineTurbo<a class="headerlink" href="#pyscript-generation-for-fineturbo" title="Permalink to this headline">¶</a></h2>
+<p>Generates the python script file for FineTurbo.</p>
+<span class="target" id="module-module.optimizer.generate_script"></span><dl class="py function">
+<dt id="module.optimizer.generate_script.gen_script">
+<code class="sig-prename descclassname">module.optimizer.generate_script.</code><code class="sig-name descname">gen_script</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">paths</span></em>, <em class="sig-param"><span class="n">param</span></em>, <em class="sig-param"><span class="n">suffix</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/generate_script.html#gen_script"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.generate_script.gen_script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the script for running fine turbo.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="optimtools">
+<h2>Optimtools<a class="headerlink" href="#optimtools" title="Permalink to this headline">¶</a></h2>
+<p>Collection of small functions used inside the Optimizer tab.</p>
+<span class="target" id="module-module.optimizer.optimtools"></span><dl class="py function">
+<dt id="module.optimizer.optimtools.calc_xmf">
+<code class="sig-prename descclassname">module.optimizer.optimtools.</code><code class="sig-name descname">calc_xmf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/optimtools.html#calc_xmf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.optimtools.calc_xmf" title="Permalink to this definition">¶</a></dt>
+<dd><p>ds is a nested dict with lists where entries y_velocity, z_velocity, static_pressure and abs_total_pressure must exist.
+TODO:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.optimizer.optimtools.cleanpaths">
+<code class="sig-prename descclassname">module.optimizer.optimtools.</code><code class="sig-name descname">cleanpaths</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path_dict</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/optimtools.html#cleanpaths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.optimtools.cleanpaths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans up input paths for usage in generate_script and optimhandle.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.optimizer.optimtools.init_xmf_param">
+<code class="sig-prename descclassname">module.optimizer.optimtools.</code><code class="sig-name descname">init_xmf_param</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/optimtools.html#init_xmf_param"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.optimtools.init_xmf_param" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an empty form of dict with lists fitting the read_xmf and calc_xmf format.
+:return:</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.optimizer.optimtools.parse_res">
+<code class="sig-prename descclassname">module.optimizer.optimtools.</code><code class="sig-name descname">parse_res</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em>, <em class="sig-param"><span class="n">q</span></em>, <em class="sig-param"><span class="n">event</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/optimtools.html#parse_res"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.optimtools.parse_res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Worker thread to read new lines from res. Only queues relevant lines.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.optimizer.optimtools.read_by_token">
+<code class="sig-prename descclassname">module.optimizer.optimtools.</code><code class="sig-name descname">read_by_token</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">fileobj</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/optimtools.html#read_by_token"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.optimtools.read_by_token" title="Permalink to this definition">¶</a></dt>
+<dd><p>A generator. Reads lines, drops everything except tokens (str, values, etc.) and appends to a list. Yields list.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.optimizer.optimtools.read_top_usage">
+<code class="sig-prename descclassname">module.optimizer.optimtools.</code><code class="sig-name descname">read_top_usage</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">top_usage</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/optimtools.html#read_top_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.optimtools.read_top_usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans up the stdout from the command top. Does the formatting into lines, dropping header,
+packing into a pdDataFrame, sorting cpu (descending) and dropping some columns w/ unneccessary information.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.optimizer.optimtools.read_xmf">
+<code class="sig-prename descclassname">module.optimizer.optimtools.</code><code class="sig-name descname">read_xmf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em>, <em class="sig-param"><span class="n">param</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/optimtools.html#read_xmf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.optimtools.read_xmf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="module.optimizer.optimtools.status_convergence">
+<code class="sig-prename descclassname">module.optimizer.optimtools.</code><code class="sig-name descname">status_convergence</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/optimtools.html#status_convergence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.optimtools.status_convergence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads the last line of the logfile and checks, if the convergence criterion has been satisfied. Returns the status</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Optimizer</a><ul>
+<li><a class="reference internal" href="#geomturbo-file-generation">geomTurbo File Generation</a></li>
+<li><a class="reference internal" href="#pyscript-generation-for-fineturbo">pyscript Generation for FineTurbo</a></li>
+<li><a class="reference internal" href="#optimtools">Optimtools</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="GUI.html"
+                        title="previous chapter">GUI</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="deap.html"
+                        title="next chapter">DEAP</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/optimizer.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="deap.html" title="DEAP"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="GUI.html" title="GUI"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Optimizer</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Ga Man Liang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

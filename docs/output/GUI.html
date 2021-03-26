@@ -1,0 +1,1037 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GUI &#8212; BOT - Blade Optimization Tool  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Optimizer" href="optimizer.html" />
+    <link rel="prev" title="Scripts module" href="scripts.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="optimizer.html" title="Optimizer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="scripts.html" title="Scripts module"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">GUI</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="gui">
+<h1>GUI<a class="headerlink" href="#gui" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="main-window">
+<h2>Main window<a class="headerlink" href="#main-window" title="Permalink to this headline">¶</a></h2>
+<p>The Graphical User Interface for the BladeGen script.</p>
+<span class="target" id="module-module.gui"></span><dl class="py class">
+<dt id="module.gui.PlotCanvas">
+<em class="property">class </em><code class="sig-prename descclassname">module.gui.</code><code class="sig-name descname">PlotCanvas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#PlotCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.PlotCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.backends.backend_qt5agg.FigureCanvasQTAgg</span></code></p>
+<p>All the plotting commands are organized here. At GUI start, an empty empty figure is generated. On Update,
+BladeGen will be called with the user parameter and the plot will be updated.</p>
+<dl class="py method">
+<dt id="module.gui.PlotCanvas.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">ds1</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">ds2</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">ds_import</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#PlotCanvas.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.PlotCanvas.plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="module.gui.Ui">
+<em class="property">class </em><code class="sig-prename descclassname">module.gui.</code><code class="sig-name descname">Ui</code><a class="reference internal" href="_modules/module/gui.html#Ui"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UI.blade.bladedesigner_handle.BDUpdateHandler</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UI.optimizer.optimizer_handle.OptimHandler</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UI.file_explorer.FileExplorer</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UI.initialize.Initialize</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UI.save_load_config.SaveLoadConfig</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">optimizer.optimizer_loadblade.LoadBlade</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UI.optimizer.run_handle.RunHandler</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">UI.optimizer.deap_run_handle.DeapRunHandler</span></code></p>
+<p>Load UI from .ui file (QT Designer). Load restraints for parameters (min, max, default, step) from
+restraints.txt. Parametee linked, so change one will modify the other (and vice versa).</p>
+<dl class="py method">
+<dt id="module.gui.Ui.annulus_window">
+<code class="sig-name descname">annulus_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#Ui.annulus_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui.annulus_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens an additional spline window on when button ‘Spline’ has been clicked.
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.gui.Ui.camber_spline_window">
+<code class="sig-name descname">camber_spline_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#Ui.camber_spline_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui.camber_spline_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens an additional spline window on when button ‘Spline’ has been clicked.
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.gui.Ui.deap_config_window">
+<code class="sig-name descname">deap_config_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#Ui.deap_config_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui.deap_config_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens Popup for DEAP config.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.gui.Ui.get_spline_pts">
+<code class="sig-name descname">get_spline_pts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#Ui.get_spline_pts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui.get_spline_pts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method is called when invisible Label with data from the spline window is being updated. Get Points from string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>str</em>) – Value with coords of spline points</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.gui.Ui.get_spline_th_pts">
+<code class="sig-name descname">get_spline_th_pts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#Ui.get_spline_th_pts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui.get_spline_th_pts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method is called when invisible Label with data from the spline window is being updated. Get Points from string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>str</em>) – Value with coords of spline points</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.gui.Ui.menu_default">
+<code class="sig-name descname">menu_default</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#Ui.menu_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui.menu_default" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="module.gui.Ui.outputbox">
+<code class="sig-name descname">outputbox</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">msg</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#Ui.outputbox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui.outputbox" title="Permalink to this definition">¶</a></dt>
+<dd><p>Terminal in Optimizer window at the bottom.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.gui.Ui.ssh_config_window">
+<code class="sig-name descname">ssh_config_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#Ui.ssh_config_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui.ssh_config_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens Popup for login into putty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.gui.Ui.thdist_spline_window">
+<code class="sig-name descname">thdist_spline_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#Ui.thdist_spline_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui.thdist_spline_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens an additional spline window on when button ‘Spline’ has been clicked.
+:return:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.gui.Ui.three_point_settings_window">
+<code class="sig-name descname">three_point_settings_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/gui.html#Ui.three_point_settings_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.gui.Ui.three_point_settings_window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<div class="section" id="initialize">
+<h3>Initialize<a class="headerlink" href="#initialize" title="Permalink to this headline">¶</a></h3>
+<p>Class for handling all initializations, inherits to main window.</p>
+<span class="target" id="module-module.UI.initialize"></span><dl class="py class">
+<dt id="module.UI.initialize.Initialize">
+<em class="property">class </em><code class="sig-prename descclassname">module.UI.initialize.</code><code class="sig-name descname">Initialize</code><a class="reference internal" href="_modules/module/UI/initialize.html#Initialize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.initialize.Initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Everything regarding labels and Slider are handled here (connecting Slider and Labels, setting restraints).</p>
+<dl class="py method">
+<dt id="module.UI.initialize.Initialize.init_slider_control">
+<code class="sig-name descname">init_slider_control</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/initialize.html#Initialize.init_slider_control"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.initialize.Initialize.init_slider_control" title="Permalink to this definition">¶</a></dt>
+<dd><p>Setting up slider and linking to label.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.initialize.Initialize.init_variables">
+<code class="sig-name descname">init_variables</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/initialize.html#Initialize.init_variables"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.initialize.Initialize.init_variables" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize variables at GUI start</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.initialize.Initialize.set_restraint">
+<code class="sig-name descname">set_restraint</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/initialize.html#Initialize.set_restraint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.initialize.Initialize.set_restraint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set min, max, default and link to label. Boolean return indicates if data has float value (needs to be converted
+because labels only have integer steps).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – label/slider key</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="bladedesigner-handle">
+<h3>Bladedesigner Handle<a class="headerlink" href="#bladedesigner-handle" title="Permalink to this headline">¶</a></h3>
+<p>Class that contains UI elements for Bladedesigner, inherits to main window.</p>
+<span class="target" id="module-module.UI.blade.bladedesigner_handle"></span><dl class="py class">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler">
+<em class="property">class </em><code class="sig-prename descclassname">module.UI.blade.bladedesigner_handle.</code><code class="sig-name descname">BDUpdateHandler</code><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Contains update GUI elements for the BladeDesign Tab.</p>
+<p>A very quick and dirty approach… Alternatively, creating a custom DoubleSlider class would be way cleaner.
+TODO: fix this when bored.</p>
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.get_labelval">
+<code class="sig-name descname">get_labelval</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.get_labelval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.get_labelval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get values and save to dataset (radio button checked). Returns the dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>ds</p>
+</dd>
+<dt class="field-even">Rtype ds</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.set_default">
+<code class="sig-name descname">set_default</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.set_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.set_default" title="Permalink to this definition">¶</a></dt>
+<dd><p>If Button: [default] is clicked, set all visible slider positions and label to default position defined in
+restraints.txt.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.set_labelval">
+<code class="sig-name descname">set_labelval</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.set_labelval"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.set_labelval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get values from saved state and update slider position and labels (radio button checked).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ds</strong> (<em>dict</em>) – dataset from saved radio button</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_AO">
+<code class="sig-name descname">update_AO</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_AO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_AO" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO:FILL
+:param value: input value
+:type value: float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_PP">
+<code class="sig-name descname">update_PP</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_PP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_PP" title="Permalink to this definition">¶</a></dt>
+<dd><p>TODO:FILL
+:param value: input value
+:type value: float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_all">
+<code class="sig-name descname">update_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>If Button: [Update All] is clicked, get values from labels and plot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_AO">
+<code class="sig-name descname">update_box_AO</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_AO"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_AO" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale Value from Label, set Slider Position of thickness (th).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_PP">
+<code class="sig-name descname">update_box_PP</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_PP"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_PP" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale Value from Label, set Slider Position of thickness (th).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_alpha1">
+<code class="sig-name descname">update_box_alpha1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_alpha1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_alpha1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Value from Slider, apply to Label (alpha1).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_alpha2">
+<code class="sig-name descname">update_box_alpha2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_alpha2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_alpha2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Value from Slider, apply to Label (alpha2).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_dist_blades">
+<code class="sig-name descname">update_box_dist_blades</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_dist_blades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_dist_blades" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale Value from Label, set Slider Position of thickness (th).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_gamma_te">
+<code class="sig-name descname">update_box_gamma_te</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_gamma_te"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_gamma_te" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale Value from Label, set Slider Position of gamma trailing edge (gamma_te).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_lambd">
+<code class="sig-name descname">update_box_lambd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_lambd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_lambd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get Value from Slider, apply to Label Lambda (lambd).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_npts">
+<code class="sig-name descname">update_box_npts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_npts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_npts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Value for Label and Slider Position for Number of Points (npts) with custom scale (100) <strong>obsolete</strong>.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_th">
+<code class="sig-name descname">update_box_th</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_th"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_th" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale Value from Label, set Slider Position of thickness (th).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_thle">
+<code class="sig-name descname">update_box_thle</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_thle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_thle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale Value and exclude range from Label, set Slider Position of thickness LE (thle).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_thte">
+<code class="sig-name descname">update_box_thte</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_thte"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_thte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale Value and exclude range from Label, set Slider Position of thickness TE (thte).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_xmax_camber">
+<code class="sig-name descname">update_box_xmax_camber</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_xmax_camber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_xmax_camber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale Value from Label, set Slider Position of maximum camber position (xmax_camber).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_xmax_th">
+<code class="sig-name descname">update_box_xmax_th</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_box_xmax_th"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_box_xmax_th" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scale Value from Label, set Slider Position of thickness (th).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_dist_blades">
+<code class="sig-name descname">update_dist_blades</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_dist_blades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_dist_blades" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Label to input value with scale for y-distance between blades (the one above the single/tandem) (dist_blades)
+:param value: input value
+:type value: float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_gamma_te">
+<code class="sig-name descname">update_gamma_te</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_gamma_te"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_gamma_te" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Label to input value with scale for gamma trailing edge (gamma_te).
+:param value: input value
+:type value: float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_imported_blade">
+<code class="sig-name descname">update_imported_blade</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_imported_blade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_imported_blade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Show/Hide imported blade in plot.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_in_control_vis">
+<code class="sig-name descname">update_in_control_vis</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">visible</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_in_control_vis"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_in_control_vis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Control for 2nd blade position. Hide at GUI start.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_in_down">
+<code class="sig-name descname">update_in_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_in_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_in_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imported Blade position control, button [down].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_in_left">
+<code class="sig-name descname">update_in_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_in_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_in_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imported Blade position control, button [left].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_in_right">
+<code class="sig-name descname">update_in_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_in_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_in_right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imported Blade position control, button [right].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_in_up">
+<code class="sig-name descname">update_in_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_in_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_in_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>Imported Blade position control, button [up].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_lambd">
+<code class="sig-name descname">update_lambd</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_lambd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_lambd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Label to input value wiht scale for lambda (lambd).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_nblades_single">
+<code class="sig-name descname">update_nblades_single</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_nblades_single"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_nblades_single" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu option for single blades. Hide Tandem Radio buttons and [update select] button as well as the blade 2
+position controls.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_nblades_tandem">
+<code class="sig-name descname">update_nblades_tandem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_nblades_tandem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_nblades_tandem" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu option for tandem blades. Show Tandem Radio buttons and [update select] button as well as the blade 2
+position controls.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_radio_blades">
+<code class="sig-name descname">update_radio_blades</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_radio_blades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_radio_blades" title="Permalink to this definition">¶</a></dt>
+<dd><p>Radio Buttons for Tandem Blades (switch between blade 1 and 2). Make xy position control for 2nd blade visible
+if 2nd blade is selected. Save values from slider/labels as soon as the other radio button is checked.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_select">
+<code class="sig-name descname">update_select</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_select" title="Permalink to this definition">¶</a></dt>
+<dd><p>If Button: [Update Select] is clicked, get values from labels and plot selected blade from radio buttons.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_th">
+<code class="sig-name descname">update_th</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_th"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_th" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Label to input value with scale for thickness (th).
+:param value: input value
+:type value: float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_thdist_V1">
+<code class="sig-name descname">update_thdist_V1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_thdist_V1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_thdist_V1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu option Thickness distribution V1 is selected.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_thdist_V2">
+<code class="sig-name descname">update_thdist_V2</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_thdist_V2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_thdist_V2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Menu option Thickness distribution V2 is selected (default).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_thle">
+<code class="sig-name descname">update_thle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_thle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_thle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Label to input value with scale and excluded range for thickness LE (thle).
+:param value: input value
+:type value: float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_thte">
+<code class="sig-name descname">update_thte</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_thte"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_thte" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Label to input value with scale and excluded range for thickness TE (thle).
+:param value: input value
+:type value: float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_xmax_camber">
+<code class="sig-name descname">update_xmax_camber</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_xmax_camber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_xmax_camber" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Label to input value with scale for maximum camber position (xmax_camber).
+:param value: input value
+:type value: float</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_xmax_th">
+<code class="sig-name descname">update_xmax_th</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/bladedesigner_handle.html#BDUpdateHandler.update_xmax_th"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.bladedesigner_handle.BDUpdateHandler.update_xmax_th" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set Label to input value with scale for maximum thickness x-coordinate (xmax_th).
+:param value: input value
+:type value: float</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="file-explorer">
+<h3>File Explorer<a class="headerlink" href="#file-explorer" title="Permalink to this headline">¶</a></h3>
+<p>Class for handling import/export, inherits to main window.</p>
+<span class="target" id="module-module.UI.file_explorer"></span><dl class="py class">
+<dt id="module.UI.file_explorer.FileExplorer">
+<em class="property">class </em><code class="sig-prename descclassname">module.UI.file_explorer.</code><code class="sig-name descname">FileExplorer</code><a class="reference internal" href="_modules/module/UI/file_explorer.html#FileExplorer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.file_explorer.FileExplorer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for File dialog popups.</p>
+<dl class="py method">
+<dt id="module.UI.file_explorer.FileExplorer.load_log">
+<code class="sig-name descname">load_log</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/file_explorer.html#FileExplorer.load_log"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.file_explorer.FileExplorer.load_log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a File Explorer to select log file.
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.file_explorer.FileExplorer.openFileNameDialog">
+<code class="sig-name descname">openFileNameDialog</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/file_explorer.html#FileExplorer.openFileNameDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.file_explorer.FileExplorer.openFileNameDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a File Explorer to select .txt of blade for import.
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.file_explorer.FileExplorer.project_explorer_dir">
+<code class="sig-name descname">project_explorer_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/file_explorer.html#FileExplorer.project_explorer_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.file_explorer.FileExplorer.project_explorer_dir" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a File Explorer to select Project folder.
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.file_explorer.FileExplorer.project_explorer_geomturbo">
+<code class="sig-name descname">project_explorer_geomturbo</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/file_explorer.html#FileExplorer.project_explorer_geomturbo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.file_explorer.FileExplorer.project_explorer_geomturbo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a File Explorer to select geomTurbo file.
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.file_explorer.FileExplorer.project_explorer_iec">
+<code class="sig-name descname">project_explorer_iec</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/file_explorer.html#FileExplorer.project_explorer_iec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.file_explorer.FileExplorer.project_explorer_iec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a File Explorer to select iec file.
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.file_explorer.FileExplorer.project_explorer_igg">
+<code class="sig-name descname">project_explorer_igg</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/file_explorer.html#FileExplorer.project_explorer_igg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.file_explorer.FileExplorer.project_explorer_igg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a File Explorer to select igg file.
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.file_explorer.FileExplorer.project_explorer_run">
+<code class="sig-name descname">project_explorer_run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/file_explorer.html#FileExplorer.project_explorer_run"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.file_explorer.FileExplorer.project_explorer_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a File Explorer to select run file.
+:return: None</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.file_explorer.FileExplorer.saveFileDialog">
+<code class="sig-name descname">saveFileDialog</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/file_explorer.html#FileExplorer.saveFileDialog"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.file_explorer.FileExplorer.saveFileDialog" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a File Explorer to select path for blade export.
+:return: None</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="camber-spline-window">
+<h2>Camber Spline window<a class="headerlink" href="#camber-spline-window" title="Permalink to this headline">¶</a></h2>
+<p>Popup window Spline config.</p>
+<span class="target" id="module-module.UI.blade.thdist_spline_ui"></span><dl class="py class">
+<dt id="module.UI.blade.thdist_spline_ui.PlotCanvas">
+<em class="property">class </em><code class="sig-prename descclassname">module.UI.blade.thdist_spline_ui.</code><code class="sig-name descname">PlotCanvas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#PlotCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.PlotCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.backends.backend_qt5agg.FigureCanvasQTAgg</span></code></p>
+<p>Class for plotting inside thickness dist spline window. Very similar to main window plot.</p>
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.PlotCanvas.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy</span></em>, <em class="sig-param"><span class="n">pts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#PlotCanvas.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.PlotCanvas.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to handle all plotting tasks.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi">
+<em class="property">class </em><code class="sig-prename descclassname">module.UI.blade.thdist_spline_ui.</code><code class="sig-name descname">ThdistSplineUi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">main_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code></p>
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.close_window">
+<code class="sig-name descname">close_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.close_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.close_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close Window on button clicked.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.get_spline_pts">
+<code class="sig-name descname">get_spline_pts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.get_spline_pts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.get_spline_pts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method is called when invisible Label with data from the spline window is being updated. Get Points from string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>str</em>) – Value with coords of spline points</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.reset_pts">
+<code class="sig-name descname">reset_pts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.reset_pts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.reset_pts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset Points to default.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p1_down">
+<code class="sig-name descname">update_p1_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_p1_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p1_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 1 position control, button [down].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p1_left">
+<code class="sig-name descname">update_p1_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_p1_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p1_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 1 position control, button [left].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p1_right">
+<code class="sig-name descname">update_p1_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_p1_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p1_right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 1 position control, button [right].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p1_up">
+<code class="sig-name descname">update_p1_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_p1_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p1_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 1 position control, button [up].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p2_left">
+<code class="sig-name descname">update_p2_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_p2_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p2_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 2 position control, button [left].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p2_right">
+<code class="sig-name descname">update_p2_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_p2_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p2_right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 2 position control, button [right].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p3_down">
+<code class="sig-name descname">update_p3_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_p3_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p3_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 3 position control, button [down].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p3_left">
+<code class="sig-name descname">update_p3_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_p3_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p3_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 3 position control, button [left].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p3_right">
+<code class="sig-name descname">update_p3_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_p3_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p3_right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 3 position control, button [right].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p3_up">
+<code class="sig-name descname">update_p3_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_p3_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_p3_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 3 position control, button [up].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_plot">
+<code class="sig-name descname">update_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/thdist_spline_ui.html#ThdistSplineUi.update_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.thdist_spline_ui.ThdistSplineUi.update_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update Plot inside window by calling plot method with updated points.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="thickness-spline-window">
+<h2>Thickness Spline window<a class="headerlink" href="#thickness-spline-window" title="Permalink to this headline">¶</a></h2>
+<p>Popup window Spline config.</p>
+<span class="target" id="module-module.UI.blade.camber_spline_ui"></span><dl class="py class">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi">
+<em class="property">class </em><code class="sig-prename descclassname">module.UI.blade.camber_spline_ui.</code><code class="sig-name descname">CamberSplineUi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">main_value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code></p>
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.close_window">
+<code class="sig-name descname">close_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.close_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.close_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close Window.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.get_spline_pts">
+<code class="sig-name descname">get_spline_pts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.get_spline_pts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.get_spline_pts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method is called when invisible Label with data from the spline window is being updated. Get Points from string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>str</em>) – Value with coords of spline points</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.reset_pts">
+<code class="sig-name descname">reset_pts</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.reset_pts"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.reset_pts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reset points back to default (straight line).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p1_down">
+<code class="sig-name descname">update_p1_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p1_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p1_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 1 position control, button [down].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p1_left">
+<code class="sig-name descname">update_p1_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p1_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p1_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 1 position control, button [left].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p1_right">
+<code class="sig-name descname">update_p1_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p1_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p1_right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 1 position control, button [right].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p1_up">
+<code class="sig-name descname">update_p1_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p1_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p1_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 1 position control, button [up].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p2_down">
+<code class="sig-name descname">update_p2_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p2_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p2_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 2 position control, button [down].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p2_left">
+<code class="sig-name descname">update_p2_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p2_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p2_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 2 position control, button [left].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p2_right">
+<code class="sig-name descname">update_p2_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p2_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p2_right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 2 position control, button [right].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p2_up">
+<code class="sig-name descname">update_p2_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p2_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p2_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 2 position control, button [up].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p3_down">
+<code class="sig-name descname">update_p3_down</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p3_down"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p3_down" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 3 position control, button [down].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p3_left">
+<code class="sig-name descname">update_p3_left</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p3_left"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p3_left" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 3 position control, button [left].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p3_right">
+<code class="sig-name descname">update_p3_right</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p3_right"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p3_right" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 3 position control, button [right].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_p3_up">
+<code class="sig-name descname">update_p3_up</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_p3_up"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_p3_up" title="Permalink to this definition">¶</a></dt>
+<dd><p>Point 3 position control, button [up].</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.CamberSplineUi.update_plot">
+<code class="sig-name descname">update_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#CamberSplineUi.update_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.CamberSplineUi.update_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update plot in spline window by calling the plot class with new points.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="module.UI.blade.camber_spline_ui.PlotCanvas">
+<em class="property">class </em><code class="sig-prename descclassname">module.UI.blade.camber_spline_ui.</code><code class="sig-name descname">PlotCanvas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#PlotCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.PlotCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.backends.backend_qt5agg.FigureCanvasQTAgg</span></code></p>
+<p>Class for Plotting inside of Spline Window. Very similar to main window plot class.</p>
+<dl class="py method">
+<dt id="module.UI.blade.camber_spline_ui.PlotCanvas.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy</span></em>, <em class="sig-param"><span class="n">pts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/camber_spline_ui.html#PlotCanvas.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.camber_spline_ui.PlotCanvas.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method for handling all plotting tasks.
+:param xy: xy-coords of spline
+:type xy: np.array
+:param pts: Points on spline.
+:type pts: list
+:return:</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="annulus-window">
+<h2>Annulus window<a class="headerlink" href="#annulus-window" title="Permalink to this headline">¶</a></h2>
+<p>Popup window Annulus config.</p>
+<span class="target" id="module-module.UI.blade.annulus_ui"></span><dl class="py class">
+<dt id="module.UI.blade.annulus_ui.AnnulusUi">
+<em class="property">class </em><code class="sig-prename descclassname">module.UI.blade.annulus_ui.</code><code class="sig-name descname">AnnulusUi</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">offset</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#AnnulusUi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.AnnulusUi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code></p>
+<dl class="py method">
+<dt id="module.UI.blade.annulus_ui.AnnulusUi.build_blades">
+<code class="sig-name descname">build_blades</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#AnnulusUi.build_blades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.AnnulusUi.build_blades" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reconstruct the blades from mainwindow.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.annulus_ui.AnnulusUi.close_window">
+<code class="sig-name descname">close_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#AnnulusUi.close_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.AnnulusUi.close_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close window on button click.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.annulus_ui.AnnulusUi.set_restraints">
+<code class="sig-name descname">set_restraints</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">restraint</span></em>, <em class="sig-param"><span class="n">label</span></em>, <em class="sig-param"><span class="n">slider</span></em>, <em class="sig-param"><span class="n">scale</span><span class="o">=</span><span class="default_value">1.0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#AnnulusUi.set_restraints"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.AnnulusUi.set_restraints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load restraints from file and apply to label and slider.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>restraint</strong> (<em>list</em>) – from file, contains minval, maxval, steps, default</p></li>
+<li><p><strong>label</strong> (<em>pyqt.Widget.label</em>) – label of widget</p></li>
+<li><p><strong>slider</strong> (<em>pyqt.Widget.slider</em>) – slider of widget</p></li>
+<li><p><strong>scale</strong> (<em>float</em>) – scale to apply between float label and int slider (default=1)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.annulus_ui.AnnulusUi.update_box_nblades">
+<code class="sig-name descname">update_box_nblades</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#AnnulusUi.update_box_nblades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.AnnulusUi.update_box_nblades" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update number of blades on slider.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.annulus_ui.AnnulusUi.update_box_r">
+<code class="sig-name descname">update_box_r</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#AnnulusUi.update_box_r"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.AnnulusUi.update_box_r" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update inner radius on slider.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.annulus_ui.AnnulusUi.update_dist">
+<code class="sig-name descname">update_dist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#AnnulusUi.update_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.AnnulusUi.update_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update distance in label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – value of label</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.annulus_ui.AnnulusUi.update_nblades">
+<code class="sig-name descname">update_nblades</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#AnnulusUi.update_nblades"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.AnnulusUi.update_nblades" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update number of blades in label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – value of label</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.annulus_ui.AnnulusUi.update_plot">
+<code class="sig-name descname">update_plot</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#AnnulusUi.update_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.AnnulusUi.update_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update Plot with input parameters.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.blade.annulus_ui.AnnulusUi.update_r">
+<code class="sig-name descname">update_r</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#AnnulusUi.update_r"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.AnnulusUi.update_r" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update inner radius in label.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> (<em>float</em>) – value of label</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="module.UI.blade.annulus_ui.PlotCanvas">
+<em class="property">class </em><code class="sig-prename descclassname">module.UI.blade.annulus_ui.</code><code class="sig-name descname">PlotCanvas</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">parent</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">width</span><span class="o">=</span><span class="default_value">5</span></em>, <em class="sig-param"><span class="n">height</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">dpi</span><span class="o">=</span><span class="default_value">100</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#PlotCanvas"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.PlotCanvas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">matplotlib.backends.backend_qt5agg.FigureCanvasQTAgg</span></code></p>
+<p>Class to handle Plot inside window. Very similar to main window plot.</p>
+<dl class="py method">
+<dt id="module.UI.blade.annulus_ui.PlotCanvas.plot">
+<code class="sig-name descname">plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_inner</span></em>, <em class="sig-param"><span class="n">blade_list</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/blade/annulus_ui.html#PlotCanvas.plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.blade.annulus_ui.PlotCanvas.plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to handle all plotting tasks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r_inner</strong> (<em>float</em>) – inner radius</p></li>
+<li><p><strong>blade_list</strong> (<em>list</em>) – list of blades with correct rotation and position to plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="optimizer-handle">
+<h2>Optimizer handle<a class="headerlink" href="#optimizer-handle" title="Permalink to this headline">¶</a></h2>
+<p>Class that contains UI elements for the optimizer, inherits to main window.</p>
+</div>
+<div class="section" id="ssh-login">
+<h2>SSH Login<a class="headerlink" href="#ssh-login" title="Permalink to this headline">¶</a></h2>
+<p>The Login window for the SSH credentials.</p>
+<span class="target" id="module-module.UI.ssh_login_ui"></span><dl class="py class">
+<dt id="module.UI.ssh_login_ui.SSHLoginUi">
+<em class="property">class </em><code class="sig-prename descclassname">module.UI.ssh_login_ui.</code><code class="sig-name descname">SSHLoginUi</code><a class="reference internal" href="_modules/module/UI/ssh_login_ui.html#SSHLoginUi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.ssh_login_ui.SSHLoginUi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtWidgets.QMainWindow</span></code></p>
+<dl class="py method">
+<dt id="module.UI.ssh_login_ui.SSHLoginUi.close_window">
+<code class="sig-name descname">close_window</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/ssh_login_ui.html#SSHLoginUi.close_window"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.ssh_login_ui.SSHLoginUi.close_window" title="Permalink to this definition">¶</a></dt>
+<dd><p>Close Window on button clicked.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.UI.ssh_login_ui.SSHLoginUi.create_config">
+<code class="sig-name descname">create_config</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/UI/ssh_login_ui.html#SSHLoginUi.create_config"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.UI.ssh_login_ui.SSHLoginUi.create_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>When Button Create is clicked, get uname, pw and node from popup and write them into config.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="pandasviewer">
+<h2>Pandasviewer<a class="headerlink" href="#pandasviewer" title="Permalink to this headline">¶</a></h2>
+<p>Displays the pandas DataFrame of ‘top usage’ as a table, sorted by CPU.</p>
+<span class="target" id="module-module.optimizer.pandasviewer"></span><dl class="py class">
+<dt id="module.optimizer.pandasviewer.pandasModel">
+<em class="property">class </em><code class="sig-prename descclassname">module.optimizer.pandasviewer.</code><code class="sig-name descname">pandasModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/pandasviewer.html#pandasModel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.pandasviewer.pandasModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">PyQt5.QtCore.QAbstractTableModel</span></code></p>
+<dl class="py method">
+<dt id="module.optimizer.pandasviewer.pandasModel.columnCount">
+<code class="sig-name descname">columnCount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">parent</span><span class="p">:</span> <span class="n">QModelIndex</span> <span class="o">=</span> <span class="default_value">QModelIndex()</span></em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/module/optimizer/pandasviewer.html#pandasModel.columnCount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.pandasviewer.pandasModel.columnCount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="module.optimizer.pandasviewer.pandasModel.data">
+<code class="sig-name descname">data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">QModelIndex</span></em>, <em class="sig-param"><span class="n">role</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">Qt.DisplayRole</span></em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="_modules/module/optimizer/pandasviewer.html#pandasModel.data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.pandasviewer.pandasModel.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="module.optimizer.pandasviewer.pandasModel.headerData">
+<code class="sig-name descname">headerData</code><span class="sig-paren">(</span><em class="sig-param">self</em>, <em class="sig-param">int</em>, <em class="sig-param">Qt.Orientation</em>, <em class="sig-param">role: int = Qt.DisplayRole</em><span class="sig-paren">)</span> &#x2192; Any<a class="reference internal" href="_modules/module/optimizer/pandasviewer.html#pandasModel.headerData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.pandasviewer.pandasModel.headerData" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="module.optimizer.pandasviewer.pandasModel.rowCount">
+<code class="sig-name descname">rowCount</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">self</span></em>, <em class="sig-param"><span class="n">parent</span><span class="p">:</span> <span class="n">QModelIndex</span> <span class="o">=</span> <span class="default_value">QModelIndex()</span></em><span class="sig-paren">)</span> &#x2192; int<a class="reference internal" href="_modules/module/optimizer/pandasviewer.html#pandasModel.rowCount"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.pandasviewer.pandasModel.rowCount" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">GUI</a><ul>
+<li><a class="reference internal" href="#main-window">Main window</a><ul>
+<li><a class="reference internal" href="#initialize">Initialize</a></li>
+<li><a class="reference internal" href="#bladedesigner-handle">Bladedesigner Handle</a></li>
+<li><a class="reference internal" href="#file-explorer">File Explorer</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#camber-spline-window">Camber Spline window</a></li>
+<li><a class="reference internal" href="#thickness-spline-window">Thickness Spline window</a></li>
+<li><a class="reference internal" href="#annulus-window">Annulus window</a></li>
+<li><a class="reference internal" href="#optimizer-handle">Optimizer handle</a></li>
+<li><a class="reference internal" href="#ssh-login">SSH Login</a></li>
+<li><a class="reference internal" href="#pandasviewer">Pandasviewer</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="scripts.html"
+                        title="previous chapter">Scripts module</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="optimizer.html"
+                        title="next chapter">Optimizer</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/GUI.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="optimizer.html" title="Optimizer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="scripts.html" title="Scripts module"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">GUI</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Ga Man Liang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
