@@ -43,6 +43,8 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
     def __init__(self):
         super(Ui, self).__init__()
         uic.loadUi('UI/qtdesigner/mainwindow.ui', self)
+        # Software version. If the version does not match, a continuation of a log is not possible (due to conflicts in
+        # implementation).
         self.VERSION = "0.1"
 
         # declaring param keys, load restraints for slider

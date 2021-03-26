@@ -24,9 +24,9 @@ class DeapVisualize:
         dtime = datetime.datetime.now().strftime("%d-%m-%Y_%H.%M.%S")
         self.logfile = Path.cwd() / logname
         if not testrun:
-            path = os.path.join(Path.cwd() / "log/", dtime)
+            path = os.path.join(Path.cwd().parent / "log/processed", dtime)
         else:
-            path = os.path.join(Path.cwd() / "log/", "test_" + dtime)
+            path = os.path.join(Path.cwd().parent / "log/processed", "test_" + dtime)
         os.mkdir(path)
         # copy log file to newly created folder
         copy(self.logfile, path)
@@ -55,12 +55,8 @@ class DeapVisualize:
 
     def plotDeapResult(self, logdir):
         ds, blades, ds_popfit = self.readLog(self.logfile)
-        # plots for PP and AO over time
-        # filter fitness < 1
-        # ds = ds[ds.omega < 0.1]
-        # ds.reset_index(inplace=True, drop=True)
         mean_fitness = ds.fitness.mean()
-        ds = ds[ds.fitness < mean_fitness*2]
+        ds = ds[ds.fitness < mean_fitness * 2]
         ds.reset_index(inplace=True, drop=True)
 
         # plot fitness/generation
@@ -84,6 +80,10 @@ class DeapVisualize:
         # contour(ds, logdir)
         # print("Generating contour2 plot...")
         # contour2(ds, logdir)
+        #
+        # print("Generating scatter plot...")
+        # # scatter matrix
+        # scatter_matrix(ds, logdir)
 
         # get default blade parameters
         print("Generating Blade plot...")
@@ -94,8 +94,6 @@ class DeapVisualize:
             print("No blade parameters found in log file.")
 
         print("Done plotting.")
-        # scatter matrix
-        # scatter_matrix(ds, logdir)
 
     @staticmethod
     def readLog(file):
@@ -159,6 +157,6 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    msg = "BUGFIX: mistakenly plotted wrong reference blade \n\n"
+    # msg = "BUGFIX: mistakenly plotted wrong reference blade \n\n"
     # DeapVisualize("test_10-02-21_19-51-14.log", True, msg)
-    DeapVisualize("12-03-21_14-30-38_seed_76.log", testrun=False)
+    DeapVisualize(os.path.join(Path.cwd().parent / "log/raw/", "test_26-03-21_15-13-15_seed_76.log"), testrun=True)

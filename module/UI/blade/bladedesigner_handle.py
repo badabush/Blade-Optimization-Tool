@@ -294,6 +294,7 @@ class BDUpdateHandler:
             else:
                 self.ds_import = 0
         except AttributeError as e:
+            print(e)
             self.ds_import = 0
         self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
         print('Updating Plot')

@@ -4,7 +4,6 @@ import numpy as np
 from matplotlib import pyplot as plt, tri
 import matplotlib
 from matplotlib.ticker import MaxNLocator
-import pandas as pd
 
 
 def contour(ds, logdir):
