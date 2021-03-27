@@ -1,3 +1,4 @@
+
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -52,3 +53,40 @@ html_theme = 'default'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+from sphinx.application import Sphinx
+from sphinx.util.docfields import Field
+
+
+def setup(app: Sphinx):
+    app.add_object_type(
+        'deap_restraints',
+        'deap_restraints',
+        objname='configuration value',
+        indextemplate='pair: %s; configuration value',
+        doc_field_types=[
+            Field('id', label='ID', has_arg=False, names=('id',)),
+            Field('blade', label='Blade', has_arg=False, names=('blade',)),
+            Field('minimum', label='Minimum', has_arg=False, names=('Minimum',)),
+            Field('maximum', label='Maximum', has_arg=False, names=('Maximum',)),
+            Field('default', label='Default', has_arg=False, names=('default',)),
+            Field('digits', label='digits', has_arg=False, names=('digits',))
+        ]
+    )
+
+    app.add_object_type(
+        'ssh',
+        'ssh',
+        objname='configuration value',
+        indextemplate='pair: %s; configuration value',
+        doc_field_types=[
+            Field('host', label='Host', has_arg=False, names=('host',)),
+            Field('user', label='User', has_arg=False, names=('user',)),
+            Field('passwd', label='Password', has_arg=False, names=('passwd',)),
+            Field('key', label='Key', has_arg=False, names=('key',)),
+            Field('node', label='Node', has_arg=False, names=('node',)),
+            Field('timeout', label='Timeout', has_arg=False, names=('timeout',)),
+            Field('port', label='Port', has_arg=False, names=('port',))
+        ]
+    )
+

@@ -1,0 +1,27 @@
+DATETIME,TYPE,LOGTYPE,INFORMATION
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,SOFTWARE VERSION:X.X
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"POPSIZE, CXPB, MUTPB, PENALTY_FACTOR        "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,Free Parameters: ...                        
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,RAMDOM_SEED:XX                              
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"Objective function parameters: A:X, B:X, C:X"
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,Reference Blade parameters: ...             
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,Reference Blade fitness: ...                
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"ind1, generation:0                          "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"ind2, generation:0                          "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,...                                         
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"ind_POPSIZE, generation:0                   "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"Population size: 50, best Fitness: XX       "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"ind1, generation:1                          "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"ind2, generation:1                          "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,...                                         
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"ind_POPSIZE, generation:1                   "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"Population size: 50, best Fitness: XX       "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"ind1, generation:X                          "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"ind2, generation:X                          "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,...                                         
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"ind_POPSIZE, generation:X                   "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,"Population size: 50, best Fitness: XX       "
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,Best individual:                            
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,(parameters of ind_best)                    
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,[blade1] (parameters of blade1)             
+[DD-MM-YY HH:MM:SS],INFO,DEAP_info,[blade2] (parameters of blade2)            

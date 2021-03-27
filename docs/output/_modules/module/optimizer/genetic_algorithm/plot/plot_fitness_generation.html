@@ -47,6 +47,15 @@
 
 
 <div class="viewcode-block" id="fitness_generation"><a class="viewcode-back" href="../../../../../deap.html#module.optimizer.genetic_algorithm.plot.plot_fitness_generation.fitness_generation">[docs]</a><span class="k">def</span> <span class="nf">fitness_generation</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">logdir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot fitness over generation. Saves figure as fitness_generation.png</span>
+
+<span class="sd">    :param ds: dataset from log</span>
+<span class="sd">    :type ds: pd.DataFrame</span>
+<span class="sd">    :param logdir: path of output directory</span>
+<span class="sd">    :type logdir: string</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">ds</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">ds</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
     <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds</span><span class="p">[:,</span><span class="mi">1</span><span class="p">])</span>
@@ -60,6 +69,35 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">xticklabel</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
     <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">logdir</span> <span class="o">+</span> <span class="s2">&quot;/fitness_generation.png&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="fitness_generation_scatter"><a class="viewcode-back" href="../../../../../deap.html#module.optimizer.genetic_algorithm.plot.plot_fitness_generation.fitness_generation_scatter">[docs]</a><span class="k">def</span> <span class="nf">fitness_generation_scatter</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">fitgen</span><span class="p">,</span> <span class="n">logdir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot best fitness over generation and scatter of all fitness values.</span>
+<span class="sd">    Saves figure as fitness_generation_scatter.png.</span>
+
+<span class="sd">    :param ds: dataset from log</span>
+<span class="sd">    :type ds: pd.DataFrame</span>
+<span class="sd">    :param fitgen: dataset of best fitness and generations</span>
+<span class="sd">    :type fitgen: np.array</span>
+<span class="sd">    :param logdir: path of output directory</span>
+<span class="sd">    :type logdir: string</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># first figure</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">))</span>
+    <span class="c1"># data = np.reshape(ds, (len(ds), len(ds[0])))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">fitgen</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">fitgen</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">c</span><span class="o">=</span><span class="s2">&quot;indianred&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">fitgen</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]),</span> <span class="n">ds</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">ds</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">s</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Fitness&quot;</span><span class="p">)</span>
+    <span class="c1"># ax.set_xlim([0, 25])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">fitgen</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">])</span> <span class="o">*</span> <span class="o">.</span><span class="mi">999</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Fitness/Generation&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Generation&quot;</span><span class="p">)</span>
+    <span class="c1"># ax.set_xticklabels([])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">logdir</span> <span class="o">+</span> <span class="s2">&quot;/fitness_generation_scatter.png&quot;</span><span class="p">))</span></div>
 </pre></div>
 
             <div class="clearer"></div>

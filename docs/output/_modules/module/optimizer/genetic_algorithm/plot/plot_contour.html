@@ -48,6 +48,17 @@
 
 
 <div class="viewcode-block" id="contour"><a class="viewcode-back" href="../../../../../deap.html#module.optimizer.genetic_algorithm.plot.plot_contour.contour">[docs]</a><span class="k">def</span> <span class="nf">contour</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">logdir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    **DEPRECIATED: use contour2**</span>
+
+<span class="sd">    Plot contour plots of 2 selected features and density of fitness.</span>
+
+<span class="sd">    :param ds: dataset from log</span>
+<span class="sd">    :type ds: pd.DataFrame</span>
+<span class="sd">    :param logdir: path of output directory</span>
+<span class="sd">    :type logdir: string</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># contour plot</span>
     <span class="n">filtered</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">&quot;omega&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">df_unique</span> <span class="o">=</span> <span class="n">filtered</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;omega&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
@@ -81,12 +92,24 @@
 
 
 <div class="viewcode-block" id="contour2"><a class="viewcode-back" href="../../../../../deap.html#module.optimizer.genetic_algorithm.plot.plot_contour.contour2">[docs]</a><span class="k">def</span> <span class="nf">contour2</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">logdir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot contour plots of 2 selected features and density of fitness.</span>
+<span class="sd">    Saves figures as \*_contour.png</span>
+
+<span class="sd">    :param df: dataset from log</span>
+<span class="sd">    :type df: pd.DataFrame</span>
+<span class="sd">    :param logdir: path of output directory</span>
+<span class="sd">    :type logdir: string</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># contour plot</span>
     <span class="n">filtered</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">([</span><span class="s2">&quot;omega&quot;</span><span class="p">],</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">df_unique</span> <span class="o">=</span> <span class="n">filtered</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;omega&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df_unique</span>
     <span class="n">cmap</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">RdBu_r</span>
 
+    <span class="c1"># selected feature combinations</span>
     <span class="n">feature</span> <span class="o">=</span> <span class="p">[</span>
         <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">alph11</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">alph12</span><span class="p">,</span> <span class="s2">&quot;alpha11_alpha12&quot;</span><span class="p">],</span>
         <span class="p">[</span><span class="n">df</span><span class="o">.</span><span class="n">alph11</span><span class="p">,</span> <span class="n">df</span><span class="o">.</span><span class="n">alph21</span><span class="p">,</span> <span class="s2">&quot;alpha11_alpha21&quot;</span><span class="p">],</span>

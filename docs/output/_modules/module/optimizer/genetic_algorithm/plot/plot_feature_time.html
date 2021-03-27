@@ -44,6 +44,15 @@
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 
 <div class="viewcode-block" id="feature_time"><a class="viewcode-back" href="../../../../../deap.html#module.optimizer.genetic_algorithm.plot.plot_feature_time.feature_time">[docs]</a><span class="k">def</span> <span class="nf">feature_time</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">logdir</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot features (free parameters) over time. Saves figure as alph_time.png.</span>
+
+<span class="sd">    :param ds: dataset from log</span>
+<span class="sd">    :type ds: pd.DataFrame</span>
+<span class="sd">    :param logdir: path of output directory</span>
+<span class="sd">    :type logdir: string</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
     <span class="c1"># FIXME</span>
     <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">alph11</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;alpha 11&quot;</span><span class="p">)</span>

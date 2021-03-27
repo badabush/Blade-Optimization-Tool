@@ -17,6 +17,7 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Config Files" href="configfiles.html" />
     <link rel="prev" title="Optimizer" href="optimizer.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
@@ -28,6 +29,9 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="configfiles.html" title="Config Files"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="optimizer.html" title="Optimizer"
              accesskey="P">previous</a> |</li>
@@ -70,7 +74,163 @@
 </div>
 <div class="section" id="logging">
 <h2>Logging<a class="headerlink" href="#logging" title="Permalink to this headline">¶</a></h2>
-<p>Logging of Runs.</p>
+<p>Logging of Runs. Uses the package logging in deap_run_handle.py.
+Logs are shaped as follows:</p>
+<ul class="simple">
+<li><p>HEADER</p></li>
+<li><p>individual (generation)</p></li>
+<li><p>best fitness (generation)</p></li>
+<li><p>best individual (total)</p></li>
+<li><p>blade1/blade2 parameters</p></li>
+</ul>
+<table class="colwidths-given longtable docutils align-default" id="id1">
+<caption><span class="caption-text">Log structure</span><a class="headerlink" href="#id1" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 9%" />
+<col style="width: 9%" />
+<col style="width: 55%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>DATETIME</p></th>
+<th class="head"><p>TYPE</p></th>
+<th class="head"><p>LOGTYPE</p></th>
+<th class="head"><p>INFORMATION</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>SOFTWARE VERSION:X.X</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>POPSIZE, CXPB, MUTPB, PENALTY_FACTOR</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>Free Parameters: …</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>RAMDOM_SEED:XX</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>Objective function parameters: A:X, B:X, C:X</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>Reference Blade parameters: …</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>Reference Blade fitness: …</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>ind1, generation:0</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>ind2, generation:0</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>ind_POPSIZE, generation:0</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>Population size: 50, best Fitness: XX</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>ind1, generation:1</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>ind2, generation:1</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>ind_POPSIZE, generation:1</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>Population size: 50, best Fitness: XX</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>ind1, generation:X</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>ind2, generation:X</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>…</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>ind_POPSIZE, generation:X</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>Population size: 50, best Fitness: XX</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>Best individual:</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>(parameters of ind_best)</p></td>
+</tr>
+<tr class="row-even"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>[blade1] (parameters of blade1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>[DD-MM-YY HH:MM:SS]</p></td>
+<td><p>INFO</p></td>
+<td><p>DEAP_info</p></td>
+<td><p>[blade2] (parameters of blade2)</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="visualization-of-results">
 <h2>Visualization of Results<a class="headerlink" href="#visualization-of-results" title="Permalink to this headline">¶</a></h2>
@@ -98,12 +258,13 @@
 <span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_feature_density"></span><dl class="py function">
 <dt id="module.optimizer.genetic_algorithm.plot.plot_feature_density.feature_density">
 <code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_feature_density.</code><code class="sig-name descname">feature_density</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_feature_density.html#feature_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_feature_density.feature_density" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot features over density.</p>
+<dd><p>Scatter Matrix of feature (free parameter) density with distribution on the diagonal.
+Saves figure as gene_output_density.png.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ds</strong> – </p></li>
-<li><p><strong>logdir</strong> – </p></li>
+<li><p><strong>ds</strong> (<em>pd.DataFrame</em>) – dataset from log</p></li>
+<li><p><strong>logdir</strong> (<em>string</em>) – path of output directory</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -113,56 +274,97 @@
 </dd></dl>
 
 </div>
-<div class="section" id="feature-time-plot">
-<h3>Feature/Time Plot<a class="headerlink" href="#feature-time-plot" title="Permalink to this headline">¶</a></h3>
-<p>Plot free parameters over time.</p>
-<a class="reference internal image-reference" href="_images/alph_time.png"><img alt="Feature/Density Plot" src="_images/alph_time.png" style="width: 800px;" /></a>
-<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_feature_time"></span><dl class="py function">
+<div class="section" id="module-module.optimizer.genetic_algorithm.plot.plot_feature_time">
+<span id="feature-time-plot"></span><h3>Feature/Time Plot<a class="headerlink" href="#module-module.optimizer.genetic_algorithm.plot.plot_feature_time" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
 <dt id="module.optimizer.genetic_algorithm.plot.plot_feature_time.feature_time">
 <code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_feature_time.</code><code class="sig-name descname">feature_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_feature_time.html#feature_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_feature_time.feature_time" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Plot features (free parameters) over time. Saves figure as alph_time.png.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>pd.DataFrame</em>) – dataset from log</p></li>
+<li><p><strong>logdir</strong> (<em>string</em>) – path of output directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
+<a class="reference internal image-reference" href="_images/alph_time.png"><img alt="Feature/Time Plot" src="_images/alph_time.png" style="width: 800px;" /></a>
 </div>
-<div class="section" id="fitness-generation-plot">
-<h3>Fitness/Generation Plot<a class="headerlink" href="#fitness-generation-plot" title="Permalink to this headline">¶</a></h3>
-<p>Plot fitness over generations.</p>
-<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_fitness_generation"></span><dl class="py function">
+<div class="section" id="module-module.optimizer.genetic_algorithm.plot.plot_fitness_generation">
+<span id="fitness-gen-plot"></span><h3>Fitness/Gen Plot<a class="headerlink" href="#module-module.optimizer.genetic_algorithm.plot.plot_fitness_generation" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
 <dt id="module.optimizer.genetic_algorithm.plot.plot_fitness_generation.fitness_generation">
 <code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_fitness_generation.</code><code class="sig-name descname">fitness_generation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_fitness_generation.html#fitness_generation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_fitness_generation.fitness_generation" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Plot fitness over generation. Saves figure as fitness_generation.png</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>pd.DataFrame</em>) – dataset from log</p></li>
+<li><p><strong>logdir</strong> (<em>string</em>) – path of output directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
+<a class="reference internal image-reference" href="_images/fitness_generation.png"><img alt="Fitness/Generation Plot" src="_images/fitness_generation.png" style="width: 800px;" /></a>
 </div>
-<div class="section" id="fitness-generation-scatter-plot">
-<h3>Fitness/Generation Scatter Plot<a class="headerlink" href="#fitness-generation-scatter-plot" title="Permalink to this headline">¶</a></h3>
-<p>Plot fitness over generations as a scatter plot.</p>
-<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter"></span><dl class="py function">
-<dt id="module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter.fitness_generation_scatter">
-<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter.</code><code class="sig-name descname">fitness_generation_scatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_fitness_generation_scatter.html#fitness_generation_scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter.fitness_generation_scatter" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<div class="section" id="module-0">
+<span id="fitness-gen-scatter-plot"></span><h3>Fitness/Gen Scatter Plot<a class="headerlink" href="#module-0" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_fitness_generation.fitness_generation_scatter">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_fitness_generation.</code><code class="sig-name descname">fitness_generation_scatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">fitgen</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_fitness_generation.html#fitness_generation_scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_fitness_generation.fitness_generation_scatter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot best fitness over generation and scatter of all fitness values.
+Saves figure as fitness_generation_scatter.png.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>pd.DataFrame</em>) – dataset from log</p></li>
+<li><p><strong>fitgen</strong> (<em>np.array</em>) – dataset of best fitness and generations</p></li>
+<li><p><strong>logdir</strong> (<em>string</em>) – path of output directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
+<a class="reference internal image-reference" href="_images/fitness_generation_scatter.png"><img alt="Fitness/Generation Scatter Plot" src="_images/fitness_generation_scatter.png" style="width: 800px;" /></a>
 </div>
-<div class="section" id="scatter-matrix-plot">
-<h3>Scatter Matrix Plot<a class="headerlink" href="#scatter-matrix-plot" title="Permalink to this headline">¶</a></h3>
-<p>Plot scatter matrix.</p>
-<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_scatter_matrix"></span><dl class="py function">
-<dt id="module.optimizer.genetic_algorithm.plot.plot_scatter_matrix.scatter_matrix">
-<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_scatter_matrix.</code><code class="sig-name descname">scatter_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_scatter_matrix.html#scatter_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_scatter_matrix.scatter_matrix" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</div>
-<div class="section" id="three-point-plot">
-<h3>Three-Point Plot<a class="headerlink" href="#three-point-plot" title="Permalink to this headline">¶</a></h3>
-<p>Plot omegas of design point, lower point and upper point of reference blade and best blade from GA.</p>
-<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_threepoint"></span><dl class="py function">
+<div class="section" id="module-module.optimizer.genetic_algorithm.plot.plot_threepoint">
+<span id="three-point-plot"></span><h3>Three-Point Plot<a class="headerlink" href="#module-module.optimizer.genetic_algorithm.plot.plot_threepoint" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
 <dt id="module.optimizer.genetic_algorithm.plot.plot_threepoint.three_point">
 <code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_threepoint.</code><code class="sig-name descname">three_point</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">ref_blade</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_threepoint.html#three_point"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_threepoint.three_point" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Plot 3 point curve of reference and fitness blade.
+Saves figure as ref_best_three_point.png .</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>pd.DataFrame</em>) – dataset from log</p></li>
+<li><p><strong>ref_blade</strong> (<em>dict</em>) – reference blade parameters</p></li>
+<li><p><strong>logdir</strong> (<em>string</em>) – path of output directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
+<a class="reference internal image-reference" href="_images/ref_best_three_point.png"><img alt="Ref/Best Three-Point Plot" src="_images/ref_best_three_point.png" style="width: 800px;" /></a>
 </div>
-<div class="section" id="ref-best-blade-plot">
-<h3>Ref-/Best-Blade Plot<a class="headerlink" href="#ref-best-blade-plot" title="Permalink to this headline">¶</a></h3>
-<p>Plot the shape of reference blade and best blade from GA.</p>
-<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_blades"></span><dl class="py function">
+<div class="section" id="module-module.optimizer.genetic_algorithm.plot.plot_blades">
+<span id="ref-best-blade-plot"></span><h3>Ref-/Best-Blade Plot<a class="headerlink" href="#module-module.optimizer.genetic_algorithm.plot.plot_blades" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
 <dt id="module.optimizer.genetic_algorithm.plot.plot_blades.deap_blade">
 <code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_blades.</code><code class="sig-name descname">deap_blade</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">blades</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_blades.html#deap_blade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_blades.deap_blade" title="Permalink to this definition">¶</a></dt>
 <dd><p>DEAP Visualization Plot for blade shapes (reference blade/best blade from GA). Saves figure as blades.png in log
@@ -180,19 +382,45 @@ directory logdir.</p>
 </dl>
 </dd></dl>
 
+<a class="reference internal image-reference" href="_images/blades.png"><img alt="Ref/Best Blade Plot" src="_images/blades.png" style="width: 800px;" /></a>
 </div>
-<div class="section" id="contour-plot">
-<h3>Contour Plot<a class="headerlink" href="#contour-plot" title="Permalink to this headline">¶</a></h3>
-<p>Plot several contour plots with feature1/feature2/fitness.</p>
-<span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_contour"></span><dl class="py function">
+<div class="section" id="module-module.optimizer.genetic_algorithm.plot.plot_contour">
+<span id="contour-plot"></span><h3>Contour Plot<a class="headerlink" href="#module-module.optimizer.genetic_algorithm.plot.plot_contour" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
 <dt id="module.optimizer.genetic_algorithm.plot.plot_contour.contour">
 <code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_contour.</code><code class="sig-name descname">contour</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_contour.html#contour"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_contour.contour" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p><strong>DEPRECIATED: use contour2</strong></p>
+<p>Plot contour plots of 2 selected features and density of fitness.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>pd.DataFrame</em>) – dataset from log</p></li>
+<li><p><strong>logdir</strong> (<em>string</em>) – path of output directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt id="module.optimizer.genetic_algorithm.plot.plot_contour.contour2">
 <code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_contour.</code><code class="sig-name descname">contour2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">df</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_contour.html#contour2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_contour.contour2" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Plot contour plots of 2 selected features and density of fitness.
+Saves figures as *_contour.png</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>pd.DataFrame</em>) – dataset from log</p></li>
+<li><p><strong>logdir</strong> (<em>string</em>) – path of output directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </div>
@@ -209,6 +437,7 @@ after creating log folder and plotting has finished.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>configfile</strong> (<em>Path</em>) – full path from cwd to config file</p></li>
 <li><p><strong>attachments</strong> (<em>list</em>) – list of attachments; has to start with log file</p></li>
+<li><p><strong>custom_message</strong> (<em>string</em>) – content of attached message</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -234,13 +463,12 @@ after creating log folder and plotting has finished.</p>
 <li><a class="reference internal" href="#logging">Logging</a></li>
 <li><a class="reference internal" href="#visualization-of-results">Visualization of Results</a><ul>
 <li><a class="reference internal" href="#feature-density-plot">Feature/Density Plot</a></li>
-<li><a class="reference internal" href="#feature-time-plot">Feature/Time Plot</a></li>
-<li><a class="reference internal" href="#fitness-generation-plot">Fitness/Generation Plot</a></li>
-<li><a class="reference internal" href="#fitness-generation-scatter-plot">Fitness/Generation Scatter Plot</a></li>
-<li><a class="reference internal" href="#scatter-matrix-plot">Scatter Matrix Plot</a></li>
-<li><a class="reference internal" href="#three-point-plot">Three-Point Plot</a></li>
-<li><a class="reference internal" href="#ref-best-blade-plot">Ref-/Best-Blade Plot</a></li>
-<li><a class="reference internal" href="#contour-plot">Contour Plot</a></li>
+<li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_feature_time">Feature/Time Plot</a></li>
+<li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_fitness_generation">Fitness/Gen Plot</a></li>
+<li><a class="reference internal" href="#module-0">Fitness/Gen Scatter Plot</a></li>
+<li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_threepoint">Three-Point Plot</a></li>
+<li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_blades">Ref-/Best-Blade Plot</a></li>
+<li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_contour">Contour Plot</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#auto-mailing">Auto-Mailing</a></li>
@@ -251,6 +479,9 @@ after creating log folder and plotting has finished.</p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="optimizer.html"
                         title="previous chapter">Optimizer</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="configfiles.html"
+                        title="next chapter">Config Files</a></p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
@@ -281,6 +512,9 @@ after creating log folder and plotting has finished.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="configfiles.html" title="Config Files"
+             >next</a> |</li>
         <li class="right" >
           <a href="optimizer.html" title="Optimizer"
              >previous</a> |</li>

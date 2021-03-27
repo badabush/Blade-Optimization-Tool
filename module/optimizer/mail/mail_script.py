@@ -22,7 +22,8 @@ def deapMail(configfile, attachments, custom_message = ""):
     :type configfile: Path
     :param attachments: list of attachments; has to start with log file
     :type attachments: list
-
+    :param custom_message: content of attached message
+    :type custom_message: string
     :return:
     """
 

@@ -7,6 +7,17 @@ from matplotlib.ticker import MaxNLocator
 
 
 def contour(ds, logdir):
+    """
+    **DEPRECIATED: use contour2**
+
+    Plot contour plots of 2 selected features and density of fitness.
+
+    :param ds: dataset from log
+    :type ds: pd.DataFrame
+    :param logdir: path of output directory
+    :type logdir: string
+    :return:
+    """
     # contour plot
     filtered = ds.sort_values(["omega"], ascending=True)
     df_unique = filtered.groupby("omega").first().reset_index()
@@ -40,12 +51,24 @@ def contour(ds, logdir):
 
 
 def contour2(df, logdir):
+    """
+    Plot contour plots of 2 selected features and density of fitness.
+    Saves figures as \*_contour.png
+
+    :param df: dataset from log
+    :type df: pd.DataFrame
+    :param logdir: path of output directory
+    :type logdir: string
+    :return:
+    """
+
     # contour plot
     filtered = df.sort_values(["omega"], ascending=True)
     df_unique = filtered.groupby("omega").first().reset_index()
     df = df_unique
     cmap = matplotlib.cm.RdBu_r
 
+    # selected feature combinations
     feature = [
         [df.alph11, df.alph12, "alpha11_alpha12"],
         [df.alph11, df.alph21, "alpha11_alpha21"],

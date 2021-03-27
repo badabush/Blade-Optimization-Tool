@@ -15,3 +15,4 @@ BOT - Blade Optimization Tool
    GUI
    optimizer
    deap
+   configfiles

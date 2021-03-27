@@ -1,0 +1,736 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Config Files &#8212; BOT - Blade Optimization Tool  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="DEAP" href="deap.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="deap.html" title="DEAP"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Config Files</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="config-files">
+<h1>Config Files<a class="headerlink" href="#config-files" title="Permalink to this headline">¶</a></h1>
+<p>Config files for accessing variables inside the source code.</p>
+<div class="section" id="deap">
+<h2>DEAP<a class="headerlink" href="#deap" title="Permalink to this headline">¶</a></h2>
+<p>DEAP config file list</p>
+<div class="section" id="deap-restraints-ini">
+<h3>deap_restraints.ini<a class="headerlink" href="#deap-restraints-ini" title="Permalink to this headline">¶</a></h3>
+<p>Boundaries and restraints for free Parameters in DEAP
+(Path: module/config/<a class="reference external" href="../configfiles/deap_restraints.ini">deap_restraints.ini</a>).</p>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-ao">
+<code class="sig-name descname">ao</code><a class="headerlink" href="#deap_restraints-ao" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>AO</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>0</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.0</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.1</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.0271</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>4</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-div">
+<code class="sig-name descname">div</code><a class="headerlink" href="#deap_restraints-div" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>dist_blades</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>0</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.51</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.61</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.56</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-alph11">
+<code class="sig-name descname">alph11</code><a class="headerlink" href="#deap_restraints-alph11" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>alpha1</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>6.0</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>28.0</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>17.0</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-alph12">
+<code class="sig-name descname">alph12</code><a class="headerlink" href="#deap_restraints-alph12" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>alpha2</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>2.0</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>18.0</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>7.0</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-alph21">
+<code class="sig-name descname">alph21</code><a class="headerlink" href="#deap_restraints-alph21" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>alpha1</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>10.0</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>26.0</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>18.0</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-alph22">
+<code class="sig-name descname">alph22</code><a class="headerlink" href="#deap_restraints-alph22" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>alpha2</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>12.0</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>32.0</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>23.0</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-lambd1">
+<code class="sig-name descname">lambd1</code><a class="headerlink" href="#deap_restraints-lambd1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>lambd</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>40.0</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>45.0</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>43.0</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-lambd2">
+<code class="sig-name descname">lambd2</code><a class="headerlink" href="#deap_restraints-lambd2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>lambd</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>20.0</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>25.0</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>23.0</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-th1">
+<code class="sig-name descname">th1</code><a class="headerlink" href="#deap_restraints-th1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>th</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.0</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.05</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.0477</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>4</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-th2">
+<code class="sig-name descname">th2</code><a class="headerlink" href="#deap_restraints-th2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>th</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.0</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.05</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.0477</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>4</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-xmaxth1">
+<code class="sig-name descname">xmaxth1</code><a class="headerlink" href="#deap_restraints-xmaxth1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>xmax_th</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.375</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.425</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.4</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>3</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-xmaxth2">
+<code class="sig-name descname">xmaxth2</code><a class="headerlink" href="#deap_restraints-xmaxth2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>xmax_th</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.375</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.425</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.4</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>3</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-xmaxcamber1">
+<code class="sig-name descname">xmaxcamber1</code><a class="headerlink" href="#deap_restraints-xmaxcamber1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>xmax_camber</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.400</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.450</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.425</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>3</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-xmaxcamber2">
+<code class="sig-name descname">xmaxcamber2</code><a class="headerlink" href="#deap_restraints-xmaxcamber2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>xmax_camber</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.470</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.500</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.472</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>3</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-gamma_te1">
+<code class="sig-name descname">gamma_te1</code><a class="headerlink" href="#deap_restraints-gamma_te1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>gamma_te</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.10</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.20</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.14</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-gamma_te2">
+<code class="sig-name descname">gamma_te2</code><a class="headerlink" href="#deap_restraints-gamma_te2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>gamma_te</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.10</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.20</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.14</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-leth1">
+<code class="sig-name descname">leth1</code><a class="headerlink" href="#deap_restraints-leth1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>th_le</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.01</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.015</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.01</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>3</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-leth2">
+<code class="sig-name descname">leth2</code><a class="headerlink" href="#deap_restraints-leth2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>th_le</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.01</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.015</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.01</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>3</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-teth1">
+<code class="sig-name descname">teth1</code><a class="headerlink" href="#deap_restraints-teth1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>th_te</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>1</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.01</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.015</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.01</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>3</p>
+</dd>
+</dl>
+<dl class="std deap_restraints">
+<dt id="deap_restraints-teth2">
+<code class="sig-name descname">teth2</code><a class="headerlink" href="#deap_restraints-teth2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">id</dt>
+<dd class="field-odd"><p>th_te</p>
+</dd>
+<dt class="field-even">blade</dt>
+<dd class="field-even"><p>2</p>
+</dd>
+<dt class="field-odd">minimum</dt>
+<dd class="field-odd"><p>0.01</p>
+</dd>
+<dt class="field-even">maximum</dt>
+<dd class="field-even"><p>0.015</p>
+</dd>
+<dt class="field-odd">default</dt>
+<dd class="field-odd"><p>0.01</p>
+</dd>
+<dt class="field-even">digits</dt>
+<dd class="field-even"><p>3</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="deap-settings-ini">
+<h3>deap_settings.ini<a class="headerlink" href="#deap-settings-ini" title="Permalink to this headline">¶</a></h3>
+<p>Saved state of checkboxes and DEAP config. Will be overwritten by user input from GUI.
+(Path: module/config/<a class="reference external" href="../configfiles/deap_settings.ini">deap_settings.ini</a>).</p>
+</div>
+<div class="section" id="mailinglist-ini">
+<h3>mailinglist.ini<a class="headerlink" href="#mailinglist-ini" title="Permalink to this headline">¶</a></h3>
+<p>Config file containing recipient’s email address
+(Path: module/config/<a class="reference external" href="../configfiles/mailinglist.ini">mailinglist.ini</a>).</p>
+</div>
+<div class="section" id="optimizer-paths-ini">
+<h3>optimizer_paths.ini<a class="headerlink" href="#optimizer-paths-ini" title="Permalink to this headline">¶</a></h3>
+<p>Path of project, iec, igg and design folder on RDP
+(Path: module/config/<a class="reference external" href="../configfiles/optimizer_paths.ini">optimizer_paths.ini</a>).</p>
+</div>
+<div class="section" id="reference-blade-ini">
+<h3>reference_blade.ini<a class="headerlink" href="#reference-blade-ini" title="Permalink to this headline">¶</a></h3>
+<p>Parameters of reference blade
+(Path: module/config/<a class="reference external" href="../configfiles/reference_blade.ini">reference_blade.ini</a>).</p>
+</div>
+<div class="section" id="three-point-paths-ini">
+<h3>three_point_paths.ini<a class="headerlink" href="#three-point-paths-ini" title="Permalink to this headline">¶</a></h3>
+<p>Path of .run files for design, upper and lower points
+(Path: module/config/<a class="reference external" href="../configfiles/three_point_paths.ini">three_point_paths.ini</a>).</p>
+</div>
+</div>
+<div class="section" id="blade-generator">
+<h2>Blade Generator<a class="headerlink" href="#blade-generator" title="Permalink to this headline">¶</a></h2>
+<p>Blade config files:</p>
+<div class="section" id="default-blade-csv">
+<h3>default_blade.csv<a class="headerlink" href="#default-blade-csv" title="Permalink to this headline">¶</a></h3>
+<p>Default blade parameters. Loaded at GUI start.
+(Path: module/UI/config/<a class="reference external" href="../configfiles/default_blade.csv">default_blade.csv</a>).
+Rows:</p>
+<ul class="simple">
+<li><p>HEADER</p></li>
+<li><p>single blade parameters</p></li>
+<li><p>tandem blade 1 parameters</p></li>
+<li><p>tandem blade 2 parameters</p></li>
+</ul>
+</div>
+<div class="section" id="init-values-csv">
+<h3>init_values.csv<a class="headerlink" href="#init-values-csv" title="Permalink to this headline">¶</a></h3>
+<p>Some initial values for blade generation (scale, chord length, number of points, default points for spline).
+(Path: module/UI/config/<a class="reference external" href="../configfiles/init_values.csv">init_values.csv</a>).</p>
+</div>
+<div class="section" id="restraints-txt">
+<h3>restraints.txt<a class="headerlink" href="#restraints-txt" title="Permalink to this headline">¶</a></h3>
+<p>Restraints for blade generator parameters (sliders/input box)
+(Path: module/UI/config/<a class="reference external" href="../configfiles/restraints.txt">restraints.txt</a>).</p>
+</div>
+<div class="section" id="restraints-annulus-txt">
+<h3>restraints_annulus.txt<a class="headerlink" href="#restraints-annulus-txt" title="Permalink to this headline">¶</a></h3>
+<p>Restraints for the annulus gap generator
+(Path: module/UI/config/<a class="reference external" href="../configfiles/restrains_annulus.txt">restraints_annulus.txt</a>).</p>
+</div>
+<div class="section" id="thdist-default-txt">
+<h3>thdist_default.txt<a class="headerlink" href="#thdist-default-txt" title="Permalink to this headline">¶</a></h3>
+<p>Default points for thickness distribution
+(Path: module/UI/config/<a class="reference external" href="../configfiles/thdist_default.txt">thdist_default.txt</a>).</p>
+</div>
+</div>
+<div class="section" id="ssh-login-config">
+<h2>SSH Login config<a class="headerlink" href="#ssh-login-config" title="Permalink to this headline">¶</a></h2>
+<p>SSH Login config file:</p>
+<div class="section" id="ssh-config-ini">
+<h3>ssh_config.ini<a class="headerlink" href="#ssh-config-ini" title="Permalink to this headline">¶</a></h3>
+<p>Config to save host, node, port and user credentials for the SSH connection
+(Path: module/optimizer/ssh_login/<a class="reference external" href="../configfiles/ssh_config.ini">ssh_config.ini</a>).</p>
+<dl class="std ssh">
+<dt id="ssh-ssh">
+<code class="sig-name descname">ssh</code><a class="headerlink" href="#ssh-ssh" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="field-list simple">
+<dt class="field-odd">host</dt>
+<dd class="field-odd"><p>Host IP</p>
+</dd>
+<dt class="field-even">user</dt>
+<dd class="field-even"><p>Username</p>
+</dd>
+<dt class="field-odd">passwd</dt>
+<dd class="field-odd"><p>Password (encrypted)</p>
+</dd>
+<dt class="field-even">key</dt>
+<dd class="field-even"><p>Key to decryption</p>
+</dd>
+<dt class="field-odd">node</dt>
+<dd class="field-odd"><p>Node number (e.g. node05)</p>
+</dd>
+<dt class="field-even">timeout</dt>
+<dd class="field-even"><p>Timeout in seconds</p>
+</dd>
+<dt class="field-odd">port</dt>
+<dd class="field-odd"><p>Port number</p>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Config Files</a><ul>
+<li><a class="reference internal" href="#deap">DEAP</a><ul>
+<li><a class="reference internal" href="#deap-restraints-ini">deap_restraints.ini</a></li>
+<li><a class="reference internal" href="#deap-settings-ini">deap_settings.ini</a></li>
+<li><a class="reference internal" href="#mailinglist-ini">mailinglist.ini</a></li>
+<li><a class="reference internal" href="#optimizer-paths-ini">optimizer_paths.ini</a></li>
+<li><a class="reference internal" href="#reference-blade-ini">reference_blade.ini</a></li>
+<li><a class="reference internal" href="#three-point-paths-ini">three_point_paths.ini</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#blade-generator">Blade Generator</a><ul>
+<li><a class="reference internal" href="#default-blade-csv">default_blade.csv</a></li>
+<li><a class="reference internal" href="#init-values-csv">init_values.csv</a></li>
+<li><a class="reference internal" href="#restraints-txt">restraints.txt</a></li>
+<li><a class="reference internal" href="#restraints-annulus-txt">restraints_annulus.txt</a></li>
+<li><a class="reference internal" href="#thdist-default-txt">thdist_default.txt</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ssh-login-config">SSH Login config</a><ul>
+<li><a class="reference internal" href="#ssh-config-ini">ssh_config.ini</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="deap.html"
+                        title="previous chapter">DEAP</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/configfiles.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="deap.html" title="DEAP"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Config Files</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Ga Man Liang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

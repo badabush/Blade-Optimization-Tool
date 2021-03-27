@@ -8,10 +8,13 @@ from scipy.stats import gaussian_kde
 
 def feature_density(ds, logdir):
     """
-    Plot features over density.
+    Scatter Matrix of feature (free parameter) density with distribution on the diagonal.
+    Saves figure as gene_output_density.png.
 
-    :param ds:
-    :param logdir:
+    :param ds: dataset from log
+    :type ds: pd.DataFrame
+    :param logdir: path of output directory
+    :type logdir: string
     :return:
     """
     n_features = ds.shape[1] - 11

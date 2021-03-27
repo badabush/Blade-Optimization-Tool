@@ -6,6 +6,18 @@ from matplotlib import cm as cm
 
 
 def three_point(ds, ref_blade, logdir):
+    """
+    Plot 3 point curve of reference and fitness blade.
+    Saves figure as ref_best_three_point.png .
+
+    :param ds: dataset from log
+    :type ds: pd.DataFrame
+    :param ref_blade: reference blade parameters
+    :type ref_blade: dict
+    :param logdir: path of output directory
+    :type logdir: string
+    :return:
+    """
     fig, ax = plt.subplots(figsize=(10, 8), sharex='col', sharey='row')
     ref_omega = [ref_blade['omega_lower'], ref_blade['omega'], ref_blade['omega_upper']]
     ref_beta = [ref_blade['beta_lower'], ref_blade['beta'], ref_blade['beta_upper']]

@@ -17,8 +17,22 @@ Generation of NUMECA file (geomTurbo) from GUI-blades.
 Logging
 --------------------------------
 
-Logging of Runs.
+Logging of Runs. Uses the package logging in deap_run_handle.py.
+Logs are shaped as follows:
 
+- HEADER
+- individual (generation)
+- best fitness (generation)
+- best individual (total)
+- blade1/blade2 parameters
+
+.. tabularcolumns:: |p{5cm}|p{1cm}|p{1cm}|p{7cm}|
+
+.. csv-table:: Log structure
+  :file: tables/log_table.csv
+  :header-rows: 1
+  :class: longtable
+  :widths: 3 1 1 6
 
 Visualization of Results
 --------------------------------
@@ -49,70 +63,70 @@ Plot density of all free parameters.
 Feature/Time Plot
 ...............................
 
-Plot free parameters over time.
-
-.. image:: images/alph_time.png
-   :width: 800
-   :alt: Feature/Density Plot
-
 .. automodule:: module.optimizer.genetic_algorithm.plot.plot_feature_time
    :members:
    :undoc-members:
    :show-inheritance:
 
+.. image:: images/alph_time.png
+   :width: 800
+   :alt: Feature/Time Plot
 
-Fitness/Generation Plot
+
+Fitness/Gen Plot
 ...............................
 
-Plot fitness over generations.
+.. automodule:: module.optimizer.genetic_algorithm.plot.plot_fitness_generation
+   :members: fitness_generation
+   :undoc-members:
+   :show-inheritance:
 
 .. image:: images/fitness_generation.png
    :width: 800
-   :alt: Feature/Density Plot
-
-.. automodule:: module.optimizer.genetic_algorithm.plot.plot_fitness_generation
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   :alt: Fitness/Generation Plot
 
 
-Scatter Matrix Plot
+Fitness/Gen Scatter Plot
 ...............................
 
-Plot scatter matrix.
-
-.. automodule:: module.optimizer.genetic_algorithm.plot.plot_scatter_matrix
-   :members:
+.. automodule:: module.optimizer.genetic_algorithm.plot.plot_fitness_generation
+   :members: fitness_generation_scatter
    :undoc-members:
    :show-inheritance:
+
+.. image:: images/fitness_generation_scatter.png
+   :width: 800
+   :alt: Fitness/Generation Scatter Plot
 
 
 Three-Point Plot
 ...............................
-
-Plot omegas of design point, lower point and upper point of reference blade and best blade from GA.
 
 .. automodule:: module.optimizer.genetic_algorithm.plot.plot_threepoint
    :members:
    :undoc-members:
    :show-inheritance:
 
+.. image:: images/ref_best_three_point.png
+   :width: 800
+   :alt: Ref/Best Three-Point Plot
+
 
 Ref-/Best-Blade Plot
 ...............................
-
-Plot the shape of reference blade and best blade from GA.
 
 .. automodule:: module.optimizer.genetic_algorithm.plot.plot_blades
    :members:
    :undoc-members:
    :show-inheritance:
 
+.. image:: images/blades.png
+   :width: 800
+   :alt: Ref/Best Blade Plot
+
 
 Contour Plot
 ...............................
-
-Plot several contour plots with feature1/feature2/fitness.
 
 .. automodule:: module.optimizer.genetic_algorithm.plot.plot_contour
    :members:

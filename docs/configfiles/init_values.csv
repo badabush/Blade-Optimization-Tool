@@ -1,0 +1,7 @@
+scale, 100000;
+lchord, 1;
+npts, 2000;
+cspline_pts_x, 0.0, 0.25, 0.5, 0.75, 1.0;
+cspline_pts_y, 0.0, 0.25, 0.5, 0.75, 1.0;
+tspline_pts_x, 0.0, 0.1, 0.4, 0.8, 1.0;
+tspline_pts_y, 0.0, 0.4, 1.0, 0.35, 0.0;
