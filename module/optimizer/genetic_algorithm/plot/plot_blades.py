@@ -15,7 +15,7 @@ def deap_blade(blades, logdir):
     :type blades: list
     :param logdir: path of processed log where figure should be saved to
     :type logdir: string
-    
+
     :return:
     """
     default_blade_path = Path(os.getcwd() + "/UI/config/default_blade.csv")

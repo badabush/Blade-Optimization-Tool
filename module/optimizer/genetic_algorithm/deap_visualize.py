@@ -5,6 +5,7 @@ from shutil import copy
 from configparser import ConfigParser
 
 import pandas as pd
+import numpy as np
 
 from optimizer.mail.mail_script import deapMail
 from optimizer.genetic_algorithm.plot.plot_feature_time import feature_time
@@ -13,7 +14,7 @@ from optimizer.genetic_algorithm.plot.plot_contour import contour2
 from optimizer.genetic_algorithm.plot.plot_blades import deap_blade
 from optimizer.genetic_algorithm.plot.plot_scatter_matrix import scatter_matrix
 from optimizer.genetic_algorithm.plot.plot_threepoint import three_point
-from optimizer.genetic_algorithm.plot.plot_fitness_generation import fitness_generation
+from optimizer.genetic_algorithm.plot.plot_fitness_generation import fitness_generation, fitness_generation_scatter
 
 
 class DeapVisualize:
@@ -54,13 +55,19 @@ class DeapVisualize:
             deapMail(mail_configfile, attachments, custom_message=custom_message)
 
     def plotDeapResult(self, logdir):
-        ds, blades, ds_popfit = self.readLog(self.logfile)
+        ds, blades, _ = self.readLog(self.logfile)
+        ds_popfit = ds.loc[:,["fitness", "generation"]]
+        ds_popfit = np.array([[gen, ds_popfit[ds_popfit.generation == gen].fitness.min()] for gen in ds_popfit.generation.unique()])
         mean_fitness = ds.fitness.mean()
         ds = ds[ds.fitness < mean_fitness * 2]
         ds.reset_index(inplace=True, drop=True)
 
         # plot fitness/generation
+        print("Generating Fitness/Generation plot...")
         fitness_generation(ds_popfit, logdir)
+        # plot fitness/generation scatter
+        print("Generating Fitness/Generation scatter plot...")
+        fitness_generation_scatter(ds, ds_popfit, logdir)
 
         # plot 3point curve ref/best blade
         print("Generating 3point plot...")
@@ -159,4 +166,4 @@ class DeapVisualize:
 if __name__ == '__main__':
     # msg = "BUGFIX: mistakenly plotted wrong reference blade \n\n"
     # DeapVisualize("test_10-02-21_19-51-14.log", True, msg)
-    DeapVisualize(os.path.join(Path.cwd().parent / "log/raw/", "test_26-03-21_15-13-15_seed_76.log"), testrun=True)
+    DeapVisualize(os.path.join(Path.cwd().parent / "log/raw/", "25-03-21_14-39-24_seed_76.log"), testrun=True)

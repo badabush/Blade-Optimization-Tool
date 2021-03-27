@@ -36,6 +36,10 @@ Feature/Density Plot
 
 Plot density of all free parameters.
 
+.. image:: images/feature_density.png
+   :width: 800
+   :alt: Feature/Density Plot
+
 .. automodule:: module.optimizer.genetic_algorithm.plot.plot_feature_density
    :members:
    :undoc-members:
@@ -46,6 +50,10 @@ Feature/Time Plot
 ...............................
 
 Plot free parameters over time.
+
+.. image:: images/alph_time.png
+   :width: 800
+   :alt: Feature/Density Plot
 
 .. automodule:: module.optimizer.genetic_algorithm.plot.plot_feature_time
    :members:
@@ -58,18 +66,11 @@ Fitness/Generation Plot
 
 Plot fitness over generations.
 
+.. image:: images/fitness_generation.png
+   :width: 800
+   :alt: Feature/Density Plot
+
 .. automodule:: module.optimizer.genetic_algorithm.plot.plot_fitness_generation
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-
-Fitness/Generation Scatter Plot
-...............................
-
-Plot fitness over generations as a scatter plot.
-
-.. automodule:: module.optimizer.genetic_algorithm.plot.plot_fitness_generation_scatter
    :members:
    :undoc-members:
    :show-inheritance:

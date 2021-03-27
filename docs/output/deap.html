@@ -94,19 +94,29 @@
 <div class="section" id="feature-density-plot">
 <h3>Feature/Density Plot<a class="headerlink" href="#feature-density-plot" title="Permalink to this headline">¶</a></h3>
 <p>Plot density of all free parameters.</p>
+<a class="reference internal image-reference" href="_images/feature_density.png"><img alt="Feature/Density Plot" src="_images/feature_density.png" style="width: 800px;" /></a>
 <span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_feature_density"></span><dl class="py function">
 <dt id="module.optimizer.genetic_algorithm.plot.plot_feature_density.feature_density">
 <code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_feature_density.</code><code class="sig-name descname">feature_density</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_feature_density.html#feature_density"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_feature_density.feature_density" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot features over density
-:param ds:
-:param logdir:
-:return:</p>
+<dd><p>Plot features over density.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> – </p></li>
+<li><p><strong>logdir</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
 <div class="section" id="feature-time-plot">
 <h3>Feature/Time Plot<a class="headerlink" href="#feature-time-plot" title="Permalink to this headline">¶</a></h3>
 <p>Plot free parameters over time.</p>
+<a class="reference internal image-reference" href="_images/alph_time.png"><img alt="Feature/Density Plot" src="_images/alph_time.png" style="width: 800px;" /></a>
 <span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_feature_time"></span><dl class="py function">
 <dt id="module.optimizer.genetic_algorithm.plot.plot_feature_time.feature_time">
 <code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_feature_time.</code><code class="sig-name descname">feature_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_feature_time.html#feature_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_feature_time.feature_time" title="Permalink to this definition">¶</a></dt>
@@ -155,7 +165,20 @@
 <span class="target" id="module-module.optimizer.genetic_algorithm.plot.plot_blades"></span><dl class="py function">
 <dt id="module.optimizer.genetic_algorithm.plot.plot_blades.deap_blade">
 <code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_blades.</code><code class="sig-name descname">deap_blade</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">blades</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_blades.html#deap_blade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_blades.deap_blade" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>DEAP Visualization Plot for blade shapes (reference blade/best blade from GA). Saves figure as blades.png in log
+directory logdir.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>blades</strong> (<em>list</em>) – list of blades</p></li>
+<li><p><strong>logdir</strong> (<em>string</em>) – path of processed log where figure should be saved to</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="section" id="contour-plot">

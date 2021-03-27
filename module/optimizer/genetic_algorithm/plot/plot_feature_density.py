@@ -8,7 +8,8 @@ from scipy.stats import gaussian_kde
 
 def feature_density(ds, logdir):
     """
-    Plot features over density
+    Plot features over density.
+
     :param ds:
     :param logdir:
     :return:
