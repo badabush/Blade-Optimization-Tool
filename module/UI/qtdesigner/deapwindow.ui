@@ -16,7 +16,7 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>520</x>
+     <x>530</x>
      <y>440</y>
      <width>168</width>
      <height>27</height>
@@ -203,7 +203,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>110</y>
+       <y>109</y>
        <width>204</width>
        <height>321</height>
       </rect>
@@ -297,11 +297,7 @@
      <x>470</x>
      <y>10</y>
      <width>231</width>
-<<<<<<< Updated upstream
-     <height>311</height>
-=======
      <height>331</height>
->>>>>>> Stashed changes
     </rect>
    </property>
    <property name="title">
@@ -313,21 +309,29 @@
       <x>10</x>
       <y>40</y>
       <width>211</width>
-<<<<<<< Updated upstream
-      <height>251</height>
+      <height>271</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="4" column="1">
-      <widget class="QDoubleSpinBox" name="input_penalty_factor">
-       <property name="maximum">
-        <double>999.899999999999977</double>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>max. Generations</string>
        </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Mutation Prob.
+(MUTPB)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="input_mutpb">
        <property name="singleStep">
         <double>0.100000000000000</double>
-       </property>
-       <property name="value">
-        <double>100.000000000000000</double>
        </property>
       </widget>
      </item>
@@ -335,6 +339,13 @@
       <widget class="QSpinBox" name="input_gen">
        <property name="maximum">
         <number>100</number>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Population Size</string>
        </property>
       </widget>
      </item>
@@ -352,143 +363,6 @@
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
-      <widget class="QDoubleSpinBox" name="input_mutpb">
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_3">
-=======
-      <height>271</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_2">
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_4">
->>>>>>> Stashed changes
-       <property name="text">
-        <string>max. Generations</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Mutation Prob.
-(MUTPB)</string>
-       </property>
-      </widget>
-     </item>
-<<<<<<< Updated upstream
-     <item row="2" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Crossover Prob.
-(CXPB)</string>
-=======
-     <item row="3" column="1">
-      <widget class="QDoubleSpinBox" name="input_mutpb">
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QSpinBox" name="input_gen">
-       <property name="maximum">
-        <number>100</number>
->>>>>>> Stashed changes
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Population Size</string>
-       </property>
-      </widget>
-     </item>
-<<<<<<< Updated upstream
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Penalty Factor</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QLabel" name="label_6">
-       <property name="text">
-        <string>Random Seed</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="1">
-      <widget class="QSpinBox" name="input_rnd_seed">
-       <property name="minimum">
-        <number>0</number>
-       </property>
-       <property name="maximum">
-        <number>10000</number>
-       </property>
-       <property name="value">
-        <number>76</number>
-=======
-     <item row="0" column="1">
-      <widget class="QSpinBox" name="input_pop">
-       <property name="maximum">
-        <number>500</number>
->>>>>>> Stashed changes
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QGroupBox" name="groupBox_5">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>330</y>
-     <width>231</width>
-     <height>80</height>
-    </rect>
-   </property>
-   <property name="title">
-    <string>Objective function Parameters:</string>
-   </property>
-   <widget class="QWidget" name="gridLayoutWidget_4">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>20</y>
-      <width>211</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <layout class="QGridLayout" name="gridLayout_4">
-     <item row="0" column="1">
-      <widget class="QDoubleSpinBox" name="input_obj_param_A">
-       <property name="maximum">
-        <double>1.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-       <property name="value">
-        <double>0.500000000000000</double>
-       </property>
-      </widget>
-     </item>
-<<<<<<< Updated upstream
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_7">
-       <property name="text">
-        <string>A</string>
-=======
      <item row="4" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
@@ -501,49 +375,22 @@
        <property name="text">
         <string>Crossover Prob.
 (CXPB)</string>
->>>>>>> Stashed changes
        </property>
       </widget>
      </item>
-     <item row="0" column="3">
-      <widget class="QDoubleSpinBox" name="input_obj_param_B">
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="input_penalty_factor">
        <property name="maximum">
-        <double>1.000000000000000</double>
+        <double>999.899999999999977</double>
        </property>
        <property name="singleStep">
         <double>0.100000000000000</double>
        </property>
        <property name="value">
-        <double>1.000000000000000</double>
+        <double>100.000000000000000</double>
        </property>
       </widget>
      </item>
-<<<<<<< Updated upstream
-     <item row="0" column="4">
-      <widget class="QLabel" name="label_9">
-       <property name="text">
-        <string>C</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="2">
-      <widget class="QLabel" name="label_8">
-       <property name="text">
-        <string>B</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="5">
-      <widget class="QDoubleSpinBox" name="input_obj_param_C">
-       <property name="maximum">
-        <double>1.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-       <property name="value">
-        <double>0.500000000000000</double>
-=======
      <item row="5" column="0">
       <widget class="QLabel" name="label_6">
        <property name="text">
@@ -561,7 +408,6 @@
        </property>
        <property name="value">
         <number>76</number>
->>>>>>> Stashed changes
        </property>
       </widget>
      </item>
