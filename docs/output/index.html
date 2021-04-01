@@ -47,11 +47,72 @@
 <p class="caption"><span class="caption-text">Table of Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="packages.html">List of Python Packages</a></li>
-<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="GUI.html">GUI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a></li>
-<li class="toctree-l1"><a class="reference internal" href="deap.html">DEAP</a></li>
-<li class="toctree-l1"><a class="reference internal" href="configfiles.html">Config Files</a></li>
+<li class="toctree-l1"><a class="reference internal" href="scripts.html">Scripts module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#bladegen-module">BladeGen module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="scripts.html#bladetools-module">Bladetools module</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="GUI.html">GUI</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#main-window">Main window</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="GUI.html#initialize">Initialize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="GUI.html#bladedesigner-handle">Bladedesigner Handle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="GUI.html#file-explorer">File Explorer</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#camber-spline-window">Camber Spline window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#thickness-spline-window">Thickness Spline window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#annulus-window">Annulus window</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#optimizer-handle">Optimizer handle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#ssh-login">SSH Login</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GUI.html#pandasviewer">Pandasviewer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="optimizer.html">Optimizer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html#geomturbo-file-generation">geomTurbo File Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html#pyscript-generation-for-fineturbo">pyscript Generation for FineTurbo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="optimizer.html#optimtools">Optimtools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="deap.html">DEAP</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="deap.html#geomturbo-file-generation">geomTurbo File Generation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deap.html#logging">Logging</a></li>
+<li class="toctree-l2"><a class="reference internal" href="deap.html#visualization-of-results">Visualization of Results</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#feature-density-plot">Feature/Density Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#module-module.optimizer.genetic_algorithm.plot.plot_feature_time">Feature/Time Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#module-module.optimizer.genetic_algorithm.plot.plot_fitness_generation">Fitness/Gen Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#module-0">Fitness/Gen Scatter Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#module-module.optimizer.genetic_algorithm.plot.plot_threepoint">Three-Point Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#module-module.optimizer.genetic_algorithm.plot.plot_blades">Ref-/Best-Blade Plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="deap.html#module-module.optimizer.genetic_algorithm.plot.plot_contour">Contour Plot</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="deap.html#auto-mailing">Auto-Mailing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configfiles.html">Config Files</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configfiles.html#deap">DEAP</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#deap-restraints-ini">deap_restraints.ini</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#deap-settings-ini">deap_settings.ini</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#mailinglist-ini">mailinglist.ini</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#optimizer-paths-ini">optimizer_paths.ini</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#reference-blade-ini">reference_blade.ini</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#three-point-paths-ini">three_point_paths.ini</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="configfiles.html#blade-generator">Blade Generator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#default-blade-csv">default_blade.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#init-values-csv">init_values.csv</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#restraints-txt">restraints.txt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#restraints-annulus-txt">restraints_annulus.txt</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#thdist-default-txt">thdist_default.txt</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="configfiles.html#ssh-login-config">SSH Login config</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configfiles.html#ssh-config-ini">ssh_config.ini</a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </div>
 </div>

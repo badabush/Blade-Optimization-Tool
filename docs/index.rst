@@ -7,12 +7,12 @@ BOT - Blade Optimization Tool
 ==================================
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 3
    :caption: Table of Contents:
 
    packages
+   scripts
    GUI
-   bladegen
    optimizer
    deap
    configfiles

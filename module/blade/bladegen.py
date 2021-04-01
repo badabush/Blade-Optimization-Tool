@@ -232,7 +232,6 @@ class BladeGen:
         else:
             xy_th[:, 1] = np.concatenate([np.abs(yth), np.abs(yth_circ_te), [0]])
 
-        self.xy_th = xy_th
         chi_camber = np.arctan(np.gradient(xy_camber[:, 1]) / np.gradient(xy_camber[:, 0]))
         xss = x - np.sin(chi_camber) * xy_th[:, 1]
         xps = x + np.sin(chi_camber) * xy_th[:, 1]
@@ -259,7 +258,6 @@ class BladeGen:
         xy_camber = xy_camber * ds['l_chord']
         X_camber = np.cos(lambd) * xy_camber[:, 0] - np.sin(lambd) * xy_camber[:, 1]
         Y_camber = np.sin(lambd) * xy_camber[:, 0] + np.cos(lambd) * xy_camber[:, 1]
-
 
         df = pd.DataFrame(data={'x': X, 'y': Y})
         return df, np.transpose(np.array([X_camber, Y_camber]))
