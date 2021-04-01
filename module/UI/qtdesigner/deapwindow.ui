@@ -297,7 +297,11 @@
      <x>470</x>
      <y>10</y>
      <width>231</width>
+<<<<<<< Updated upstream
      <height>311</height>
+=======
+     <height>331</height>
+>>>>>>> Stashed changes
     </rect>
    </property>
    <property name="title">
@@ -309,6 +313,7 @@
       <x>10</x>
       <y>40</y>
       <width>211</width>
+<<<<<<< Updated upstream
       <height>251</height>
      </rect>
     </property>
@@ -356,23 +361,16 @@
      </item>
      <item row="0" column="0">
       <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Population Size</string>
-       </property>
-      </widget>
-     </item>
+=======
+      <height>271</height>
+     </rect>
+    </property>
+    <layout class="QGridLayout" name="gridLayout_2">
      <item row="1" column="0">
       <widget class="QLabel" name="label_4">
+>>>>>>> Stashed changes
        <property name="text">
         <string>max. Generations</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Crossover Prob.
-(CXPB)</string>
        </property>
       </widget>
      </item>
@@ -384,6 +382,36 @@
        </property>
       </widget>
      </item>
+<<<<<<< Updated upstream
+     <item row="2" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Crossover Prob.
+(CXPB)</string>
+=======
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="input_mutpb">
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="input_gen">
+       <property name="maximum">
+        <number>100</number>
+>>>>>>> Stashed changes
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Population Size</string>
+       </property>
+      </widget>
+     </item>
+<<<<<<< Updated upstream
      <item row="4" column="0">
       <widget class="QLabel" name="label_5">
        <property name="text">
@@ -408,6 +436,12 @@
        </property>
        <property name="value">
         <number>76</number>
+=======
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="input_pop">
+       <property name="maximum">
+        <number>500</number>
+>>>>>>> Stashed changes
        </property>
       </widget>
      </item>
@@ -449,10 +483,25 @@
        </property>
       </widget>
      </item>
+<<<<<<< Updated upstream
      <item row="0" column="0">
       <widget class="QLabel" name="label_7">
        <property name="text">
         <string>A</string>
+=======
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Penalty Factor</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Crossover Prob.
+(CXPB)</string>
+>>>>>>> Stashed changes
        </property>
       </widget>
      </item>
@@ -469,6 +518,7 @@
        </property>
       </widget>
      </item>
+<<<<<<< Updated upstream
      <item row="0" column="4">
       <widget class="QLabel" name="label_9">
        <property name="text">
@@ -493,6 +543,25 @@
        </property>
        <property name="value">
         <double>0.500000000000000</double>
+=======
+     <item row="5" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Random Seed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="5" column="1">
+      <widget class="QSpinBox" name="input_rnd_seed">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>76</number>
+>>>>>>> Stashed changes
        </property>
       </widget>
      </item>
