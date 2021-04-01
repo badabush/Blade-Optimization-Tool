@@ -3,7 +3,6 @@ import random
 import configparser
 import json
 import pandas as pd
-from sphinx.addnodes import index
 
 
 def _random(min, max, digits):
