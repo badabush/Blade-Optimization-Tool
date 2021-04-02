@@ -316,11 +316,11 @@ Saves figure as gene_output_density.png.</p>
 
 <a class="reference internal image-reference" href="_images/fitness_generation.png"><img alt="Fitness/Generation Plot" src="_images/fitness_generation.png" style="width: 800px;" /></a>
 </div>
-<div class="section" id="module-0">
-<span id="fitness-gen-scatter-plot"></span><h3>Fitness/Gen Scatter Plot<a class="headerlink" href="#module-0" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="fitness-gen-scatter-plot">
+<h3>Fitness/Gen Scatter Plot<a class="headerlink" href="#fitness-gen-scatter-plot" title="Permalink to this headline">¶</a></h3>
 <dl class="py function">
-<dt id="module.optimizer.genetic_algorithm.plot.plot_fitness_generation.fitness_generation_scatter">
-<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_fitness_generation.</code><code class="sig-name descname">fitness_generation_scatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">fitgen</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_fitness_generation.html#fitness_generation_scatter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_fitness_generation.fitness_generation_scatter" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_fitness_generation.</code><code class="sig-name descname">fitness_generation_scatter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">fitgen</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_fitness_generation.html#fitness_generation_scatter"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Plot best fitness over generation and scatter of all fitness values.
 Saves figure as fitness_generation_scatter.png.</p>
 <dl class="field-list simple">
@@ -383,6 +383,63 @@ directory logdir.</p>
 </dd></dl>
 
 <a class="reference internal image-reference" href="_images/blades.png"><img alt="Ref/Best Blade Plot" src="_images/blades.png" style="width: 800px;" /></a>
+</div>
+<div class="section" id="module-module.optimizer.genetic_algorithm.plot.plot_camber_thickness">
+<span id="camber-thickness-distribution-ref-best-plot"></span><h3>Camber-/Thickness Distribution (ref/best) Plot<a class="headerlink" href="#module-module.optimizer.genetic_algorithm.plot.plot_camber_thickness" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_camber_thickness.camber_dist">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_camber_thickness.</code><code class="sig-name descname">camber_dist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">dir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_camber_thickness.html#camber_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_camber_thickness.camber_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate camber distribution subplot for front/aft blade.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>list</em>) – camber data (ref1/ref2/best1/best2)</p></li>
+<li><p><strong>dir</strong> (<em>string</em>) – log directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_camber_thickness.distributions">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_camber_thickness.</code><code class="sig-name descname">distributions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">best_blades</span></em>, <em class="sig-param"><span class="n">logdir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_camber_thickness.html#distributions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_camber_thickness.distributions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate plots for thickness and camber distributions. Pack camber and thickness data into lists with
+ref1/ref2/best1/best2 entries, save plots to log directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>best_blades</strong> (<em>list</em>) – Blade parameters best blades</p></li>
+<li><p><strong>logdir</strong> (<em>string</em>) – path to log directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.optimizer.genetic_algorithm.plot.plot_camber_thickness.thickness_dist">
+<code class="sig-prename descclassname">module.optimizer.genetic_algorithm.plot.plot_camber_thickness.</code><code class="sig-name descname">thickness_dist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ds</span></em>, <em class="sig-param"><span class="n">dir</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/optimizer/genetic_algorithm/plot/plot_camber_thickness.html#thickness_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.optimizer.genetic_algorithm.plot.plot_camber_thickness.thickness_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate thickness distribution subplot for front/aft blade.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ds</strong> (<em>list</em>) – thickness data (ref1/ref2/best1/best2)</p></li>
+<li><p><strong>dir</strong> (<em>string</em>) – log directory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<a class="reference internal image-reference" href="_images/camber_distribution.png"><img alt="Camber Distribution Plot" src="_images/camber_distribution.png" style="width: 800px;" /></a>
+<a class="reference internal image-reference" href="_images/thickness_distribution.png"><img alt="Thickness Distribution Plot" src="_images/thickness_distribution.png" style="width: 800px;" /></a>
 </div>
 <div class="section" id="module-module.optimizer.genetic_algorithm.plot.plot_contour">
 <span id="contour-plot"></span><h3>Contour Plot<a class="headerlink" href="#module-module.optimizer.genetic_algorithm.plot.plot_contour" title="Permalink to this headline">¶</a></h3>
@@ -465,9 +522,10 @@ after creating log folder and plotting has finished.</p>
 <li><a class="reference internal" href="#feature-density-plot">Feature/Density Plot</a></li>
 <li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_feature_time">Feature/Time Plot</a></li>
 <li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_fitness_generation">Fitness/Gen Plot</a></li>
-<li><a class="reference internal" href="#module-0">Fitness/Gen Scatter Plot</a></li>
+<li><a class="reference internal" href="#fitness-gen-scatter-plot">Fitness/Gen Scatter Plot</a></li>
 <li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_threepoint">Three-Point Plot</a></li>
 <li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_blades">Ref-/Best-Blade Plot</a></li>
+<li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_camber_thickness">Camber-/Thickness Distribution (ref/best) Plot</a></li>
 <li><a class="reference internal" href="#module-module.optimizer.genetic_algorithm.plot.plot_contour">Contour Plot</a></li>
 </ul>
 </li>

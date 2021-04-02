@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Getting Started &#8212; BOT - Blade Optimization Tool  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="List of Python Packages" href="packages.html" />
+    <link rel="prev" title="BOT - Blade Optimization Tool" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="packages.html" title="List of Python Packages"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="BOT - Blade Optimization Tool"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Getting Started</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line">A small guide on how to get this software running and which customizations and modifications are possible.</div>
+<div class="line">Most theoretical knowledge required are covered in my thesis, which can be accessed &lt;here&gt; when it is released.</div>
+</div>
+<div class="section" id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">BOT runs entirely on Python 3.7, so make sure to have it installed. Please refer to <a class="reference external" href="packages.html">Packages</a> for
+all the python packages required to run this.</div>
+<div class="line"><br /></div>
+<div class="line">Note that <a class="reference external" href="optimizer.html">Optimizer</a> and <a class="reference external" href="deap.html">DEAP</a> requires an account at the institutes server since
+all simulations run on the server, but Blade Generator works regardless.</div>
+</div>
+</div>
+<div class="section" id="first-configurations">
+<h2>First configurations<a class="headerlink" href="#first-configurations" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">In order to use all features of BOT, some configurations have to be done.</div>
+</div>
+<div class="section" id="ssh-connection">
+<h3>SSH Connection<a class="headerlink" href="#ssh-connection" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">Click on &lt;Optimize&gt;-&lt;create config&gt; and enter your credentials and the node where the simulations should run as
+described <a class="reference internal" href="configfiles.html#sec-ssh-config"><span class="std std-ref">SSH Login config</span></a>.</div>
+</div>
+</div>
+<div class="section" id="display">
+<h3>Display<a class="headerlink" href="#display" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">BOT runs simulations on NUMECA via Python scripts by creating and sending it via console. NUMECA requires the
+VNC-Display to start, so run  <code class="docutils literal notranslate"><span class="pre">echo</span> <span class="pre">$DISPLAY</span></code> in the linux terminal and enter the output in the GUI text field.
+The output should look like this: <code class="docutils literal notranslate"><span class="pre">localhost:15.0</span></code>.</div>
+</div>
+</div>
+<div class="section" id="paths">
+<h3>Paths<a class="headerlink" href="#paths" title="Permalink to this headline">¶</a></h3>
+<div class="line-block">
+<div class="line">Change paths of NUMECA project working directory inside the optimizer tab, affects <a class="reference internal" href="configfiles.html#ssec-three-point-paths"><span class="std std-ref">three_point_paths.ini</span></a> and
+<a class="reference internal" href="configfiles.html#ssec-optimizer-paths"><span class="std std-ref">optimizer_paths.ini</span></a>.</div>
+</div>
+</div>
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Getting Started</a><ul>
+<li><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li><a class="reference internal" href="#first-configurations">First configurations</a><ul>
+<li><a class="reference internal" href="#ssh-connection">SSH Connection</a></li>
+<li><a class="reference internal" href="#display">Display</a></li>
+<li><a class="reference internal" href="#paths">Paths</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">BOT - Blade Optimization Tool</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="packages.html"
+                        title="next chapter">List of Python Packages</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/getting_started.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="packages.html" title="List of Python Packages"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="BOT - Blade Optimization Tool"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Getting Started</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Ga Man Liang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>

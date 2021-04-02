@@ -8,6 +8,17 @@ from blade.bladetools import get_blade_from_csv
 
 
 def distributions(best_blades, logdir):
+    """
+    Generate plots for thickness and camber distributions. Pack camber and thickness data into lists with
+    ref1/ref2/best1/best2 entries, save plots to log directory.
+
+    :param best_blades: Blade parameters best blades
+    :type best_blades: list
+    :param logdir: path to log directory
+    :type logdir: string
+    :return:
+    """
+
     ds_blades = []  # store blade parameters of ref1/ref2/best1/best2
     ds_thickness = []  # store thickness points of ref1/ref2/best1/best2
     ds_camber = []  # store camber points of ref1/ref2/best1/best2
@@ -36,6 +47,16 @@ def distributions(best_blades, logdir):
 
 
 def camber_dist(ds, dir):
+    """
+    Generate camber distribution subplot for front/aft blade.
+
+    :param ds: camber data (ref1/ref2/best1/best2)
+    :type ds: list
+    :param dir: log directory
+    :type dir: string
+    :return:
+    """
+
     fig, ax = plt.subplots(1, 2, sharey=True, figsize=(12, 6))
     fig.suptitle("Camber Distribution")
     ax_i = 0
@@ -78,6 +99,16 @@ def camber_dist(ds, dir):
 
 
 def thickness_dist(ds, dir):
+    """
+    Generate thickness distribution subplot for front/aft blade.
+
+    :param ds: thickness data (ref1/ref2/best1/best2)
+    :type ds: list
+    :param dir: log directory
+    :type dir: string
+    :return:
+    """
+
     fig, ax = plt.subplots(1, 2, sharey=True, figsize=(12, 6))
     fig.suptitle("Thickness Distribution")
     ax[0].plot(ds[0][:, 0], ds[0][:, 1] / np.max(ds[0][:, 1]), linewidth=2, alpha=.75)

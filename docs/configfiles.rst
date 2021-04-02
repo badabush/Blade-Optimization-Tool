@@ -229,6 +229,8 @@ Config file containing recipient's email address
 (Path: module/config/`mailinglist.ini <../configfiles/mailinglist.ini>`_).
 
 
+.. _ssec_optimizer_paths:
+
 optimizer_paths.ini
 .............................
 
@@ -242,6 +244,7 @@ reference_blade.ini
 Parameters of reference blade
 (Path: module/config/`reference_blade.ini <../configfiles/reference_blade.ini>`_).
 
+.. _ssec_three_point_paths:
 
 three_point_paths.ini
 .............................
@@ -297,6 +300,7 @@ Default points for thickness distribution
 (Path: module/UI/config/`thdist_default.txt <../configfiles/thdist_default.txt>`_).
 
 
+.. _sec_ssh_config:
 
 SSH Login config
 --------------------------

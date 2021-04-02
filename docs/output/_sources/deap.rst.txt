@@ -93,6 +93,7 @@ Fitness/Gen Scatter Plot
    :members: fitness_generation_scatter
    :undoc-members:
    :show-inheritance:
+   :noindex:
 
 .. image:: images/fitness_generation_scatter.png
    :width: 800
@@ -123,6 +124,24 @@ Ref-/Best-Blade Plot
 .. image:: images/blades.png
    :width: 800
    :alt: Ref/Best Blade Plot
+
+
+Camber-/Thickness Distribution (ref/best) Plot
+................................................
+
+.. automodule:: module.optimizer.genetic_algorithm.plot.plot_camber_thickness
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. image:: images/camber_distribution.png
+   :width: 800
+   :alt: Camber Distribution Plot
+
+
+.. image:: images/thickness_distribution.png
+   :width: 800
+   :alt: Thickness Distribution Plot
 
 
 Contour Plot

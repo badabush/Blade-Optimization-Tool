@@ -1,0 +1,333 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blade Generation &#8212; BOT - Blade Optimization Tool  documentation</title>
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Optimizer" href="optimizer.html" />
+    <link rel="prev" title="GUI" href="GUI.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="optimizer.html" title="Optimizer"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="GUI.html" title="GUI"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Blade Generation</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="blade-generation">
+<h1>Blade Generation<a class="headerlink" href="#blade-generation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="bladegen-module">
+<h2>BladeGen module<a class="headerlink" href="#bladegen-module" title="Permalink to this headline">¶</a></h2>
+<p>Generate a NACA65 blade from input parameters.</p>
+<span class="target" id="module-module.blade.bladegen"></span><dl class="py class">
+<dt id="module.blade.bladegen.BladeGen">
+<em class="property">class </em><code class="sig-prename descclassname">module.blade.bladegen.</code><code class="sig-name descname">BladeGen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frontend</span><span class="o">=</span><span class="default_value">'user'</span></em>, <em class="sig-param"><span class="n">file</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">nblade</span><span class="o">=</span><span class="default_value">'single'</span></em>, <em class="sig-param"><span class="n">th_dist_option</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">th</span><span class="o">=</span><span class="default_value">0.0215</span></em>, <em class="sig-param"><span class="n">alpha1</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">alpha2</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">x_maxcamber</span><span class="o">=</span><span class="default_value">0.4</span></em>, <em class="sig-param"><span class="n">gamma_te</span><span class="o">=</span><span class="default_value">0.14</span></em>, <em class="sig-param"><span class="n">x_maxth</span><span class="o">=</span><span class="default_value">0.3</span></em>, <em class="sig-param"><span class="n">l_chord</span><span class="o">=</span><span class="default_value">1.0</span></em>, <em class="sig-param"><span class="n">lambd</span><span class="o">=</span><span class="default_value">20</span></em>, <em class="sig-param"><span class="n">th_le</span><span class="o">=</span><span class="default_value">0.01</span></em>, <em class="sig-param"><span class="n">th_te</span><span class="o">=</span><span class="default_value">0.0135</span></em>, <em class="sig-param"><span class="n">npts</span><span class="o">=</span><span class="default_value">1000</span></em>, <em class="sig-param"><span class="n">spline_pts</span><span class="o">=</span><span class="default_value">[9999]</span></em>, <em class="sig-param"><span class="n">thdist_points</span><span class="o">=</span><span class="default_value">[9999]</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladegen.html#BladeGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladegen.BladeGen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Generate a blade from parameters.</p>
+<dl class="py method">
+<dt id="module.blade.bladegen.BladeGen.assert_input">
+<code class="sig-name descname">assert_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nblade</span></em>, <em class="sig-param"><span class="n">r_th</span></em>, <em class="sig-param"><span class="n">alpha1</span></em>, <em class="sig-param"><span class="n">alpha2</span></em>, <em class="sig-param"><span class="n">x_maxcamber</span></em>, <em class="sig-param"><span class="n">rth_le</span></em>, <em class="sig-param"><span class="n">rth_te</span></em>, <em class="sig-param"><span class="n">npts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladegen.html#BladeGen.assert_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladegen.BladeGen.assert_input" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assert input parameter are within defined range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nblade</strong> (<em>str</em>) – number of blades, default: ‘single’</p></li>
+<li><p><strong>r_th</strong> (<em>float</em>) – relative thickness, default: .0215</p></li>
+<li><p><strong>alpha1</strong> (<em>float</em>) – inlet angle, default: 25</p></li>
+<li><p><strong>alpha2</strong> (<em>float</em>) – outlet angle, default: 25</p></li>
+<li><p><strong>x_maxcamber</strong> (<em>float</em>) – X position of max. chamber, default: .4</p></li>
+<li><p><strong>rth_le</strong> (<em>float</em>) – rel. thickness leading edge as percentage of chord, default: .02</p></li>
+<li><p><strong>rth_te</strong> (<em>float</em>) – rel. thickness trailing edge as percentage of chord, default: .0135</p></li>
+<li><p><strong>npts</strong> (<em>int</em>) – number of blade points, default: 400</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p>Assertion Errors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.blade.bladegen.BladeGen.camberline">
+<code class="sig-name descname">camberline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">theta</span></em>, <em class="sig-param"><span class="n">a</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladegen.html#BladeGen.camberline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladegen.BladeGen.camberline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the parabolic-arc camberline from R.Aungier.
+Returns vector with X and Y of camber line.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>theta</strong> (<em>float</em>) – sum of alpha1 and alpha2 (Chi1 and Chi2 in R.Aungier)</p></li>
+<li><p><strong>a</strong> (<em>float</em>) – max. camber position</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>xy_camber</p>
+</dd>
+<dt class="field-odd">Rtype xy_camber</dt>
+<dd class="field-odd"><p>(npts, 2) ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.blade.bladegen.BladeGen.debug_plot">
+<code class="sig-name descname">debug_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy_camber</span></em>, <em class="sig-param"><span class="n">xy_blade</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladegen.html#BladeGen.debug_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladegen.BladeGen.debug_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="module.blade.bladegen.BladeGen.geom_gen">
+<code class="sig-name descname">geom_gen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy_th</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladegen.html#BladeGen.geom_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladegen.BladeGen.geom_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the Blade shape.
+Returns vector with X and Y of blade geometry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lambd</strong> (<em>float</em>) – Rotation of blade</p></li>
+<li><p><strong>c</strong> (<em>float</em>) – chord length</p></li>
+<li><p><strong>xy_th</strong> (<em>(</em><em>npts</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X and Y points from method thickness_dist_v1</p></li>
+<li><p><strong>xy_camber</strong> (<em>(</em><em>npts</em><em>, </em><em>2</em><em>) </em><em>float-array</em>) – X and Y points from method camberline</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>xy_blade</p>
+</dd>
+<dt class="field-odd">Rtype xy_blade</dt>
+<dd class="field-odd"><p>(npts, 2) float-array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.blade.bladegen.BladeGen.params">
+<code class="sig-name descname">params</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">th</span></em>, <em class="sig-param"><span class="n">alpha</span></em>, <em class="sig-param"><span class="n">x_maxcamber</span></em>, <em class="sig-param"><span class="n">x_maxth</span></em>, <em class="sig-param"><span class="n">l_chord</span></em>, <em class="sig-param"><span class="n">lambd</span></em>, <em class="sig-param"><span class="n">th_le</span></em>, <em class="sig-param"><span class="n">th_te</span></em>, <em class="sig-param"><span class="n">gamma_te</span></em>, <em class="sig-param"><span class="n">npts</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladegen.html#BladeGen.params"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladegen.BladeGen.params" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate parameters.
+Return dataset (ds) with parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>ds</p>
+</dd>
+<dt class="field-even">Rtype ds</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.blade.bladegen.BladeGen.thickness_dist_v1">
+<code class="sig-name descname">thickness_dist_v1</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladegen.html#BladeGen.thickness_dist_v1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladegen.BladeGen.thickness_dist_v1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate thickness distribution.
+Returns  vector with X and Y of thickness distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>xy_th</p>
+</dd>
+<dt class="field-even">Rtype xy_th</dt>
+<dd class="field-even"><p>(npts, 2) ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="module.blade.bladegen.BladeGen.thickness_dist_v2">
+<code class="sig-name descname">thickness_dist_v2</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xyth_spline</span><span class="o">=</span><span class="default_value">[9999, 9999]</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladegen.html#BladeGen.thickness_dist_v2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladegen.BladeGen.thickness_dist_v2" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="bladetools-module">
+<h2>Bladetools module<a class="headerlink" href="#bladetools-module" title="Permalink to this headline">¶</a></h2>
+<p>Contains multiple reusable tools for the BladeGen module.</p>
+<span class="target" id="module-module.blade.bladetools"></span><dl class="py class">
+<dt id="module.blade.bladetools.AnnulusGen">
+<em class="property">class </em><code class="sig-prename descclassname">module.blade.bladetools.</code><code class="sig-name descname">AnnulusGen</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">nblades</span></em>, <em class="sig-param"><span class="n">r_inner</span></em>, <em class="sig-param"><span class="n">blade1</span></em>, <em class="sig-param"><span class="n">blade2</span><span class="o">=</span><span class="default_value">0</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladetools.html#AnnulusGen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.AnnulusGen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="module.blade.bladetools.AnnulusGen.generate">
+<code class="sig-name descname">generate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladetools.html#AnnulusGen.generate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.AnnulusGen.generate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="module.blade.bladetools.ImportExport">
+<em class="property">class </em><code class="sig-prename descclassname">module.blade.bladetools.</code><code class="sig-name descname">ImportExport</code><a class="reference internal" href="_modules/module/blade/bladetools.html#ImportExport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.ImportExport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for importing existing xyz coordinates from txt and exporting generated blade to txt (z=0).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.blade.bladetools.camber_spline">
+<code class="sig-prename descclassname">module.blade.bladetools.</code><code class="sig-name descname">camber_spline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">npts</span></em>, <em class="sig-param"><span class="n">xy_points</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladetools.html#camber_spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.camber_spline" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="module.blade.bladetools.cdist_from_spline">
+<code class="sig-prename descclassname">module.blade.bladetools.</code><code class="sig-name descname">cdist_from_spline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy_spline</span></em>, <em class="sig-param"><span class="n">delta_alpha</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladetools.html#cdist_from_spline"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.cdist_from_spline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate the camber spline from spline distribution spline window.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy_spline</strong> – </p></li>
+<li><p><strong>delta_alpha</strong> – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.blade.bladetools.euclidean_dist">
+<code class="sig-prename descclassname">module.blade.bladetools.</code><code class="sig-name descname">euclidean_dist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy1</span></em>, <em class="sig-param"><span class="n">xy2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladetools.html#euclidean_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.euclidean_dist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="module.blade.bladetools.get_blade_from_csv">
+<code class="sig-prename descclassname">module.blade.bladetools.</code><code class="sig-name descname">get_blade_from_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">file_name</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladetools.html#get_blade_from_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.get_blade_from_csv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="module.blade.bladetools.load_config_file">
+<code class="sig-prename descclassname">module.blade.bladetools.</code><code class="sig-name descname">load_config_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladetools.html#load_config_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.load_config_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="module.blade.bladetools.min_dist">
+<code class="sig-prename descclassname">module.blade.bladetools.</code><code class="sig-name descname">min_dist</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy1</span></em>, <em class="sig-param"><span class="n">xy2</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladetools.html#min_dist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.min_dist" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find closest upper surface point to each lower surface point.
+Returns idx for both arrays where the minimum distance was found as well as the distance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>xy1</strong> (<em>np.array</em>) – list arrays of x and y values</p></li>
+<li><p><strong>xy2</strong> (<em>np.array</em>) – list arrays of x and y values</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>idx1, idx2, dist</p>
+</dd>
+<dt class="field-odd">Rtype idx1</dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+<dt class="field-even">Rtype idx2</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">Rtype dist</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="module.blade.bladetools.normalize">
+<code class="sig-prename descclassname">module.blade.bladetools.</code><code class="sig-name descname">normalize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xy</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladetools.html#normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.normalize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="module.blade.bladetools.rotate_flat">
+<code class="sig-prename descclassname">module.blade.bladetools.</code><code class="sig-name descname">rotate_flat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/module/blade/bladetools.html#rotate_flat"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#module.blade.bladetools.rotate_flat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+</div>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Blade Generation</a><ul>
+<li><a class="reference internal" href="#bladegen-module">BladeGen module</a></li>
+<li><a class="reference internal" href="#bladetools-module">Bladetools module</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="GUI.html"
+                        title="previous chapter">GUI</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="optimizer.html"
+                        title="next chapter">Optimizer</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/bladegen.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="optimizer.html" title="Optimizer"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="GUI.html" title="GUI"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">BOT - Blade Optimization Tool  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Blade Generation</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Ga Man Liang.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 3.2.1.
+    </div>
+  </body>
+</html>
