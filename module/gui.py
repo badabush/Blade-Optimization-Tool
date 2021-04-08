@@ -46,11 +46,11 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         uic.loadUi('UI/qtdesigner/mainwindow.ui', self)
         # Software version. If the version does not match, a continuation of a log is not possible (due to conflicts in
         # implementation).
-        self.VERSION = "0.1"
+        self.VERSION = "0.2"
 
         # declaring param keys, load restraints for slider
         self.param_keys = ['alpha1', 'alpha2', 'lambd', 'th', 'xmax_th', 'xmax_camber', 'gamma_te', 'th_le',
-                           'th_te', 'dist_blades', 'PP', 'AO']
+                           'th_te', 'dist_blades', 'PP', 'AO', 'chord_dist']
         self.restraints = load_config_file('UI/config/restraints.txt')
         self.menu_default()  # set menu defaults
         self.init_variables()  # initialize some variables at GUI start
@@ -137,6 +137,7 @@ class Ui(QtWidgets.QMainWindow, BDUpdateHandler, OptimHandler, FileExplorer, Ini
         # load default blades
         self.update_all()
         self.load_config(Path(os.getcwd() + '/UI/config/default_blade.csv'))
+        # self.select_blade = 1
         self.update_select()
         self.select_blade = 2
         self.update_select()

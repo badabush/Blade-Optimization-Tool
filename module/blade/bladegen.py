@@ -15,10 +15,7 @@ class BladeGen:
     Generate a blade from parameters.
     """
 
-    def __init__(self, frontend='user', file='', nblade='single', th_dist_option=0, th=.0215, alpha1=25, alpha2=25,
-                 x_maxcamber=.4, gamma_te=.14, x_maxth=.3, l_chord=1.0, lambd=20, th_le=0.01, th_te=0.0135, npts=1000,
-                 spline_pts=[9999], thdist_points=[9999]):
-
+    def __init__(self, frontend='user', file='', blade_df={}):
         self.file = file
         if self.file != '':
             try:
@@ -28,20 +25,20 @@ class BladeGen:
                 print(e)
 
         # assert input
-        self.assert_input(nblade, th, alpha1, alpha2, x_maxcamber, th_le, th_te, npts)
+        self.assert_input(blade_df)
         # menu items
-        self.thdist_option = th_dist_option  # th_dist v1 or v2
+        self.thdist_option = blade_df["th_dist_ver"]  # th_dist v1 or v2
         self.frontend = frontend  # the interface to this script
-        self.nblade = nblade
+        self.nblade = blade_df["nblades"]
 
         # pack parameters into dict
-        self.ds = self.params(th, [alpha1, alpha2], x_maxcamber, x_maxth, l_chord, lambd, th_le,
-                              th_te, gamma_te, npts)
+        self.ds = self.params(blade_df)
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, int(self.ds['npts'] / 2))))  # x-coord generation
         # self.x = np.linspace(0, 1, self.ds['npts'])
 
         # #TODO: camber spline is disabled for now
-        self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
+        self.xy_camber = self.camberline(self.ds['theta'], self.ds["xmax_camber"])
+        thdist_points = blade_df["thdist_pts"]
         # if 9999 in spline_pts:
         #     self.xy_camber = self.camberline(self.ds['theta'], x_maxcamber)
         # else:
@@ -69,8 +66,7 @@ class BladeGen:
             self.xy_blade = xy_blade
             self._return()
 
-    def params(self, th, alpha, x_maxcamber, x_maxth, l_chord, lambd, th_le,
-               th_te, gamma_te, npts):
+    def params(self, blade_df):
         """
         Generate parameters.
         Return dataset (ds) with parameters.
@@ -82,30 +78,37 @@ class BladeGen:
         # TODO: omit obsolete parameters, add input parameters into dataframe
         ds = {}
         if self.nblade == 'single':
-            ds['l_chord'] = l_chord
-            ds['rth'] = th  # * ds['l_chord']
-            ds['alpha'] = alpha
+            ds['l_chord'] = blade_df["l_chord"]
+            ds['chord_dist'] = 1
+            ds['rth'] = blade_df["th"]  # * ds['l_chord']
+            # ds['xmax_camber'] = .5  # FIXME: fixed value for spline camber development
+            ds['xmax_camber'] = blade_df["xmax_camber"]
+            ds['xmax_th'] = blade_df["xmax_th"]
+            ds['th_le'] = blade_df["th_le"]  # * ds['l_chord']
+            ds['th_te'] = blade_df["th_te"]  # * ds['l_chord']
+            ds['gamma_te'] = blade_df["gamma_te"]  # Lieblein Diffusion Factor for front and rear blade
+            ds['alpha'] = blade_df["alpha1"] + blade_df["alpha2"]
             ds['theta'] = np.deg2rad(np.sum(ds['alpha']))
-            ds['lambd'] = np.deg2rad(lambd)
-            ds['xmax_camber'] = .5  # FIXME: fixed value for spline camber development
-            # ds['xmax_camber'] = x_maxcamber
-            ds['xmax_th'] = x_maxth
-            ds['th_le'] = th_le  # * ds['l_chord']
-            ds['th_te'] = th_te  # * ds['l_chord']
-            ds['gamma_te'] = gamma_te  # Lieblein Diffusion Factor for front and rear blade
+            ds['lambd'] = np.deg2rad(blade_df["lambd"])
+
 
         elif self.nblade == 'tandem':
-            ds['l_chord'] = l_chord / 2
-            ds['rth'] = th  # / ds['l_chord']
-            ds['alpha'] = alpha
+            # ds['l_chord'] = blade_df["l_chord"]/2
+            # ds['chord_dist'] = blade_df["chord_dist"]
+            # if blade_df['blade'] == "front":
+            ds['l_chord'] = blade_df['chord_dist']
+            # else:
+            #     ds['l_chord'] = 1-blade_df['chord_dist']
+            ds['rth'] = blade_df["th"]  # / ds['l_chord']
+            ds['alpha'] = blade_df["alpha1"] + blade_df["alpha2"]
             ds['theta'] = np.deg2rad(np.sum(ds['alpha']))
-            ds['lambd'] = np.deg2rad(lambd)
-            ds['xmax_camber'] = x_maxcamber
-            ds['xmax_th'] = x_maxth
-            ds['th_le'] = th_le  # * ds['l_chord']
-            ds['th_te'] = th_te  # * ds['l_chord']
-            ds['gamma_te'] = gamma_te  # Lieblein Diffusion Factor for front and rear blade
-        ds['npts'] = int(npts / 2)
+            ds['lambd'] = np.deg2rad(blade_df["lambd"])
+            ds['xmax_camber'] = blade_df["xmax_camber"]
+            ds['xmax_th'] = blade_df["xmax_th"]
+            ds['th_le'] = blade_df["th_le"]  # * ds['l_chord']
+            ds['th_te'] = blade_df["th_te"]  # * ds['l_chord']
+            ds['gamma_te'] = blade_df["gamma_te"]  # Lieblein Diffusion Factor for front and rear blade
+        ds['npts'] = int(blade_df["npts"] / 2)
 
         return ds
 
@@ -260,7 +263,6 @@ class BladeGen:
         X_camber = np.cos(lambd) * xy_camber[:, 0] - np.sin(lambd) * xy_camber[:, 1]
         Y_camber = np.sin(lambd) * xy_camber[:, 0] + np.cos(lambd) * xy_camber[:, 1]
 
-
         df = pd.DataFrame(data={'x': X, 'y': Y})
         return df, np.transpose(np.array([X_camber, Y_camber]))
 
@@ -315,7 +317,7 @@ class BladeGen:
         xy_camber = self.xy_camber
         x = self.x
         lambd = ds['lambd']
-        c = ds['l_chord']
+        c = ds['l_chord'] * ds['chord_dist']
         th_le = ds['th_le']
         th_te = ds['th_te']
 
@@ -371,7 +373,7 @@ class BladeGen:
         xy_blade = pd.DataFrame(data={'x': xy_blade[:, 0], 'y': xy_blade[:, 1]})
         return xy_blade, xy_camber
 
-    def assert_input(self, nblade, r_th, alpha1, alpha2, x_maxcamber, rth_le, rth_te, npts):
+    def assert_input(self, df):
         """
         Assert input parameter are within defined range.
 
@@ -394,19 +396,20 @@ class BladeGen:
         :raises: Assertion Errors
         """
         # Either single or tandem
-        assert ((nblade == 'single') or (nblade == 'tandem')), "single or tandem"
+        assert ((df["nblades"] == 'single') or (df["nblades"] == 'tandem')), "single or tandem"
 
         # LE/TE Radius doesnt work properly outside of range
-        assert (((rth_le <= .03) and (rth_le >= .005)) or rth_le == 0), "rth_le out of range"
-        assert (((rth_te <= .03) and (rth_te >= .005)) or rth_te == 0), "rth_te out of range"
+        assert (((df["th_le"] <= .03) and (df["th_le"] >= .005)) or df["th_le"] == 0), "rth_le out of range"
+        assert (((df["th_te"] <= .03) and (df["th_te"] >= .005)) or df["th_te"] == 0), "rth_te out of range"
 
-        assert ((x_maxcamber > 0) and (x_maxcamber < 1)), "x max chamber out of range [0,1]."
+        assert ((df["xmax_camber"] > 0) and (df["xmax_camber"] < 1)), "x max chamber out of range [0,1]."
         # Blade arc flips above sum(alpha1,alpha2)>90
-        assert ((alpha1 + alpha2) <= 90), "alpha1 + alpha2 must be smaller than 90"
+        assert ((df["alpha1"] + df["alpha2"]) <= 90), "alpha1 + alpha2 must be smaller than 90"
 
         # Blade looks absolute horrible sub 500 points. Blade will be divided into 4 even parts, so npts%4==0
         # must be true.
-        assert ((npts >= 500) and (npts % 4 == 0)), "Choose more than 500 Pts and npts must be dividable by 4."
+        assert ((df["npts"] >= 500) and (
+                    df["npts"] % 4 == 0)), "Choose more than 500 Pts and npts must be dividable by 4."
 
     def debug_plot(self, xy_camber, xy_blade):
         plt.figure(figsize=(12, 4))
@@ -424,5 +427,9 @@ class BladeGen:
 
 
 if __name__ == "__main__":
-    BladeGen(file='../geo_output/coords.txt', th_dist_option=0, lambd=0, th_te=0.00, th_le=.0,
-             l_chord=1, alpha2=15, alpha1=15, th=.04, x_maxth=.5, spline_pts=[9999, 9999])
+    # BladeGen(file='../geo_output/coords.txt', th_dist_option=0, lambd=0, th_te=0.00, th_le=.0,
+    #          l_chord=1, alpha2=15, alpha1=15, th=.04, x_maxth=.5, spline_pts=[9999, 9999])
+    from bladetools import initialize_blade_df
+
+    df = initialize_blade_df()
+    BladeGen(blade_df=df)

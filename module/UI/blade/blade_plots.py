@@ -1,6 +1,7 @@
 import numpy as np
 
 from blade.bladegen import BladeGen
+from blade.bladetools import initialize_blade_df
 
 
 def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha=0.5, clear=True, transparent=False):
@@ -57,15 +58,10 @@ def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha
         dataselect = [ds1, ds2]
         for i in [0, 1]:
             df = dataselect[i]
-            bladegen = BladeGen(frontend='UI', nblade=df['nblades'], th_dist_option=df['thdist_ver'],
-                                npts=df['npts'],
-                                alpha1=df['alpha1'], alpha2=df['alpha2'],
-                                lambd=df['lambd'], th=df['th'], x_maxth=df['xmax_th'],
-                                x_maxcamber=df['xmax_camber'], gamma_te=df['gamma_te'],
-                                l_chord=df['l_chord'], th_le=df['th_le'], th_te=df['th_te'], spline_pts=df['pts'],
-                                thdist_points=df['pts_th'])
+
+            bladegen = BladeGen(frontend='UI', blade_df=df)
             blade_data, camber_data = bladegen._return()
-            division = df['dist_blades'] * df['l_chord']
+            division = df['dist_blades'] * df['l_chord'] # TODO:check
             # Update simultaneously
             blade1 = blade_data
             blade2 = np.copy(blade1)
@@ -78,7 +74,7 @@ def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha
             df_blades['camber1_%i' % (i + 1)] = camber1
             df_blades['camber2_%i' % (i + 1)] = camber2
 
-        if ds['selected_blade'] == 0:
+        if ds['blade'] == "both":
             """Update both blades at once"""
             blade2[:, 0] = blade2[:, 0] + blade1[0, 0]
             blade2[:, 1] = blade2[:, 1] + blade1[0, 1]

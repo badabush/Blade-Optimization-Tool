@@ -90,6 +90,9 @@ class Initialize:
         self.slider['AO'] = self.slider_AO
         self.label['AO'] = self.val_AO
 
+        self.slider['chord_dist'] = self.slider_chord_dist
+        self.label['chord_dist'] = self.val_chord_dist
+
         for key in self.slider:
             retval = self.set_restraint(key)
             if retval == 1:
@@ -128,6 +131,8 @@ class Initialize:
         self.label['PP'].editingFinished.connect(self.update_box_PP)
         self.slider['AO'].valueChanged[int].connect(self.update_AO)
         self.label['AO'].editingFinished.connect(self.update_box_AO)
+        self.slider['chord_dist'].valueChanged[int].connect(self.update_chord_dist)
+        self.label['chord_dist'].editingFinished.connect(self.update_box_chord_dist)
 
     def set_restraint(self, key):
         """

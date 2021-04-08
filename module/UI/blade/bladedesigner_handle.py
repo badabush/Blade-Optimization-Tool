@@ -1,5 +1,6 @@
 import math
 import pandas as pd
+from blade.bladetools import initialize_blade_df
 
 
 class BDUpdateHandler:
@@ -35,7 +36,7 @@ class BDUpdateHandler:
         """
         Set Label to input value wiht scale for lambda (lambd).
         """
-        self.label['lambd'].setValue(float(value)/10)
+        self.label['lambd'].setValue(float(value) / 10)
 
     def update_box_npts(self):
         """
@@ -194,6 +195,21 @@ class BDUpdateHandler:
         value = self.label['AO'].value() * self.scale
         self.slider['AO'].setSliderPosition(value)
 
+    def update_chord_dist(self, value):
+        """
+        TODO:FILL
+        :param value: input value
+        :type value: float
+        """
+        self.label['chord_dist'].setValue(float(value) / self.scale)
+
+    def update_box_chord_dist(self):
+        """
+        Scale Value from Label, set Slider Position of thickness (th).
+        """
+        value = self.label['chord_dist'].value() * self.scale
+        self.slider['chord_dist'].setSliderPosition(value)
+
     def update_radio_blades(self):
         """
         Radio Buttons for Tandem Blades (switch between blade 1 and 2). Make xy position control for 2nd blade visible
@@ -202,16 +218,25 @@ class BDUpdateHandler:
         # get radio state
         if self.radio_blade1.isChecked():
             self.select_blade = 1
-            self.ds_blade2 = self.get_labelval()
-            self.set_labelval(self.ds_blade1)
+            ds2 = self.get_labelval()
+            for key in ds2.keys():
+                self.ds2[key] = ds2[key]
+            if not self.ds1['chord_dist'] == (1 - self.ds2['chord_dist']):
+                self.ds1['chord_dist'] = 1 - self.ds2['chord_dist']
+            self.set_labelval(self.ds1)
 
         elif self.radio_blade2.isChecked():
             self.select_blade = 2
-            self.ds_blade1 = self.get_labelval()
+            ds1 = self.get_labelval()
+            for key in ds1.keys():
+                self.ds1[key] = ds1[key]
             try:
-                self.set_labelval(self.ds_blade2)
+                if not self.ds2['chord_dist'] == (1 - self.ds1['chord_dist']):
+                    self.ds2['chord_dist'] = 1 - self.ds1['chord_dist']
+
+                self.set_labelval(self.ds2)
             except AttributeError:
-                self.set_labelval(self.ds_blade1)
+                self.set_labelval(self.ds1)
         print(self.select_blade)
 
     def get_labelval(self):
@@ -239,8 +264,8 @@ class BDUpdateHandler:
         self.slider['alpha1'].setSliderPosition(ds['alpha1'])
         self.label['alpha2'].setValue(ds['alpha2'])
         self.slider['alpha2'].setSliderPosition(ds['alpha2'])
-        self.label['lambd'].setValue(ds['lambd']*10)
-        self.slider['lambd'].setSliderPosition(ds['lambd']*10)
+        self.label['lambd'].setValue(ds['lambd'])
+        self.slider['lambd'].setSliderPosition(ds['lambd'] * 10)
         self.label['th'].setValue(ds['th'])
         self.slider['th'].setSliderPosition(ds['th'] * self.scale)
         self.label['xmax_th'].setValue(ds['xmax_th'])
@@ -260,24 +285,27 @@ class BDUpdateHandler:
         self.slider['PP'].setSliderPosition(ds['PP'] * self.scale)
         self.label['AO'].setValue(ds['AO'])
         self.slider['AO'].setSliderPosition(ds['AO'] * self.scale)
+        self.label['chord_dist'].setValue(ds['chord_dist'])
+        self.slider['chord_dist'].setSliderPosition(ds['chord_dist'] * self.scale)
 
     def update_all(self):
         """
         If Button: [Update All] is clicked, get values from labels and plot.
         """
         # get values
-        ds = {}
+        # ds = {}
+        ds = initialize_blade_df()
         for key in self.param_keys:
             ds[key] = self.label[key].value()
 
-        # get values from menu items
-        ds['thdist_ver'] = self.thdist_ver
+        ds["th_dist_ver"] = self.thdist_ver
         ds['nblades'] = self.nblades
-        ds['pts'] = self.camber_spline_pts
-        ds['pts_th'] = self.thdist_spline_pts
-        ds['selected_blade'] = 0
+        ds['spline_pts'] = self.camber_spline_pts
+        ds['thdist_pts'] = self.thdist_spline_pts
+        ds['blade'] = "both"
         ds['npts'] = self.number_of_points
         ds['l_chord'] = self.length_chord
+
         self.ds = ds
 
         self.ds1 = self.ds
@@ -317,15 +345,17 @@ class BDUpdateHandler:
 
         if self.select_blade == 1:
 
-            self.ds['selected_blade'] = 1
+            self.ds['blade'] = "front"
             ds1 = {}
             for key in self.param_keys:
                 ds1[key] = self.label[key].value()
             # get values from menu items
-            ds1['thdist_ver'] = self.thdist_ver
+            ds1['th_dist_ver'] = self.thdist_ver
+            ds1['blade'] = self.ds["blade"]
+            # ds1['chord_dist'] = 0.5 #fixme
             ds1['nblades'] = self.nblades
-            ds1['pts'] = self.camber_spline_pts
-            ds1['pts_th'] = self.thdist_spline_pts
+            ds1['spline_pts'] = self.camber_spline_pts
+            ds1['thdist_pts'] = self.thdist_spline_pts
             ds1['npts'] = self.number_of_points
             ds1['l_chord'] = self.length_chord
             ds1['x_offset'] = ds1['AO'] * ds1['dist_blades']  # AO
@@ -333,21 +363,29 @@ class BDUpdateHandler:
 
             self.ds2['x_offset'] = ds1['AO'] * ds1['dist_blades']  # AO
             self.ds2['y_offset'] = (1 - ds1['PP']) * ds1['dist_blades']  # PP
+            # invert value from ds1
+            self.ds2['chord_dist'] = 1 - ds1["chord_dist"]  # chord dist
+            # make sure ds1 and ds2 have the same values for ao,pp,div
+            self.ds2['dist_blades'] = ds1["dist_blades"]
+            self.ds2['PP'] = ds1["PP"]
+            self.ds2['AO'] = ds1["AO"]
             self.ds1 = ds1
 
             self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
         elif self.select_blade == 2:
 
-            self.ds['selected_blade'] = 2
+            self.ds['blade'] = "aft"
             ds2 = {}
             for key in self.param_keys:
                 ds2[key] = self.label[key].value()
             # get values from menu items
-            ds2['thdist_ver'] = self.thdist_ver
+            ds2['th_dist_ver'] = self.thdist_ver
+            ds2['blade'] = self.ds["blade"]
+            # ds2['chord_dist'] = ds2
             ds2['nblades'] = self.nblades
-            ds2['pts'] = self.camber_spline_pts
-            ds2['pts_th'] = self.thdist_spline_pts
+            ds2['spline_pts'] = self.camber_spline_pts
+            ds2['thdist_pts'] = self.thdist_spline_pts
             ds2['npts'] = self.number_of_points
             ds2['l_chord'] = self.length_chord
             # same xy offset as in ds1, but required here to update div,PP,AO when blade 2 is selected
@@ -356,6 +394,12 @@ class BDUpdateHandler:
 
             self.ds1['x_offset'] = ds2['AO'] * ds2['dist_blades']  # AO
             self.ds1['y_offset'] = (1 - ds2['PP']) * ds2['dist_blades']  # PP
+            # self.ds1['chord_dist'] = 1 - ds2["chord_dist"]  # chord dist
+            self.ds1['chord_dist'] = 1 - ds2["chord_dist"]  # chord dist
+            # make sure ds1 and ds2 have the same values for ao,pp,div
+            self.ds1['dist_blades'] = ds2["dist_blades"]
+            self.ds1['PP'] = ds2["PP"]
+            self.ds1['AO'] = ds2["AO"]
             self.ds2 = ds2
             self.m.plot(self.ds, ds1=self.ds1, ds2=self.ds2, ds_import=self.ds_import)
 
@@ -403,8 +447,12 @@ class BDUpdateHandler:
         Menu option for tandem blades. Show Tandem Radio buttons and [update select] button as well as the blade 2
         position controls.
         """
-        self.ds_blade1 = self.get_labelval()
-        self.ds_blade2 = self.get_labelval()
+        ds1 = self.get_labelval()
+        ds2 = self.get_labelval()
+        for key in ds1.keys():
+            self.ds1[key] = ds1[key]
+            self.ds2[key] = ds2[key]
+
         self.nblades = 'tandem'
         self.radio_blade1.setVisible(True)
         self.radio_blade2.setVisible(True)

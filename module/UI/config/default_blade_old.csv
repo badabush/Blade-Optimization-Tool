@@ -1,4 +1,4 @@
-alpha1,alpha2,lambd,th,xmax_th,xmax_camber,th_le,th_te,dist_blades,PP,AO,thdist_ver,nblades,pts,pts_th,selected_blade,npts,l_chord,x_offset,y_offset
+alpha1,alpha2,lambd,th,xmax_th,xmax_camber,th_le,th_te,dist_blades,PP,AO,th_dist_ver,nblades,pts,pts_th,selected_blade,npts,l_chord,x_offset,y_offset
 
 26,14,22.5,0.0477,0.4,0.3742,0.01,0.01,0.56,0.915,0.03,1,tandem,"[[0.   0.  ]
  [0.25 0.25]
