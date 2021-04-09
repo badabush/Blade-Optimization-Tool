@@ -6,10 +6,16 @@
 BOT - Blade Optimization Tool
 ==================================
 
+Welcome to the software documentation for the Blade-Optimization-Tool!
+
+..
+   _TODO: add a readme (structure/folder structure)
+
 .. toctree::
    :maxdepth: 1
    :caption: Table of Contents:
 
+   getting_started
    packages
    GUI
    bladegen

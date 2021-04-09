@@ -56,6 +56,7 @@
 <span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_scatter_matrix</span> <span class="kn">import</span> <span class="n">scatter_matrix</span>
 <span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_threepoint</span> <span class="kn">import</span> <span class="n">three_point</span>
 <span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_fitness_generation</span> <span class="kn">import</span> <span class="n">fitness_generation</span><span class="p">,</span> <span class="n">fitness_generation_scatter</span>
+<span class="kn">from</span> <span class="nn">optimizer.genetic_algorithm.plot.plot_camber_thickness</span> <span class="kn">import</span> <span class="n">distributions</span>
 
 
 <div class="viewcode-block" id="DeapVisualize"><a class="viewcode-back" href="../../../../deap.html#module.optimizer.genetic_algorithm.deap_visualize.DeapVisualize">[docs]</a><span class="k">class</span> <span class="nc">DeapVisualize</span><span class="p">:</span>
@@ -102,6 +103,9 @@
         <span class="n">mean_fitness</span> <span class="o">=</span> <span class="n">ds</span><span class="o">.</span><span class="n">fitness</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
         <span class="n">ds</span> <span class="o">=</span> <span class="n">ds</span><span class="p">[</span><span class="n">ds</span><span class="o">.</span><span class="n">fitness</span> <span class="o">&lt;</span> <span class="n">mean_fitness</span> <span class="o">*</span> <span class="mi">2</span><span class="p">]</span>
         <span class="n">ds</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># plot camber and thickness distribution</span>
+        <span class="n">distributions</span><span class="p">(</span><span class="n">blades</span><span class="p">,</span> <span class="n">logdir</span><span class="p">)</span>
 
         <span class="c1"># plot fitness/generation</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Generating Fitness/Generation plot...&quot;</span><span class="p">)</span>
