@@ -18,7 +18,8 @@ def deap_blade(blades, logdir):
 
     :return:
     """
-    default_blade_path = Path(os.getcwd() + "/UI/config/default_blade.csv")
+    # default_blade_path = Path(os.getcwd() + "/UI/config/default_blade.csv")
+    default_blade_path = Path(os.getcwd() + "/UI/config/default_blade2.csv")
     default_blade = get_blade_from_csv(default_blade_path)
     # plot blades
     fig, ax = plt.subplots(figsize=(10, 8))
