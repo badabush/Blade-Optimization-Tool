@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="tab_bladedesign">
      <attribute name="title">
@@ -1034,6 +1034,34 @@ inside VNC enter: echo $DISPLAY</string>
         <height>481</height>
        </rect>
       </property>
+      <widget class="QDoubleSpinBox" name="opt_input_cores_2">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="geometry">
+        <rect>
+         <x>70</x>
+         <y>190</y>
+         <width>73</width>
+         <height>20</height>
+        </rect>
+       </property>
+       <property name="decimals">
+        <number>0</number>
+       </property>
+       <property name="minimum">
+        <double>1.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>20.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>1.000000000000000</double>
+       </property>
+       <property name="value">
+        <double>7.000000000000000</double>
+       </property>
+      </widget>
      </widget>
      <widget class="QGroupBox" name="groupBox_5">
       <property name="geometry">
@@ -1219,34 +1247,6 @@ inside VNC enter: echo $DISPLAY</string>
         <enum>Qt::NoArrow</enum>
        </property>
       </widget>
-      <widget class="QDoubleSpinBox" name="opt_input_cores_2">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
-       <property name="geometry">
-        <rect>
-         <x>210</x>
-         <y>190</y>
-         <width>73</width>
-         <height>20</height>
-        </rect>
-       </property>
-       <property name="decimals">
-        <number>0</number>
-       </property>
-       <property name="minimum">
-        <double>1.000000000000000</double>
-       </property>
-       <property name="maximum">
-        <double>20.000000000000000</double>
-       </property>
-       <property name="singleStep">
-        <double>1.000000000000000</double>
-       </property>
-       <property name="value">
-        <double>7.000000000000000</double>
-       </property>
-      </widget>
      </widget>
      <widget class="QWidget" name="optimfig_widget_2" native="true">
       <property name="geometry">
@@ -1303,7 +1303,7 @@ inside VNC enter: echo $DISPLAY</string>
      <x>0</x>
      <y>0</y>
      <width>1125</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuBlade_generator">

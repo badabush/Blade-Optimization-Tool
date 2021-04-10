@@ -119,15 +119,15 @@ def unravel_individual(checkboxes, dp_genes, individual):
     from individual is easier.
 
     Individual list structure is as follows:
-    0 - PP; 1 - AO; 2 - DIV;
-    3 - alph11; 4 - alph12;
-    5 - alph21; 6 - alph22;
-    7 - lambd1; 8 - lambd2;
-    9 - th1; 10 - th2;
-    11 - xmaxth1; 12 - xmaxth2;
-    13 - xmaxcamber1; 14 - xmaxcamber2;
-    15 - leth1; 16 - leth2;
-    17 - teth1; 18 - teth2
+    0 - PP; 1 - AO; 2 - DIV; 3 - cdist;
+    4 - alph11; 5 - alph12;
+    6 - alph21; 7 - alph22;
+    8 - lambd1; 9 - lambd2;
+    10 - th1; 11 - th2;
+    12 - xmaxth1; 13 - xmaxth2;
+    14 - xmaxcamber1; 15 - xmaxcamber2;
+    16 - leth1; 17 - leth2;
+    18 - teth1; 19 - teth2
 
     :param deap_settings:
     :param individual:
@@ -168,8 +168,12 @@ def update_blade_individuals(df_blade1, df_blade2, df_ind):
         elif int(row.blade) == 2:
             df_blade2[row.id] = float(row.value)
         else:
-            df_blade1[row.id] = float(row.value)
-            df_blade2[row.id] = float(row.value)
+            if not row.id == "cdist":
+                df_blade1[row.id] = float(row.value)
+                df_blade2[row.id] = float(row.value)
+            else:
+                df_blade1[row.id] = float(row.value)
+                df_blade2[row.id] = 1-float(row.value)
     return df_blade1, df_blade2
 
 

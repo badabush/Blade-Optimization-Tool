@@ -18,6 +18,7 @@ class DeapConfigUi(QtWidgets.QDialog):
             "pp": self.cb_pp,
             "ao": self.cb_ao,
             "div": self.cb_division,
+            "cdist": self.cb_chord_dist,
             "alph11": self.cb_alpha11,
             "alph12": self.cb_alpha12,
             "alph21": self.cb_alpha21,

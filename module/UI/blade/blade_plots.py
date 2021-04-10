@@ -34,11 +34,7 @@ def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha
 
     if ds['nblades'] == 'single':
         """Single blade"""
-        bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'], npts=ds['npts'],
-                            alpha1=ds['alpha1'], alpha2=ds['alpha2'], lambd=ds['lambd'], th=ds['th'],
-                            x_maxth=ds['xmax_th'], x_maxcamber=ds['xmax_camber'], gamma_te=ds['gamma_te'],
-                            l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'], spline_pts=ds['pts'],
-                            thdist_points=ds['pts_th'])
+        bladegen = BladeGen(frontend='UI', blade_df=ds)
         blade_data, camber_data = bladegen._return()
         division = ds['dist_blades'] * ds['l_chord']
         ax.plot(blade_data[:, 0], blade_data[:, 1], color='royalblue')
@@ -74,37 +70,48 @@ def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha
             df_blades['camber1_%i' % (i + 1)] = camber1
             df_blades['camber2_%i' % (i + 1)] = camber2
 
-        if ds['blade'] == "both":
+        if ds1['blade'] == "both":
             """Update both blades at once"""
             blade2[:, 0] = blade2[:, 0] + blade1[0, 0]
             blade2[:, 1] = blade2[:, 1] + blade1[0, 1]
             camber2[:, 0] = camber2[:, 0] + blade1[0, 0]
             camber2[:, 1] = camber2[:, 1] + blade1[0, 1]
-            # tandem blade 1 (lower)
-            ax.plot(blade1[:, 0], blade1[:, 1], color='royalblue')
-            ax.fill(blade1[:, 0], blade1[:, 1], color='cornflowerblue', alpha=alpha)
-            ax.plot(camber1[::15, 0], camber1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue',
-                    alpha=(alpha + .2))
-            # tandem blade 2 (lower)
-            ax.plot(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + ds1['y_offset'], color='indianred')
-            ax.fill(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + ds1['y_offset'], color='lightcoral',
-                    alpha=alpha)
-            ax.plot(camber2[::15, 0] + ds1['x_offset'], camber2[::15, 1] + ds1['y_offset'], linestyle='--',
-                    dashes=(5, 5), color='darkred',
-                    alpha=(alpha + .2))
-            # tandem blade 1 (upper)
-            ax.plot(blade1[:, 0], blade1[:, 1] + division, color='royalblue')
-            ax.fill(blade1[:, 0], blade1[:, 1] + division, color='cornflowerblue', alpha=alpha)
-            ax.plot(camber1[::15, 0], camber1[::15, 1] + division, linestyle='--', dashes=(5, 5),
-                    color='darkblue', alpha=(alpha + .2))
-            # tandem blade 2 (upper)
-            ax.plot(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + division + ds1['y_offset'],
-                    color='indianred')
-            ax.fill(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + division + ds1['y_offset'],
-                    color='lightcoral', alpha=alpha)
-            ax.plot(camber2[::15, 0] + ds1['x_offset'], camber2[::15, 1] + division + ds1['y_offset'],
-                    linestyle='--', dashes=(5, 5),
-                    color='darkred', alpha=(alpha + .2))
+            if not transparent:
+                # tandem blade 1 (lower)
+                ax.plot(blade1[:, 0], blade1[:, 1], color='royalblue')
+                ax.fill(blade1[:, 0], blade1[:, 1], color='cornflowerblue', alpha=alpha)
+                ax.plot(camber1[::15, 0], camber1[::15, 1], linestyle='--', dashes=(5, 5), color='darkblue',
+                        alpha=(alpha + .2))
+                # tandem blade 2 (lower)
+                ax.plot(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + ds1['y_offset'], color='indianred')
+                ax.fill(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + ds1['y_offset'], color='lightcoral',
+                        alpha=alpha)
+                ax.plot(camber2[::15, 0] + ds1['x_offset'], camber2[::15, 1] + ds1['y_offset'], linestyle='--',
+                        dashes=(5, 5), color='darkred',
+                        alpha=(alpha + .2))
+                # tandem blade 1 (upper)
+                ax.plot(blade1[:, 0], blade1[:, 1] + division, color='royalblue')
+                ax.fill(blade1[:, 0], blade1[:, 1] + division, color='cornflowerblue', alpha=alpha)
+                ax.plot(camber1[::15, 0], camber1[::15, 1] + division, linestyle='--', dashes=(5, 5),
+                        color='darkblue', alpha=(alpha + .2))
+                # tandem blade 2 (upper)
+                ax.plot(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + division + ds1['y_offset'],
+                        color='indianred')
+                ax.fill(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + division + ds1['y_offset'],
+                        color='lightcoral', alpha=alpha)
+                ax.plot(camber2[::15, 0] + ds1['x_offset'], camber2[::15, 1] + division + ds1['y_offset'],
+                        linestyle='--', dashes=(5, 5),
+                        color='darkred', alpha=(alpha + .2))
+            else:
+                ax.plot(blade1[:, 0], blade1[:, 1],
+                        color='grey', alpha=alpha)
+                ax.plot(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + ds1['y_offset'],
+                        color='grey', alpha=alpha)
+                ax.plot(blade1[:, 0], blade1[:, 1] + division,
+                        color='grey', alpha=alpha)
+                ax.plot(blade2[:, 0] + ds1['x_offset'], blade2[:, 1] + division + ds1['y_offset'],
+                        color='grey', alpha=alpha)
+
 
         else:
             """ Update blades seperately """
@@ -151,7 +158,6 @@ def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha
                         color='grey', alpha=alpha)
 
             df_blades['type'] = 'tandem'
-            plt_df = df_blades
 
     """ Plot imported blade if exists """
     try:
