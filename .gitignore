@@ -10,8 +10,7 @@ module/config/mailinglist.ini
 module/config/optimizer_paths.ini
 module/config/three_point_paths.ini
 module/optimizer/ssh_login/*.ini
-
-
+module/optimizer/ssh_login/ssh_config.ini
 
 
 # Created by https://www.toptal.com/developers/gitignore/api/python,pycharm,git
