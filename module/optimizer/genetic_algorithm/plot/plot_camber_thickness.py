@@ -35,10 +35,7 @@ def distributions(best_blades, logdir):
 
     # generate thickness and camber from BladeGen for all blades ref1/ref2/best1/best2
     for ds in ds_blades:
-        bladegen = BladeGen(frontend="ui", nblade='single', th_dist_option=1, th=ds["th"], alpha1=ds["alpha1"],
-                            alpha2=ds["alpha2"], x_maxcamber=ds["xmax_camber"], gamma_te=ds["gamma_te"],
-                            x_maxth=ds["xmax_th"], l_chord=ds["l_chord"], lambd=ds["lambd"], th_le=ds["th_le"],
-                            th_te=ds["th_te"], npts=1000)
+        bladegen = BladeGen(frontend="UI",blade_df=ds)
 
         ds_thickness.append(bladegen.xy_th)
         ds_camber.append(bladegen.xy_camber)

@@ -14,13 +14,7 @@ class LoadBlade:
         ds = self.ds
         z = np.zeros(int(ds['npts'] / 2))
         if ds['nblades'] == 'single':
-            bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'],
-                                npts=ds['npts'],
-                                alpha1=ds['alpha1'], alpha2=ds['alpha2'],
-                                lambd=ds['lambd'], th=ds['th'], x_maxth=ds['xmax_th'],
-                                x_maxcamber=ds['xmax_camber'],
-                                l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'], spline_pts=ds['pts'],
-                                thdist_points=ds['pts_th'])
+            bladegen = BladeGen(frontend='UI', blade_df=ds)
             print('save single blade')
             blade_data, _ = bladegen._return()
             blade_flip = np.zeros(blade_data.shape)
@@ -33,13 +27,7 @@ class LoadBlade:
                     ds = self.ds1
                 else:
                     ds = self.ds2
-                bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'],
-                                    npts=ds['npts'],
-                                    alpha1=ds['alpha1'], alpha2=ds['alpha2'],
-                                    lambd=ds['lambd'], th=ds['th'], x_maxth=ds['xmax_th'],
-                                    x_maxcamber=ds['xmax_camber'],
-                                    l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'], spline_pts=ds['pts'],
-                                    thdist_points=ds['pts_th'])
+                bladegen = BladeGen(frontend='UI', blade_df=ds)
                 blade_data, _ = bladegen._return()
                 # blade = pd.DataFrame({'x': blade_data[:, 0], 'y': blade_data[:, 1]})
                 # flip blade

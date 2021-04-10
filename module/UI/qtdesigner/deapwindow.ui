@@ -80,81 +80,21 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
-     <item row="7" column="0">
-      <widget class="QCheckBox" name="cb_xmaxth1">
+     <item row="5" column="0">
+      <widget class="QCheckBox" name="cb_alpha12">
        <property name="text">
-        <string>Pos. max. Th (xmaxth1)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="10" column="0">
-      <widget class="QCheckBox" name="cb_leth1">
-       <property name="text">
-        <string>Leading Edge Thickness
-(leth1)</string>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="11" column="0">
-      <widget class="QCheckBox" name="cb_teth1">
-       <property name="text">
-        <string>Trailing Edge Thickness
-(teth1)</string>
-       </property>
-       <property name="checkable">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QCheckBox" name="cb_division">
-       <property name="text">
-        <string>division</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QCheckBox" name="cb_pp">
-       <property name="text">
-        <string>Percent Pitch (PP)</string>
-       </property>
-       <property name="checked">
-        <bool>false</bool>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QCheckBox" name="cb_alpha11">
-       <property name="text">
-        <string>Alpha 1 (alph11)</string>
+        <string>Alpha 2 (alph12)</string>
        </property>
        <property name="checked">
         <bool>true</bool>
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
-      <widget class="QCheckBox" name="cb_th1">
-       <property name="text">
-        <string>Thickness (th1)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QCheckBox" name="cb_xmaxcamber1">
        <property name="text">
         <string>Pos. max. Camber
 (xmaxcamber1)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="0">
-      <widget class="QCheckBox" name="cb_lambd1">
-       <property name="text">
-        <string>Lambda (lambd1)</string>
        </property>
       </widget>
      </item>
@@ -168,20 +108,87 @@
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
-      <widget class="QCheckBox" name="cb_alpha12">
+     <item row="6" column="0">
+      <widget class="QCheckBox" name="cb_lambd1">
        <property name="text">
-        <string>Alpha 2 (alph12)</string>
+        <string>Lambda (lambd1)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="8" column="0">
+      <widget class="QCheckBox" name="cb_xmaxth1">
+       <property name="text">
+        <string>Pos. max. Th (xmaxth1)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QCheckBox" name="cb_leth1">
+       <property name="text">
+        <string>Leading Edge Thickness
+(leth1)</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
+      <widget class="QCheckBox" name="cb_teth1">
+       <property name="text">
+        <string>Trailing Edge Thickness
+(teth1)</string>
+       </property>
+       <property name="checkable">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="10" column="0">
+      <widget class="QCheckBox" name="cb_gamma_te1">
+       <property name="text">
+        <string>Gamma TE (gamma_te1)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QCheckBox" name="cb_division">
+       <property name="text">
+        <string>division</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QCheckBox" name="cb_alpha11">
+       <property name="text">
+        <string>Alpha 1 (alph11)</string>
        </property>
        <property name="checked">
         <bool>true</bool>
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
-      <widget class="QCheckBox" name="cb_gamma_te1">
+     <item row="0" column="0">
+      <widget class="QCheckBox" name="cb_pp">
        <property name="text">
-        <string>Gamma TE (gamma_te1)</string>
+        <string>Percent Pitch (PP)</string>
+       </property>
+       <property name="checked">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QCheckBox" name="cb_th1">
+       <property name="text">
+        <string>Thickness (th1)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QCheckBox" name="cb_chord_dist">
+       <property name="text">
+        <string>Chord Distribution</string>
        </property>
       </widget>
      </item>
@@ -203,9 +210,9 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>110</y>
+       <y>130</y>
        <width>204</width>
-       <height>321</height>
+       <height>301</height>
       </rect>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
@@ -313,16 +320,74 @@
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="4" column="1">
-      <widget class="QDoubleSpinBox" name="input_penalty_factor">
-       <property name="maximum">
-        <double>999.899999999999977</double>
+     <item row="4" column="0">
+      <widget class="QLabel" name="label_5">
+       <property name="text">
+        <string>Penalty Factor</string>
        </property>
+      </widget>
+     </item>
+     <item row="7" column="0">
+      <widget class="QLabel" name="label_6">
+       <property name="text">
+        <string>Random Seed</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Crossover Prob.
+(CXPB)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="label_4">
+       <property name="text">
+        <string>max. Generations</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="label_2">
+       <property name="text">
+        <string>Mutation Prob.
+(MUTPB)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="7" column="1">
+      <widget class="QSpinBox" name="input_rnd_seed">
+       <property name="minimum">
+        <number>0</number>
+       </property>
+       <property name="maximum">
+        <number>10000</number>
+       </property>
+       <property name="value">
+        <number>76</number>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QDoubleSpinBox" name="input_mutpb">
        <property name="singleStep">
         <double>0.100000000000000</double>
        </property>
-       <property name="value">
-        <double>100.000000000000000</double>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QDoubleSpinBox" name="input_cxpb">
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="label_3">
+       <property name="text">
+        <string>Population Size</string>
        </property>
       </widget>
      </item>
@@ -340,74 +405,62 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QDoubleSpinBox" name="input_cxpb">
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="input_penalty_factor">
+       <property name="maximum">
+        <double>999.899999999999977</double>
+       </property>
        <property name="singleStep">
         <double>0.100000000000000</double>
        </property>
-      </widget>
-     </item>
-     <item row="3" column="1">
-      <widget class="QDoubleSpinBox" name="input_mutpb">
-       <property name="singleStep">
-        <double>0.100000000000000</double>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="label_3">
-       <property name="text">
-        <string>Population Size</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="label_4">
-       <property name="text">
-        <string>max. Generations</string>
-       </property>
-      </widget>
-     </item>
-     <item row="2" column="0">
-      <widget class="QLabel" name="label">
-       <property name="text">
-        <string>Crossover Prob.
-(CXPB)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="3" column="0">
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>Mutation Prob.
-(MUTPB)</string>
-       </property>
-      </widget>
-     </item>
-     <item row="4" column="0">
-      <widget class="QLabel" name="label_5">
-       <property name="text">
-        <string>Penalty Factor</string>
+       <property name="value">
+        <double>100.000000000000000</double>
        </property>
       </widget>
      </item>
      <item row="5" column="0">
-      <widget class="QLabel" name="label_6">
+      <widget class="QLabel" name="label_10">
        <property name="text">
-        <string>Random Seed</string>
+        <string>Beta Constraint</string>
        </property>
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QSpinBox" name="input_rnd_seed">
-       <property name="minimum">
-        <number>0</number>
+      <widget class="QDoubleSpinBox" name="input_beta_constraint">
+       <property name="decimals">
+        <number>1</number>
        </property>
        <property name="maximum">
-        <number>10000</number>
+        <double>30.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
        </property>
        <property name="value">
-        <number>76</number>
+        <double>17.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="1">
+      <widget class="QDoubleSpinBox" name="input_beta_constraint_range">
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>2.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>0.500000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="6" column="0">
+      <widget class="QLabel" name="label_11">
+       <property name="text">
+        <string>Beta Constraint Range</string>
        </property>
       </widget>
      </item>

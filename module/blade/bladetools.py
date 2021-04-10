@@ -5,6 +5,29 @@ import pandas as pd
 from scipy.special import binom
 
 
+def initialize_blade_df():
+    df = {
+        "nblades": "tandem",
+        "blade": "front",
+        "th_dist_ver": 1,
+        "th": 0.0,
+        "alpha1": 0.0,
+        "alpha2": 0.0,
+        "xmax_camber": 0.0,
+        "gamma_te": 0.0,
+        "xmax_th": 0,
+        "l_chord": 1,
+        "chord_dist": 0.5,
+        "lambd": 0.0,
+        "th_le": 0.0,
+        "th_te": 0.0,
+        "npts": 1000,
+        "spline_pts": [9999],
+        "thdist_pts": [9999]
+    }
+
+    return df
+
 def euclidean_dist(xy1, xy2):
     x1 = xy1[0]
     y1 = xy1[1]
@@ -213,7 +236,7 @@ def get_blade_from_csv(file_name):
             # values to float
             for key in row.keys():
                 try:
-                    if key == "pts" or key == "pts_th":
+                    if key == "spline_pts" or key == "thdist_pts":
                         pts = []
                         string = row[key]
                         string = string.strip("[").strip("]").split("]\n [")

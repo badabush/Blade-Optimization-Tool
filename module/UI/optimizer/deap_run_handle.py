@@ -135,7 +135,7 @@ class DeapRunHandler:
         self.toolbox.register(
             "individual", tools.initCycle, creator.Individual,
             (
-                self.toolbox.attr_pp, self.toolbox.attr_ao, self.toolbox.attr_div,
+                self.toolbox.attr_pp, self.toolbox.attr_ao, self.toolbox.attr_div, self.toolbox.attr_cdist,
                 self.toolbox.attr_alph11, self.toolbox.attr_alph12, self.toolbox.attr_alph21, self.toolbox.attr_alph22,
                 self.toolbox.attr_lambd1, self.toolbox.attr_lambd2,
                 self.toolbox.attr_th1, self.toolbox.attr_th2,
@@ -691,7 +691,10 @@ class DeapRunHandler:
             # ignore pts and pts_th
             if ("pts" not in key) and ("pts_th" not in key):
                 if key in ind_best.id.to_list():
-                    val = ind_best[(ind_best.id == key) & (ind_best.blade != "1")].value.values[0]
+                    if not "chord_dist" in key:
+                        val = ind_best[(ind_best.id == key) & (ind_best.blade != "1")].value.values[0]
+                    else:
+                        val = 1-ind_best[(ind_best.id == key) & (ind_best.blade != "1")].value.values[0]
                 blade2_str += "{0}:{1}, ".format(key, val)
         self.logger.info("[blade1] " + blade1_str[:-2])  # log it, remove trailing ,
         self.logger.info("[blade2] " + blade2_str[:-2])  # log it, remove trailing ,
