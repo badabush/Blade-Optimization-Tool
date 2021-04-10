@@ -35,7 +35,8 @@ class DeapVisualize:
 
         # get reference blade beta/cp/omega from ini file
         ref_blade_config = ConfigParser()
-        ref_blade_config.read("config/reference_blade.ini")
+        # ref_blade_config.read("config/reference_blade.ini")
+        ref_blade_config.read("config/reference_blade2.ini")
         self.ref_blade = {"beta": float(ref_blade_config['param']['beta']),
                           "cp": float(ref_blade_config['param']['cp']),
                           "omega": float(ref_blade_config['param']['omega']),
@@ -168,8 +169,5 @@ class DeapVisualize:
 
 
 if __name__ == '__main__':
-    # msg = "BUGFIX: mistakenly plotted wrong reference blade \n\n"
+    msg = "FIX1: wrong reference blade parameters. \n\n"
     # DeapVisualize("test_10-02-21_19-51-14.log", True, msg)
-    # DeapVisualize(os.path.join(Path.cwd().parent / "log/raw/", "25-03-21_14-39-24_seed_76.log"), testrun=True)
-    # DeapVisualize(os.path.join(Path.cwd().parent / "log/raw/", "test_09-04-21_17-25-30_seed_76.log"), testrun=True)
-    DeapVisualize(os.path.join(Path.cwd().parent / "log/raw/", "test_10-04-21_17-22-35_seed_80.log"), testrun=True)

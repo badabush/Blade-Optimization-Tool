@@ -24,7 +24,8 @@ def distributions(best_blades, logdir):
     ds_camber = []  # store camber points of ref1/ref2/best1/best2
 
     # get ref_blade parameters
-    _, ref1, ref2 = get_blade_from_csv(Path.cwd() / "UI/config/default_blade.csv")
+    # _, ref1, ref2 = get_blade_from_csv(Path.cwd() / "UI/config/default_blade.csv")
+    _, ref1, ref2 = get_blade_from_csv(Path.cwd() / "UI/config/default_blade2.csv")
 
     # assign best blade parameters
     ds_blades.append(ref1)
