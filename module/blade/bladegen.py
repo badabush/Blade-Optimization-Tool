@@ -149,11 +149,11 @@ class BladeGen:
         # rn = 4 * th_le
         if self.nblade == "tandem":
             d = ds['rth'] / ds["l_chord"]  # absolute thickness ... ???
-            rn = 2 * th_le / ds["l_chord"]
+            rn = th_le / ds["l_chord"]
             dhk = th_te / ds["l_chord"]
         else:
             d = ds['rth'] * 2
-            rn = 4 * th_le
+            rn = 2 * th_le
             dhk = 2 * th_te
         # d = ds['rth']  * 2
 
