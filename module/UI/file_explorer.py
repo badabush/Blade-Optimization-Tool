@@ -115,13 +115,7 @@ class FileExplorer:
             # generate blades from parameter
             ds = self.ds
             if ds['nblades'] == 'single':
-                bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'],
-                                    npts=ds['npts'],
-                                    alpha1=ds['alpha1'], alpha2=ds['alpha2'],
-                                    lambd=ds['lambd'], th=ds['th'], x_maxth=ds['xmax_th'],
-                                    x_maxcamber=ds['xmax_camber'],
-                                    l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'], spline_pts=ds['pts'],
-                                    thdist_points=ds['pts_th'])
+                bladegen = BladeGen(frontend='UI', blade_df=ds)
                 print('save single blade')
                 blade_data, _ = bladegen._return()
                 ds = pd.DataFrame({'x': blade_data[:, 0], 'y': blade_data[:, 1]})
@@ -138,14 +132,7 @@ class FileExplorer:
                     else:
                         ds = self.ds2
                         fname = head + "_AV.txt"
-                    bladegen = BladeGen(frontend='UI', nblade=ds['nblades'], th_dist_option=ds['thdist_ver'],
-                                        npts=ds['npts'],
-                                        alpha1=ds['alpha1'], alpha2=ds['alpha2'],
-                                        lambd=ds['lambd'], th=ds['th'], x_maxth=ds['xmax_th'],
-                                        x_maxcamber=ds['xmax_camber'],
-                                        l_chord=ds['l_chord'], th_le=ds['th_le'], th_te=ds['th_te'],
-                                        spline_pts=ds['pts'],
-                                        thdist_points=ds['pts_th'])
+                    bladegen = BladeGen(frontend='UI', blade_df=ds)
                     blade_data, _ = bladegen._return()
                     ds = pd.DataFrame({'x': blade_data[:, 0], 'y': blade_data[:, 1]})
 
@@ -158,7 +145,7 @@ class FileExplorer:
         """
         options = QFileDialog.Options()
         options |= QFileDialog.DontUseNativeDialog
-        log_path, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()",
+        log_path, _ = QFileDialog.getOpenFileName(self, "QFileDialog.getOpenFileName()", "../log/raw/",
                                                   "test_28-02-21_15-16-22_seed_76.log",
                                                   "Log Files (*.log)", options=options)
         filename = Path(log_path).stem
@@ -167,7 +154,8 @@ class FileExplorer:
             return
         else:
             if "test" in filename:
-                self.testrun = True
+                # self.testrun = True
+                raise IOError("File is a testfile and cannot be loaded and continued.")
             else:
                 self.testrun = False
 

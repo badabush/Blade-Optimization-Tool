@@ -37,17 +37,19 @@ class SaveLoadConfig:
                                                       "CSV Files (*.csv)", options=options)
 
         try:
-            self.ds, self.ds1, self.ds2 = get_blade_from_csv(fileName)
+            ds, ds1, ds2 = get_blade_from_csv(fileName)
         except IOError:
             print("I/O error")
 
         # update blade
         if self.nblades == 'single':
-            self.set_labelval(self.ds)
+            self.set_labelval(ds)
 
         if self.nblades == 'tandem':
             self.radio_blade1.setChecked(True)
-            self.set_labelval(self.ds1)
+            self.set_labelval(ds1)
+            self.update_select()
             self.radio_blade1.setChecked(False)
             self.radio_blade2.setChecked(True)
-            self.set_labelval(self.ds2)
+            self.set_labelval(ds2)
+            self.update_select()

@@ -67,27 +67,27 @@ class DeapVisualize:
         # plot camber and thickness distribution
         distributions(blades, logdir)
 
-        # # plot fitness/generation
-        # print("Generating Fitness/Generation plot...")
-        # fitness_generation(ds_popfit, logdir)
-        # # plot fitness/generation scatter
-        # print("Generating Fitness/Generation scatter plot...")
-        # fitness_generation_scatter(ds, ds_popfit, logdir)
-        #
-        # # plot 3point curve ref/best blade
-        # print("Generating 3point plot...")
-        # try:
-        #     three_point(ds, self.ref_blade, logdir)
-        # except KeyError:
-        #     print("not a 3point run.")
-        #
-        # # plot a feature over time
-        # print("Generating Feature/time plot...")
-        # feature_time(ds, logdir)
-        #
-        # # plot features over density
-        # print("Generating feature/density plot...")
-        # feature_density(ds, logdir)
+        # plot fitness/generation
+        print("Generating Fitness/Generation plot...")
+        fitness_generation(ds_popfit, logdir)
+        # plot fitness/generation scatter
+        print("Generating Fitness/Generation scatter plot...")
+        fitness_generation_scatter(ds, ds_popfit, logdir)
+
+        # plot 3point curve ref/best blade
+        print("Generating 3point plot...")
+        try:
+            three_point(ds, self.ref_blade, logdir)
+        except KeyError:
+            print("not a 3point run.")
+
+        # plot a feature over time
+        print("Generating Feature/time plot...")
+        feature_time(ds, logdir)
+
+        # plot features over density
+        print("Generating feature/density plot...")
+        feature_density(ds, logdir)
 
         # contour(ds, logdir)
         # print("Generating contour2 plot...")
@@ -171,3 +171,4 @@ class DeapVisualize:
 if __name__ == '__main__':
     msg = "FIX1: wrong reference blade parameters. \n\n"
     # DeapVisualize("test_10-02-21_19-51-14.log", True, msg)
+    DeapVisualize(Path.cwd().parent / "log/raw/10-04-21_18-31-39_seed_76.log", False, msg)

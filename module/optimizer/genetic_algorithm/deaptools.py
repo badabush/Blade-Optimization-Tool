@@ -39,40 +39,39 @@ def read_deap_restraints():
     return df
 
 
-def custom_penalty(fit, beta, penalty_factor):
+def custom_penalty(fit, beta, penalty_factor, beta_default=16.5, beta_range_default=.5):
     """
 
     :param fitnesses: list with (val,) tuples
     :param df:
     :return:
     """
-    if feasible(beta):
+    if feasible(beta, beta_default, beta_range_default):
         return fit
 
     else:
         # quadratic penalty
-        penalty = penalty_distance(beta, penalty_factor)
+        penalty = penalty_distance(beta, penalty_factor, beta_default)
         new_fit = fit[0]
         return (np.round(new_fit + penalty, 4),)
 
 
-def feasible(val):
+def feasible(val, default, range):
     """
     Feasibility test for input val (beta).
     :param val:
     :return:
     """
-    beta_min = 16.
-    beta_max = 17.
+    beta_min = default-range
+    beta_max = default+range
 
     if (val > beta_min) and (val < beta_max):
         return True
     return False
 
 
-def penalty_distance(val, penalty_factor=40):
-    average = 16.5
-    return (np.deg2rad(val - average) ** 2) * penalty_factor
+def penalty_distance(val, penalty_factor=40, beta=16.5):
+    return (np.deg2rad(val - beta) ** 2) * penalty_factor
 
 
 def get_three_point_paths(paths):
@@ -260,6 +259,11 @@ def read_header(log_path):
                 log_meta["ref_params"] = {elem.split(":")[0]: float(elem.split(":")[1]) for elem in chunklist}
             elif "Reference Blade Fitness" in line:
                 log_meta["ref_fit"] = float(line.split(":")[-1])
+            elif "Beta Constraint" in line:
+                chunk = line.split("--- ")[-1]
+                chunklist = chunk.split(", ")
+                log_meta["beta_constraint"] = float(chunklist[0].lstrip("Beta Constraint: "))
+                log_meta["beta_constraint_range"] = float(chunklist[1].lstrip("Beta Constraint Range: "))
     return log_meta
 
 

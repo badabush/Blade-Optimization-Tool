@@ -46,7 +46,9 @@ class DeapConfigUi(QtWidgets.QDialog):
             "mutpb": self.input_mutpb,
             "penalty_factor": self.input_penalty_factor,
             "random_seed": self.input_rnd_seed,
-            "objective_params": [self.input_obj_param_A,self.input_obj_param_B,self.input_obj_param_C]
+            "objective_params": [self.input_obj_param_A, self.input_obj_param_B, self.input_obj_param_C],
+            "beta_constraint": self.input_beta_constraint,
+            "beta_constraint_range": self.input_beta_constraint_range
         }
 
         self.cblist = {}
@@ -88,6 +90,8 @@ class DeapConfigUi(QtWidgets.QDialog):
         self.vallist['random_seed'] = self.input_rnd_seed.value()
         self.vallist['objective_params'] = [self.input_obj_param_A.value(), self.input_obj_param_B.value(),
                                             self.input_obj_param_C.value()]
+        self.vallist['beta_constraint'] = self.input_beta_constraint.value()
+        self.vallist['beta_constraint_range'] = self.input_beta_constraint_range.value()
 
     def _close(self):
         self.close()
@@ -103,7 +107,7 @@ class DeapConfigUi(QtWidgets.QDialog):
                         self.deap_config_inputs[option].setValue(self.config.getfloat(section, option))
                     else:
                         param_list = self.config.get(section, option)
-                        param_list = list(map(float,param_list.strip("[]").split(", ")))
+                        param_list = list(map(float, param_list.strip("[]").split(", ")))
                         [self.deap_config_inputs[option][i].setValue(param_list[i]) for i in range(len(param_list))]
 
     def save_config(self):

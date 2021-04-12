@@ -1,4 +1,5 @@
 import math
+from pathlib import Path
 import pandas as pd
 from blade.bladetools import initialize_blade_df
 
@@ -405,19 +406,9 @@ class BDUpdateHandler:
 
     def set_default(self):
         """
-        If Button: [default] is clicked, set all visible slider positions and label to default position defined in
-        restraints.txt.
+        Load blades from default_blade.csv.
         """
-        # set values
-        for key in self.param_keys:
-            self.label[key].setValue(self.restraints[key][3])
-            if key == 'npts':
-                self.slider[key].setSliderPosition(self.restraints[key][3] / 100)
-            elif self.restraints[key][1] > 1:
-                self.slider[key].setSliderPosition(self.restraints[key][3])
-            else:
-                self.slider[key].setSliderPosition(self.restraints[key][3] * self.scale)
-        print('Resetting Values')
+        self.load_config(Path.cwd() / "UI/config/default_blade.csv")
 
     def update_thdist_V1(self):
         """

@@ -147,9 +147,14 @@ class BladeGen:
         x = self.x
         xd = ds['xmax_th']
         rn = 4 * th_le
-        d = ds['rth'] * 2
+        if self.nblade == "tandem":
+            d = ds['rth'] / ds["l_chord"]  # absolute thickness ... ???
+        else:
+            d = ds['rth'] * 2
+        # d = ds['rth']  * 2
         dhk = 2 * th_te
         c = 1
+        # c = ds["l_chord"]
         gammahk = ds['gamma_te']
         # if thickness dist spline points are given, take thdist from spline
         if 0:
@@ -409,7 +414,7 @@ class BladeGen:
         # Blade looks absolute horrible sub 500 points. Blade will be divided into 4 even parts, so npts%4==0
         # must be true.
         assert ((df["npts"] >= 500) and (
-                    df["npts"] % 4 == 0)), "Choose more than 500 Pts and npts must be dividable by 4."
+                df["npts"] % 4 == 0)), "Choose more than 500 Pts and npts must be dividable by 4."
 
     def debug_plot(self, xy_camber, xy_blade):
         plt.figure(figsize=(12, 4))

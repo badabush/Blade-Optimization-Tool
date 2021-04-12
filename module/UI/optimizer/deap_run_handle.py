@@ -121,7 +121,8 @@ class DeapRunHandler:
         self.dp_CXPB = self.deap_config_ui.vallist['cxpb']  # crossover probability
         self.dp_MUTPB = self.deap_config_ui.vallist['mutpb']  # mutation probability
         self.dp_MAX_GENERATIONS = self.deap_config_ui.vallist['max_gens']  # maximum number of generations
-
+        self.dp_BETA_CONSTRAINT = self.deap_config_ui.vallist['beta_constraint']  # beta constraint for penalty
+        self.dp_BETA_CONSTRAINT_RANGE =self.deap_config_ui.vallist['beta_constraint_range']  # " range for penalty
         # Creator
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
         creator.create("Individual", list, fitness=creator.FitnessMin)
@@ -167,6 +168,8 @@ class DeapRunHandler:
             '--- POP_SIZE:{popsize}, CXPB:{cxpb}, MUTPB:{mutpb}, PENALTY_FACTOR:{penalty_factor}'.format(
                 popsize=self.dp_POP_SIZE, cxpb=self.dp_CXPB, mutpb=self.dp_MUTPB,
                 penalty_factor=self.deap_settings.values['penalty_factor']))
+        self.logger.info("--- Beta Constraint: {beta_constraint}, Beta Constraint Range: {beta_range}".format(
+            beta_constraint=self.dp_BETA_CONSTRAINT, beta_range=self.dp_BETA_CONSTRAINT_RANGE))
         free_params = "".join(
             ["{param}, ".format(param=param) for (param, val) in self.deap_settings.checkboxes.items() if val == 1])
         self.logger.info("--- Free Parameters: " + free_params[:-2])
@@ -544,14 +547,18 @@ class DeapRunHandler:
             if not fit[-1] > 9998:
                 if not self.log_loaded:
                     fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
-                                                   self.deap_settings.values['penalty_factor'])
+                                                   self.deap_settings.values['penalty_factor'],
+                                                   beta_default=self.deap_settings.values['beta_constraint'],
+                                                   beta_range_default=self.deap_settings.values['beta_constraint_range'])
                 else:
 
                     if ((self.pointer_df + idx) <= self.log_df.shape[0]) and (self.log_df.shape[0] != 0):
                         fit = (self.log_df.iloc[self.pointer_df + idx].fitness,)
                     else:
                         fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
-                                                       self.deap_settings.values['penalty_factor'])
+                                                       self.deap_settings.values['penalty_factor'],
+                                                   beta_default=self.deap_settings.values['beta_constraint'],
+                                                   beta_range_default=self.deap_settings.values['beta_constraint_range'])
             ind.fitness.values = fit
             try:
                 self.df.iloc[idx + self.pointer_df].fitness = fit[0]
@@ -619,13 +626,17 @@ class DeapRunHandler:
                 if not fit[-1] > 9998:
                     if not self.log_loaded:
                         fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
-                                                       self.deap_settings.values['penalty_factor'])
+                                                       self.deap_settings.values['penalty_factor'],
+                                                   beta_default=self.deap_settings.values['beta_constraint'],
+                                                   beta_range_default=self.deap_settings.values['beta_constraint_range'])
                     else:
                         if (self.pointer_df + idx) < self.log_df.shape[0]:
                             fit = (self.log_df.iloc[self.pointer_df + idx].fitness,)
                         else:
                             fit = deaptools.custom_penalty(fit, self.df.iloc[idx + self.pointer_df].beta,
-                                                           self.deap_settings.values['penalty_factor'])
+                                                           self.deap_settings.values['penalty_factor'],
+                                                   beta_default=self.deap_settings.values['beta_constraint'],
+                                                   beta_range_default=self.deap_settings.values['beta_constraint_range'])
                 ind.fitness.values = fit
 
                 try:

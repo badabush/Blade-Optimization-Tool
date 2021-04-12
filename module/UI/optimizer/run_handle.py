@@ -18,7 +18,11 @@ class RunHandler:
         When UI button 'Continue Log' is pressed, open file explorer for log file and run GA.
         :return:
         """
-        ds_log_meta = self.load_log()
+        try:
+            ds_log_meta = self.load_log()
+        except IOError as e:
+            self.outputbox(str(e))
+            return
 
         self.deap_config_ui.get_checkbox()
         self.deap_config_ui.get_values()
@@ -28,6 +32,7 @@ class RunHandler:
         # assert parameters between log file and UI settings
         if not ds_log_meta:
             return
+
         try:
             if not ds_log_meta["version"] == self.VERSION:
                 raise AssertionError(
@@ -67,6 +72,17 @@ class RunHandler:
                 raise AssertionError(
                     "Penalty factor don't match (Current:{curr}, Log:{log})".format(log=ds_log_meta["objective_params"],
                                                                                     curr=ds_curr["objective_params"]))
+
+            if not ds_log_meta["beta_constraint"] == ds_curr["beta_constraint"]:
+                raise AssertionError(
+                    "Beta Constraint don't match (Current:{curr}, Log:{log})".format(
+                        log=ds_log_meta["beta_constraint"], curr=ds_curr["beta_constraint"]))
+
+            if not ds_log_meta["beta_constraint_range"] == ds_curr["beta_constraint_range"]:
+                raise AssertionError(
+                    "Beta Constraint Range don't match (Current:{curr}, Log:{log})".format(
+                        log=ds_log_meta["beta_constraint_range"], curr=ds_curr["beta_constraint_range"]))
+
 
             ref_individual = ind_list_from_datasets(self.ds1, self.ds2, dp_genes)
             for i, (key, val) in enumerate(ds_log_meta["ref_params"].items()):
