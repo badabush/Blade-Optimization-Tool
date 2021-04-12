@@ -146,13 +146,17 @@ class BladeGen:
         lambd = ds['lambd']
         x = self.x
         xd = ds['xmax_th']
-        rn = 4 * th_le
+        # rn = 4 * th_le
         if self.nblade == "tandem":
             d = ds['rth'] / ds["l_chord"]  # absolute thickness ... ???
+            rn = 2 * th_le / ds["l_chord"]
+            dhk = th_te / ds["l_chord"]
         else:
             d = ds['rth'] * 2
+            rn = 4 * th_le
+            dhk = 2 * th_te
         # d = ds['rth']  * 2
-        dhk = 2 * th_te
+
         c = 1
         # c = ds["l_chord"]
         gammahk = ds['gamma_te']
