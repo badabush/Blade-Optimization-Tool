@@ -186,8 +186,6 @@ class PlotCanvas(FigureCanvas):
         self.xlim = (0, 0)
         self.ylim = (0, 0)
 
-        # self.plot()
-
     def plot(self, r_inner, blade_list):
         """
         Method to handle all plotting tasks.

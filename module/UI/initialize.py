@@ -172,7 +172,6 @@ class Initialize:
         elif key == 'lambd':
             label.setMinimum(minval)
             label.setMaximum(maxval)
-            # label.setSingleStep(step)
             slider.setMinimum(minval * 10)
             slider.setMaximum(maxval * 10)
             slider.setSingleStep(step * 10)

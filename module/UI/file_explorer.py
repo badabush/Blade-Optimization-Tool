@@ -154,7 +154,6 @@ class FileExplorer:
             return
         else:
             if "test" in filename:
-                # self.testrun = True
                 raise IOError("File is a testfile and cannot be loaded and continued.")
             else:
                 self.testrun = False

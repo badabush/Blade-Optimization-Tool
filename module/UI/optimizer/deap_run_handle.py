@@ -455,7 +455,6 @@ class DeapRunHandler:
             self.res_failed_event.clear()
             return 9999,
         self.beta, self.cp, self.omega = calc_xmf(self.xmf_param)
-        # print("Omega: " + str(omega))
         # clear events
         self.igg_event.clear()
         self.res_event.clear()
@@ -492,8 +491,6 @@ class DeapRunHandler:
             if not refblade:
                 self.df = self.df.append(new_row, ignore_index=True)
 
-            # entry = deaptools.generate_log(-1, self.df, )
-            # self.logger.info(entry)
             return res / self.fit_ref,
 
         if not refblade:
@@ -688,7 +685,6 @@ class DeapRunHandler:
 
         best_ind = tools.selBest(pop, 1)[0]
         print("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
-        # self.logger.info("Best individual is %s, %s" % (best_ind, best_ind.fitness.values))
         try:
             idx_best = self.df[self.df.fitness == np.min(minlist)].index[0]
             self.logger.info("Best individual: ")

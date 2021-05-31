@@ -294,7 +294,6 @@ class BDUpdateHandler:
         If Button: [Update All] is clicked, get values from labels and plot.
         """
         # get values
-        # ds = {}
         ds = initialize_blade_df()
         for key in self.param_keys:
             ds[key] = self.label[key].value()
@@ -383,7 +382,6 @@ class BDUpdateHandler:
             # get values from menu items
             ds2['th_dist_ver'] = self.thdist_ver
             ds2['blade'] = self.ds["blade"]
-            # ds2['chord_dist'] = ds2
             ds2['nblades'] = self.nblades
             ds2['spline_pts'] = self.camber_spline_pts
             ds2['thdist_pts'] = self.thdist_spline_pts

@@ -400,7 +400,6 @@ class OptimHandler:
                 for i in process_list:
                     if i != '':
                         stdout = self.sshobj.send_cmd("kill " + str(i))
-                        # self.outputbox("Killed fine EuranusTurbo (" + str(i) + ").")
                 self.outputbox("Killed multiple processes.")
         except AttributeError:
             self.outputbox("Error killing the process.")

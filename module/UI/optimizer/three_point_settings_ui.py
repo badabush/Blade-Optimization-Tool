@@ -46,7 +46,6 @@ class ThreePointSettingsUI(QtWidgets.QDialog):
         :return:
         """
         cfgfile = open(self.configfile, 'w')
-        # config_checkboxes = self.config["checkboxes"]
         for key, val in self.paths.items():
                 self.config.set("paths", key, str(val))
         self.config.write(cfgfile)

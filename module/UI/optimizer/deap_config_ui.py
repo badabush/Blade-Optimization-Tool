@@ -116,7 +116,6 @@ class DeapConfigUi(QtWidgets.QDialog):
         :return:
         """
         cfgfile = open(self.configfile, 'w')
-        # config_checkboxes = self.config["checkboxes"]
         for key, state in self.cblist.items():
             if state:
                 self.config.set("checkboxes", key, 'true')

@@ -199,7 +199,6 @@ class RunHandler:
                 paths['proj_folder'] + "/BOT/py_script/" + scriptfile + " -batch -print")
             self.outputbox(stdout)
 
-            # for i in range(3):
             # try removing old res files
             # change paths of res and xmf files
             t = threading.Thread(name='res_reader', target=self.read_res, args=(self.res_files[0], self.xmf_files[0]),
@@ -207,8 +206,6 @@ class RunHandler:
             t.start()
             self.res_event.wait()
             time.sleep(2)
-            # self.res_event.clear()
-            # self.res_event.set()
             # read xmfs from lower and upper point
             self.xmf_param_lower = read_xmf(self.xmf_files[1], self.xmf_param_lower)
             self.xmf_param_upper = read_xmf(self.xmf_files[2], self.xmf_param_upper)

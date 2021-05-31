@@ -34,7 +34,6 @@ class BladeGen:
         # pack parameters into dict
         self.ds = self.params(blade_df)
         self.x = .5 * (1 - np.cos(np.linspace(0, np.pi, int(self.ds['npts'] / 2))))  # x-coord generation
-        # self.x = np.linspace(0, 1, self.ds['npts'])
 
         # #TODO: camber spline is disabled for now
         self.xy_camber = self.camberline(self.ds['theta'], self.ds["xmax_camber"])

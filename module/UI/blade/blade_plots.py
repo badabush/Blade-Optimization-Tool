@@ -18,11 +18,6 @@ def bladePlot(ax, ds, ds1=0, ds2=0, ds_import=0, xlim=(0, 0), ylim=(0, 0), alpha
     :type ds_import: pandas.DataFrame
     :return: None
     """
-    # get zoom state
-    # if xlim == (0, 0) and ylim == (0, 0):
-    #     xlim = (-.1, 1)
-    #     ylim = (-.1, 1)
-    # else:
     xlim = ax.get_xlim()
     ylim = ax.get_ylim()
     if clear:

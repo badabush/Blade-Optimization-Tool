@@ -6,8 +6,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
-
-# from module.blade.bladetools import camber_spline
 from blade.testspline import compute_spline
 from blade.bladetools import load_config_file
 
@@ -208,14 +206,11 @@ class PlotCanvas(FigureCanvas):
         self.xlim = (0, 0)
         self.ylim = (0, 0)
 
-        # self.plot()
-
     def plot(self, xy, pts):
         """
         Method to handle all plotting tasks.
         """
         self.ax.cla()
-        # print(pts)
         thdist_default = np.loadtxt("../module/UI/config/thdist_default.txt")
         thdist_default = np.reshape(thdist_default, (500,2))
         self.ax.plot(xy[:, 0], xy[:, 1]/np.max(xy[:, 1]))

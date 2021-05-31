@@ -62,7 +62,6 @@ class OptimPlotMassflow(FigureCanvas):
     def clear(self):
         self.ax.clear()
         self.ax.grid()
-        # self.ax.legend()
 
 
 class OptimPlotXMF(FigureCanvas):
@@ -82,7 +81,6 @@ class OptimPlotXMF(FigureCanvas):
         self.ax.set_title(r'$c_p, \omega, \beta$')
         self.ax.set_xlabel("iteration")
         self.ax.set_ylabel(r"$c_p, \omega$")
-        # self.ax.legend()
         self.ax.grid()
         self.xlim = (0, 0)
         self.ylim = (0, 0)
@@ -126,7 +124,6 @@ class OptimPlotXMF(FigureCanvas):
     def clear(self):
         self.ax.clear()
         self.ax.grid()
-        # self.ax.legend()
 
 
 class OptimPlotDEAP(FigureCanvas):
@@ -155,9 +152,6 @@ class OptimPlotDEAP(FigureCanvas):
         ani = animation.FuncAnimation(fig, self.animate_deap, interval=1000)
 
     def animate_deap(self, ds):
-        # gen = ds
-        # fitmin = []
-        #
         self.clear()
         self.ax.plot(np.arange(len(ds))+1, ds, color="indianred", label="fitness")
         self.ax.xaxis.set_major_locator(MaxNLocator(integer=True))  # force integer x values

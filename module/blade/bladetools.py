@@ -109,14 +109,6 @@ def load_config_file(filename):
             else:
                 ds[item[0]] = [float(item[i]) for i in range(1, len(item))]
 
-
-            # if len(item) == 2:
-            #     ds[item[0]] = float(item[1])
-            # else:
-            #     try:
-            #         ds[item[0]] = [float(item[1]), float(item[2]), float(item[3]), float(item[4])]
-            #     except IndexError as e:
-            #         print(e)
     return ds
 
 
@@ -222,10 +214,6 @@ def cdist_from_spline(xy_spline, delta_alpha):
     xy_camber[:, 0] = xy_camber[:, 0] / xmax
     xy_camber[:, 1] = xy_camber[:, 1] / xmax
 
-    # plt.cla
-    # plt.plot(xy_camber[:, 0], xy_camber[:, 1])
-    # plt.axis('equal')
-    # plt.show()
     return xy_camber
 
 def get_blade_from_csv(file_name):
@@ -286,8 +274,5 @@ class AnnulusGen:
             x_blade = np.cos(c) * x_temp - np.sin(c) * y_temp
             y_blade = np.sin(c) * x_temp + np.cos(c) * y_temp
             blade_list['blade_%i' % (int(i))] = np.concatenate([x_blade + x[i], y_blade + y[i]])
-        # plt.plot(x, y)
-        # plt.axis('equal')
-        # plt.show()
 
         return blade_list

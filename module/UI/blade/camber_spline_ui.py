@@ -214,8 +214,6 @@ class PlotCanvas(FigureCanvas):
         self.xlim = (0, 0)
         self.ylim = (0, 0)
 
-        # self.plot()
-
     def plot(self, xy, pts):
         """
         Method for handling all plotting tasks.
