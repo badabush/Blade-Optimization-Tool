@@ -199,7 +199,6 @@ class PlotCanvas(FigureCanvas):
         :return:
         """
         self.ax.cla()
-        # print(pts)
         shape = blade_list.shape
         n2 = int(shape[0] / 2)
         # line directly connecting blade edges

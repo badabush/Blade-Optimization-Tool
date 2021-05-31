@@ -124,8 +124,16 @@ class DeapRunHandler:
         self.dp_BETA_CONSTRAINT = self.deap_config_ui.vallist['beta_constraint']  # beta constraint for penalty
         self.dp_BETA_CONSTRAINT_RANGE =self.deap_config_ui.vallist['beta_constraint_range']  # " range for penalty
         # Creator
-        creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
-        creator.create("Individual", list, fitness=creator.FitnessMin)
+        try:
+            var = creator.FitnessMin
+            var = creator.Individual
+            del creator.FitnessMin
+            del creator.Individual
+            creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+            creator.create("Individual", list, fitness=creator.FitnessMin)
+        except AttributeError:
+            creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
+            creator.create("Individual", list, fitness=creator.FitnessMin)
 
         # Toolbox
         self.toolbox = base.Toolbox()
@@ -276,7 +284,7 @@ class DeapRunHandler:
                 self.df = self.df.append(new_row, ignore_index=True)
                 return np.round(res, 4),
 
-        beta = clean_individuals.value.to_numpy().sum() / 4
+        beta = clean_individuals.value.to_numpy().sum() / 3.5
         omega = np.deg2rad(beta) / 10
         self.cp = [0, 2 * omega]
         self.beta = [beta, beta]
